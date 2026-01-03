@@ -1,0 +1,35 @@
+
+<html>
+<head><title>Search Facts</title>
+<style>
+body{font-family:Arial,sans-serif;padding:20px;}
+input{width:80%;padding:10px;margin-bottom:10px;}
+ul{list-style:none;padding:0;}
+li{margin:5px 0;}
+</style>
+</head>
+<body>
+<h1>Search Facts</h1>
+<input type="text" id="searchBox" placeholder="Type to search...">
+<ul id="results"></ul>
+<script>
+let data = [];
+fetch('search.json').then(r=>r.json()).then(j=>data=j);
+const box=document.getElementById('searchBox');
+const results=document.getElementById('results');
+box.addEventListener('input',()=>{
+  results.innerHTML='';
+  const term=box.value.toLowerCase();
+  data.filter(d=>d.title.toLowerCase().includes(term))
+      .forEach(d=>{
+        let li=document.createElement('li');
+        let a=document.createElement('a');
+        a.href=d.url;
+        a.textContent=d.title;
+        li.appendChild(a);
+        results.appendChild(li);
+      });
+});
+</script>
+</body>
+</html>
