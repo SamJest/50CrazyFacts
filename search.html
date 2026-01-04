@@ -41,19 +41,45 @@ gtag('config', 'G-V2XJEGWMGS');
 <script>
 let data = [];
 
-fetch('search.json')
-  .then(r => r.json())
-  .then(d => data = d);
+// Load all category search.json files
+async function loadSearchData() {
+  const categoryFolders = true;
+}
+
+// Manually list categories via fetch index
+fetch('categories/index.html')
+  .then(r => r.text())
+  .then(html => {
+    const matches = [...html.matchAll(/href="([^"]+)\/index.html"/g)];
+    const paths = matches.map(m => m[1]);
+
+    return Promise.all(
+      paths.map(p =>
+        fetch('../' + p + '/search.json')
+          .then(r => r.json())
+          .catch(() => [])
+      )
+    );
+  })
+  .then(all => {
+    data = all.flat();
+  });
 
 document.getElementById('searchBox').addEventListener('input', function() {
   const q = this.value.toLowerCase();
+  if (!q) {
+    document.getElementById('results').innerHTML = '';
+    return;
+  }
+
   const results = data.filter(r =>
     r.join(' ').toLowerCase().includes(q)
   );
 
   document.getElementById('results').innerHTML =
     results.map(r =>
-      '<li><a href="' + r[6] + '/' + r[7] + '/' +
+      '<li><a href="' +
+      r[6] + '/' + r[7] + '/' +
       r[0].toLowerCase().replace(/[^a-z0-9]+/g,'-') +
       '.html">' + r[0] + '</a></li>'
     ).join('');
