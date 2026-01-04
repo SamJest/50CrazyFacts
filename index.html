@@ -16,6 +16,16 @@ nav { margin:20px; text-align:center; }
 .card a { font-weight:bold; color:#ff5722; text-decoration:none; }
 .card a:hover { text-decoration:underline; }
 .date { display:block; font-size:0.8em; color:#555; margin-top:5px; }
+.search-container { text-align:center; margin:30px 0; }
+#searchBox { width:80%; max-width:400px; padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc; }
+#results { list-style:none; padding:0; margin-top:20px; }
+#results li { background:white; padding:10px; margin:5px auto; width:80%; max-width:400px; border-radius:5px; box-shadow:0 1px 3px rgba(0,0,0,0.1); text-align:left; }
+#results li a { color:#ff5722; text-decoration:none; font-weight:bold; }
+#results li a:hover { text-decoration:underline; }
+.ad-placeholder { background:#e0e0e0; text-align:center; padding:20px; margin:15px auto; border-radius:10px; font-weight:bold; color:#555; width:80%; max-width:600px; }
+.random-fact { background:white; padding:20px; margin:20px auto; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); width:80%; max-width:600px; text-align:center; }
+.random-fact a { color:#ff5722; text-decoration:none; font-weight:bold; margin:0 5px; }
+.random-fact a:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
@@ -28,6 +38,15 @@ nav { margin:20px; text-align:center; }
 <a href="categories/index.html" class="category-btn">categories</a><a href="Technology/index.html" class="category-btn">Technology</a><a href="Animals/index.html" class="category-btn">Animals</a>
 </nav>
 
+<div class="search-container">
+  <input type="text" id="searchBox" placeholder="Search for a fact...">
+  <ul id="results"></ul>
+</div>
+
+<div class="ad-placeholder">AD 1</div>
+<div class="ad-placeholder">AD 2</div>
+
+<h2 style="text-align:center; margin-top:40px;">Latest Facts</h2>
 <div class="main">
 
       <div class="card">
@@ -55,6 +74,45 @@ nav { margin:20px; text-align:center; }
         <span class="date">Jan 03, 2026</span>
       </div>
 </div>
+
+<div class="random-fact" id="randomFact">
+  Loading random fact...
+</div>
+
+<script>
+let data = [];
+fetch('search.json')
+  .then(r=>r.json())
+  .then(d=>{
+    data=d;
+    showRandomFact();
+  });
+
+document.getElementById('searchBox').addEventListener('input', function(){
+  const q=this.value.toLowerCase();
+  document.getElementById('results').innerHTML =
+    data.filter(r=>r.join(' ').toLowerCase().includes(q))
+        .map(r=>'<li><a href="'+r[6]+'/'+r[7]+'/'+r[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+'.html">'+r[0]+'</a></li>')
+        .join('');
+});
+
+function showRandomFact() {
+  if(data.length===0) return;
+  const fact = data[Math.floor(Math.random()*data.length)];
+  const factUrl = fact[6]+'/'+fact[7]+'/'+fact[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+'.html';
+  const html = `
+    <h3><a href="${factUrl}">${fact[0]}</a></h3>
+    <p>${fact[1]}</p>
+    <div>
+      Share: 
+      <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(fact[0] + ' ' + window.location.href)}" target="_blank">Twitter</a> | 
+      <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(factUrl)}" target="_blank">Facebook</a> | 
+      <a href="#" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied!'); return false;">Copy Link</a>
+    </div>
+  `;
+  document.getElementById('randomFact').innerHTML = html;
+}
+</script>
 
 </body>
 </html>
