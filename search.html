@@ -1,11 +1,18 @@
-<html><body>
-<h1>Search Facts</h1>
-<input id="q" placeholder="Search facts..." style="width:80%;padding:10px">
+
+<html>
+<body>
+<nav><a href="index.html">Home</a></nav>
+<h1>Search All Facts</h1>
+<input id="q" placeholder="Search..." style="width:80%;padding:10px">
 <ul id="r"></ul>
+
 <script>
 fetch('search.json').then(r=>r.json()).then(d=>{
-  q.oninput=()=>r.innerHTML=d.filter(x=>x[0].toLowerCase().includes(q.value.toLowerCase()))
-    .map(x=>'<'+'li><a href="'+x[7]+'/'+x[8]+'.html">'+x[0]+'</a></li>').join('');
+  q.oninput=()=>r.innerHTML=d
+    .filter(x=>x.title.toLowerCase().includes(q.value.toLowerCase()))
+    .map(x=>`<li><a href="${x.url}">${x.title}</a></li>`)
+    .join('');
 });
 </script>
-</body></html>
+</body>
+</html>
