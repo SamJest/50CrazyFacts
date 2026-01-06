@@ -31,26 +31,50 @@ h1 { margin: 0; font-size: 3em; }
 #results a { text-decoration: none; color: #ff5722; font-weight: bold; }
 
 .random-fact {
-  background: #fdf7f3;
+  background: #fff9f2;       /* soft, warm background, still "ad-like" */
   max-width: 800px;
   margin: 40px auto;
   padding: 24px 28px;
   border-radius: 12px;
   border-left: 6px solid #ff5722;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  text-align: center;        /* center the content */
+  font-family: Arial, sans-serif;
 }
 
 .random-fact h2 {
-  margin: 0 0 8px 0;
-  font-size: 1.4em;
+  margin: 0 0 12px 0;
+  font-size: 1.6em;
   color: #222;
   font-weight: 700;
+  text-transform: capitalize; /* capitalize headline text */
 }
 
 .random-fact p {
   font-size: 1.05em;
   color: #444;
   line-height: 1.5;
+  margin-top: 8px;
+}
+
+.random-fact .share-buttons {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.random-fact .share-buttons button {
+  background: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.random-fact .share-buttons button:hover {
+  background: #e64a19;
 }
 
 .ad-placeholder {
@@ -120,15 +144,15 @@ h1 { margin: 0; font-size: 3em; }
 <h2 style="text-align:center; margin-top:40px;">Latest Facts</h2>
 <div class="main" id="latestFacts">
     <div class="card">
-      <a href="categories/Technology/5G Technology/5g-and-virtual-reality-workspaces.html">
-        5G and Virtual Reality Workspaces
+      <a href="categories/Animals/Tarsiers/tarsiers-are-native-only-to-southeast-asian-islands.html">
+        Tarsiers Are Native Only to Southeast Asian Islands
       </a>
       <span class="date">2026-01-06</span>
     </div>
   
     <div class="card">
-      <a href="categories/Animals/Tarsiers/tarsiers-eyes-are-immobile-but-exceptionally-large.html">
-        Tarsiers’ Eyes Are Immobile But Exceptionally Large
+      <a href="categories/Technology/5G Technology/5g-and-personal-robots-home-helpers-in-real-time.html">
+        5G and Personal Robots: Home Helpers in Real Time
       </a>
       <span class="date">2026-01-06</span>
     </div>
@@ -164,16 +188,49 @@ document.getElementById('searchBox').addEventListener('input', function () {
 
 function showRandomFact() {
   if (!data.length) return;
+
   const fact = data[Math.floor(Math.random() * data.length)];
   const url = 'categories/' + fact[6] + '/' + fact[7] + '/' +
               fact[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
               '.html';
 
-  document.getElementById('randomFact').innerHTML =
-  '<h2><a href="' + url + '">' + fact[0] + '</a></h2>' +
-  '<p style="margin-top:10px;">' +
-  '<a href="' + url + '" style="color:#ff5722;font-weight:bold;text-decoration:none;">' +
-  'Click to read more →</a></p>';
+  const randomFactDiv = document.getElementById('randomFact');
+
+  // Use plain quotes for inner HTML to avoid breaking the outer backticks
+  randomFactDiv.innerHTML =
+    '<h2><a href="' + url + '" style="color:#222; text-decoration:none;">' + fact[0] + '</a></h2>' +
+    '<p>Click the link above to read more.</p>' +
+    '<div class="share-buttons">' +
+      '<button id="copyBtn">Copy Link</button>' +
+      '<button id="fbBtn">Facebook</button>' +
+      '<button id="twBtn">Twitter</button>' +
+    '</div>';
+
+  // Attach event listeners safely
+  document.getElementById('copyBtn').addEventListener('click', function() {
+    navigator.clipboard.writeText(window.location.origin + '/' + url)
+      .then(function() { alert('Fact link copied!'); });
+  });
+  document.getElementById('fbBtn').addEventListener('click', function() {
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.origin + '/' + url), '_blank');
+  });
+  document.getElementById('twBtn').addEventListener('click', function() {
+    window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.origin + '/' + url) + '&text=' + encodeURIComponent('Check out this crazy fact!'), '_blank');
+  });
+}
+
+// Copy to clipboard function
+function copyLink(url) {
+  navigator.clipboard.writeText(window.location.origin + '/' + url)
+    .then(() => alert('Fact link copied!'));
+}
+
+// Social share functions
+function shareFacebook(url) {
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.origin + '/' + url), '_blank');
+}
+function shareTwitter(url) {
+  window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.origin + '/' + url) + '&text=' + encodeURIComponent('Check out this crazy fact!'), '_blank');
 }
 </script>
 
