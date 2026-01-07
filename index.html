@@ -91,19 +91,43 @@ h1 { margin: 0; font-size: 3em; }
       <a href="categories/index.html">Browse all categories →</a>
     </div></div>
 
-<h2 style="text-align:center; margin-top:40px;">Latest Facts</h2>
-<div class="main" id="latestFacts"><div class="card">
-    <a href="categories/Animals/Elephants/elephants-adjust-their-behavior-when-being-watched.html">
-      Elephants Adjust Their Behavior When Being Watched
-    </a>
-    <span class="date">2026-01-07</span>
-  </div></div>
+<h2 style="text-align:center; margin-top:40px;">Random Facts</h2>
+<div class="main" id="latestFacts"></div>
 
 <div class="ad-placeholder">AD 2</div>
 
 <script>
 let data = [];
-fetch('search.json').then(r => r.json()).then(d => { data = d; showRandomFact(); });
+
+fetch('search.json')
+  .then(r => r.json())
+  .then(d => {
+    data = d;
+    renderRandomCards();
+    showRandomFact();
+  });
+
+function renderRandomCards() {
+  const container = document.getElementById('latestFacts');
+  if (!container || !Array.isArray(data)) return;
+
+  // Shuffle copy of data
+  const shuffled = data.slice().sort(() => 0.5 - Math.random());
+
+  // Take first 6 facts
+  const picks = shuffled.slice(0, 6);
+
+  container.innerHTML = picks.map(fact => {
+    const url = 'categories/' + fact[6] + '/' + fact[7] + '/' +
+      fact[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
+      '.html';
+
+    return '<div class="card">' +
+             '<a href="' + url + '">' + fact[0] + '</a>' +
+           '</div>';
+  }).join('');
+}
+
 document.getElementById('searchBox').addEventListener('input', function () {
   const q = this.value.toLowerCase();
   document.getElementById('results').innerHTML =
@@ -113,6 +137,7 @@ document.getElementById('searchBox').addEventListener('input', function () {
                     r[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
                     '.html">' + r[0] + '</a></li>').join('');
 });
+</script>
 
 function showRandomFact() {
   if (!data || !Array.isArray(data) || data.length === 0) return;
