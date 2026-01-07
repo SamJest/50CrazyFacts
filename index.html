@@ -84,27 +84,36 @@ h1 { margin: 0; font-size: 3em; }
 
 <h2 style="text-align:center; margin-top:40px;">Categories</h2>
 <div class="main"><div class="card">
+      <a href="categories/Technology/index.html">Technology</a>
+    </div><div class="card">
       <a href="categories/Animals/index.html">Animals</a>
     </div><div class="card">
       <a href="categories/index.html">Browse all categories →</a>
     </div></div>
 
 <h2 style="text-align:center; margin-top:40px;">Latest Facts</h2>
-<div class="main" id="latestFacts"><div class="card">
-      <a href="categories/Animals/Narwhals/narwhals-can-hunt-in-total-darkness.html">
-        Narwhals Can Hunt in Total Darkness
-      </a>
-      <span class="date">2026-01-07</span>
-    </div><div class="card">
-      <a href="categories/Animals/Crows/crows-can-learn-from-watching-other-species.html">
-        Crows Can Learn From Watching Other Species
-      </a>
-      <span class="date">2026-01-07</span>
-    </div></div>
+<div class="main" id="latestFacts"></div>
 
 <div class="ad-placeholder">AD 2</div>
 
 <script>
+const latestSubjectsData = [[{"category":"Technology","subject":"NFTs","title":"Why NFTs Are Driving Digital Brand Loyalty Programs","date":"2026-01-07"},{"category":"Technology","subject":"NFTs","title":"How NFTs Are Being Used for Music Rights Management","date":"2026-01-07"},{"category":"Technology","subject":"NFTs","title":"Why Some NFTs Are Linked to Exclusive Digital Communities","date":"2026-01-07"},{"category":"Technology","subject":"NFTs","title":"How NFTs Are Being Used to Tokenize Intellectual Property in Film","date":"2026-01-07"},{"category":"Technology","subject":"NFTs","title":"Why NFTs Are Becoming Digital Memorabilia for Historical Events","date":"2026-01-07"}]];
+
+// Populate latest facts section (one random fact per subject)
+function renderLatestFacts() {
+  const container = document.getElementById('latestFacts');
+  container.innerHTML = latestSubjectsData.map(subjectFacts => {
+    const fact = subjectFacts[Math.floor(Math.random() * subjectFacts.length)];
+    return '<div class="card">' +
+           '<a href="categories/' + fact.category + '/' + fact.subject + '/' + 
+           fact.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
+           '.html">' + fact.title + '</a>' +
+           '<span class="date">' + (fact.date||'') + '</span>' +
+           '</div>';
+  }).join('');
+}
+renderLatestFacts();
+
 let data = [];
 fetch('search.json').then(r => r.json()).then(d => { data = d; showRandomFact(); });
 document.getElementById('searchBox').addEventListener('input', function () {
@@ -145,4 +154,3 @@ function showRandomFact() {
 </script>
 </body>
 </html>
-  
