@@ -84,8 +84,6 @@ h1 { margin: 0; font-size: 3em; }
 
 <h2 style="text-align:center; margin-top:40px;">Categories</h2>
 <div class="main"><div class="card">
-      <a href="categories/Technology/index.html">Technology</a>
-    </div><div class="card">
       <a href="categories/Animals/index.html">Animals</a>
     </div><div class="card">
       <a href="categories/index.html">Browse all categories →</a>
@@ -107,6 +105,7 @@ fetch('search.json')
     showRandomFact();
   });
 
+// ===== Render 6 random fact cards =====
 function renderRandomCards() {
   const container = document.getElementById('latestFacts');
   if (!container || !Array.isArray(data)) return;
@@ -124,10 +123,58 @@ function renderRandomCards() {
 
     return '<div class="card">' +
              '<a href="' + url + '">' + fact[0] + '</a>' +
+             '<span class="date">' + (fact[5] || '') + '</span>' + // date if available
            '</div>';
   }).join('');
 }
 
+// ===== Display one random fact in the big "Random Fact" section =====
+function showRandomFact() {
+  if (!data || !Array.isArray(data) || data.length === 0) return;
+
+  const fact = data[Math.floor(Math.random() * data.length)];
+
+  const url =
+    'categories/' + fact[6] + '/' + fact[7] + '/' +
+    fact[0].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g,'') +
+    '.html';
+
+  const randomFactDiv = document.getElementById('randomFact');
+
+  randomFactDiv.innerHTML =
+    '<h3><a href="' + url + '" style="color:#222; text-decoration:none;">' + fact[0] + '</a></h3>' +
+    '<p>Click the link above to read more.</p>' +
+    '<div class="share-buttons">' +
+      '<button id="copyBtn">Copy Link</button>' +
+      '<button id="fbBtn">Facebook</button>' +
+      '<button id="twBtn">Twitter</button>' +
+    '</div>';
+
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    navigator.clipboard.writeText(window.location.origin + '/' + url)
+      .then(function(){ alert('Fact link copied!'); });
+  });
+
+  document.getElementById('fbBtn').addEventListener('click', function () {
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u=' +
+      encodeURIComponent(window.location.origin + '/' + url),
+      '_blank'
+    );
+  });
+
+  document.getElementById('twBtn').addEventListener('click', function () {
+    window.open(
+      'https://twitter.com/intent/tweet?url=' +
+      encodeURIComponent(window.location.origin + '/' + url) +
+      '&text=' +
+      encodeURIComponent('Check out this crazy fact!'),
+      '_blank'
+    );
+  });
+}
+
+// ===== Search box functionality =====
 document.getElementById('searchBox').addEventListener('input', function () {
   const q = this.value.toLowerCase();
   document.getElementById('results').innerHTML =
@@ -137,40 +184,6 @@ document.getElementById('searchBox').addEventListener('input', function () {
                     r[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
                     '.html">' + r[0] + '</a></li>').join('');
 });
-</script>
-
-function showRandomFact() {
-  if (!data || !Array.isArray(data) || data.length === 0) return;
-
-  // Pick a random fact from the array-based search.json
-  const fact = data[Math.floor(Math.random() * data.length)];
-
-  // Build the URL to the fact page
-  const url = 'categories/' + fact[6] + '/' + fact[7] + '/' +
-              fact[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.html';
-
-  // Replace the randomFact div content
-  const randomFactDiv = document.getElementById('randomFact');
-  randomFactDiv.innerHTML =
-    '<h2><a href="' + url + '" style="color:#222; text-decoration:none;">' + fact[0] + '</a></h2>' +
-    '<p>Click the link above to read more.</p>' +
-    '<div class="share-buttons">' +
-      '<button id="copyBtn">Copy Link</button>' +
-      '<button id="fbBtn">Facebook</button>' +
-      '<button id="twBtn">Twitter</button>' +
-    '</div>';
-
-  // Add event listeners for buttons
-  document.getElementById('copyBtn').addEventListener('click', function() {
-    navigator.clipboard.writeText(window.location.origin + '/' + url).then(() => alert('Fact link copied!'));
-  });
-  document.getElementById('fbBtn').addEventListener('click', function() {
-    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.origin + '/' + url), '_blank');
-  });
-  document.getElementById('twBtn').addEventListener('click', function() {
-    window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.origin + '/' + url) + '&text=' + encodeURIComponent('Check out this crazy fact!'), '_blank');
-  });
-}
 </script>
 </body>
 </html>
