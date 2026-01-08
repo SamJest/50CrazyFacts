@@ -86,11 +86,35 @@ h1 { margin: 0; font-size: 3em; }
 <div class="ad-placeholder">AD 1</div>
 
 <h2 style="text-align:center; margin-top:40px;">Categories</h2>
-<div class="main"><div class="card">
-      <a href="categories/Animals/index.html">Animals</a>
-    </div><div class="card">
-      <a href="categories/index.html">Browse all categories →</a>
-    </div></div>
+<div class="main" id="homepageCategories"></div>
+
+<script>
+// ===== Render all categories dynamically on homepage =====
+function renderHomepageCategories(categories) {
+  const container = document.getElementById('homepageCategories');
+  if (!container || !Array.isArray(categories)) return;
+
+  container.innerHTML = categories.map(cat => {
+    const url = 'categories/' + cat + '/index.html';
+    return '<div class="card">' +
+             '<a href="' + url + '">' + cat + '</a>' +
+           '</div>';
+  }).join('') +
+  // Add "Browse all categories →" at the end
+  '<div class="card">' +
+    '<a href="categories/index.html">Browse all categories →</a>' +
+  '</div>';
+}
+
+// Fetch categories dynamically from search.json (or you can create a categories.json if preferred)
+fetch('search.json')
+  .then(r => r.json())
+  .then(data => {
+    // Extract unique categories from the data
+    const uniqueCats = Array.from(new Set(data.map(f => f[6]))).sort();
+    renderHomepageCategories(uniqueCats);
+  });
+</script>
 
 <div class="ad-placeholder">AD 2</div>
 
