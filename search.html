@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Search Facts | 50 Crazy Facts</title>
+<title>Search Facts</title>
 
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -21,29 +21,69 @@ gtag('config', 'G-V2XJEGWMGS');
 </script>
 
 <style>
-body { font-family: Arial; padding:20px; background:#f7f7f7; }
-h1 { color:#ff5722; }
-#searchBox { width: 100%; padding:12px; font-size:1em; margin-bottom:10px; }
-#results { list-style:none; padding:0; }
-#results li { background:white; margin:5px 0; padding:10px; border-radius:5px; }
-#results a { text-decoration:none; font-weight:bold; color:#ff5722; }
+body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f7; }
+header { background: #ff5722; color: white; padding: 30px; text-align: center; }
+h1 { margin: 0; }
+
+.search-container {
+  max-width: 700px;
+  margin: 40px auto;
+  text-align: center;
+}
+#searchBox {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1em;
+}
+#results {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+#results li {
+  background: white;
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 6px;
+}
+#results a {
+  text-decoration: none;
+  color: #ff5722;
+  font-weight: bold;
+}
 </style>
 </head>
 <body>
-<h1>Search Facts</h1>
-<input type="text" id="searchBox" placeholder="Search for a fact...">
-<ul id="results"></ul>
+
+<header>
+  <h1>Search Facts</h1>
+  <p><a href="../index.html" style="color:white;text-decoration:underline;">← Back to home</a></p>
+</header>
+
+<div class="search-container">
+  <input type="text" id="searchBox" placeholder="Type to search facts...">
+  <ul id="results"></ul>
+</div>
 
 <script>
 let data = [];
-fetch('search.json').then(r => r.json()).then(d => data = d);
 
-document.getElementById('searchBox').addEventListener('input', function() {
+fetch('../search.json')
+  .then(r => r.json())
+  .then(d => data = d || []);
+
+document.getElementById('searchBox').addEventListener('input', function () {
   const q = this.value.toLowerCase();
-  document.getElementById('results').innerHTML = data.filter(r => r.join(' ').toLowerCase().includes(q)).slice(0,20)
-    .map(r => '<li><a href="categories/'+r[6]+'/'+r[7]+'/'+r[0].toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+'.html">'+r[0]+'</a></li>')
-    .join('');
+  document.getElementById('results').innerHTML =
+    data.filter(r => r.join(' ').toLowerCase().includes(q))
+        .slice(0,20)
+        .map(r =>
+          '<li><a href="../categories/' + r[6] + '/' + r[7] + '/' +
+          r[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
+          '.html">' + r[0] + '</a></li>'
+        ).join('');
 });
 </script>
+
 </body>
 </html>
