@@ -107,8 +107,12 @@ function renderHomepageCategories(categories) {
   '<div class="card"><a href="categories/index.html">Browse all categories →</a></div>';
 }
 fetch('search.json')
-  .then(r=>r.json())
-  .then(d=>renderHomepageCategories(Array.from(new Set(d.map(f=>f[6]))).sort()));
+  .then(r => r.json())
+  .then(d => {
+    // Remove any undefined or empty categories
+    const categories = Array.from(new Set(d.map(f => f[6]).filter(Boolean))).sort();
+    renderHomepageCategories(categories);
+  });
 </script>
 
 <script>
