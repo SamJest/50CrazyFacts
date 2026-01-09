@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,168 +23,100 @@ gtag('config', 'G-V2XJEGWMGS');
 body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f7; }
 header { background: #ff5722; color: white; padding: 40px; text-align: center; }
 h1 { margin: 0; font-size: 3em; }
-.search-container { max-width: 600px; margin: 30px auto; text-align: center; }
-#searchBox { width: 100%; padding: 12px; font-size: 1em; }
-#results { list-style: none; padding: 0; margin-top: 10px; }
-#results li { background: white; margin: 5px 0; padding: 10px; border-radius: 5px; }
-#results a { text-decoration: none; color: #ff5722; font-weight: bold; }
-
-.random-fact {
-  background: #fff9f2;
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 24px 28px;
-  border-radius: 12px;
-  border-left: 6px solid #ff5722;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  text-align: center;
-  font-family: Arial, sans-serif;
-}
-
+.main { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+.card { background: white; padding: 15px; margin: 10px; width: 220px; text-align: center; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.card a { text-decoration: none; font-weight: bold; color: #ff5722; }
+.card a:hover { text-decoration: underline; }
+.random-fact { background: #fff9f2; max-width: 800px; margin: 40px auto; padding: 24px 28px; border-radius: 12px; border-left: 6px solid #ff5722; box-shadow: 0 2px 6px rgba(0,0,0,0.08); text-align: center; font-family: Arial, sans-serif; }
 .random-fact h2 { margin: 0 0 12px 0; font-size: 1.6em; color: #222; font-weight: 700; text-transform: capitalize; }
 .random-fact p { font-size: 1.05em; color: #444; line-height: 1.5; margin-top: 8px; }
 .random-fact .share-buttons { margin-top: 16px; display: flex; justify-content: center; gap: 12px; }
 .random-fact .share-buttons button { background: #ff5722; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
 .random-fact .share-buttons button:hover { background: #e64a19; }
-
-.ad-placeholder { background: #e0e0e0; text-align: center; padding: 20px; margin: 30px auto; max-width: 800px; border-radius: 10px; font-weight: bold; }
-
-.main { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
-.card { background: white; padding: 15px; margin: 10px; width: 220px; text-align: center; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.card a { text-decoration: none; font-weight: bold; color: #ff5722; }
-.card a:hover { text-decoration: underline; }
-.category-btn { display:inline-block; background:#ff5722; color:white; padding:10px 15px; margin:5px; border-radius:5px; text-decoration:none; font-weight:bold; }
-.category-btn:hover { background:#e64a19; }
 </style>
 </head>
 <body>
-
 <header>
-  <h1>50 Crazy Facts</h1>
-  <p>Discover mind-blowing facts every day</p>
-  <p style="margin-top:15px;">
-    <a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">
-      Browse all categories →
-    </a>
-  </p>
+<h1>50 Crazy Facts</h1>
+<p>Discover mind-blowing facts every day</p>
+<p style="margin-top:15px;"><a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">Browse all categories →</a></p>
 </header>
 
 <div class="search-container">
-  <input type="text" id="searchBox" placeholder="Search for a fact...">
-  <ul id="results"></ul>
+<input type="text" id="searchBox" placeholder="Search for a fact...">
+<ul id="results"></ul>
 </div>
 
 <div class="random-fact" id="randomFact">
-  <h2>Loading Random Fact…</h2>
-  <p></p>
+<h2>Loading Random Fact…</h2>
+<p></p>
 </div>
 
 <h2 style="text-align:center; margin-top:40px;">Random Facts</h2>
 <div class="main" id="latestFacts"></div>
 
 <div class="ad-placeholder">AD 1</div>
-
 <h2 style="text-align:center; margin-top:40px;">Categories</h2>
 <div class="main" id="homepageCategories"></div>
-
-<script>
-// ===== Render all categories dynamically on homepage =====
-function renderHomepageCategories(categories) {
-  const container = document.getElementById('homepageCategories');
-  if (!container || !Array.isArray(categories)) return;
-
-  container.innerHTML = categories.map(cat => {
-    const url = 'categories/' + cat + '/index.html';
-    return '<div class="card">' +
-             '<a href="' + url + '">' + cat + '</a>' +
-           '</div>';
-  }).join('') +
-  // Add "Browse all categories →" at the end
-  '<div class="card">' +
-    '<a href="categories/index.html">Browse all categories →</a>' +
-  '</div>';
-}
-
-// Fetch categories dynamically from search.json (or you can create a categories.json if preferred)
-fetch('search.json')
-  .then(r => r.json())
-  .then(data => {
-    // Extract unique categories from the data
-    const uniqueCats = Array.from(new Set(data.map(f => f[6]))).sort();
-    renderHomepageCategories(uniqueCats);
-  });
-</script>
-
 <div class="ad-placeholder">AD 2</div>
 
 <script>
 let data = [];
-
 fetch('search.json')
   .then(r => r.json())
-  .then(d => {
-    data = d;
-    renderRandomCards();
-    showRandomFact();
-  });
+  .then(d => { data=d; renderRandomCards(); showRandomFact(); });
 
 function renderRandomCards() {
   const container = document.getElementById('latestFacts');
   if (!container || !Array.isArray(data)) return;
   const shuffled = data.slice().sort(() => 0.5 - Math.random());
   const picks = shuffled.slice(0, 6);
-
   container.innerHTML = picks.map(fact => {
-    const url = 'categories/' + fact[6] + '/' + fact[7] + '/' +
-      fact[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
-      '.html';
-    return '<div class="card">' +
-             '<a href="' + url + '">' + fact[0] + '</a>' +
-             '<span class="date">' + (fact[5] || '') + '</span>' +
-           '</div>';
+    const url = 'categories/' + fact[6] + '/' + fact[7] + '/' + fact[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.html';
+    return '<div class="card"><a href="'+url+'">'+fact[0]+'</a></div>';
   }).join('');
 }
 
 function showRandomFact() {
   if (!data || !Array.isArray(data) || data.length === 0) return;
-  const fact = data[Math.floor(Math.random() * data.length)];
-  const url = 'categories/' + fact[6] + '/' + fact[7] + '/' +
-    fact[0].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g,'') +
-    '.html';
-
+  const fact = data[Math.floor(Math.random()*data.length)];
+  const url = 'categories/' + fact[6] + '/' + fact[7] + '/' + fact[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.html';
   const randomFactDiv = document.getElementById('randomFact');
-  randomFactDiv.innerHTML =
-    '<h3><a href="' + url + '" style="color:#222; text-decoration:none;">' + fact[0] + '</a></h3>' +
-    '<p>Click the link above to read more.</p>' +
-    '<div class="share-buttons">' +
-      '<button id="copyBtn">Copy Link</button>' +
-      '<button id="fbBtn">Facebook</button>' +
-      '<button id="twBtn">Twitter</button>' +
+  randomFactDiv.innerHTML = '<h3><a href="'+url+'" style="color:#222; text-decoration:none;">'+fact[0]+'</a></h3>'+
+    '<p>Click the link above to read more.</p>'+
+    '<div class="share-buttons">'+
+      '<button id="copyBtn">Copy Link</button>'+
+      '<button id="fbBtn">Facebook</button>'+
+      '<button id="twBtn">Twitter</button>'+
     '</div>';
-
-  document.getElementById('copyBtn').addEventListener('click', function () {
-    navigator.clipboard.writeText(window.location.origin + '/' + url)
-      .then(() => alert('Fact link copied!'));
-  });
-  document.getElementById('fbBtn').addEventListener('click', function () {
-    window.open('https://www.facebook.com/sharer/sharer.php?u=' +
-      encodeURIComponent(window.location.origin + '/' + url), '_blank');
-  });
-  document.getElementById('twBtn').addEventListener('click', function () {
-    window.open('https://twitter.com/intent/tweet?url=' +
-      encodeURIComponent(window.location.origin + '/' + url) +
-      '&text=' + encodeURIComponent('Check out this crazy fact!'), '_blank');
-  });
+  document.getElementById('copyBtn').addEventListener('click', function(){ navigator.clipboard.writeText(window.location.origin+'/'+url).then(()=>alert('Fact link copied!')); });
+  document.getElementById('fbBtn').addEventListener('click', function(){ window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.origin+'/'+url),'_blank'); });
+  document.getElementById('twBtn').addEventListener('click', function(){ window.open('https://twitter.com/intent/tweet?url='+encodeURIComponent(window.location.origin+'/'+url)+'&text='+encodeURIComponent('Check out this crazy fact!'),'_blank'); });
 }
+</script>
 
-document.getElementById('searchBox').addEventListener('input', function () {
+<script>
+// ===== Render all categories dynamically on homepage =====
+function renderHomepageCategories(categories) {
+  const container = document.getElementById('homepageCategories');
+  if (!container || !Array.isArray(categories)) return;
+  container.innerHTML = categories.map(cat => {
+    const url = 'categories/' + cat + '/index.html';
+    return '<div class="card"><a href="'+url+'">'+cat+'</a></div>';
+  }).join('') +
+  '<div class="card"><a href="categories/index.html">Browse all categories →</a></div>';
+}
+fetch('search.json')
+  .then(r=>r.json())
+  .then(d=>renderHomepageCategories(Array.from(new Set(d.map(f=>f[6]))).sort()));
+</script>
+
+<script>
+document.getElementById('searchBox').addEventListener('input', function(){
   const q = this.value.toLowerCase();
   document.getElementById('results').innerHTML =
-    data.filter(r => r.join(' ').toLowerCase().includes(q))
-        .slice(0,10)
-        .map(r => '<li><a href="categories/' + r[6] + '/' + r[7] + '/' +
-                    r[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') +
-                    '.html">' + r[0] + '</a></li>').join('');
+    data.filter(r=>r.join(' ').toLowerCase().includes(q)).slice(0,10)
+    .map(r=>'<li><a href="categories/'+r[6]+'/'+r[7]+'/'+r[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.html">'+r[0]+'</a></li>').join('');
 });
 </script>
 </body>
