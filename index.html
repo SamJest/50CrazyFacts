@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>50 Crazy Facts</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#ffffff">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+<style>
+body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f7; }
+header { background: #ff5722; color: white; padding: 40px; text-align: center; }
+h1 { margin: 0; font-size: 3em; }
+.main { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+.card { background: white; padding: 15px; margin: 10px; width: 220px; text-align: center; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.card a { text-decoration: none; font-weight: bold; color: #ff5722; }
+.card a:hover { text-decoration: underline; }
+.random-fact { background: #fff9f2; max-width: 800px; margin: 40px auto; padding: 24px 28px; border-radius: 12px; border-left: 6px solid #ff5722; box-shadow: 0 2px 6px rgba(0,0,0,0.08); text-align: center; font-family: Arial,sans-serif; }
+.random-fact h2 { margin: 0 0 12px 0; font-size: 1.6em; color: #222; font-weight: 700; text-transform: capitalize; }
+.random-fact p { font-size: 1.05em; color: #444; line-height: 1.5; margin-top: 8px; }
+.random-fact .share-buttons { margin-top: 16px; display: flex; justify-content: center; gap: 12px; }
+.random-fact .share-buttons button { background: #ff5722; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
+.random-fact .share-buttons button:hover { background: #e64a19; }
+</style>
+</head>
+<body>
+<header>
+<h1>50 Crazy Facts</h1>
+<p>Discover mind-blowing facts every day</p>
+<p style="margin-top:15px;"><a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">Browse all categories →</a></p>
+</header>
+<div class="search-container">
+<input type="text" id="searchBox" placeholder="Search for a fact...">
+<ul id="results"></ul>
+</div>
+<div class="random-fact" id="randomFact"><h2>Loading Random Fact…</h2><p></p></div>
+<h2 style="text-align:center; margin-top:40px;">Random Facts</h2>
+<div class="main" id="latestFacts"></div>
+<div class="ad-placeholder">AD 1</div>
+<h2 style="text-align:center; margin-top:40px;">Categories</h2>
+<div class="main" id="homepageCategories"></div>
+<div class="ad-placeholder">AD 2</div>
+<script>
+function sanitizeJS(str){
+  return (str || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+}
+
+let data=[]; 
+fetch("search.json").then(r=>r.json()).then(d=>{
+  data=d;
+
+  // Latest Facts section
+  const container = document.getElementById("latestFacts");
+  const shuffled = data.slice().sort(()=>0.5-Math.random());
+  container.innerHTML = shuffled.slice(0,6).map(f=>{
+    const cat = sanitizeJS(f[6]);
+    const sub = sanitizeJS(f[7]);
+    const title = sanitizeJS(f[0]);
+    return '<div class="card"><a href="categories/'+cat+'/'+sub+'/'+title+'.html">'+f[0]+'</a><br><small>'+f[7]+'</small></div>';
+  }).join("");
+
+  // Random Fact section
+  const fact = data[Math.floor(Math.random()*data.length)];
+  const url = "categories/"+sanitizeJS(fact[6])+"/"+sanitizeJS(fact[7])+"/"+sanitizeJS(fact[0])+".html";
+  const randomFactDiv = document.getElementById("randomFact");
+  randomFactDiv.innerHTML = '<h3><a href="'+url+'" style="color:#222;text-decoration:none;">'+fact[0]+'</a></h3><p>Click the link above to read more.</p><div class="share-buttons"><button id="copyBtn">Copy Link</button><button id="fbBtn">Facebook</button><button id="twBtn">Twitter</button></div>';
+  
+  document.getElementById("copyBtn").addEventListener("click",()=>navigator.clipboard.writeText(window.location.origin+"/"+url).then(()=>alert("Fact link copied!")));
+  document.getElementById("fbBtn").addEventListener("click",()=>window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.origin+"/"+url),"_blank"));
+  document.getElementById("twBtn").addEventListener("click",()=>window.open("https://twitter.com/intent/tweet?url="+encodeURIComponent(window.location.origin+"/"+url)+"&text="+encodeURIComponent("Check out this crazy fact!")));
+
+  // Categories section
+  const containerCat = document.getElementById("homepageCategories");
+  const readableCategories = [...new Set(data.map(f=>f[6]))].sort();
+  containerCat.innerHTML = readableCategories.map(cat=>{
+    const catSlug = sanitizeJS(cat);
+    return '<div class="card"><a href="categories/'+catSlug+'/index.html">'+cat+'</a></div>';
+  }).join('') + '<div class="card"><a href="categories/index.html">Browse all categories →</a></div>';
+
+  // Search input
+  document.getElementById("searchBox").addEventListener("input",function(){
+    const q = this.value.toLowerCase();
+    document.getElementById("results").innerHTML = data.filter(r=>r.join(" ").toLowerCase().includes(q)).slice(0,10).map(r=>{
+      const cat = sanitizeJS(r[6]);
+      const sub = sanitizeJS(r[7]);
+      const title = sanitizeJS(r[0]);
+      return '<li><a href="categories/'+cat+'/'+sub+'/'+title+'.html">'+r[0]+'<br><small>'+r[7]+'</small></a></li>';
+    }).join('');
+  });
+});
+</script>
+</body>
+</html>
