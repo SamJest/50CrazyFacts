@@ -41,18 +41,27 @@ h1 { margin: 0; font-size: 3em; }
 <ul id="results"></ul>
 </div>
 <script>
-let data=[];
+let data = [];
+
 fetch('search.json')
   .then(r => r.json())
   .then(d => data = d);
 
-function sanitize(str){return str.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+// Trim and sanitize function to ensure proper links
+function sanitize(str) {
+  return (str || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+}
 
 document.getElementById('searchBox').addEventListener('input', function(){
   const q = this.value.toLowerCase();
   document.getElementById('results').innerHTML =
     data.filter(r => r.join(' ').toLowerCase().includes(q)).slice(0, 20)
-    .map(r => '<li><a href="categories/'+sanitize(r[6])+'/'+sanitize(r[7)+'/'+sanitize(r[0])+'.html">'+r[0]+'</a></li>')
+    .map(r => {
+      const cat = sanitize(r[6]);
+      const sub = sanitize(r[7]);
+      const title = sanitize(r[0]);
+      return '<li><a href="categories/' + cat + '/' + sub + '/' + title + '.html">' + r[0] + '</a></li>';
+    })
     .join('');
 });
 </script>
