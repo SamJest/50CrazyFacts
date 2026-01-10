@@ -45,31 +45,54 @@ h1 { margin: 0; font-size: 3em; }
 <input type="text" id="searchBox" placeholder="Search for a fact...">
 <ul id="results"></ul>
 </div>
-<div class="random-fact" id="randomFact"><h2>Loading Random Fact…</h2><p></p></div>
-<h2 style="text-align:center; margin-top:40px;">Random Facts</h2>
-<div class="main" id="latestFacts"></div>
-<div class="ad-placeholder">AD 1</div>
-<h2 style="text-align:center; margin-top:40px;">Categories</h2>
-<div class="main" id="homepageCategories"></div>
-<div class="ad-placeholder">AD 2</div>
+<div class="random-fact" id="heroFact"></div>
+<div class="main" id="randomFactsContainer"></div>
+<div class="main" id="categoriesContainer"></div>
 <script>
-function sanitizeJS(str){return (str||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-let data=[];
-fetch("search.json").then(r=>r.json()).then(d=>{data=d;
-let container=document.getElementById("latestFacts");
-let shuffled=data.slice().sort(()=>0.5-Math.random());
-container.innerHTML=shuffled.slice(0,6).map(f=>'<div class="card"><a href="categories/'+sanitizeJS(f[6])+'/'+sanitizeJS(f[7])+'/'+sanitizeJS(f[0])+'.html">'+f[0]+'</a><br><small>'+f[7]+'</small></div>').join("");
-let fact=data[Math.floor(Math.random()*data.length)];
-let url="categories/"+sanitizeJS(fact[6])+"/"+sanitizeJS(fact[7])+"/"+sanitizeJS(fact[0])+".html";
-let randomFactDiv=document.getElementById("randomFact");
-randomFactDiv.innerHTML='<h3><a href="'+url+'" style="color:#222;text-decoration:none;">'+fact[0]+'</a></h3><p>Click the link above to read more.</p><div class="share-buttons"><button id="copyBtn">Copy Link</button><button id="fbBtn">Facebook</button><button id="twBtn">Twitter</button></div>';
-document.getElementById("copyBtn").addEventListener("click",()=>navigator.clipboard.writeText(window.location.origin+"/"+url).then(()=>alert("Fact link copied!")));
-document.getElementById("fbBtn").addEventListener("click",()=>window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(window.location.origin+"/"+url),"_blank"));
-document.getElementById("twBtn").addEventListener("click",()=>window.open("https://twitter.com/intent/tweet?url="+encodeURIComponent(window.location.origin+"/"+url)+"&text="+encodeURIComponent("Check out this crazy fact!")));
-let containerCat=document.getElementById("homepageCategories");
-let readableCategories=[...new Set(data.map(f=>f[6]))].sort();
-containerCat.innerHTML=readableCategories.map(cat=>' <div class="card"><a href="categories/'+sanitizeJS(cat)+'/index.html">'+cat+'</a></div>').join('')+'<div class="card"><a href="categories/index.html">Browse all categories →</a></div>';
-document.getElementById("searchBox").addEventListener("input",function(){var q=this.value.toLowerCase();document.getElementById("results").innerHTML=data.filter(r=>r.join(" ").toLowerCase().includes(q)).slice(0,10).map(r=>'<li><a href="categories/'+sanitizeJS(r[6])+'/'+sanitizeJS(r[7])+'/'+sanitizeJS(r[0])+'.html">'+r[0]+'<br><small>'+r[7]+'</small></a></li>').join('');});
+let facts = [];
+let categories = [];
+let CATEGORY_DISPLAY_NAME = {};
+
+fetch('search.json').then(r=>r.json()).then(data=>{
+  facts = data;
+
+  // Build slug -> display name map
+  data.forEach(f=>CATEGORY_DISPLAY_NAME[f[6]]=f[6]);
+
+  // Hero fact
+  const heroFact = facts[Math.floor(Math.random()*facts.length)];
+  document.getElementById('heroFact').innerHTML = `
+    <div class="random-fact">
+      <h2>${heroFact[0]}</h2>
+      <p>${heroFact[1]}</p>
+      <div class="share-buttons">
+        <button onclick="window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('${heroFact[0]} - ${heroFact[1]}'))">Tweet</button>
+        <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href))">Share</button>
+      </div>
+    </div>
+  `;
+
+  // 6 random facts
+  const shuffled = facts.sort(()=>0.5-Math.random());
+  const randomSix = shuffled.slice(0,6);
+  const randomFactsContainer = document.getElementById('randomFactsContainer');
+  randomFactsContainer.innerHTML = randomSix.map(f=>`
+    <div class="card"><a href="categories/${f[6]}/${f[7]}/${f[0].toLowerCase().replace(/[^a-z0-9]+/g,'-')}.html">${f[0]}</a></div>
+  `).join('');
+
+  // 3 random categories
+  const uniqueCats = [...new Set(data.map(f=>f[6]))];
+  const catShuffled = uniqueCats.sort(()=>0.5-Math.random()).slice(0,3);
+  const categoriesContainer = document.getElementById('categoriesContainer');
+  categoriesContainer.innerHTML = catShuffled.map(c=>`<div class="card"><a href="categories/${c}/index.html">${c}</a></div>`).join('');
+});
+
+// Search functionality
+document.getElementById('searchBox').addEventListener('input', function(){
+  const q = this.value.toLowerCase();
+  const resultsContainer = document.getElementById('results');
+  resultsContainer.innerHTML = facts.filter(f=>f.join(' ').toLowerCase().includes(q)).slice(0,20)
+    .map(f=>`<li><a href="categories/${f[6]}/${f[7]}/${f[0].toLowerCase().replace(/[^a-z0-9]+/g,'-')}.html">${f[0]}</a></li>`).join('');
 });
 </script>
 </body>
