@@ -33,6 +33,12 @@ h1 { margin: 0; font-size: 3em; }
 .random-fact .share-buttons { margin-top: 16px; display: flex; justify-content: center; gap: 12px; }
 .random-fact .share-buttons button { background: #ff5722; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
 .random-fact .share-buttons button:hover { background: #e64a19; }
+.search-container { max-width: 700px; margin: 40px auto; text-align: center; }
+#searchBox { width: 100%; padding: 12px; font-size: 1.1em; border-radius: 8px; border: 1px solid #ccc; }
+#results { list-style: none; padding: 0; margin-top: 20px; }
+#results li { background: white; padding: 10px 15px; margin: 8px 0; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+#results li a { text-decoration: none; color: #ff5722; font-weight: bold; }
+#results li a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -41,51 +47,68 @@ h1 { margin: 0; font-size: 3em; }
 <p>Discover mind-blowing facts every day</p>
 <p style="margin-top:15px;"><a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">Browse all categories →</a></p>
 </header>
+
 <div class="search-container">
 <input type="text" id="searchBox" placeholder="Search for a fact...">
 <ul id="results"></ul>
 </div>
-<div class="random-fact" id="heroFact"></div>
+
+<div id="heroFact"></div>
 <div class="main" id="randomFactsContainer"></div>
 <div class="main" id="categoriesContainer"></div>
+
 <script>
 let facts = [];
-let categories = [];
 let CATEGORY_DISPLAY_NAME = {};
 
-fetch('search.json').then(r=>r.json()).then(data=>{
-  facts = data;
+fetch('search.json')
+  .then(r => r.json())
+  .then(data => {
+    facts = data;
 
-  // Build slug -> display name map
-  data.forEach(f=>CATEGORY_DISPLAY_NAME[f[6]]=f[6]);
+    // Build slug -> display name map
+    data.forEach(f => {
+      const slug = f[6];
+      if (!CATEGORY_DISPLAY_NAME[slug]) CATEGORY_DISPLAY_NAME[slug] = slug;
+    });
 
-  // Hero fact
-  const heroFact = facts[Math.floor(Math.random()*facts.length)];
-  document.getElementById('heroFact').innerHTML = `
-    <div class="random-fact">
-      <h2>${heroFact[0]}</h2>
-      <p>${heroFact[1]}</p>
-      <div class="share-buttons">
-        <button onclick="window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent('${heroFact[0]} - ${heroFact[1]}'))">Tweet</button>
-        <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href))">Share</button>
+    // Hero fact (from all categories)
+    const heroFact = facts[Math.floor(Math.random()*facts.length)];
+    const heroDiv = document.getElementById('heroFact');
+    heroDiv.innerHTML = `
+      <div class="random-fact">
+        <h2>${heroFact[0]}</h2>
+        <p>${heroFact[1]}</p>
+        <div class="share-buttons">
+          <button id="tweetBtn">Tweet</button>
+          <button id="fbBtn">Share</button>
+        </div>
       </div>
-    </div>
-  `;
+    `;
 
-  // 6 random facts
-  const shuffled = facts.sort(()=>0.5-Math.random());
-  const randomSix = shuffled.slice(0,6);
-  const randomFactsContainer = document.getElementById('randomFactsContainer');
-  randomFactsContainer.innerHTML = randomSix.map(f=>`
-    <div class="card"><a href="categories/${f[6]}/${f[7]}/${f[0].toLowerCase().replace(/[^a-z0-9]+/g,'-')}.html">${f[0]}</a></div>
-  `).join('');
+    document.getElementById('tweetBtn').onclick = () => {
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(`${heroFact[0]} - ${heroFact[1]}`));
+    };
+    document.getElementById('fbBtn').onclick = () => {
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href));
+    };
 
-  // 3 random categories
-  const uniqueCats = [...new Set(data.map(f=>f[6]))];
-  const catShuffled = uniqueCats.sort(()=>0.5-Math.random()).slice(0,3);
-  const categoriesContainer = document.getElementById('categoriesContainer');
-  categoriesContainer.innerHTML = catShuffled.map(c=>`<div class="card"><a href="categories/${c}/index.html">${c}</a></div>`).join('');
-});
+    // 6 random facts from all categories
+    const randomSix = [...facts].sort(()=>0.5-Math.random()).slice(0,6);
+    const randomFactsContainer = document.getElementById('randomFactsContainer');
+    randomFactsContainer.innerHTML = randomSix.map(f =>
+      `<div class="card"><a href="categories/${f[6]}/${f[7]}/${f[0].toLowerCase().replace(/[^a-z0-9]+/g,'-')}.html">${f[0]}</a></div>`
+    ).join('');
+
+    // 3 random categories + "Browse All Categories"
+    const uniqueCats = Object.keys(CATEGORY_DISPLAY_NAME);
+    const catShuffled = [...uniqueCats].sort(()=>0.5-Math.random()).slice(0,3);
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    categoriesContainer.innerHTML = catShuffled.map(c =>
+      `<div class="card"><a href="categories/${c}/index.html">${CATEGORY_DISPLAY_NAME[c]}</a></div>`
+    ).join('');
+    categoriesContainer.innerHTML += `<div class="card"><a href="categories/index.html">Browse All Categories</a></div>`;
+  });
 
 // Search functionality
 document.getElementById('searchBox').addEventListener('input', function(){
