@@ -39,6 +39,32 @@ h1 { margin: 0; font-size: 3em; }
 #results li { background: white; padding: 10px 15px; margin: 8px 0; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 #results li a { text-decoration: none; color: #ff5722; font-weight: bold; }
 #results li a:hover { text-decoration: underline; }
+.card .meta {
+  margin-top: 8px;
+  font-size: 0.75em;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: #ffe1d6;
+  color: #c63d12;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.card.fact-card {
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.card.fact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
 </style>
 </head>
 <body>
@@ -81,10 +107,26 @@ fetch("search.json").then(r => r.json()).then(data => {
 
   const randomSix = [...facts].sort(()=>0.5-Math.random()).slice(0,6);
   const randomFactsContainer = document.getElementById("randomFactsContainer");
-  randomFactsContainer.innerHTML = randomSix.map(f => {
-    const url = "categories/"+(f[6]||"uncategorized")+"/"+(f[7]||"general")+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
-    return "<div class='card'><a href='"+url+"'>"+f[0]+"</a></div>";
-  }).join("");
+randomFactsContainer.innerHTML = randomSix.map(function(f) {
+  var category = f[6] || "uncategorized";
+  var subject = f[7] || "general";
+  var url =
+    "categories/" +
+    category + "/" +
+    subject + "/" +
+    f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") +
+    ".html";
+
+  return (
+    "<div class='card fact-card'>" +
+      "<a href='" + url + "'>" + f[0] + "</a>" +
+      "<div class='meta'>" +
+        "<span class='badge'>" + category + "</span>" +
+        "<span class='badge'>" + subject + "</span>" +
+      "</div>" +
+    "</div>"
+  );
+}).join("");
 
   const categoriesContainer = document.getElementById("categoriesContainer");
   const randomCats = categoryFolders.sort(()=>0.5-Math.random()).slice(0,3);
