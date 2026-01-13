@@ -107,25 +107,12 @@ fetch("search.json").then(r => r.json()).then(data => {
 
   const randomSix = [...facts].sort(()=>0.5-Math.random()).slice(0,6);
   const randomFactsContainer = document.getElementById("randomFactsContainer");
-randomFactsContainer.innerHTML = randomSix.map(function(f) {
-  var category = f[6] || "uncategorized";
-  var subject = f[7] || "general";
-  var url =
-    "categories/" +
-    category + "/" +
-    subject + "/" +
-    f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") +
-    ".html";
 
-  return (
-    "<div class='card fact-card'>" +
-      "<a href='" + url + "'>" + f[0] + "</a>" +
-      "<div class='meta'>" +
-        "<span class='badge'>" + category + "</span>" +
-        "<span class='badge'>" + subject + "</span>" +
-      "</div>" +
-    "</div>"
-  );
+randomFactsContainer.innerHTML = randomSix.map(f => {
+  const category = f[6] || "uncategorized";
+  const subject = f[7] || "general";
+  const url = "categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
+  return '<div class="card fact-card"><a href="'+url+'">'+f[0]+'</a><div class="meta"><span class="badge">'+prettyName(category)+'</span> <span class="badge">'+prettyName(subject)+'</span></div></div>';
 }).join("");
 
   const categoriesContainer = document.getElementById("categoriesContainer");
