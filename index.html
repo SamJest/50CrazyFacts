@@ -81,54 +81,76 @@ h1 { margin: 0; font-size: 3em; }
 <div class="main" id="randomFactsContainer"></div>
 <div class="main" id="categoriesContainer"></div>
 <script>
+// ---------- Pretty Name (REQUIRED) ----------
+function prettyName(slug) {
+  const small = ['and','or','the','in','of','to','for'];
+  return (slug || '')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i) =>
+      i > 0 && small.includes(w)
+        ? w
+        : w.charAt(0).toUpperCase() + w.slice(1)
+    )
+    .join(' ');
+}
+
 let facts = [];
 const categoryFolders = ["animals"];
+
 fetch("search.json").then(r => r.json()).then(data => {
   if (!Array.isArray(data) || data.length === 0) return;
   facts = data;
 
+  // -------- HERO FACT --------
   const heroFact = facts[Math.floor(Math.random()*facts.length)];
   const heroCategory = heroFact[6] || "uncategorized";
   const heroSubject = heroFact[7] || "general";
-  const heroTitle = heroFact[0] || "Untitled";
+  const heroTitle = heroFact[0];
   const heroSlug = heroTitle.toLowerCase().replace(/[^a-z0-9]+/g,"-");
-  const heroUrl = "categories/" + heroCategory + "/" + heroSubject + "/" + heroSlug + ".html";
-  const heroText = heroTitle + " - " + (heroFact[1]||"");
+  const heroUrl = "categories/"+heroCategory+"/"+heroSubject+"/"+heroSlug+".html";
 
-  const heroDiv = document.getElementById("heroFact");
-  heroDiv.innerHTML = "<div class='random-fact'>"+
-    "<h2><a href='"+heroUrl+"' style='color:#222;text-decoration:none'>"+heroTitle+"</a></h2>"+
-    "<p>"+(heroFact[1]||"")+"</p>"+
-    "<small style='display:block;margin-top:10px;opacity:.7'>Refresh to change</small>"+
-    "<div class='share-buttons'>"+
-      "<button onclick='window.open(\"https://twitter.com/intent/tweet?text="+encodeURIComponent(heroText)+"\")'>Tweet</button>"+
-      "<button onclick='window.open(\"https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(location.href)+"\")'>Share</button>"+
-    "</div></div>";
+  document.getElementById("heroFact").innerHTML =
+    "<div class='random-fact'>"+
+      "<h2><a href='"+heroUrl+"' style='color:#222;text-decoration:none'>"+heroTitle+"</a></h2>"+
+      "<p>"+(heroFact[1]||"")+"</p>"+
+      "<small style='opacity:.7'>Refresh to change</small>"+
+    "</div>";
 
-  const randomSix = [...facts].sort(()=>0.5-Math.random()).slice(0,6);
-  const randomFactsContainer = document.getElementById("randomFactsContainer");
+  // -------- RANDOM 6 FACTS (FIXED & SAFE) --------
+const randomSix = facts.slice().sort(() => 0.5 - Math.random()).slice(0, 6);
 
-randomFactsContainer.innerHTML = randomSix.map(f => {
-  const category = f[6] || "uncategorized";
-  const subject = f[7] || "general";
-  const url = "categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
-  return '<div class="card fact-card"><a href="'+url+'">'+f[0]+'</a><div class="meta"><span class="badge">'+prettyName(category)+'</span> <span class="badge">'+prettyName(subject)+'</span></div></div>';
-}).join("");
+document.getElementById("randomFactsContainer").innerHTML =
+  randomSix.map(f => {
+    const category = f[6] || "uncategorized";
+    const subject  = f[7] || "general";
+    const url =
+      "categories/" +
+      category + "/" +
+      subject + "/" +
+      f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") +
+      ".html";
 
-  const categoriesContainer = document.getElementById("categoriesContainer");
-  const randomCats = categoryFolders.sort(()=>0.5-Math.random()).slice(0,3);
-  categoriesContainer.innerHTML = randomCats.map(function(c){
-    return "<div class='card'><a href='categories/"+c+"/index.html'>"+c+"</a></div>";
+    return (
+      '<div class="card fact-card">' +
+        '<a href="' + url + '">' + f[0] + '</a>' +
+        '<div class="meta">' +
+          '<span class="badge">' + prettyName(category) + '</span>' +
+          '<span class="badge">' + prettyName(subject) + '</span>' +
+        '</div>' +
+      '</div>'
+    );
   }).join("");
-  categoriesContainer.innerHTML += "<div class='card'><a href='categories/index.html'>Browse All Categories</a></div>";
 
+  // -------- SEARCH --------
   document.getElementById("searchBox").addEventListener("input", function(){
     const q = this.value.toLowerCase();
-    const results = document.getElementById("results");
-    results.innerHTML = facts.filter(f=>f.join(" ").toLowerCase().includes(q)).slice(0,20)
-      .map(f=>{ 
-        const url="categories/"+(f[6]||"uncategorized")+"/"+(f[7]||"general")+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html"; 
-        return "<li><a href='"+url+"'>"+f[0]+"</a></li>"; 
+    document.getElementById("results").innerHTML =
+      facts.filter(f=>f.join(" ").toLowerCase().includes(q))
+      .slice(0,20)
+      .map(f=>{
+        const url="categories/"+f[6]+"/"+f[7]+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
+        return "<li><a href='"+url+"'>"+f[0]+"</a></li>";
       }).join("");
   });
 });

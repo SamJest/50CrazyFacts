@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search Facts</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#ffffff">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+<style>
+body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f7; }
+header { background: #ff5722; color: white; padding: 40px; text-align: center; }
+h1 { margin: 0; font-size: 3em; }
+.search-container { max-width: 800px; margin: 20px auto; text-align: center; }
+#searchBox { width: 100%; padding: 14px; font-size: 1.1em; border-radius: 8px; border: 1px solid #ccc; }
+#resultsContainer { max-width: 800px; margin: 20px auto; }
+.search-result { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.search-result a { font-weight: bold; color: #ff5722; text-decoration: none; font-size: 1.1em; }
+.search-result a:hover { text-decoration: underline; }
+.search-result p { margin: 5px 0; color: #444; }
+.search-result small { display: block; margin-top: 5px; color: #777; }
+.ad-slot { background:#e0e0e0; text-align:center; padding:20px; margin:15px 0; border-radius:10px; font-weight:bold; color:#555; }
+.back-link { text-align:center; margin:30px 0; }
+.back-link a { color:#ff5722; text-decoration:none; font-weight:bold; }
+.back-link a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Search Facts</h1>
+  <p>Find mind-blowing facts by keyword, category, or subject</p>
+</header>
+
+<div class="search-container">
+  <input type="text" id="searchBox" placeholder="Type a keyword or topic...">
+</div>
+
+<div class="ad-slot">AD 1</div>
+<div id="resultsContainer"></div>
+<div class="ad-slot">AD 2</div>
+<div class="ad-slot">AD 3</div>
+
+<div class="back-link"><a href="index.html">← Back to Home</a></div>
+
+<script>
+// ------------------- Pretty Name -------------------
+function prettyName(slug) {
+  const small = ['and','or','the','in','of','to','for'];
+  return slug.replace(/-/g,' ').split(' ').map((w,i) =>
+    i > 0 && small.includes(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)
+  ).join(' ');
+}
+
+// ------------------- Load facts -------------------
+let facts = [];
+fetch("search.json")
+  .then(r => r.json())
+  .then(data => { facts = data; });
+
+// ------------------- Search logic -------------------
+document.getElementById("searchBox").addEventListener("input", function(){
+  const query = this.value.toLowerCase();
+  const results = facts.filter(f => f.join(" ").toLowerCase().includes(query));
+  
+  const resultsHtml = results.slice(0, 50).map(f => {
+    const category = f[6] || "uncategorized";
+    const subject = f[7] || "general";
+    const url = "categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
+    return `
+      <div class="search-result">
+        <a href="${url}">${f[0]}</a>
+        <p>${f[1] || ""}</p>
+        <small>${prettyName(category)} › ${prettyName(subject)}</small>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("resultsContainer").innerHTML = resultsHtml || '<p style="text-align:center; color:#777;">No results found</p>';
+});
+</script>
+
+</body>
+</html>
