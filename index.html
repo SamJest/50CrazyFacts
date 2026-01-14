@@ -94,9 +94,8 @@ function prettyName(slug) {
     )
     .join(' ');
 }
-
 let facts = [];
-const categoryFolders = ["animals"];
+const categoryFolders = ["astronomy","technology","animals"]; // folder names from Apps Script
 
 fetch("search.json").then(r => r.json()).then(data => {
   if (!Array.isArray(data) || data.length === 0) return;
@@ -117,30 +116,36 @@ fetch("search.json").then(r => r.json()).then(data => {
       "<small style='opacity:.7'>Refresh to change</small>"+
     "</div>";
 
-  // -------- RANDOM 6 FACTS (FIXED & SAFE) --------
-const randomSix = facts.slice().sort(() => 0.5 - Math.random()).slice(0, 6);
+  // -------- RANDOM 6 FACTS --------
+  const randomSix = facts.slice().sort(() => 0.5 - Math.random()).slice(0, 6);
+  document.getElementById("randomFactsContainer").innerHTML =
+    randomSix.map(f => {
+      const category = f[6] || "uncategorized";
+      const subject  = f[7] || "general";
+      const url =
+        "categories/" + category + "/" + subject + "/" + f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".html";
+      return (
+        '<div class="card fact-card">' +
+          '<a href="' + url + '">' + f[0] + '</a>' +
+          '<div class="meta">' +
+            '<span class="badge">' + prettyName(category) + '</span>' +
+            '<span class="badge">' + prettyName(subject) + '</span>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
 
-document.getElementById("randomFactsContainer").innerHTML =
-  randomSix.map(f => {
-    const category = f[6] || "uncategorized";
-    const subject  = f[7] || "general";
-    const url =
-      "categories/" +
-      category + "/" +
-      subject + "/" +
-      f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") +
-      ".html";
-
-    return (
-      '<div class="card fact-card">' +
-        '<a href="' + url + '">' + f[0] + '</a>' +
-        '<div class="meta">' +
-          '<span class="badge">' + prettyName(category) + '</span>' +
-          '<span class="badge">' + prettyName(subject) + '</span>' +
-        '</div>' +
-      '</div>'
-    );
-  }).join("");
+  // -------- RANDOM 3 CATEGORIES CARDS --------
+  const randomCategories = [...categoryFolders].sort(() => 0.5 - Math.random()).slice(0, 3);
+  document.getElementById("categoriesContainer").innerHTML =
+    '<div class="card"><a href="categories/index.html">Browse All Categories →</a></div>' +
+    randomCategories.map(cat =>
+  '<div class="card">' +
+    '<a href="categories/' + cat + '/index.html">' +
+      prettyName(cat) +
+    '</a>' +
+  '</div>'
+).join("");
 
   // -------- SEARCH --------
   document.getElementById("searchBox").addEventListener("input", function(){
