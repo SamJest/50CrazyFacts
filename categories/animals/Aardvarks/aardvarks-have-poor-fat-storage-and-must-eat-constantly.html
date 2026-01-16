@@ -45,10 +45,10 @@ gtag('config', 'G-V2XJEGWMGS');
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem","position":1,"name":"Home","item":"https://50crazyfacts.com/index.html"},
-    {"@type": "ListItem","position":2,"name":"Animals","item":"https://50crazyfacts.com/categories/animals/index.html"},
-    {"@type": "ListItem","position":3,"name":"Aardvarks","item":"https://50crazyfacts.com/categories/animals/Aardvarks/index.html"},
-    {"@type": "ListItem","position":4,"name":"Aardvarks Have Poor Fat Storage and Must Eat Constantly","item":"https://50crazyfacts.com/categories/animals/Aardvarks/aardvarks-have-poor-fat-storage-and-must-eat-constantly.html"}
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://50crazyfacts.com/index.html"},
+    {"@type":"ListItem","position":2,"name":"Animals","item":"https://50crazyfacts.com/categories/animals/index.html"},
+    {"@type":"ListItem","position":3,"name":"Aardvarks","item":"https://50crazyfacts.com/categories/animals/Aardvarks/index.html"},
+    {"@type":"ListItem","position":4,"name":"Aardvarks Have Poor Fat Storage and Must Eat Constantly","item":"https://50crazyfacts.com/categories/animals/Aardvarks/aardvarks-have-poor-fat-storage-and-must-eat-constantly.html"}
   ]
 }
 </script>
@@ -78,7 +78,6 @@ h1 { margin:0; font-size:3em; color:white; }
 .share-buttons { margin-top:16px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
 .share-buttons button { background: #ff5722; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
 .share-buttons button:hover { background: #e64a19; }
-.badge { background:#ffe1d6; color:#c63d12; padding:3px 8px; border-radius:999px; font-weight:bold; text-transform:capitalize; margin-left:4px;}
 </style>
 </head>
 <body>
@@ -104,21 +103,22 @@ h1 { margin:0; font-size:3em; color:white; }
 <p>During severe droughts, aardvark populations can decline rapidly even without hunting pressure. Starvation is the main cause.</p>
 
 <h2>Source</h2>
-<p>
-  <script>
-    // Escape single quotes in fact.SOURCE
-    const sourceText = 'International Union for Conservation of Nature (iucn.org)';
-    // Regex to detect URL at the end of the text
-    const urlMatch = sourceText.match(/(https?://[^s]+)$/);
-    if (urlMatch) {
-      const url = urlMatch[0];
-      const text = sourceText.replace(url, '').trim() || url;
-      document.write('<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + text + '</a>');
-    } else {
-      document.write(sourceText);
-    }
-  </script>
-</p>
+<p id="factSource">International Union for Conservation of Nature (iucn.org)</p>
+
+<script>
+// Convert any URL in the source field to a clickable link
+(function(){
+  const sourceEl = document.getElementById("factSource");
+  // Only run if the element has text
+  if (sourceEl && sourceEl.textContent) {
+    // Replace URLs in the text with <a> tags
+    sourceEl.innerHTML = sourceEl.textContent.replace(
+      /(https?://[^s]+)/g,
+      '<a href="$1" target="_blank">$1</a>'
+    );
+  }
+})();
+</script>
 
 <div class="ad-placeholder">AD 1</div>
 
@@ -134,35 +134,28 @@ h1 { margin:0; font-size:3em; color:white; }
 <span><a href="https://50crazyfacts.com/categories/animals/Aardvarks/aardvarks-rarely-drink-water-directly.html">← Previous Fact</a></span>
 <span><a href="https://50crazyfacts.com/categories/animals/Aardvarks/index.html">Back to Subject</a></span>
 <span><a href="https://50crazyfacts.com/categories/animals/Aardvarks/aardvarks-are-surprisingly-quiet-while-moving.html">Next Fact →</a></span>
-</nav>
 
 <div class="ad-placeholder">AD 2</div>
+</nav>
 
-<script defer>
-document.addEventListener("DOMContentLoaded", () => {
-  const relatedSection = document.getElementById("relatedFacts");
+<script>
+// ------------------ Related Facts ------------------
+fetch("/search.json")
+  .then(r => r.json())
+  .then(data => {
+    const related = data.filter(f =>
+      f[6] === "animals" &&
+      f[7] === "Aardvarks" &&
+      f[0] !== "Aardvarks Have Poor Fat Storage and Must Eat Constantly"
+    ).slice(0, 5);
 
-  // Lazy-load related facts JSON for this category/subject
-  const observer = new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting) return;
-
-    fetch("/search_animals_Aardvarks.json") // server-side injected values
-      .then(r => r.json())
-      .then(data => {
-        const related = data.filter(f => f[0] !== "Aardvarks Have Poor Fat Storage and Must Eat Constantly").slice(0, 5);
-        relatedSection.innerHTML = related.map(f => {
-          const url = "/categories/" + f[6] + "/" + f[7] + "/" +
-            f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".html";
-          return "<li><a href='" + url + "'>" + f[0] + "</a> <span class='badge'>" + f[6] + "</span> <span class='badge'>" + f[7] + "</span></li>";
-        }).join("");
-      });
-
-    observer.disconnect(); // stop observing
+    document.getElementById("relatedFacts").innerHTML =
+      related.map(f => {
+        const url = "/categories/" + f[6] + "/" + f[7] + "/" + f[0].toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".html";
+        return "<li><a href='" + url + "'>" + f[0] + "</a></li>";
+      }).join("");
   });
 
-  observer.observe(relatedSection);
-});
 </script>
-
 </body>
 </html>
