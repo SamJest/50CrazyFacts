@@ -21,7 +21,6 @@ gtag('config', 'G-V2XJEGWMGS');
 </script>
 
 <style>
-/* --- same styles as before --- */
 body { font-family: Arial, sans-serif; margin:0; background:#f7f7f7; }
 header { background:#ff5722; color:white; padding:40px; text-align:center; }
 h1 { margin:0; font-size:3em; }
@@ -71,14 +70,13 @@ h1 { margin:0; font-size:3em; }
 <div class="main" id="categoriesContainer"></div>
 
 <script>
-// Pretty Name helper
+// --- Helpers ---
 function prettyName(slug) {
   const small=['and','or','the','in','of','to','for'];
   return (slug||'').replace(/-/g,' ').split(' ').map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
 }
 
-// Helper to create fact cards
-function factCard(f) {
+function factCard(f){
   const category=f[6]||"uncategorized";
   const subject=f[7]||"general";
   const url="categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
@@ -91,46 +89,53 @@ function factCard(f) {
          '</div>';
 }
 
-// --- Load small homepage JSON ---
-fetch("home.json").then(r=>r.json()).then(homeData=>{
-  if(!Array.isArray(homeData)||!homeData.length)return;
+// --- Load homepage JSON from root ---
+fetch("home.json")
+  .then(r=>r.json())
+  .then(homeData=>{
+    console.log("Home JSON loaded:", homeData);
 
-  // Hero Fact
-  const heroFact=homeData.hero[Math.floor(Math.random()*homeData.hero.length)];
-  const heroCategory=heroFact[6]||"uncategorized";
-  const heroSubject=heroFact[7]||"general";
-  const heroTitle=heroFact[0];
-  const heroSlug=heroTitle.toLowerCase().replace(/[^a-z0-9]+/g,"-");
-  const heroUrl="categories/"+heroCategory+"/"+heroSubject+"/"+heroSlug+".html";
+    if(!Array.isArray(homeData.hero)||!homeData.hero.length) return;
 
-  document.getElementById("heroFact").innerHTML=
-    "<div class='random-fact'>"+
-      "<h2><a href='"+heroUrl+"' style='color:#222;text-decoration:none'>"+heroTitle+"</a></h2>"+
-      "<div class='meta' style='justify-content:center;margin-bottom:10px'>"+
-        "<span class='badge'>"+prettyName(heroCategory)+"</span>"+
-        "<span class='badge'>"+prettyName(heroSubject)+"</span>"+
-      "</div>"+
-      "<p>"+(heroFact[1]||"")+"</p>"+
-      "<small style='opacity:.7'>Refresh to change, click for more info</small>"+
-    "</div>";
+    // Hero Fact
+    const heroFact=homeData.hero[Math.floor(Math.random()*homeData.hero.length)];
+    const heroCategory=heroFact[6]||"uncategorized";
+    const heroSubject=heroFact[7]||"general";
+    const heroTitle=heroFact[0];
+    const heroSlug=heroTitle.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+    const heroUrl="categories/"+heroCategory+"/"+heroSubject+"/"+heroSlug+".html";
 
-  // Latest, Popular, Random
-  ["latest","popular","random"].forEach(section=>{
-    const container=document.getElementById(section+"FactsContainer")||document.getElementById(section==="random"?"randomFactsContainer":section+"FactsContainer");
-    if(homeData[section] && container){
-      container.innerHTML=homeData[section].map(f=>factCard(f)).join("");
+    document.getElementById("heroFact").innerHTML=
+      "<div class='random-fact'>"+
+        "<h2><a href='"+heroUrl+"' style='color:#222;text-decoration:none'>"+heroTitle+"</a></h2>"+
+        "<div class='meta' style='justify-content:center;margin-bottom:10px'>"+
+          "<span class='badge'>"+prettyName(heroCategory)+"</span>"+
+          "<span class='badge'>"+prettyName(heroSubject)+"</span>"+
+        "</div>"+
+        "<p>"+(heroFact[1]||"")+"</p>"+
+        "<small style='opacity:.7'>Refresh to change, click for more info</small>"+
+      "</div>";
+
+    // Latest, Popular, Random Facts
+    ["latest","popular","random"].forEach(section=>{
+      const container=document.getElementById(section==="random"?"randomFactsContainer":section+"FactsContainer");
+      if(homeData[section] && container){
+        container.innerHTML=homeData[section].map(f=>factCard(f)).join("");
+      }
+    });
+
+    // Categories
+    const categories=document.getElementById("categoriesContainer");
+    if(homeData.categories && categories){
+      categories.innerHTML='<div class="card"><a href="categories/index.html">Browse All Categories →</a></div>'+
+        homeData.categories.map(cat=>'<div class="card"><a href="categories/'+cat+'/index.html">'+prettyName(cat)+'</a></div>').join("");
     }
+  })
+  .catch(err=>{
+    console.error("Failed to load home.json:", err);
   });
 
-  // Categories
-  const categories=document.getElementById("categoriesContainer");
-  if(homeData.categories && categories){
-    categories.innerHTML='<div class="card"><a href="categories/index.html">Browse All Categories →</a></div>'+
-      homeData.categories.map(cat=>'<div class="card"><a href="categories/'+cat+'/index.html">'+prettyName(cat)+'</a></div>').join("");
-  }
-});
-
-// --- Lazy load full search on first search ---
+// --- Search ---
 let searchData=null;
 document.getElementById("searchBox").addEventListener("input",function(){
   const q=this.value.toLowerCase();
