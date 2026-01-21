@@ -6,12 +6,9 @@
 <title>Search Facts</title>
 
 <link rel="icon" href="/favicon.ico">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#ffffff">
 
+
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -21,75 +18,69 @@ gtag('config', 'G-V2XJEGWMGS');
 </script>
 
 <style>
-body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f7; }
-header { background: #ff5722; color: white; padding: 40px; text-align: center; }
-h1 { margin: 0; font-size: 3em; }
-.search-container { max-width: 800px; margin: 20px auto; text-align: center; }
-#searchBox { width: 100%; padding: 14px; font-size: 1.1em; border-radius: 8px; border: 1px solid #ccc; }
-#resultsContainer { max-width: 800px; margin: 20px auto; }
-.search-result { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.search-result a { font-weight: bold; color: #ff5722; text-decoration: none; font-size: 1.1em; }
-.search-result a:hover { text-decoration: underline; }
-.search-result p { margin: 5px 0; color: #444; }
-.search-result small { display: block; margin-top: 5px; color: #777; }
-.ad-slot { background:#e0e0e0; text-align:center; padding:20px; margin:15px 0; border-radius:10px; font-weight:bold; color:#555; }
-.back-link { text-align:center; margin:30px 0; }
-.back-link a { color:#ff5722; text-decoration:none; font-weight:bold; }
-.back-link a:hover { text-decoration:underline; }
+body{font-family:Arial,sans-serif;background:#f7f7f7;margin:20px;}
+h1{text-align:center;margin-bottom:20px;}
+.search-container{max-width:700px;margin:0 auto;text-align:center;}
+#searchBox{width:100%;padding:12px;font-size:1.1em;border-radius:8px;border:1px solid #ccc;}
+#results{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:20px;}
+.card{background:white;padding:18px;border-radius:14px;box-shadow:0 4px 10px rgba(0,0,0,0.08);flex:1 1 220px;text-align:center;transition:transform .25s,box-shadow .25s;}
+.card a{text-decoration:none;font-weight:700;color:#222;}
+.card:hover{transform:translateY(-4px);box-shadow:0 0 0 2px #ff5722,0 10px 25px #ff5722;}
+.badge{display:inline-block;padding:2px 6px;margin:2px;background:#ff5722;color:white;border-radius:4px;font-size:.75em;}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Search Facts</h1>
-  <p>Find mind-blowing facts by keyword, category, or subject</p>
-</header>
+<h1 style="text-align:center;">Search Facts</h1>
 
 <div class="search-container">
-  <input type="text" id="searchBox" placeholder="Type a keyword or topic...">
+  <input type="text" id="searchBox" placeholder="Type a keyword and press Enter...">
 </div>
 
-<div class="ad-slot">AD 1</div>
-<div id="resultsContainer"></div>
-<div class="ad-slot">AD 2</div>
-<div class="ad-slot">AD 3</div>
-
-<div class="back-link"><a href="index.html">← Back to Home</a></div>
+<div id="results"></div>
 
 <script>
-// ------------------- Pretty Name -------------------
-function prettyName(slug) {
-  const small = ['and','or','the','in','of','to','for'];
-  return slug.replace(/-/g,' ').split(' ').map((w,i) =>
-    i > 0 && small.includes(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)
-  ).join(' ');
+// --- Helper to pretty-print category/subject ---
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'').replace(/-/g,' ').split(' ').map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
 }
 
-// ------------------- Load facts -------------------
-let facts = [];
-fetch("json/search/search.json")
-  .then(r => r.json())
-  .then(data => { facts = data; });
+// --- Card HTML ---
+function factCard(f){
+  const category=f[6]||"uncategorized";
+  const subject=f[7]||"general";
+  const url="categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
+  return '<div class="card">'+
+           '<a href="'+url+'">'+f[0]+'</a>'+
+           '<div class="meta" style="margin-top:8px;">'+
+             '<span class="badge">'+prettyName(category)+'</span> '+
+             '<span class="badge">'+prettyName(subject)+'</span>'+
+           '</div>'+
+         '</div>';
+}
 
-// ------------------- Search logic -------------------
-document.getElementById("searchBox").addEventListener("input", function(){
-  const query = this.value.toLowerCase();
-  const results = facts.filter(f => f.join(" ").toLowerCase().includes(query));
-  
-  const resultsHtml = results.slice(0, 50).map(f => {
-    const category = f[6] || "uncategorized";
-    const subject = f[7] || "general";
-    const url = "categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
-    return `
-      <div class="search-result">
-        <a href="${url}">${f[0]}</a>
-        <p>${f[1] || ""}</p>
-        <small>${prettyName(category)} › ${prettyName(subject)}</small>
-      </div>
-    `;
-  }).join("");
+// --- Load search.json ---
+let allFacts = [];
+fetch("search/search.json")
+  .then(r=>r.json())
+  .then(data=>{
+    allFacts = data;
+  });
 
-  document.getElementById("resultsContainer").innerHTML = resultsHtml || '<p style="text-align:center; color:#777;">No results found</p>';
+// --- Search on Enter ---
+document.getElementById("searchBox").addEventListener("keypress", function(e){
+  if(e.key==="Enter"){
+    const q = this.value.trim().toLowerCase();
+    const resultsContainer = document.getElementById("results");
+    resultsContainer.innerHTML = '';
+    const matches = allFacts.filter(f => f[0].toLowerCase().includes(q) || f[1].toLowerCase().includes(q));
+    if(matches.length === 0){
+      resultsContainer.innerHTML = '<p style="text-align:center;width:100%;">No results found</p>';
+    } else {
+      matches.forEach(f=>resultsContainer.innerHTML += factCard(f));
+    }
+  }
 });
 </script>
 
