@@ -70,137 +70,66 @@ h1 { margin:0; font-size:3em; }
 <script>
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
-  return (slug||'').replace(/-/g,' ').split(' ').map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=>i>0 && small.includes(w) ? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
 }
 
 function factCard(f, reactions){
-  const category=f[6]||"uncategorized";
-  const subject=f[7]||"general";
-  const url="categories/"+category+"/"+subject+"/"+f[0].toLowerCase().replace(/[^a-z0-9]+/g,"-")+".html";
-  const factId=f[0];
-  const counts = reactions[factId]||{};
-  const reactionHtml = `
-    <span title="Mind Blown">🤯 ${counts.mindBlown||0}</span>
-    <span title="Shocked">😲 ${counts.shocked||0}</span>
-    <span title="Wow">😮 ${counts.wow||0}</span>
-    <span title="Interesting">🤓 ${counts.interesting||0}</span>
-  `;
-  return `<div class="card">
-            <a href="${url}">${f[0]}</a>
-            <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
-              <span class="badge">${prettyName(category)}</span>
-              <span class="badge">${prettyName(subject)}</span>
-            </div>
-            <div class="reactions">${reactionHtml}</div>
-          </div>`;
+  const counts = reactions[f.title] || {};
+  return `
+    <div class="card">
+      <a href="${f.url}">${f.title}</a>
+      <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+        <span class="badge">${prettyName(f.category)}</span>
+        <span class="badge">${prettyName(f.subject)}</span>
+      </div>
+      <div class="reactions">
+        <span>🤯 ${counts.mindBlown||0}</span>
+        <span>😲 ${counts.shocked||0}</span>
+        <span>😮 ${counts.wow||0}</span>
+        <span>🤓 ${counts.interesting||0}</span>
+      </div>
+    </div>`;
 }
 
-<script>
-// Helper: capitalize words nicely
-function prettyName(slug){
-  const small=['and','or','the','in','of','to','for'];
-  return (slug||'').replace(/-/g,' ').split(' ').map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+// Shuffle helper
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
 }
 
-// Create a fact card HTML
-function factCard(f, reactions){
-  const category=f.category||"uncategorized";
-  const subject=f.subject||"general";
-  const url=f.url;
-  const factId=f.title;
-  const counts = reactions[factId]||{};
-  const reactionHtml = `
-    <span title="Mind Blown">🤯 ${counts.mindBlown||0}</span>
-    <span title="Shocked">😲 ${counts.shocked||0}</span>
-    <span title="Wow">😮 ${counts.wow||0}</span>
-    <span title="Interesting">🤓 ${counts.interesting||0}</span>
-  `;
-  return `<div class="card">
-            <a href="${url}">${f.title}</a>
-            <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
-              <span class="badge">${prettyName(category)}</span>
-              <span class="badge">${prettyName(subject)}</span>
-            </div>
-            <div class="reactions">${reactionHtml}</div>
-          </div>`;
-}
-
-// Shuffle an array
-function shuffle(array){
-  return array.sort(()=>Math.random()-0.5);
-}
-
-// Pick n items from array, ensuring variety of categories/subjects
-function pickVariety(arr, n){
-  const seenCats = new Set();
-  const seenSubs = new Set();
-  const output = [];
-  const shuffled = shuffle(arr.slice());
-
-  for(const item of shuffled){
-    if(output.length >= n) break;
-    if(!seenCats.has(item.category) || !seenSubs.has(item.subject)){
-      output.push(item);
-      seenCats.add(item.category);
-      seenSubs.add(item.subject);
-    }
-  }
-
-  // Fill remaining if not enough variety
-  if(output.length < n){
-    for(const item of shuffled){
-      if(output.length >= n) break;
-      if(!output.includes(item)) output.push(item);
-    }
-  }
-
-  return output;
-}
-
-// Load home.json & reactions.json
 Promise.all([
   fetch("home.json").then(r=>r.json()),
   fetch("reactions.json").then(r=>r.json())
-]).then(([homeData, reactions])=>{
-  
-  // Pick a random hero fact
-  const hero = homeData.featured[Math.floor(Math.random()*homeData.featured.length)];
-  const heroCount = reactions[hero.title]||{};
-  const heroReactionHtml = `
-    <span title="Mind Blown">🤯 ${heroCount.mindBlown||0}</span>
-    <span title="Shocked">😲 ${heroCount.shocked||0}</span>
-    <span title="Wow">😮 ${heroCount.wow||0}</span>
-    <span title="Interesting">🤓 ${heroCount.interesting||0}</span>
-  `;
+]).then(([homeData, reactions]) => {
+
+  const facts = shuffle(homeData.featured.slice());
+
+  // HERO
+  const hero = facts[0];
   document.getElementById("heroFact").innerHTML = `
-    <div class='random-fact'>
-      <h2><a href='${hero.url}' style='color:#222;text-decoration:none'>${hero.title}</a></h2>
-      <div class='meta' style='justify-content:center;margin-bottom:10px'>
-        <span class='badge'>${prettyName(hero.category)}</span>
-        <span class='badge'>${prettyName(hero.subject)}</span>
+    <div class="random-fact">
+      <h2><a href="${hero.url}" style="color:#222;text-decoration:none">${hero.title}</a></h2>
+      <div class="meta">
+        <span class="badge">${prettyName(hero.category)}</span>
+        <span class="badge">${prettyName(hero.subject)}</span>
       </div>
       <p>${hero.hook}</p>
-      <div class='reactions'>${heroReactionHtml}</div>
-      <small style='opacity:.7'>Refresh to change, click for more info</small>
     </div>`;
 
-  // Pick 8 latest facts with category/subject variety
-  const latestFacts = pickVariety(homeData.featured, 8);
-  const latestContainer = document.getElementById("latestFactsContainer");
-  latestFacts.forEach(f => latestContainer.innerHTML += factCard(f,reactions));
+  // LATEST
+  facts.slice(1,9).forEach(f =>
+    latestFactsContainer.innerHTML += factCard(f,reactions)
+  );
 
-  // Pick 8 random facts with category/subject variety
-  const randomFacts = pickVariety(homeData.featured, 8);
-  const randomContainer = document.getElementById("randomFactsContainer");
-  randomFacts.forEach(f => randomContainer.innerHTML += factCard(f,reactions));
-});
-
-// Homepage search
-document.getElementById("searchBox").addEventListener("keypress", function(e){
-  if(e.key==="Enter"){
-    window.location.href="search.html?q="+encodeURIComponent(this.value);
-  }
+  // RANDOM
+  shuffle(facts).slice(0,8).forEach(f =>
+    randomFactsContainer.innerHTML += factCard(f,reactions)
+  );
 });
 </script>
+
 </body>
 </html>
