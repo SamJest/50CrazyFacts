@@ -65,7 +65,7 @@ h1 { margin:0; font-size:3em; }
 <div class="main" id="randomFactsContainer"></div>
 
 <h2 class="section-title">📚 Categories</h2>
-<div class="main" id="categoriesContainer"><div class="card"><a href="categories/astronomy/index.html">Astronomy</a></div></div>
+<div class="main" id="categoriesContainer"><div class="card"><a href="categories/food-drink/index.html">Food Drink</a></div><div class="card"><a href="categories/mental-health/index.html">Mental Health</a></div><div class="card"><a href="categories/the-victorians/index.html">The Victorians</a></div><div class="card"><a href="categories/astronomy/index.html">Astronomy</a></div><div class="card"><a href="categories/technology/index.html">Technology</a></div><div class="card"><a href="categories/animals/index.html">Animals</a></div></div>
 
 <script>
 function prettyName(slug){
@@ -95,40 +95,104 @@ function factCard(f, reactions){
           </div>`;
 }
 
+<script>
+// Helper: capitalize words nicely
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'').replace(/-/g,' ').split(' ').map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+}
+
+// Create a fact card HTML
+function factCard(f, reactions){
+  const category=f.category||"uncategorized";
+  const subject=f.subject||"general";
+  const url=f.url;
+  const factId=f.title;
+  const counts = reactions[factId]||{};
+  const reactionHtml = `
+    <span title="Mind Blown">🤯 ${counts.mindBlown||0}</span>
+    <span title="Shocked">😲 ${counts.shocked||0}</span>
+    <span title="Wow">😮 ${counts.wow||0}</span>
+    <span title="Interesting">🤓 ${counts.interesting||0}</span>
+  `;
+  return `<div class="card">
+            <a href="${url}">${f.title}</a>
+            <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+              <span class="badge">${prettyName(category)}</span>
+              <span class="badge">${prettyName(subject)}</span>
+            </div>
+            <div class="reactions">${reactionHtml}</div>
+          </div>`;
+}
+
+// Shuffle an array
+function shuffle(array){
+  return array.sort(()=>Math.random()-0.5);
+}
+
+// Pick n items from array, ensuring variety of categories/subjects
+function pickVariety(arr, n){
+  const seenCats = new Set();
+  const seenSubs = new Set();
+  const output = [];
+  const shuffled = shuffle(arr.slice());
+
+  for(const item of shuffled){
+    if(output.length >= n) break;
+    if(!seenCats.has(item.category) || !seenSubs.has(item.subject)){
+      output.push(item);
+      seenCats.add(item.category);
+      seenSubs.add(item.subject);
+    }
+  }
+
+  // Fill remaining if not enough variety
+  if(output.length < n){
+    for(const item of shuffled){
+      if(output.length >= n) break;
+      if(!output.includes(item)) output.push(item);
+    }
+  }
+
+  return output;
+}
+
 // Load home.json & reactions.json
 Promise.all([
   fetch("home.json").then(r=>r.json()),
   fetch("reactions.json").then(r=>r.json())
 ]).then(([homeData, reactions])=>{
-    const hero=homeData.hero[Math.floor(Math.random()*homeData.hero.length)];
-    const heroCategory=hero[6]||"uncategorized";
-    const heroSubject=hero[7]||"general";
-    const heroTitle=hero[0];
-    const heroSlug=heroTitle.toLowerCase().replace(/[^a-z0-9]+/g,"-");
-    const heroUrl="categories/"+heroCategory+"/"+heroSubject+"/"+heroSlug+".html";
+  
+  // Pick a random hero fact
+  const hero = homeData.featured[Math.floor(Math.random()*homeData.featured.length)];
+  const heroCount = reactions[hero.title]||{};
+  const heroReactionHtml = `
+    <span title="Mind Blown">🤯 ${heroCount.mindBlown||0}</span>
+    <span title="Shocked">😲 ${heroCount.shocked||0}</span>
+    <span title="Wow">😮 ${heroCount.wow||0}</span>
+    <span title="Interesting">🤓 ${heroCount.interesting||0}</span>
+  `;
+  document.getElementById("heroFact").innerHTML = `
+    <div class='random-fact'>
+      <h2><a href='${hero.url}' style='color:#222;text-decoration:none'>${hero.title}</a></h2>
+      <div class='meta' style='justify-content:center;margin-bottom:10px'>
+        <span class='badge'>${prettyName(hero.category)}</span>
+        <span class='badge'>${prettyName(hero.subject)}</span>
+      </div>
+      <p>${hero.hook}</p>
+      <div class='reactions'>${heroReactionHtml}</div>
+      <small style='opacity:.7'>Refresh to change, click for more info</small>
+    </div>`;
 
-    const heroCount = reactions[heroTitle] || {};
-    const heroReactionHtml = `
-      <span title="Mind Blown">🤯 ${heroCount.mindBlown||0}</span>
-      <span title="Shocked">😲 ${heroCount.shocked||0}</span>
-      <span title="Wow">😮 ${heroCount.wow||0}</span>
-      <span title="Interesting">🤓 ${heroCount.interesting||0}</span>
-    `;
+  // Pick 8 latest facts with category/subject variety
+  const latestFacts = pickVariety(homeData.featured, 8);
+  const latestContainer = document.getElementById("latestFactsContainer");
+  latestFacts.forEach(f => latestContainer.innerHTML += factCard(f,reactions));
 
-    document.getElementById("heroFact").innerHTML=`
-      <div class='random-fact'>
-        <h2><a href='${heroUrl}' style='color:#222;text-decoration:none'>${heroTitle}</a></h2>
-        <div class='meta' style='justify-content:center;margin-bottom:10px'>
-          <span class='badge'>${prettyName(heroCategory)}</span>
-          <span class='badge'>${prettyName(heroSubject)}</span>
-        </div>
-        <p>${hero[1]||""}</p>
-        <div class='reactions'>${heroReactionHtml}</div>
-        <small style='opacity:.7'>Refresh to change, click for more info</small>
-      </div>`;
-
-    homeData.latest.forEach(f=>document.getElementById("latestFactsContainer").innerHTML+=factCard(f,reactions));
-    homeData.random.forEach(f=>document.getElementById("randomFactsContainer").innerHTML+=factCard(f,reactions));
+  // Pick 8 random facts with category/subject variety
+  const randomFacts = pickVariety(homeData.featured, 8);
+  const randomContainer = document.getElementById("randomFactsContainer");
+  randomFacts.forEach(f => randomContainer.innerHTML += factCard(f,reactions));
 });
 
 // Homepage search
