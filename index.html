@@ -22,14 +22,34 @@ gtag('config', 'G-V2XJEGWMGS');
 body { font-family:Arial,sans-serif; margin:0; background:#f7f7f7; }
 header { background:#ff5722; color:white; padding:40px; text-align:center; }
 h1 { margin:0; font-size:3em; }
+
 .main { display:flex; flex-wrap:wrap; justify-content:center; padding:20px; }
-.card { background:white; padding:15px; margin:10px; width:220px; text-align:center; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:.25s; }
-.card a { text-decoration:none; font-weight:bold; color:#ff5722; }
-.card:hover { transform: translateY(-4px); box-shadow:0 6px 18px rgba(0,0,0,0.15); }
+
+.card {
+  background:white;
+  padding:15px;
+  margin:10px;
+  width:220px;
+  text-align:center;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  transition:.25s;
+}
+
+.card a {
+  text-decoration:none;
+  font-weight:bold;
+  color:#ff5722;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+}
 
 .random-fact {
   background:#fff9f2;
-  max-width:800px;
+  max-width:820px;
   margin:40px auto;
   padding:26px 30px;
   border-radius:12px;
@@ -55,18 +75,49 @@ h1 { margin:0; font-size:3em; }
   flex-wrap:wrap;
 }
 
-.reactions span { display:flex; align-items:center; gap:4px; }
+.reactions span {
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
 
-.search-container { max-width:700px; margin:40px auto; text-align:center; }
-#searchBox { width:100%; padding:12px; font-size:1.1em; border-radius:8px; border:1px solid #ccc; }
+.search-container {
+  max-width:700px;
+  margin:40px auto;
+  text-align:center;
+}
 
-.section-title { text-align:center; margin-top:50px; }
+#searchBox {
+  width:100%;
+  padding:12px;
+  font-size:1.1em;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+.section-title {
+  text-align:center;
+  margin-top:50px;
+}
 
 .badge {
   background:#eee;
-  padding:3px 8px;
+  padding:3px 9px;
   border-radius:20px;
   font-size:.7em;
+  white-space:nowrap;
+}
+
+.scroll-cta {
+  text-align:center;
+  margin:60px 0;
+}
+
+.scroll-cta a {
+  font-weight:bold;
+  color:#ff5722;
+  text-decoration:none;
+  font-size:1.1em;
 }
 </style>
 </head>
@@ -75,9 +126,10 @@ h1 { margin:0; font-size:3em; }
 
 <header>
   <h1>50 Crazy Facts</h1>
-  <p>One strange fact can change how you see the world.</p>
+  <p>One strange fact can completely change how you see the world.</p>
   <p style="margin-top:15px;">
-    <a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">
+    <a href="categories/index.html"
+       style="color:white;font-weight:bold;text-decoration:underline;">
       Browse all categories →
     </a>
   </p>
@@ -86,7 +138,8 @@ h1 { margin:0; font-size:3em; }
 <div class="search-container">
   <input type="text" id="searchBox" placeholder="Search for a fact...">
   <p style="margin-top:12px;">
-    <a href="search.html" style="color:#ff5722;font-weight:bold;text-decoration:underline;">
+    <a href="search.html"
+       style="color:#ff5722;font-weight:bold;text-decoration:underline;">
       Go to full search page →
     </a>
   </p>
@@ -101,11 +154,9 @@ h1 { margin:0; font-size:3em; }
 <h2 class="section-title">🎲 Discover More</h2>
 <div class="main" id="randomFactsContainer"></div>
 
-<p style="text-align:center;margin:10px 0 50px;">
-  <a href="random.html" style="font-weight:bold;color:#ff5722;">
-    Show me another crazy fact →
-  </a>
-</p>
+<div class="scroll-cta" id="bottomCta" style="display:none;">
+  <a href="random.html">Show me another crazy fact →</a>
+</div>
 
 <script>
 function prettyName(slug){
@@ -120,8 +171,9 @@ function prettyName(slug){
 function factCard(f){
   return `
     <div class="card">
-      <a href="${f.url}">${f.title}</a>
-      <div class="meta" style="margin-top:8px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+      <a href="${f.url}">${humanize(f.title)}</a>
+      <div class="meta"
+           style="margin-top:8px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
         <span class="badge">${prettyName(f.category)}</span>
         <span class="badge">${prettyName(f.subject)}</span>
       </div>
@@ -149,7 +201,7 @@ fetch('home.json')
         </div>
         <h2>
           <a href="${hero.url}" style="color:#222;text-decoration:none">
-            ${hero.title}
+            ${humanize(hero.title)}
           </a>
         </h2>
         <div class="meta" style="justify-content:center;margin-bottom:6px">
@@ -162,7 +214,7 @@ fetch('home.json')
           <span>😮 ${hero.reactions?.wow || 0}</span>
           <span>🤓 ${hero.reactions?.interesting || 0}</span>
         </div>
-        <p style="font-size:.75em;color:#777;margin-top:6px;">
+        <p style="font-size:.75em;color:#777;margin-top:8px;">
           How did this fact make you feel?
         </p>
       </div>
@@ -176,6 +228,13 @@ fetch('home.json')
       randomFactsContainer.insertAdjacentHTML('beforeend', factCard(f))
     );
   });
+
+/* Show bottom CTA after scrolling */
+window.addEventListener('scroll', () => {
+  if (window.scrollY > window.innerHeight * 0.6) {
+    document.getElementById('bottomCta').style.display = 'block';
+  }
+});
 
 document.getElementById("searchBox").addEventListener("keypress", e => {
   if (e.key === "Enter") {
