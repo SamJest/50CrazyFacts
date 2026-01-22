@@ -17,6 +17,7 @@ gtag('js', new Date());
 gtag('config', 'G-V2XJEGWMGS');
 </script>
 
+
 <style>
 body { font-family:Arial,sans-serif; margin:0; background:#f7f7f7; }
 header { background:#ff5722; color:white; padding:40px; text-align:center; }
@@ -25,37 +26,73 @@ h1 { margin:0; font-size:3em; }
 .card { background:white; padding:15px; margin:10px; width:220px; text-align:center; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:.25s; }
 .card a { text-decoration:none; font-weight:bold; color:#ff5722; }
 .card:hover { transform: translateY(-4px); box-shadow:0 6px 18px rgba(0,0,0,0.15); }
-.random-fact { background:#fff9f2; max-width:800px; margin:40px auto; padding:24px 28px; border-radius:12px; border-left:6px solid #ff5722; box-shadow:0 2px 6px rgba(0,0,0,0.08); text-align:center; }
-.random-fact h2 { margin:0 0 12px 0; font-size:1.6em; color:#222; font-weight:700; }
-.random-fact p { font-size:1.05em; color:#444; line-height:1.5; }
-.reactions { margin-top:6px; font-size:0.85em; color:#555; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+
+.random-fact {
+  background:#fff9f2;
+  max-width:800px;
+  margin:40px auto;
+  padding:26px 30px;
+  border-radius:12px;
+  border-left:6px solid #ff5722;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+  text-align:center;
+}
+
+.random-fact h2 {
+  margin:0 0 10px 0;
+  font-size:1.7em;
+  color:#222;
+  font-weight:700;
+}
+
+.reactions {
+  margin-top:10px;
+  font-size:0.85em;
+  color:#555;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
 .reactions span { display:flex; align-items:center; gap:4px; }
+
 .search-container { max-width:700px; margin:40px auto; text-align:center; }
 #searchBox { width:100%; padding:12px; font-size:1.1em; border-radius:8px; border:1px solid #ccc; }
-#results { list-style:none; padding:0; margin-top:20px; }
-#results li { background:white; padding:10px 15px; margin:8px 0; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-#results li a { text-decoration:none; color:#ff5722; font-weight:bold; }
+
 .section-title { text-align:center; margin-top:50px; }
+
+.badge {
+  background:#eee;
+  padding:3px 8px;
+  border-radius:20px;
+  font-size:.7em;
+}
 </style>
 </head>
+
 <body>
 
 <header>
   <h1>50 Crazy Facts</h1>
-  <p>Discover mind-blowing facts every day</p>
+  <p>One strange fact can change how you see the world.</p>
   <p style="margin-top:15px;">
-    <a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">Browse all categories →</a>
+    <a href="categories/index.html" style="color:white;font-weight:bold;text-decoration:underline;">
+      Browse all categories →
+    </a>
   </p>
 </header>
 
 <div class="search-container">
   <input type="text" id="searchBox" placeholder="Search for a fact...">
   <p style="margin-top:12px;">
-    <a href="search.html" style="color:#ff5722; font-weight:bold; text-decoration:underline;">Go to full search page →</a>
+    <a href="search.html" style="color:#ff5722;font-weight:bold;text-decoration:underline;">
+      Go to full search page →
+    </a>
   </p>
-  <ul id="results"></ul>
 </div>
 
+<!-- HERO -->
 <div id="heroFact"></div>
 
 <h2 class="section-title">🆕 Latest Facts</h2>
@@ -64,8 +101,11 @@ h1 { margin:0; font-size:3em; }
 <h2 class="section-title">🎲 Discover More</h2>
 <div class="main" id="randomFactsContainer"></div>
 
-<h2 class="section-title">📚 Categories</h2>
-<div class="main" id="categoriesContainer"></div>
+<p style="text-align:center;margin:10px 0 50px;">
+  <a href="random.html" style="font-weight:bold;color:#ff5722;">
+    Show me another crazy fact →
+  </a>
+</p>
 
 <script>
 function prettyName(slug){
@@ -81,7 +121,7 @@ function factCard(f){
   return `
     <div class="card">
       <a href="${f.url}">${f.title}</a>
-      <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+      <div class="meta" style="margin-top:8px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
         <span class="badge">${prettyName(f.category)}</span>
         <span class="badge">${prettyName(f.subject)}</span>
       </div>
@@ -99,17 +139,20 @@ fetch('home.json')
   .then(r => r.json())
   .then(home => {
 
-    /* ---------- HERO FACT ---------- */
+    /* HERO */
     const hero = home.hero[Math.floor(Math.random() * home.hero.length)];
 
     document.getElementById('heroFact').innerHTML = `
       <div class="random-fact">
+        <div style="font-size:.8em;color:#ff5722;font-weight:bold;margin-bottom:6px;">
+          🔥 Today’s Crazy Fact
+        </div>
         <h2>
           <a href="${hero.url}" style="color:#222;text-decoration:none">
             ${hero.title}
           </a>
         </h2>
-        <div class="meta" style="justify-content:center;margin-bottom:10px">
+        <div class="meta" style="justify-content:center;margin-bottom:6px">
           <span class="badge">${prettyName(hero.category)}</span>
           <span class="badge">${prettyName(hero.subject)}</span>
         </div>
@@ -119,30 +162,27 @@ fetch('home.json')
           <span>😮 ${hero.reactions?.wow || 0}</span>
           <span>🤓 ${hero.reactions?.interesting || 0}</span>
         </div>
+        <p style="font-size:.75em;color:#777;margin-top:6px;">
+          How did this fact make you feel?
+        </p>
       </div>
     `;
 
-    /* ---------- LATEST ---------- */
-    const latestContainer = document.getElementById('latestFactsContainer');
-    latestContainer.innerHTML = '';
-    home.latest.forEach(f => {
-      latestContainer.insertAdjacentHTML('beforeend', factCard(f));
-    });
+    home.latest.forEach(f =>
+      latestFactsContainer.insertAdjacentHTML('beforeend', factCard(f))
+    );
 
-    /* ---------- RANDOM ---------- */
-    const randomContainer = document.getElementById('randomFactsContainer');
-    randomContainer.innerHTML = '';
-    home.random.forEach(f => {
-      randomContainer.insertAdjacentHTML('beforeend', factCard(f));
-    });
+    home.random.forEach(f =>
+      randomFactsContainer.insertAdjacentHTML('beforeend', factCard(f))
+    );
   });
 
-// Search redirect
 document.getElementById("searchBox").addEventListener("keypress", e => {
   if (e.key === "Enter") {
     window.location.href = "search.html?q=" + encodeURIComponent(e.target.value);
   }
 });
 </script>
+
 </body>
 </html>
