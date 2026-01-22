@@ -73,18 +73,27 @@ function prettyName(slug){
   return (slug||'')
     .replace(/-/g,' ')
     .split(' ')
-    .map((w,i)=>i>0 && small.includes(w) ? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1))
     .join(' ');
 }
 
 function factCard(f, reactions){
-  const counts = reactions[f.title] || {};
+  const title = f[0];
+  const hook = f[1];
+  const category = f[6] || 'uncategorized';
+  const subject = f[7] || 'general';
+
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  const url = `categories/${category}/${subject}/${slug}.html`;
+
+  const counts = reactions[title] || {};
+
   return `
     <div class="card">
-      <a href="${f.url}">${f.title}</a>
+      <a href="${url}">${title}</a>
       <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
-        <span class="badge">${prettyName(f.category)}</span>
-        <span class="badge">${prettyName(f.subject)}</span>
+        <span class="badge">${prettyName(category)}</span>
+        <span class="badge">${prettyName(subject)}</span>
       </div>
       <div class="reactions">
         <span>🤯 ${counts.mindBlown||0}</span>
@@ -92,42 +101,60 @@ function factCard(f, reactions){
         <span>😮 ${counts.wow||0}</span>
         <span>🤓 ${counts.interesting||0}</span>
       </div>
-    </div>`;
-}
-
-// Shuffle helper
-function shuffle(arr){
-  return arr.sort(()=>Math.random()-0.5);
+    </div>
+  `;
 }
 
 Promise.all([
-  fetch("home.json").then(r=>r.json()),
-  fetch("reactions.json").then(r=>r.json())
-]).then(([homeData, reactions]) => {
+  fetch('home.json').then(r=>r.json()),
+  fetch('reactions.json').then(r=>r.json())
+]).then(([home, reactions]) => {
 
-  const facts = shuffle(homeData.featured.slice());
+  // HERO FACT
+  const hero = home.hero[Math.floor(Math.random()*home.hero.length)];
+  const heroTitle = hero[0];
+  const heroHook = hero[1];
+  const heroCategory = hero[6] || 'uncategorized';
+  const heroSubject = hero[7] || 'general';
+  const heroSlug = heroTitle.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  const heroUrl = `categories/${heroCategory}/${heroSubject}/${heroSlug}.html`;
+  const heroCounts = reactions[heroTitle] || {};
 
-  // HERO
-  const hero = facts[0];
-  document.getElementById("heroFact").innerHTML = `
+  document.getElementById('heroFact').innerHTML = `
     <div class="random-fact">
-      <h2><a href="${hero.url}" style="color:#222;text-decoration:none">${hero.title}</a></h2>
-      <div class="meta">
-        <span class="badge">${prettyName(hero.category)}</span>
-        <span class="badge">${prettyName(hero.subject)}</span>
+      <h2><a href="${heroUrl}" style="color:#222;text-decoration:none">${heroTitle}</a></h2>
+      <div class="meta" style="justify-content:center;margin-bottom:10px">
+        <span class="badge">${prettyName(heroCategory)}</span>
+        <span class="badge">${prettyName(heroSubject)}</span>
       </div>
-      <p>${hero.hook}</p>
-    </div>`;
+      <p>${heroHook}</p>
+      <div class="reactions">
+        <span>🤯 ${heroCounts.mindBlown||0}</span>
+        <span>😲 ${heroCounts.shocked||0}</span>
+        <span>😮 ${heroCounts.wow||0}</span>
+        <span>🤓 ${heroCounts.interesting||0}</span>
+      </div>
+    </div>
+  `;
 
   // LATEST
-  facts.slice(1,9).forEach(f =>
-    latestFactsContainer.innerHTML += factCard(f,reactions)
-  );
+  const latestContainer = document.getElementById('latestFactsContainer');
+  home.latest.forEach(f => {
+    latestContainer.innerHTML += factCard(f, reactions);
+  });
 
   // RANDOM
-  shuffle(facts).slice(0,8).forEach(f =>
-    randomFactsContainer.innerHTML += factCard(f,reactions)
-  );
+  const randomContainer = document.getElementById('randomFactsContainer');
+  home.random.forEach(f => {
+    randomContainer.innerHTML += factCard(f, reactions);
+  });
+});
+
+// Search redirect
+document.getElementById("searchBox").addEventListener("keypress", e => {
+  if(e.key==="Enter"){
+    window.location.href="search.html?q="+encodeURIComponent(e.target.value);
+  }
 });
 </script>
 
