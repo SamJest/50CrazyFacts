@@ -143,7 +143,7 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
  * REACTIONS FRONTEND
  ***********************/
 const backendURL = "https://script.google.com/macros/s/AKfycbyoWUyrU-0pTbwW3vhEcqPsjrFhOwaCDrg4_ZuU6QfoVdM3N6V1KykJMRM0TrdWlmZ3Lg/exec";
-const factKey = "animals/elephants/elephants-use-tools-to-scratch-places-they-can-t-reach";
+const factKey = "${jsCategory}/${jsSubject}/${jsFactSlug}";
 const reactions = ["mind_blown", "shocked", "wow", "interesting"];
 
 // --- Cookie helpers ---
@@ -173,7 +173,7 @@ function renderCounts(counts) {
 
 // --- Send reaction ---
 function sendReaction(type) {
-  fetch(`${backendURL}?category=${encodeURIComponent("animals")}&subject=${encodeURIComponent("elephants")}&fact=${encodeURIComponent("elephants-use-tools-to-scratch-places-they-can-t-reach")}&reaction=${encodeURIComponent(type)}&prev=${encodeURIComponent(prevReaction || "")}`)
+  fetch(`${backendURL}?category=${encodeURIComponent("${jsCategory}")}&subject=${encodeURIComponent("${jsSubject}")}&fact=${encodeURIComponent("${jsFactSlug}")}&reaction=${encodeURIComponent(type)}&prev=${encodeURIComponent(prevReaction || "")}`)
     .then(res => res.json())
     .then(data => {
       if (data.success) {
@@ -196,7 +196,7 @@ document.querySelectorAll(".reactions button").forEach(btn =>
 );
 
 // --- Initial load ---
-fetch(`${backendURL}?category=${encodeURIComponent("animals")}&subject=${encodeURIComponent("elephants")}&fact=${encodeURIComponent("elephants-use-tools-to-scratch-places-they-can-t-reach")}`)
+fetch(`${backendURL}?category=${encodeURIComponent("${jsCategory}")}&subject=${encodeURIComponent("${jsSubject}")}&fact=${encodeURIComponent("${jsFactSlug}")}`)
   .then(res => res.json())
   .then(data => {
     if (data.success) renderCounts(data.counts);
@@ -209,14 +209,15 @@ fetch(`${backendURL}?category=${encodeURIComponent("animals")}&subject=${encodeU
 fetch("/home.json")
   .then(r => r.json())
   .then(facts => {
+    if (!Array.isArray(facts)) return; // safety check
     const sameSubject = facts.filter(f =>
-      f.category === "animals" &&
-      f.subject === "elephants" &&
-      f.slug !== "elephants-use-tools-to-scratch-places-they-can-t-reach"
+      f.category === "${jsCategory}" &&
+      f.subject === "${jsSubject}" &&
+      f.slug !== "${jsFactSlug}"
     );
     const sameCategory = facts.filter(f =>
-      f.category === "animals" &&
-      f.slug !== "elephants-use-tools-to-scratch-places-they-can-t-reach"
+      f.category === "${jsCategory}" &&
+      f.slug !== "${jsFactSlug}"
     );
     const pick = sameSubject[0] || sameCategory[0] || facts[0];
     if (pick) {
