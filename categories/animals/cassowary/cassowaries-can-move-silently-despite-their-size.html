@@ -47,8 +47,10 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
   display:flex;
   align-items:center;
   gap:6px;
+  transition: background 0.2s;
 }
 .reactions button:hover { background:#ffe0b2; }
+.reactions button.selected { background:#ffcc80; }
 .reaction-count { font-size:0.9em; color:#555; }
 
 /* Momentum */
@@ -107,7 +109,7 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
   <p>Did you know cassowaries can move quietly through the jungle despite their large size.</p>
 
   <h2>Source</h2>
-  <p>[Smithsonian National Zoo, si.edu]</p>
+  <p><span>[Smithsonian National Zoo, si.edu]</span></p>
 
   <div class="ad-placeholder">AD SLOT</div>
 
@@ -129,43 +131,81 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
   <div class="ad-placeholder">AD SLOT</div>
 
   <nav class="fact-nav">
-    <span><a href="/categories/animals/cassowary/cassowaries-have-casques-that-amplify-calls.html">← Previous Fact</a></span>
+    <span>/categories/animals/cassowary/cassowaries-have-casques-that-amplify-calls.html</span>
     <span><a href="/categories/animals/cassowary/index.html">Back to Subject</a></span>
-    <span><a href="/categories/animals/cassowary/cassowaries-use-feet-for-exploration.html">Next Fact →</a></span>
+    <span>/categories/animals/cassowary/cassowaries-use-feet-for-exploration.html</span>
   </nav>
 
 </div>
 
 <script>
-const reactionsFile = "factReactions.json";
+/***********************
+ * REACTIONS FRONTEND
+ ***********************/
+const backendURL = "https://script.google.com/macros/s/AKfycbyoWUyrU-0pTbwW3vhEcqPsjrFhOwaCDrg4_ZuU6QfoVdM3N6V1KykJMRM0TrdWlmZ3Lg/exec";
+const factKey = "animals/cassowary/cassowaries-can-move-silently-despite-their-size";
+const reactions = ["mind_blown", "shocked", "wow", "interesting"];
 
-function updateReactionCounts() {
-  fetch(reactionsFile)
-    .then(r => r.json())
-    .then(d => {
-      mind_blownCount.textContent = d.mind_blown || 0;
-      shockedCount.textContent = d.shocked || 0;
-      wowCount.textContent = d.wow || 0;
-      interestingCount.textContent = d.interesting || 0;
-    });
+// --- Cookie helpers ---
+function setCookie(name, value, days = 365) {
+  const expires = new Date(Date.now() + days*864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r
+  }, '');
 }
 
+// --- Load previous reaction ---
+let prevReaction = getCookie('reaction_' + factKey) || null;
+
+// --- Update counts ---
+function renderCounts(counts) {
+  reactions.forEach(r => {
+    const btn = document.querySelector(`.reactions button[data-type="${r}"]`);
+    const span = document.getElementById(r + "Count");
+    span.textContent = counts[r] || 0;
+    btn.classList.toggle('selected', r === prevReaction);
+  });
+}
+
+// --- Send reaction ---
 function sendReaction(type) {
-  fetch(reactionsFile)
-    .then(r => r.json())
-    .then(d => {
-      d[type] = (d[type] || 0) + 1;
-      document.getElementById(type + "Count").textContent = d[type];
+  fetch(`${backendURL}?category=${encodeURIComponent("animals")}&subject=${encodeURIComponent("cassowary")}&fact=${encodeURIComponent("cassowaries-can-move-silently-despite-their-size")}&reaction=${encodeURIComponent(type)}&prev=${encodeURIComponent(prevReaction || "")}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        renderCounts(data.counts);
+        prevReaction = type;
+        setCookie('reaction_' + factKey, type);
+      } else {
+        console.error("Reaction failed:", data.error);
+      }
     });
 }
 
-document.querySelectorAll(".reactions button").forEach(b =>
-  b.addEventListener("click", () => sendReaction(b.dataset.type))
+// --- Button clicks ---
+document.querySelectorAll(".reactions button").forEach(btn =>
+  btn.addEventListener("click", () => {
+    const type = btn.dataset.type;
+    if (type === prevReaction) return;
+    sendReaction(type);
+  })
 );
 
-updateReactionCounts();
+// --- Initial load ---
+fetch(`${backendURL}?category=${encodeURIComponent("animals")}&subject=${encodeURIComponent("cassowary")}&fact=${encodeURIComponent("cassowaries-can-move-silently-despite-their-size")}`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) renderCounts(data.counts);
+    else console.error("Failed to load counts:", data.error);
+  });
 
-/* Momentum logic */
+/***********************
+ * MOMENTUM
+ ***********************/
 fetch("/home.json")
   .then(r => r.json())
   .then(facts => {
@@ -174,17 +214,11 @@ fetch("/home.json")
       f.subject === "cassowary" &&
       f.slug !== "cassowaries-can-move-silently-despite-their-size"
     );
-
     const sameCategory = facts.filter(f =>
       f.category === "animals" &&
       f.slug !== "cassowaries-can-move-silently-despite-their-size"
     );
-
-    const pick =
-      sameSubject[0] ||
-      sameCategory[0] ||
-      facts[0];
-
+    const pick = sameSubject[0] || sameCategory[0] || facts[0];
     if (pick) {
       nextFactTitle.textContent = pick.title;
       nextFactLink.href = pick.url;
