@@ -174,18 +174,28 @@ function renderCounts(counts) {
 // --- Send reaction ---
 function sendReaction(type) {
   fetch(`${backendURL}?category=${encodeURIComponent("${jsCategory}")}&subject=${encodeURIComponent("${jsSubject}")}&fact=${encodeURIComponent("${jsFactSlug}")}&reaction=${encodeURIComponent(type)}&prev=${encodeURIComponent(prevReaction || "")}`)
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.text()) // 👈 DO NOT ASSUME JSON
+    .then(txt => {
+      let data;
+      try {
+        data = JSON.parse(txt);
+      } catch (e) {
+        console.error("Backend returned non-JSON:", txt);
+        return;
+      }
+
       if (data.success) {
-        renderCounts(data.counts);
         prevReaction = type;
         setCookie('reaction_' + factKey, type);
+        renderCounts(data.counts);
       } else {
         console.error("Reaction failed:", data.error);
       }
+    })
+    .catch(err => {
+      console.error("Reaction fetch error:", err);
     });
 }
-
 // --- Button clicks ---
 document.querySelectorAll(".reactions button").forEach(btn =>
   btn.addEventListener("click", () => {
