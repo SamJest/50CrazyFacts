@@ -36,6 +36,7 @@ h1 { margin:0; font-size:3em; }
 #results li { background:white; padding:10px 15px; margin:8px 0; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
 #results li a { text-decoration:none; color:#ff5722; font-weight:bold; }
 .section-title { text-align:center; margin-top:50px; }
+.badge { background:#eee; padding:2px 6px; border-radius:4px; font-size:.75em; }
 </style>
 </head>
 <body>
@@ -65,6 +66,7 @@ h1 { margin:0; font-size:3em; }
 <div class="main" id="randomFactsContainer"></div>
 
 <script>
+// --- Utility: Capitalize nicely ---
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
   return (slug||'')
@@ -74,7 +76,7 @@ function prettyName(slug){
     .join(' ');
 }
 
-// Fact card generator with reaction spans having data attributes
+// --- Card HTML ---
 function factCard(f){
   return `
     <div class="card">
@@ -93,67 +95,46 @@ function factCard(f){
   `;
 }
 
-// Update reaction count on a span element
-function updateReactionDisplay(el, counts) {
-  el.closest('.reactions').querySelectorAll('span[data-reaction]').forEach(span => {
-    const type = span.getAttribute('data-reaction');
-    span.querySelector('.count').textContent = counts[type] || 0;
-  });
+// --- Shuffle ---
+function shuffleArray(array){
+  const copy=[...array];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
 }
 
-// Send reaction to backend
-async function sendReaction(category, subject, factUrl, reaction) {
-  try {
-    const params = new URLSearchParams({ category, subject, fact: factUrl, reaction });
-    const res = await fetch(`/exec?${params.toString()}`); // adjust to your web app URL if needed
-    const data = await res.json();
-    if (data.success && data.counts) return data.counts;
-    console.error('Reaction update failed', data);
-    return null;
-  } catch (err) {
-    console.error('Reaction error', err);
-    return null;
+// --- Load home.json and populate sections ---
+async function loadHomeFacts(){
+  try{
+    const res = await fetch('home.json');
+    const home = await res.json();
+
+    if(Array.isArray(home.hero)){
+      document.getElementById('heroFact').innerHTML = home.hero.map(factCard).join('');
+    }
+    if(Array.isArray(home.latest)){
+      document.getElementById('latestFactsContainer').innerHTML = home.latest.map(factCard).join('');
+    }
+    if(Array.isArray(home.random)){
+      document.getElementById('randomFactsContainer').innerHTML = home.random.map(factCard).join('');
+    }
+  }catch(err){
+    console.error('Error loading home.json:', err);
   }
 }
 
-// Load facts.json and render cards
-function loadFacts(containerId) {
-  fetch('facts.json')
-    .then(r => r.json())
-    .then(facts => {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      facts.forEach(f => {
-        container.insertAdjacentHTML('beforeend', factCard(f));
-      });
+// --- Run on page load ---
+loadHomeFacts();
 
-      // Add click listeners
-      container.querySelectorAll('.reactions span[data-reaction]').forEach(span => {
-        span.addEventListener('click', async () => {
-          const reaction = span.getAttribute('data-reaction');
-          const factUrl = span.getAttribute('data-fact');
-          const category = span.closest('.card').querySelector('.badge').textContent;
-          const subject = span.closest('.card').querySelectorAll('.badge')[1].textContent;
-
-          const counts = await sendReaction(category, subject, factUrl, reaction);
-          if (counts) updateReactionDisplay(span, counts);
-        });
-      });
-    })
-    .catch(err => console.error('Error loading facts.json', err));
-}
-
-// Initialize page
-loadFacts('latestFactsContainer');   // adjust container IDs as needed
-loadFacts('randomFactsContainer');   // for homepage
-loadFacts('subjectFactsContainer');  // for subject index pages
-
-// Search redirect
-document.getElementById("searchBox").addEventListener("keypress", e => {
+// --- Search redirect ---
+document.getElementById("searchBox").addEventListener("keypress", e=>{
   if(e.key==="Enter"){
-    window.location.href = "search.html?q=" + encodeURIComponent(e.target.value);
+    window.location.href="search.html?q="+encodeURIComponent(e.target.value);
   }
 });
 </script>
+
 </body>
 </html>
