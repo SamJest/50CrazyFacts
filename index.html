@@ -64,9 +64,6 @@ h1 { margin:0; font-size:3em; }
 <h2 class="section-title">🎲 Discover More</h2>
 <div class="main" id="randomFactsContainer"></div>
 
-<h2 class="section-title">📚 Categories</h2>
-<div class="main" id="categoriesContainer">${CATEGORIES}</div>
-
 <script>
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
@@ -77,6 +74,7 @@ function prettyName(slug){
     .join(' ');
 }
 
+// Fact card generator with reaction spans having data attributes
 function factCard(f){
   return `
     <div class="card">
@@ -86,60 +84,73 @@ function factCard(f){
         <span class="badge">${prettyName(f.subject)}</span>
       </div>
       <div class="reactions">
-        <span>🤯 ${f.reactions?.mind_blown || 0}</span>
-        <span>😲 ${f.reactions?.shocked || 0}</span>
-        <span>😮 ${f.reactions?.wow || 0}</span>
-        <span>🤓 ${f.reactions?.interesting || 0}</span>
+        <span data-reaction="mind_blown" data-fact="${f.url}">🤯 <span class="count">${f.reactions?.mind_blown||0}</span></span>
+        <span data-reaction="shocked" data-fact="${f.url}">😲 <span class="count">${f.reactions?.shocked||0}</span></span>
+        <span data-reaction="wow" data-fact="${f.url}">😮 <span class="count">${f.reactions?.wow||0}</span></span>
+        <span data-reaction="interesting" data-fact="${f.url}">🤓 <span class="count">${f.reactions?.interesting||0}</span></span>
       </div>
     </div>
   `;
 }
 
-fetch('home.json')
-  .then(r => r.json())
-  .then(home => {
-
-    /* ---------- HERO FACT ---------- */
-    const hero = home.hero[Math.floor(Math.random() * home.hero.length)];
-
-    document.getElementById('heroFact').innerHTML = `
-      <div class="random-fact">
-        <h2>
-          <a href="${hero.url}" style="color:#222;text-decoration:none">
-            ${hero.title}
-          </a>
-        </h2>
-        <div class="meta" style="justify-content:center;margin-bottom:10px">
-          <span class="badge">${prettyName(hero.category)}</span>
-          <span class="badge">${prettyName(hero.subject)}</span>
-        </div>
-        <div class="reactions">
-          <span>🤯 ${hero.reactions?.mind_blown || 0}</span>
-          <span>😲 ${hero.reactions?.shocked || 0}</span>
-          <span>😮 ${hero.reactions?.wow || 0}</span>
-          <span>🤓 ${hero.reactions?.interesting || 0}</span>
-        </div>
-      </div>
-    `;
-
-    /* ---------- LATEST ---------- */
-    const latestContainer = document.getElementById('latestFactsContainer');
-    latestContainer.innerHTML = '';
-    home.latest.forEach(f => {
-      latestContainer.insertAdjacentHTML('beforeend', factCard(f));
-    });
-
-    /* ---------- RANDOM ---------- */
-    const randomContainer = document.getElementById('randomFactsContainer');
-    randomContainer.innerHTML = '';
-    home.random.forEach(f => {
-      randomContainer.insertAdjacentHTML('beforeend', factCard(f));
-    });
+// Update reaction count on a span element
+function updateReactionDisplay(el, counts) {
+  el.closest('.reactions').querySelectorAll('span[data-reaction]').forEach(span => {
+    const type = span.getAttribute('data-reaction');
+    span.querySelector('.count').textContent = counts[type] || 0;
   });
+}
+
+// Send reaction to backend
+async function sendReaction(category, subject, factUrl, reaction) {
+  try {
+    const params = new URLSearchParams({ category, subject, fact: factUrl, reaction });
+    const res = await fetch(`/exec?${params.toString()}`); // adjust to your web app URL if needed
+    const data = await res.json();
+    if (data.success && data.counts) return data.counts;
+    console.error('Reaction update failed', data);
+    return null;
+  } catch (err) {
+    console.error('Reaction error', err);
+    return null;
+  }
+}
+
+// Load facts.json and render cards
+function loadFacts(containerId) {
+  fetch('facts.json')
+    .then(r => r.json())
+    .then(facts => {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      facts.forEach(f => {
+        container.insertAdjacentHTML('beforeend', factCard(f));
+      });
+
+      // Add click listeners
+      container.querySelectorAll('.reactions span[data-reaction]').forEach(span => {
+        span.addEventListener('click', async () => {
+          const reaction = span.getAttribute('data-reaction');
+          const factUrl = span.getAttribute('data-fact');
+          const category = span.closest('.card').querySelector('.badge').textContent;
+          const subject = span.closest('.card').querySelectorAll('.badge')[1].textContent;
+
+          const counts = await sendReaction(category, subject, factUrl, reaction);
+          if (counts) updateReactionDisplay(span, counts);
+        });
+      });
+    })
+    .catch(err => console.error('Error loading facts.json', err));
+}
+
+// Initialize page
+loadFacts('latestFactsContainer');   // adjust container IDs as needed
+loadFacts('randomFactsContainer');   // for homepage
+loadFacts('subjectFactsContainer');  // for subject index pages
 
 // Search redirect
 document.getElementById("searchBox").addEventListener("keypress", e => {
-  if (e.key === "Enter") {
+  if(e.key==="Enter"){
     window.location.href = "search.html?q=" + encodeURIComponent(e.target.value);
   }
 });

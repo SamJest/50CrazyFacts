@@ -1,0 +1,108 @@
+<script>
+// ------------------ Helpers ------------------
+function humanize(slug) {
+  return (slug || '').replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function pickRandomFacts(array, count) {
+  const copy = [...array];
+  shuffleArray(copy);
+  return copy.slice(0, count);
+}
+
+function factCard(f) {
+  return `
+    <div class="card">
+      <a href="${f.url}">${f.title}</a>
+      <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+        <span class="badge">${f.category}</span>
+        <span class="badge">${f.subject}</span>
+      </div>
+      <div class="reactions">
+        <span>🤯 ${f.reactions?.mind_blown || 0}</span>
+        <span>😲 ${f.reactions?.shocked || 0}</span>
+        <span>😮 ${f.reactions?.wow || 0}</span>
+        <span>🤓 ${f.reactions?.interesting || 0}</span>
+      </div>
+    </div>
+  `;
+}
+
+// ------------------ Load Home ------------------
+fetch('home.json')
+  .then(r => r.json())
+  .then(home => {
+    const allFacts = home.allFacts || [];
+
+    if (!allFacts.length) return;
+
+    // ---------- HERO FACT ----------
+    const hero = pickRandomFacts(allFacts, 1)[0];
+    document.getElementById('heroFact').innerHTML = `
+      <div class="random-fact">
+        <h2>
+          <a href="${hero.url}" style="color:#222;text-decoration:none">${hero.title}</a>
+        </h2>
+        <div class="meta" style="justify-content:center;margin-bottom:10px">
+          <span class="badge">${hero.category}</span>
+          <span class="badge">${hero.subject}</span>
+        </div>
+        <div class="reactions">
+          <span>🤯 ${hero.reactions?.mind_blown || 0}</span>
+          <span>😲 ${hero.reactions?.shocked || 0}</span>
+          <span>😮 ${hero.reactions?.wow || 0}</span>
+          <span>🤓 ${hero.reactions?.interesting || 0}</span>
+        </div>
+      </div>
+    `;
+
+    // ---------- LATEST FACTS (3 most recent subjects) ----------
+    const latestContainer = document.getElementById('latestFactsContainer');
+    latestContainer.innerHTML = '';
+
+    // group facts by subject
+    const subjectsMap = {};
+    allFacts.forEach(f => {
+      if (!subjectsMap[f.subject]) subjectsMap[f.subject] = [];
+      subjectsMap[f.subject].push(f);
+    });
+
+    // get 3 most recent subjects (based on latest uploadedAt)
+    const subjectsSorted = Object.entries(subjectsMap)
+      .sort((a, b) => {
+        const lastA = a[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
+        const lastB = b[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
+        return new Date(lastB.uploadedAt) - new Date(lastA.uploadedAt);
+      })
+      .slice(0, 3);
+
+    let latestFacts = [];
+    subjectsSorted.forEach(([_, facts]) => {
+      latestFacts = latestFacts.concat(pickRandomFacts(facts, 8)); // 8 per subject → 24 max
+    });
+
+    latestFacts = pickRandomFacts(latestFacts, 24); // final shuffle and limit
+    latestFacts.forEach(f => latestContainer.insertAdjacentHTML('beforeend', factCard(f)));
+
+    // ---------- RANDOM FACTS ----------
+    const randomContainer = document.getElementById('randomFactsContainer');
+    randomContainer.innerHTML = '';
+
+    const randomFacts = pickRandomFacts(allFacts, 25);
+    randomFacts.forEach(f => randomContainer.insertAdjacentHTML('beforeend', factCard(f)));
+  });
+
+// Search redirect
+document.getElementById("searchBox").addEventListener("keypress", e => {
+  if (e.key === "Enter") {
+    window.location.href = "search.html?q=" + encodeURIComponent(e.target.value);
+  }
+});
+</script>
