@@ -162,18 +162,28 @@ function highlightPrev() {
     if (btn) btn.classList.add('selected');
   }
 }
+// Load current reactions from backend (SOURCE OF TRUTH)
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const params = new URLSearchParams({
+      category,
+      subject,
+      fact: factSlug
+    });
 
-// Load current reactions
-fetch(`/categories/animals/aardvarks/factReactions.json`)
-  .then(res => res.json())
-  .then(data => {
-    if (data && data[factSlug]) {
-      Object.assign(reactionCounts, data[factSlug]);
+    const res = await fetch('YOUR_WEB_APP_URL?' + params.toString());
+    const json = await res.json();
+
+    if (json.success && json.counts) {
+      Object.assign(reactionCounts, json.counts);
       updateReactionUI();
       highlightPrev();
     }
-  })
-  .catch(err => console.warn('Could not load reactions:', err));
+  } catch (err) {
+    console.warn('Could not load reactions:', err);
+  }
+});
+
 
 reactionButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -191,7 +201,8 @@ reactionButtons.forEach(btn => {
     const params = new URLSearchParams({
       category, subject, fact: factSlug, reaction: type, prev: prev !== type ? prev : ''
     });
-    fetch(`/exec?${params.toString()}`)
+    fetch('https://script.google.com/macros/s/AKfycbyoWUyrU-0pTbwW3vhEcqPsjrFhOwaCDrg4_ZuU6QfoVdM3N6V1KykJMRM0TrdWlmZ3Lg/exec' + params.toString())
+
       .then(res => res.json())
       .then(json => {
         if (json.success && json.counts) {
