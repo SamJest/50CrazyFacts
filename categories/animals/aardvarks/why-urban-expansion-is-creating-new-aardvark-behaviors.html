@@ -138,7 +138,6 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
 
 </div>
 
-<!-- ------------------ Reactions Script ------------------ -->
 <script>
 const factSlug = 'why-urban-expansion-is-creating-new-aardvark-behaviors';
 const category = 'animals';
@@ -162,18 +161,13 @@ function highlightPrev() {
     if (btn) btn.classList.add('selected');
   }
 }
-// Load current reactions from backend (SOURCE OF TRUTH)
-document.addEventListener('DOMContentLoaded', async () => {
+
+// --- Load counts from backend ---
+async function loadReactionCounts() {
   try {
-    const params = new URLSearchParams({
-      category,
-      subject,
-      fact: factSlug
-    });
-
-    const res = await fetch('YOUR_WEB_APP_URL?' + params.toString());
+    const params = new URLSearchParams({ category, subject, fact: factSlug });
+    const res = await fetch('https://script.google.com/macros/s/AKfycbyoWUyrU-0pTbwW3vhEcqPsjrFhOwaCDrg4_ZuU6QfoVdM3N6V1KykJMRM0TrdWlmZ3Lg/exec?' + params.toString());
     const json = await res.json();
-
     if (json.success && json.counts) {
       Object.assign(reactionCounts, json.counts);
       updateReactionUI();
@@ -182,38 +176,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.warn('Could not load reactions:', err);
   }
-});
+}
 
-
+// --- Handle button clicks ---
 reactionButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     const type = btn.dataset.type;
-    reactionCounts[type] = (reactionCounts[type] || 0) + 1;
-    if (prevReaction && prevReaction !== type) {
-      reactionCounts[prevReaction] = Math.max((reactionCounts[prevReaction] || 1) - 1, 0);
-    }
-    updateReactionUI();
-    reactionButtons.forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
+
+    if (prevReaction === type) return; // prevent double-click
+
     const prev = prevReaction;
     prevReaction = type;
     localStorage.setItem(`reaction_why-urban-expansion-is-creating-new-aardvark-behaviors`, type);
-    const params = new URLSearchParams({
-      category, subject, fact: factSlug, reaction: type, prev: prev !== type ? prev : ''
-    });
-    fetch('https://script.google.com/macros/s/AKfycbyoWUyrU-0pTbwW3vhEcqPsjrFhOwaCDrg4_ZuU6QfoVdM3N6V1KykJMRM0TrdWlmZ3Lg/exec' + params.toString())
 
-      .then(res => res.json())
-      .then(json => {
-        if (json.success && json.counts) {
-          Object.assign(reactionCounts, json.counts);
-          updateReactionUI();
-        }
-      })
-      .catch(err => console.error('Failed to update reaction:', err));
+    // Optimistically update UI
+    if (!reactionCounts[type]) reactionCounts[type] = 0;
+    reactionCounts[type]++;
+    if (prev && reactionCounts[prev] > 0) reactionCounts[prev]--;
+    updateReactionUI();
+    reactionButtons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    // Send update to backend
+    try {
+      const params = new URLSearchParams({
+        category,
+        subject,
+        fact: factSlug,
+        reaction: type,
+        prev: prev !== type ? prev : ''
+      });
+      const res = await fetch('https://script.google.com/macros/s/AKfycbyoWUyrU-0pTbwW3vhEcqPsjrFhOwaCDrg4_ZuU6QfoVdM3N6V1KykJMRM0TrdWlmZ3Lg/exec?' + params.toString());
+      const json = await res.json();
+      if (json.success && json.counts) {
+        Object.assign(reactionCounts, json.counts);
+        updateReactionUI();
+      }
+    } catch (err) {
+      console.error('Failed to update reaction:', err);
+    }
   });
 });
+
+// --- Initialize ---
+document.addEventListener('DOMContentLoaded', loadReactionCounts);
 </script>
+
 
 </body>
 </html>
