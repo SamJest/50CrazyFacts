@@ -33,6 +33,7 @@ h1 { margin: 0; font-size: 3em; }
   text-align: center;
   transition: transform 0.2s, box-shadow 0.2s;
   border-top: 4px solid var(--category-color, #555);
+  cursor: pointer;
 }
 
 .card a {
@@ -45,7 +46,7 @@ h1 { margin: 0; font-size: 3em; }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 0 0 2 var(--category-color, #555), 0 10px 25px var(--category-color, #555);
+  box-shadow: 0 0 0 2px var(--category-color, #555), 0 10px 25px var(--category-color, #555);
 }
 
 .badge {
@@ -57,7 +58,11 @@ h1 { margin: 0; font-size: 3em; }
   display: inline-block;
 }
 
-.stats { font-size: 0.85em; color: #666; margin-top: 6px; }
+.stats {
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 6px;
+}
 </style>
 </head>
 <body>
@@ -66,17 +71,64 @@ h1 { margin: 0; font-size: 3em; }
   <h1>All Categories</h1>
 </header>
 
-<div class="grid">
-  
-      <div class="card" style="--category-color:#ff5722">
-        <a href="/categories/animals/index.html">Animals</a>
-        <div class="meta">
-          <span class="badge">Animals</span>
-        </div>
-        <div class="stats">📄 0 Facts</div>
-      </div>
-     <!-- Each card includes badge + total facts -->
+<div class="grid" id="categoriesGrid">
+  <!-- Category cards will be injected here by JS -->
 </div>
+
+<script>
+// Example categories data injected by your generator
+// Format: { name: "Animals", color: "#ff5722", url: "/categories/animals/index.html", subjects: ["mammals", "birds"] }
+const categories = ${categoryCards || '[]'};
+
+// Web App URL to fetch reactions
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHdJTvbkP83-_wsO23WSLrbHbzrGQSSv_2DM06CPQFd3_Gd_wNp2NkaNuu4yDRIyVSEg/exec';
+
+// Utility to sum reactions from all subjects in a category
+async function getCategoryReactionTotal(category) {
+  let total = 0;
+  if (!category.subjects || category.subjects.length === 0) return total;
+
+  for (const subject of category.subjects) {
+    try {
+      const params = new URLSearchParams({ category: category.name.toLowerCase(), subject });
+      const res = await fetch(WEB_APP_URL + '?' + params.toString());
+      const json = await res.json();
+      if (json.success && json.counts) {
+        total += Object.values(json.counts).reduce((a,b) => a+b, 0);
+      }
+    } catch(err) {
+      console.warn(`Failed to load reactions for ${category.name}/${subject}`, err);
+    }
+  }
+  return total;
+}
+
+function createCard(category, reactionTotal=0) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.setProperty('--category-color', category.color || '#555');
+  div.innerHTML = `
+    <a href="${category.url}">${category.name}</a>
+    <div class="badge">${category.subjects.length} Subjects</div>
+    <div class="stats">Total Reactions: ${reactionTotal}</div>
+  `;
+  div.addEventListener('click', () => {
+    window.location.href = category.url;
+  });
+  return div;
+}
+
+async function renderCategories() {
+  const grid = document.getElementById('categoriesGrid');
+  grid.innerHTML = '';
+  for (const cat of categories) {
+    const total = await getCategoryReactionTotal(cat);
+    grid.appendChild(createCard(cat, total));
+  }
+}
+
+document.addEventListener('DOMContentLoaded', renderCategories);
+</script>
 
 </body>
 </html>

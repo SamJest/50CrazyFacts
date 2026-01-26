@@ -146,23 +146,13 @@ const subject = 'axolotls';
 
 const reactionButtons = document.querySelectorAll('.reactions button');
 const reactionCounts = {};
-let prevReaction = localStorage.getItem(`reaction_aztec-reverence-for-axolotls`) || null;
 
-function updateReactionUI() {
-  reactionButtons.forEach(btn => {
-    const type = btn.dataset.type;
-    const span = btn.querySelector('.reaction-count');
-    span.textContent = reactionCounts[type] || 0;
-    btn.classList.toggle('selected', prevReaction === type);
-  });
-}
-
+// Load current counts
 async function loadReactionCounts() {
   try {
     const params = new URLSearchParams({ category, subject, fact: factSlug });
     const res = await fetch(WEB_APP_URL + '?' + params.toString());
     const json = await res.json();
-
     if (json.success && json.counts) {
       Object.assign(reactionCounts, json.counts);
       updateReactionUI();
@@ -172,41 +162,34 @@ async function loadReactionCounts() {
   }
 }
 
+function updateReactionUI() {
+  reactionButtons.forEach(btn => {
+    const type = btn.dataset.type;
+    const span = btn.querySelector('.reaction-count');
+    span.textContent = reactionCounts[type] || 0;
+  });
+}
+
+// Click handler
 reactionButtons.forEach(btn => {
   btn.addEventListener('click', async () => {
     const type = btn.dataset.type;
-    if (prevReaction === type) return;
-
-    const old = prevReaction;
-    prevReaction = type;
-    localStorage.setItem(`reaction_aztec-reverence-for-axolotls`, type);
-
-    reactionCounts[type] = (reactionCounts[type] || 0) + 1;
-    if (old && reactionCounts[old] > 0) reactionCounts[old]--;
-
-    updateReactionUI();
-
     try {
-      const params = new URLSearchParams({
-        category,
-        subject,
-        fact: factSlug,
-        reaction: type,
-        prev: old || ''
-      });
+      const params = new URLSearchParams({ category, subject, fact: factSlug, reaction: type });
       const res = await fetch(WEB_APP_URL + '?' + params.toString());
       const json = await res.json();
-      if (json.success && json.counts) {
+      if(json.success && json.counts){
         Object.assign(reactionCounts, json.counts);
         updateReactionUI();
       }
-    } catch (err) {
+    } catch(err){
       console.error('Failed to update reaction:', err);
     }
   });
 });
 
-document.addEventListener('DOMContentLoaded', loadReactionCounts);
+// Init
+loadReactionCounts();
 </script>
 
 </body>

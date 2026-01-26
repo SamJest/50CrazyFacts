@@ -18,47 +18,71 @@ gtag('config', 'G-V2XJEGWMGS');
 
 
 <style>
-body{font-family:Arial,sans-serif;background:#f7f7f7;margin:0;}
-header{background:#ff5722;color:white;text-align:center;padding:60px 20px;}
-h1{margin:0;font-size:3em;}
-.breadcrumbs{margin:20px;font-size:0.9em;}
-.breadcrumbs a{color:white;text-decoration:none;margin-right:5px;}
-.grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px;}
-.card{
-  background:white;
-  padding:18px;
-  border-radius:14px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
-  flex:1 1 280px;
-  text-align:center;
-  transition:0.2s;
+body { font-family: Arial,sans-serif; background: #f7f7f7; margin: 0; }
+header { background: #ff5722; color: white; text-align: center; padding: 60px 20px; }
+h1 { margin: 0; font-size: 3em; }
+
+.breadcrumbs { margin: 20px; font-size: 0.9em; }
+.breadcrumbs a { color: white; text-decoration: none; margin-right: 5px; }
+
+.grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 20px; }
+
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  flex: 1 1 280px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.card a{
-  text-decoration:none;
-  font-weight:700;
-  color:#222;
-  display:block;
-  margin-bottom:10px;
+
+.card a {
+  text-decoration: none;
+  font-weight: 700;
+  color: #222;
+  display: block;
+  margin-bottom: 10px;
 }
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 0 0 2px #ff5722,0 10px 25px #ff5722;
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2 #ff5722, 0 10px 25px #ff5722;
 }
-.stats{
-  display:flex;
-  justify-content:space-between;
-  font-size:0.85em;
-  opacity:0.9;
+
+.meta { margin-bottom: 6px; }
+.badge {
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: .75em;
+  margin: 0 2px;
+  display: inline-block;
 }
-.back-link{text-align:center;margin:30px 0;}
-.back-link a{color:#ff5722;text-decoration:none;font-weight:bold;}
-.badge{background:#eee;padding:2px 6px;border-radius:4px;font-size:.75em;margin:0 2px;}
-.ad-slot{background:#e0e0e0;text-align:center;padding:20px;margin:15px auto;border-radius:10px;font-weight:bold;color:#555;}
-.reactions span{cursor:pointer;margin:0 4px;user-select:none;}
-.reactions span.selected{text-decoration:underline;}
-.reactions .count{margin-left:2px;font-weight:bold;}
+
+.stats { display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.9; margin: 0 20px; }
+
+.back-link { text-align: center; margin: 30px 0; }
+.back-link a { color: #ff5722; text-decoration: none; font-weight: bold; }
+
+.reactions { margin-top: 8px; display: flex; justify-content: center; gap: 10px; font-size: 1em; cursor: pointer; }
+.reactions span { user-select: none; }
+.reactions span.selected { text-decoration: underline; }
+.reactions .count { margin-left: 2px; font-weight: bold; }
+
+.ad-slot {
+  background: #e0e0e0;
+  text-align: center;
+  padding: 20px;
+  margin: 15px auto;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #555;
+  max-width: 700px;
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -89,7 +113,7 @@ h1{margin:0;font-size:3em;}
           </div>
           <div class="stats">📄 45 Facts</div>
         </div>
-       <!-- Each card should include a link + badges + data-category/data-subject/data-fact -->
+       <!-- Each card must include data-category, data-subject, data-fact, and reactions HTML -->
 </div>
 
 <div class="ad-slot">AD 1</div>
@@ -100,37 +124,18 @@ h1{margin:0;font-size:3em;}
 </div>
 
 <script>
-// ---------- Utilities ----------
+// ----------------- Utilities -----------------
 function prettyName(slug){
-  const small=['and','or','the','in','of','to','for'];
+  const small = ['and','or','the','in','of','to','for'];
   return (slug||'')
     .replace(/-/g,' ')
     .split(' ')
-    .map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1))
+    .map((w,i) => i>0 && small.includes(w) ? w : w.charAt(0).toUpperCase()+w.slice(1))
     .join(' ');
 }
 
-// Optional: dynamically generate subject cards if needed
-function subjectCard(f){
-  return `
-    <div class="card" data-category="${f.category}" data-subject="${f.subject}" data-fact="${f.slug}">
-      <a href="${f.url}">${f.title}</a>
-      <div class="meta">
-        <span class="badge">${prettyName(f.category)}</span>
-        <span class="badge">${prettyName(f.subject)}</span>
-      </div>
-      <div class="reactions">
-        <span data-reaction="mind_blown" data-fact="${f.slug}">🤯 <span class="count">0</span></span>
-        <span data-reaction="shocked" data-fact="${f.slug}">😲 <span class="count">0</span></span>
-        <span data-reaction="wow" data-fact="${f.slug}">😮 <span class="count">0</span></span>
-        <span data-reaction="interesting" data-fact="${f.slug}">🤓 <span class="count">0</span></span>
-      </div>
-    </div>
-  `;
-}
-
-// ---------- Reactions Handling ----------
-const WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_WEB_APP_ID/exec';
+// ----------------- Reactions -----------------
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHdJTvbkP83-_wsO23WSLrbHbzrGQSSv_2DM06CPQFd3_Gd_wNp2NkaNuu4yDRIyVSEg/exec';
 
 async function loadReactions() {
   const cards = document.querySelectorAll('.card');
@@ -141,9 +146,11 @@ async function loadReactions() {
     const subj = card.dataset.subject;
     const fact = card.dataset.fact;
     const params = new URLSearchParams({ category: cat, subject: subj, fact });
-    requests.push(fetch(WEB_APP_URL + '?' + params.toString())
-      .then(r => r.json())
-      .then(json => ({ card, json })));
+    requests.push(
+      fetch(WEB_APP_URL + '?' + params.toString())
+        .then(r => r.json())
+        .then(json => ({ card, json }))
+    );
   });
 
   const results = await Promise.all(requests);
@@ -153,13 +160,15 @@ async function loadReactions() {
       card.querySelectorAll('.reactions span[data-reaction]').forEach(span => {
         const type = span.dataset.reaction;
         span.querySelector('.count').textContent = counts[type] || 0;
-        if(localStorage.getItem(`reaction_${card.dataset.fact}`) === type) span.classList.add('selected');
+        if(localStorage.getItem(`reaction_${card.dataset.fact}`) === type){
+          span.classList.add('selected');
+        }
       });
     }
   });
 }
 
-document.addEventListener('click', async (e) => {
+document.addEventListener('click', async e => {
   const span = e.target.closest('.reactions span[data-reaction]');
   if(!span) return;
 

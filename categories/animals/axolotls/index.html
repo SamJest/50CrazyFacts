@@ -307,7 +307,7 @@ h1{margin:0;font-size:3em;}
             <span data-reaction="interesting" data-fact="potential-future-biomedical-uses">🤓 <span class="count">0</span></span>
           </div>
         </div>
-      
+       <!-- Each file should have class="card" and data attributes for category, subject, fact slug -->
 </div>
 
 <div class="back-link">
@@ -321,75 +321,53 @@ const WEB_APP_URL =
 // Load reactions for all cards
 async function loadReactions() {
   const cards = document.querySelectorAll('.card');
-  const requests = [];
-
-  cards.forEach(card => {
-    const category = card.dataset.category;
-    const subject = card.dataset.subject;
-    const fact = card.dataset.fact; // ✅ SLUG
-
-    const params = new URLSearchParams({ category, subject, fact });
-
-    requests.push(
-      fetch(WEB_APP_URL + '?' + params.toString())
-        .then(r => r.json())
-        .then(json => ({ card, json }))
-    );
-  });
-
-  const results = await Promise.all(requests);
-
-  results.forEach(({ card, json }) => {
-    if (json.success && json.counts) {
-      card.querySelectorAll('.reactions span[data-reaction]').forEach(span => {
-        const type = span.dataset.reaction;
-        span.querySelector('.count').textContent =
-          json.counts[type] || 0;
-
-        const prev = localStorage.getItem(`reaction_${card.dataset.fact}`);
-        if (prev === type) span.classList.add('selected');
-      });
+  await Promise.all(Array.from(cards).map(async card => {
+    const params = new URLSearchParams({
+      category: card.dataset.category,
+      subject: card.dataset.subject,
+      fact: card.dataset.fact
+    });
+    try {
+      const res = await fetch(WEB_APP_URL + '?' + params.toString());
+      const json = await res.json();
+      if(json.success && json.counts){
+        card.querySelectorAll('.reactions span[data-reaction]').forEach(span=>{
+          const type = span.dataset.reaction;
+          span.querySelector('.count').textContent = json.counts[type] || 0;
+        });
+      }
+    } catch(err){
+      console.warn('Failed to load reactions:', err);
     }
-  });
+  }));
 }
 
 // Handle reaction clicks
-document.addEventListener('click', async e => {
+document.addEventListener('click', async e=>{
   const span = e.target.closest('.reactions span[data-reaction]');
-  if (!span) return;
+  if(!span) return;
 
   const card = span.closest('.card');
   const type = span.dataset.reaction;
-  const fact = card.dataset.fact;
-  const category = card.dataset.category;
-  const subject = card.dataset.subject;
-
-  const prev = localStorage.getItem(`reaction_${fact}`);
-  if (prev === type) return;
-
-  localStorage.setItem(`reaction_${fact}`, type);
 
   const params = new URLSearchParams({
-    category,
-    subject,
-    fact,
-    reaction: type,
-    prev: prev || ''
+    category: card.dataset.category,
+    subject: card.dataset.subject,
+    fact: card.dataset.fact,
+    reaction: type
   });
 
-  try {
+  try{
     const res = await fetch(WEB_APP_URL + '?' + params.toString());
     const json = await res.json();
-
-    if (json.success && json.counts) {
-      card.querySelectorAll('.reactions span[data-reaction]').forEach(s => {
+    if(json.success && json.counts){
+      card.querySelectorAll('.reactions span[data-reaction]').forEach(s=>{
         const t = s.dataset.reaction;
-        s.querySelector('.count').textContent =
-          json.counts[t] || 0;
-        s.classList.toggle('selected', t === type);
+        s.querySelector('.count').textContent = json.counts[t] || 0;
+        s.classList.toggle('selected', t===type);
       });
     }
-  } catch (err) {
+  }catch(err){
     console.error('Reaction update failed:', err);
   }
 });
