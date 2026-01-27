@@ -139,9 +139,13 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
 </div>
 
 <script>
-// ------------------ Helpers ------------------
+/* =========================
+   HELPERS
+========================= */
 function humanize(slug) {
-  return (slug || '').replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+  return (slug || '')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function shuffleArray(array) {
@@ -157,14 +161,22 @@ function pickRandomFacts(array, count) {
   return copy.slice(0, count);
 }
 
+/* =========================
+   FACT CARD RENDER
+========================= */
 function factCard(f) {
   return `
-    <div class="card">
+    <div class="card"
+         data-category="${f.category}"
+         data-subject="${f.subject}"
+         data-fact="${f.slug}">
       <a href="${f.url}">${f.title}</a>
+
       <div class="meta" style="margin-top:8px;font-size:.75em;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
         <span class="badge">${f.category}</span>
         <span class="badge">${f.subject}</span>
       </div>
+
       <div class="reactions">
         <button data-type="mind_blown">🤯 <span class="reaction-count">${f.reactions?.mind_blown || 0}</span></button>
         <button data-type="shocked">😲 <span class="reaction-count">${f.reactions?.shocked || 0}</span></button>
@@ -175,18 +187,25 @@ function factCard(f) {
   `;
 }
 
-// ------------------ FACT DISPLAY ------------------
-// HERO FACT
+/* =========================
+   HERO FACT
+========================= */
 const hero = pickRandomFacts(allFacts, 1)[0];
+
 document.getElementById('heroFact').innerHTML = `
-  <div class="random-fact">
+  <div class="card"
+       data-category="${hero.category}"
+       data-subject="${hero.subject}"
+       data-fact="${hero.slug}">
     <h2>
       <a href="${hero.url}" style="color:#222;text-decoration:none">${hero.title}</a>
     </h2>
+
     <div class="meta" style="justify-content:center;margin-bottom:10px">
       <span class="badge">${hero.category}</span>
       <span class="badge">${hero.subject}</span>
     </div>
+
     <div class="reactions">
       <button data-type="mind_blown">🤯 <span class="reaction-count">${hero.reactions?.mind_blown || 0}</span></button>
       <button data-type="shocked">😲 <span class="reaction-count">${hero.reactions?.shocked || 0}</span></button>
@@ -196,14 +215,18 @@ document.getElementById('heroFact').innerHTML = `
   </div>
 `;
 
-// LATEST and RANDOM FACTS
+/* =========================
+   LATEST FACTS
+========================= */
 const latestContainer = document.getElementById('latestFactsContainer');
 latestContainer.innerHTML = '';
+
 const subjectsMap = {};
 allFacts.forEach(f => {
   if (!subjectsMap[f.subject]) subjectsMap[f.subject] = [];
   subjectsMap[f.subject].push(f);
 });
+
 const subjectsSorted = Object.entries(subjectsMap)
   .sort((a, b) => {
     const lastA = a[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
@@ -211,41 +234,71 @@ const subjectsSorted = Object.entries(subjectsMap)
     return new Date(lastB.uploadedAt) - new Date(lastA.uploadedAt);
   })
   .slice(0, 3);
+
 let latestFacts = [];
 subjectsSorted.forEach(([_, facts]) => {
   latestFacts = latestFacts.concat(pickRandomFacts(facts, 8));
 });
+
 latestFacts = pickRandomFacts(latestFacts, 24);
 latestFacts.forEach(f => latestContainer.insertAdjacentHTML('beforeend', factCard(f)));
 
+/* =========================
+   RANDOM FACTS
+========================= */
 const randomContainer = document.getElementById('randomFactsContainer');
 randomContainer.innerHTML = '';
-const randomFacts = pickRandomFacts(allFacts, 25);
-randomFacts.forEach(f => randomContainer.insertAdjacentHTML('beforeend', factCard(f)));
 
-// ------------------ INSTANT REACTION CLICK ------------------
-function setupReactionButtons(container) {
-  container.querySelectorAll('.reactions button').forEach(btn => {
+pickRandomFacts(allFacts, 25)
+  .forEach(f => randomContainer.insertAdjacentHTML('beforeend', factCard(f)));
+
+/* =========================
+   REACTION HANDLER
+========================= */
+function setupReactionButtons(scope) {
+  scope.querySelectorAll('.reactions button').forEach(btn => {
     btn.addEventListener('click', () => {
+
+      // Instant UI update
       const span = btn.querySelector('.reaction-count');
-      span.textContent = parseInt(span.textContent) + 1; // instant UI update
+      span.textContent = parseInt(span.textContent, 10) + 1;
       btn.classList.add('selected');
 
-      // Optional: send click to backend (your existing endpoint)
-      const factId = container.dataset.factId; // if you have a data attribute
-      const type = btn.dataset.type;
-      fetch(`/api/reactions?fact=${factId}&type=${type}`, { method: 'POST' })
-        .catch(err => console.error('Reaction POST failed', err));
+      const card = btn.closest('.card');
+      if (!card) return;
+
+      const category = card.dataset.category;
+      const subject  = card.dataset.subject;
+      const fact     = card.dataset.fact;
+      const reaction = btn.dataset.type;
+
+      if (!category || !subject || !fact || !reaction) {
+        console.error('Reaction data missing', { category, subject, fact, reaction });
+        return;
+      }
+
+      fetch(
+        'https://script.google.com/macros/s/AKfycbwHdJTvbkP83-_wsO23WSLrbHbzrGQSSv_2DM06CPQFd3_Gd_wNp2NkaNuu4yDRIyVSEg/exec'
+        + `?category=${encodeURIComponent(category)}`
+        + `&subject=${encodeURIComponent(subject)}`
+        + `&fact=${encodeURIComponent(fact)}`
+        + `&reaction=${reaction}`,
+        { method: 'POST' }
+      ).catch(err => console.error('Reaction backend error', err));
     });
   });
 }
 
-// Apply to hero, latest, and random facts
+/* =========================
+   APPLY REACTIONS
+========================= */
 setupReactionButtons(document.getElementById('heroFact'));
 latestContainer.querySelectorAll('.card').forEach(card => setupReactionButtons(card));
 randomContainer.querySelectorAll('.card').forEach(card => setupReactionButtons(card));
 
-// ------------------ Search redirect ------------------
+/* =========================
+   SEARCH
+========================= */
 document.getElementById("searchBox").addEventListener("keypress", e => {
   if (e.key === "Enter") {
     window.location.href = "search.html?q=" + encodeURIComponent(e.target.value);
