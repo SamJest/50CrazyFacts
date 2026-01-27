@@ -72,18 +72,23 @@ h1 { margin: 0; font-size: 3em; }
 </header>
 
 <div class="grid" id="categoriesGrid">
-  <!-- Category cards will be injected here by JS -->
+  
+    <div class="card" style="--category-color:#ff5722">
+      <a href="/categories/animals/index.html">Animals</a>
+      <div class="badge">0 Subjects</div>
+      <div class="stats">📄 0 Facts</div>
+    </div>
+   <!-- Pre-rendered cards for immediate display -->
 </div>
 
 <script>
-// Example categories data injected by your generator
-// Format: { name: "Animals", color: "#ff5722", url: "/categories/animals/index.html", subjects: ["mammals", "birds"] }
+// Categories array injected by server
 const categories = ${categoryCards || '[]'};
 
 // Web App URL to fetch reactions
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHdJTvbkP83-_wsO23WSLrbHbzrGQSSv_2DM06CPQFd3_Gd_wNp2NkaNuu4yDRIyVSEg/exec';
 
-// Utility to sum reactions from all subjects in a category
+// Fetch total reactions per category
 async function getCategoryReactionTotal(category) {
   let total = 0;
   if (!category.subjects || category.subjects.length === 0) return total;
@@ -112,18 +117,23 @@ function createCard(category, reactionTotal=0) {
     <div class="badge">${category.subjects.length} Subjects</div>
     <div class="stats">Total Reactions: ${reactionTotal}</div>
   `;
-  div.addEventListener('click', () => {
-    window.location.href = category.url;
-  });
+  div.addEventListener('click', () => window.location.href = category.url);
   return div;
 }
 
 async function renderCategories() {
   const grid = document.getElementById('categoriesGrid');
-  grid.innerHTML = '';
+
   for (const cat of categories) {
     const total = await getCategoryReactionTotal(cat);
-    grid.appendChild(createCard(cat, total));
+    const card = createCard(cat, total);
+    // Replace pre-rendered card if it exists
+    const existing = Array.from(grid.children).find(c => c.querySelector('a').textContent === cat.name);
+    if (existing) {
+      grid.replaceChild(card, existing);
+    } else {
+      grid.appendChild(card);
+    }
   }
 }
 
