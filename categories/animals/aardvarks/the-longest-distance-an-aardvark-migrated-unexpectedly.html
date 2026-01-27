@@ -155,71 +155,86 @@ function factCard(f) {
         <span class="badge">${f.subject}</span>
       </div>
       <div class="reactions">
-        <span>🤯 ${f.reactions?.mind_blown || 0}</span>
-        <span>😲 ${f.reactions?.shocked || 0}</span>
-        <span>😮 ${f.reactions?.wow || 0}</span>
-        <span>🤓 ${f.reactions?.interesting || 0}</span>
+        <button data-type="mind_blown">🤯 <span class="reaction-count">${f.reactions?.mind_blown || 0}</span></button>
+        <button data-type="shocked">😲 <span class="reaction-count">${f.reactions?.shocked || 0}</span></button>
+        <button data-type="wow">😮 <span class="reaction-count">${f.reactions?.wow || 0}</span></button>
+        <button data-type="interesting">🤓 <span class="reaction-count">${f.reactions?.interesting || 0}</span></button>
       </div>
     </div>
   `;
 }
-    // ---------- HERO FACT ----------
-    const hero = pickRandomFacts(allFacts, 1)[0];
-    document.getElementById('heroFact').innerHTML = `
-      <div class="random-fact">
-        <h2>
-          <a href="${hero.url}" style="color:#222;text-decoration:none">${hero.title}</a>
-        </h2>
-        <div class="meta" style="justify-content:center;margin-bottom:10px">
-          <span class="badge">${hero.category}</span>
-          <span class="badge">${hero.subject}</span>
-        </div>
-        <div class="reactions">
-          <span>🤯 ${hero.reactions?.mind_blown || 0}</span>
-          <span>😲 ${hero.reactions?.shocked || 0}</span>
-          <span>😮 ${hero.reactions?.wow || 0}</span>
-          <span>🤓 ${hero.reactions?.interesting || 0}</span>
-        </div>
-      </div>
-    `;
 
-    // ---------- LATEST FACTS (3 most recent subjects) ----------
-    const latestContainer = document.getElementById('latestFactsContainer');
-    latestContainer.innerHTML = '';
+// ------------------ FACT DISPLAY ------------------
+// HERO FACT
+const hero = pickRandomFacts(allFacts, 1)[0];
+document.getElementById('heroFact').innerHTML = `
+  <div class="random-fact">
+    <h2>
+      <a href="${hero.url}" style="color:#222;text-decoration:none">${hero.title}</a>
+    </h2>
+    <div class="meta" style="justify-content:center;margin-bottom:10px">
+      <span class="badge">${hero.category}</span>
+      <span class="badge">${hero.subject}</span>
+    </div>
+    <div class="reactions">
+      <button data-type="mind_blown">🤯 <span class="reaction-count">${hero.reactions?.mind_blown || 0}</span></button>
+      <button data-type="shocked">😲 <span class="reaction-count">${hero.reactions?.shocked || 0}</span></button>
+      <button data-type="wow">😮 <span class="reaction-count">${hero.reactions?.wow || 0}</span></button>
+      <button data-type="interesting">🤓 <span class="reaction-count">${hero.reactions?.interesting || 0}</span></button>
+    </div>
+  </div>
+`;
 
-    // group facts by subject
-    const subjectsMap = {};
-    allFacts.forEach(f => {
-      if (!subjectsMap[f.subject]) subjectsMap[f.subject] = [];
-      subjectsMap[f.subject].push(f);
+// LATEST and RANDOM FACTS
+const latestContainer = document.getElementById('latestFactsContainer');
+latestContainer.innerHTML = '';
+const subjectsMap = {};
+allFacts.forEach(f => {
+  if (!subjectsMap[f.subject]) subjectsMap[f.subject] = [];
+  subjectsMap[f.subject].push(f);
+});
+const subjectsSorted = Object.entries(subjectsMap)
+  .sort((a, b) => {
+    const lastA = a[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
+    const lastB = b[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
+    return new Date(lastB.uploadedAt) - new Date(lastA.uploadedAt);
+  })
+  .slice(0, 3);
+let latestFacts = [];
+subjectsSorted.forEach(([_, facts]) => {
+  latestFacts = latestFacts.concat(pickRandomFacts(facts, 8));
+});
+latestFacts = pickRandomFacts(latestFacts, 24);
+latestFacts.forEach(f => latestContainer.insertAdjacentHTML('beforeend', factCard(f)));
+
+const randomContainer = document.getElementById('randomFactsContainer');
+randomContainer.innerHTML = '';
+const randomFacts = pickRandomFacts(allFacts, 25);
+randomFacts.forEach(f => randomContainer.insertAdjacentHTML('beforeend', factCard(f)));
+
+// ------------------ INSTANT REACTION CLICK ------------------
+function setupReactionButtons(container) {
+  container.querySelectorAll('.reactions button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const span = btn.querySelector('.reaction-count');
+      span.textContent = parseInt(span.textContent) + 1; // instant UI update
+      btn.classList.add('selected');
+
+      // Optional: send click to backend (your existing endpoint)
+      const factId = container.dataset.factId; // if you have a data attribute
+      const type = btn.dataset.type;
+      fetch(`/api/reactions?fact=${factId}&type=${type}`, { method: 'POST' })
+        .catch(err => console.error('Reaction POST failed', err));
     });
-
-    // get 3 most recent subjects (based on latest uploadedAt)
-    const subjectsSorted = Object.entries(subjectsMap)
-      .sort((a, b) => {
-        const lastA = a[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
-        const lastB = b[1].sort((x, y) => new Date(y.uploadedAt) - new Date(x.uploadedAt))[0];
-        return new Date(lastB.uploadedAt) - new Date(lastA.uploadedAt);
-      })
-      .slice(0, 3);
-
-    let latestFacts = [];
-    subjectsSorted.forEach(([_, facts]) => {
-      latestFacts = latestFacts.concat(pickRandomFacts(facts, 8)); // 8 per subject → 24 max
-    });
-
-    latestFacts = pickRandomFacts(latestFacts, 24); // final shuffle and limit
-    latestFacts.forEach(f => latestContainer.insertAdjacentHTML('beforeend', factCard(f)));
-
-    // ---------- RANDOM FACTS ----------
-    const randomContainer = document.getElementById('randomFactsContainer');
-    randomContainer.innerHTML = '';
-
-    const randomFacts = pickRandomFacts(allFacts, 25);
-    randomFacts.forEach(f => randomContainer.insertAdjacentHTML('beforeend', factCard(f)));
   });
+}
 
-// Search redirect
+// Apply to hero, latest, and random facts
+setupReactionButtons(document.getElementById('heroFact'));
+latestContainer.querySelectorAll('.card').forEach(card => setupReactionButtons(card));
+randomContainer.querySelectorAll('.card').forEach(card => setupReactionButtons(card));
+
+// ------------------ Search redirect ------------------
 document.getElementById("searchBox").addEventListener("keypress", e => {
   if (e.key === "Enter") {
     window.location.href = "search.html?q=" + encodeURIComponent(e.target.value);
