@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,65 +7,67 @@
 <title>All Categories</title>
 
 <link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
 <script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-V2XJEGWMGS');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
 </script>
 
 
 <style>
-body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; }
-header { background: #222; color: white; text-align: center; padding: 60px 20px; }
-h1 { margin: 0; font-size: 3em; }
-
-.grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 20px; }
-
+body { font-family: Arial,sans-serif; background:#f7f7f7; margin:0; color:#222; line-height:1.5; }
+header { background:#222; color:white; text-align:center; padding:60px 20px; position:relative; }
+header h1 { margin:0; font-size:3em; }
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:20px; }
 .card {
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  flex: 1 1 220px;
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border-top: 4px solid var(--category-color, #555);
-  cursor: pointer;
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+  flex:1 1 220px;
+  text-align:center;
+  cursor:pointer;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-top 0.25s ease;
+  border-top: 5px solid var(--category-color,#555);
 }
-
-.card a {
-  text-decoration: none;
-  font-weight: 700;
-  color: #222;
-  display: block;
-  margin-bottom: 6px;
-}
-
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 0 2px var(--category-color, #555), 0 10px 25px var(--category-color, #555);
+  transform: translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#555),0 12px 28px rgba(0,0,0,0.12);
 }
-
-.badge {
-  background: #eee;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: .75em;
-  margin: 0 2px;
-  display: inline-block;
+.card a.title {
+  display:block;
+  font-weight:700;
+  color:#222;
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:1.2em;
 }
-
-.stats {
-  font-size: 0.85em;
-  color: #666;
-  margin-top: 6px;
+.card a.title:hover { color:var(--category-color,#555); }
+.card .badge {
+  background:#f0f0f0;
+  padding:3px 8px;
+  border-radius:8px;
+  font-size:0.8em;
+  margin:4px 0;
+  display:inline-block;
+}
+.card .stats { font-size:0.85em; color:#555; margin-top:8px; }
+@media(max-width:600px){
+  .grid { flex-direction:column; align-items:center; }
+  .card { flex:1 1 100%; }
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -73,72 +76,24 @@ h1 { margin: 0; font-size: 3em; }
 
 <div class="grid" id="categoriesGrid">
   
-    <div class="card" style="--category-color:#ff5722">
-      <a href="/categories/animals/index.html">Animals</a>
-      <div class="badge">0 Subjects</div>
-      <div class="stats">📄 0 Facts</div>
-    </div>
-   <!-- Pre-rendered cards for immediate display -->
+      <div class="card" style="--category-color:#e91e63">
+        <a class="title" href="/categories/technology/index.html">
+          technology
+        </a>
+        <div class="badge">3 Subjects</div>
+        <div class="stats">Explore facts →</div>
+      </div>
+    
+
+      <div class="card" style="--category-color:#e91e63">
+        <a class="title" href="/categories/animals/index.html">
+          animals
+        </a>
+        <div class="badge">3 Subjects</div>
+        <div class="stats">Explore facts →</div>
+      </div>
+    
 </div>
-
-<script>
-// Categories array injected by server
-const categories = ${categoryCards || '[]'};
-
-// Web App URL to fetch reactions
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHdJTvbkP83-_wsO23WSLrbHbzrGQSSv_2DM06CPQFd3_Gd_wNp2NkaNuu4yDRIyVSEg/exec';
-
-// Fetch total reactions per category
-async function getCategoryReactionTotal(category) {
-  let total = 0;
-  if (!category.subjects || category.subjects.length === 0) return total;
-
-  for (const subject of category.subjects) {
-    try {
-      const params = new URLSearchParams({ category: category.name.toLowerCase(), subject });
-      const res = await fetch(WEB_APP_URL + '?' + params.toString());
-      const json = await res.json();
-      if (json.success && json.counts) {
-        total += Object.values(json.counts).reduce((a,b) => a+b, 0);
-      }
-    } catch(err) {
-      console.warn(`Failed to load reactions for ${category.name}/${subject}`, err);
-    }
-  }
-  return total;
-}
-
-function createCard(category, reactionTotal=0) {
-  const div = document.createElement('div');
-  div.className = 'card';
-  div.style.setProperty('--category-color', category.color || '#555');
-  div.innerHTML = `
-    <a href="${category.url}">${category.name}</a>
-    <div class="badge">${category.subjects.length} Subjects</div>
-    <div class="stats">Total Reactions: ${reactionTotal}</div>
-  `;
-  div.addEventListener('click', () => window.location.href = category.url);
-  return div;
-}
-
-async function renderCategories() {
-  const grid = document.getElementById('categoriesGrid');
-
-  for (const cat of categories) {
-    const total = await getCategoryReactionTotal(cat);
-    const card = createCard(cat, total);
-    // Replace pre-rendered card if it exists
-    const existing = Array.from(grid.children).find(c => c.querySelector('a').textContent === cat.name);
-    if (existing) {
-      grid.replaceChild(card, existing);
-    } else {
-      grid.appendChild(card);
-    }
-  }
-}
-
-document.addEventListener('DOMContentLoaded', renderCategories);
-</script>
 
 </body>
 </html>

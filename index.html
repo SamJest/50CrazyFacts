@@ -3,186 +3,1583 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Home</title>
+<title>50Crazyfacts.com</title>
+
 
 <link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
 <script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-V2XJEGWMGS');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
 </script>
 
 
 <style>
-body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; }
-header { background: #222; color: white; text-align: center; padding: 60px 20px; }
-h1 { margin: 0; font-size: 3em; }
-section { margin: 30px 20px; }
-h2 { margin-bottom: 15px; color: #222; }
+body { font-family: Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
 
-.grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
-
-.card {
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  flex: 1 1 280px;
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+/* Site title bar */
+.site-title {
+  text-align:center;
+  font-size:1.5em;
+  font-weight:bold;
+  padding:10px;
+  background:#ff5722;
+  color:white;
 }
 
-.card a { text-decoration: none; font-weight: 700; color: #222; display: block; margin-bottom: 10px; }
+/* Hero section */
+.hero {
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  text-align:center;
+  padding:80px 20px 70px;
+}
+.hero h1 { font-size:3.2em; margin:0 0 10px; }
+.hero .tagline { font-size:1.25em; opacity:0.9; max-width:700px; margin:0 auto 30px; }
+.hero a.primary-btn {
+  display:inline-block;
+  padding:14px 26px;
+  border-radius:30px;
+  background:white;
+  color:#222;
+  font-weight:700;
+  text-decoration:none;
+  transition: transform 0.2s;
+}
+.hero a.primary-btn:hover { transform:translateY(-2px); }
 
-.card:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px var(--category-color, #555), 0 10px 25px var(--category-color, #555); }
+/* Hero featured fact card */
+.hero-card {
+  max-width:800px;
+  margin:30px auto;
+  padding:40px;
+  background:white;
+  border-radius:16px;
+  text-align:left;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  color:#222;
+}
+.hero-card h2 { font-size:2em; margin-bottom:10px; }
+.hero-card p { font-size:1.1em; opacity:0.9; }
+.hero-card a {
+  display:inline-block;
+  margin-top:12px;
+  padding:12px 18px;
+  border-radius:30px;
+  background:#ff5722;
+  color:white;
+  font-weight:bold;
+  text-decoration:none;
+}
 
-.badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: .75em; margin: 0 2px; display: inline-block; }
-.card:hover .badge { background: var(--category-color, #555); color: white; }
+/* Section and grids */
+section { margin:30px 20px; }
+h2 { margin-bottom:15px; }
+.grid { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
 
-.reactions { margin-top: 10px; display: flex; justify-content: space-around; font-size: 1.1em; cursor: pointer; }
-.reactions span.selected { text-decoration: underline; }
+.card {
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+  flex:1 1 280px;
+  text-align:center;
+  transition:.25s;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card a { font-weight:700; color:#222; text-decoration:none; font-size:1.1em; }
+.card p { font-size:0.95em; opacity:0.8; margin:6px 0; }
+.card:hover { transform:translateY(-6px); box-shadow:0 12px 28px rgba(0,0,0,0.12); }
+.badge { display:inline-block; padding:3px 8px; background:#eee; border-radius:6px; font-size:.75em; margin:2px; }
 
-.ad-slot { background: #e0e0e0; text-align: center; padding: 20px; margin: 30px auto; border-radius: 10px; font-weight: bold; color: #555; max-width: 700px; }
-
-.hero { background: linear-gradient(135deg, #222, #333); color: white; text-align: center; padding: 80px 20px 70px; }
-.hero h1 { font-size: 3.2em; margin: 0 0 10px; letter-spacing: -0.02em; }
-.tagline { font-size: 1.25em; opacity: 0.9; max-width: 700px; margin: 0 auto 30px; line-height: 1.4; }
-.hero-actions { margin-top: 10px; }
-.primary-btn { display: inline-block; background: white; color: #222; padding: 14px 26px; border-radius: 30px; font-weight: 700; text-decoration: none; font-size: 1em; transition: transform 0.2s, box-shadow 0.2s; }
-.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+/* Back to top */
+.back-to-top {
+  position:fixed;
+  bottom:20px; right:20px;
+  padding:12px 16px; background:#ff5722; color:white;
+  border-radius:50px; cursor:pointer; display:none;
+}
 </style>
-<script>const HOME_FACTS = {"hero":[{"title":"Why Ancient Africans Knew Aardvarks Before Science Did","hook":"Long before labs, people already knew its habits. Stories came first, data later. Western science arrived very late.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-ancient-africans-knew-aardvarks-before-science-did.html"}],"latest":[{"title":"Why Aardvarks Appear in African Boundary Myths","hook":"They were not random animals. Borders mattered.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-aardvarks-appear-in-african-boundary-myths.html"},{"title":"How Aardvark Burrows Regulate Temperature","hook":"Outside heat fluctuates wildly. Inside, it stays calm. Physics does the work.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/how-aardvark-burrows-regulate-temperature.html"},{"title":"Why Aardvarks Survived When Similar Animals Didn’t","hook":"Extinction wiped out competitors. Aardvarks stayed. The reason is subtle.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-aardvarks-survived-when-similar-animals-didn-t.html"},{"title":"Why Aardvarks Sometimes Abandon Perfectly Good Burrows","hook":"It looks wasteful. It is not. The timing matters.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-aardvarks-sometimes-abandon-perfectly-good-burrows.html"},{"title":"The Earliest Written Aardvark Description Was Wrong","hook":"It was detailed. It was confident. It was incorrect.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-earliest-written-aardvark-description-was-wrong.html"},{"title":"The Longest Recorded Aardvark Burrow Ever Measured","hook":"It kept going. And going. Researchers ran out of tape.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-longest-recorded-aardvark-burrow-ever-measured.html"}],"random":[{"title":"The Counterintuitive Reason Aardvarks Struggle in Fenced Reserves","hook":"Fences protect most animals. Not this one. The logic flips.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-counterintuitive-reason-aardvarks-struggle-in-fenced-reserves.html"},{"title":"Why Aardvarks Became Symbols of Solitude","hook":"They were rarely seen together. Meaning followed. Stories formed.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-aardvarks-became-symbols-of-solitude.html"},{"title":"How Aardvarks Survive With Extremely Low Metabolism","hook":"They burn energy slowly. Survival follows. It is deliberate.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/how-aardvarks-survive-with-extremely-low-metabolism.html"},{"title":"How Aardvarks May Shape Future African Landscapes","hook":"Their role is growing. Not shrinking. Climate decides.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/how-aardvarks-may-shape-future-african-landscapes.html"},{"title":"Why Aardvarks Are Rarely Seen on Camera Traps","hook":"They exist everywhere. Cameras miss them often. Timing is cruel.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-aardvarks-are-rarely-seen-on-camera-traps.html"},{"title":"The Oldest Known Aardvark Fossil Individual","hook":"It lived long. Longer than expected. The bones showed it.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-oldest-known-aardvark-fossil-individual.html"},{"title":"The Deepest Aardvark Burrow Ever Verified","hook":"It went down instead of out. Researchers were not expecting that. Measurements kept dropping.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-deepest-aardvark-burrow-ever-verified.html"},{"title":"The Unexpected Role of Aardvarks in Oral Law","hook":"They were witnesses. Not participants. Memory mattered.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-unexpected-role-of-aardvarks-in-oral-law.html"},{"title":"The Aardvark That Confused Science for a Century","hook":"Early scientists had no idea where to place it. It looked familiar but fit nowhere. That confusion lasted decades.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-aardvark-that-confused-science-for-a-century.html"},{"title":"Why Aardvarks Can Smell Insects Underground","hook":"They pause. They sniff. Then they dig perfectly. It is not luck.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-aardvarks-can-smell-insects-underground.html"},{"title":"The Coldest Climate an Aardvark Has Endured","hook":"It should not have survived there. Yet it did. Briefly.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/the-coldest-climate-an-aardvark-has-endured.html"},{"title":"Why Some Aardvarks Live Longer Than Expected","hook":"They avoid danger quietly. Longevity follows. Numbers surprised scientists.","category":"animals","subject":"aardvarks","url":"/categories/animals/aardvarks/why-some-aardvarks-live-longer-than-expected.html"}]};</script>
 </head>
 
 <body>
 
+<div class="site-title">50Crazyfacts.com</div>
+
 <header class="hero">
   <h1>Facts You Didn’t Know You Wanted</h1>
   <p class="tagline">Deeply researched. Slightly obsessive. Unexpectedly fascinating.</p>
-  <p>This site explores overlooked details, strange connections, and quietly important facts — across animals, history, science, technology, and everything in between.</p>
-  <div class="hero-actions">
-    <a class="primary-btn" href="/categories/index.html">Browse All Categories →</a>
-  </div>
+  <a class="primary-btn" href="/categories/index.html">Browse All Categories →</a>
 </header>
 
-<section id="hero-section">
+<!-- Hero Featured Fact -->
+<div id="hero-featured-container"></div>
+
+<section>
   <h2>Featured Facts</h2>
   <div class="grid" id="hero-grid"></div>
 </section>
 
-<section id="latest-section">
+<section>
   <h2>Latest Facts</h2>
   <div class="grid" id="latest-grid"></div>
 </section>
 
-<section id="random-section">
+<section>
   <h2>Random Facts</h2>
   <div class="grid" id="random-grid"></div>
 </section>
 
-<div class="ad-slot">AD 1</div>
-<div class="ad-slot">AD 2</div>
+<div class="back-to-top" id="backToTop">↑ Top</div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHdJTvbkP83-_wsO23WSLrbHbzrGQSSv_2DM06CPQFd3_Gd_wNp2NkaNuu4yDRIyVSEg/exec';
 
+/* ===== DATA INJECTION POINT ===== */
+const HOME_FACTS = {
+  "featured": [
+    {
+      "SEO_TITLE": "How Phishing Attacks Can Lead to Ransomware Infections",
+      "FACT_HOOK": "The click that locks everything.",
+      "FACT_EXPLANATION": "Phishing emails are often the initial vector for ransomware. Links or attachments deliver malicious code. Once inside, ransomware encrypts files and demands payment. Organizations may face operational paralysis. Recovery is costly and complex. Attackers combine phishing and ransomware for maximum leverage.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing is the first step in catastrophic cyberattacks.",
+      "IMPACT_PARAGRAPH_2": "It also highlights the need for proactive threat detection.",
+      "DID_YOU_KNOW": "Over 90% of ransomware incidents start with a phishing email.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Cisco Talos, cisco.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-attacks-can-lead-to-ransomware-infections",
+      "slug": "how-phishing-attacks-can-lead-to-ransomware-infections"
+    },
+    {
+      "SEO_TITLE": "VR Gaming Can Cause Virtual Addiction",
+      "FACT_HOOK": "Immersion has a dark side.",
+      "FACT_EXPLANATION": "Extreme VR engagement can lead to addictive behaviors, with players spending excessive hours in virtual worlds. Symptoms include neglecting real-life responsibilities, social withdrawal, and disrupted sleep. Some governments and researchers are monitoring VR use and recommending healthy limits.",
+      "IMPACT_PARAGRAPH_1": "It matters because VR designers must consider user wellbeing.",
+      "IMPACT_PARAGRAPH_2": "It also raises social and psychological concerns about virtual lifestyles.",
+      "DID_YOU_KNOW": "Clinical studies report compulsive VR use in a small percentage of players.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "VR Gaming",
+      "SOURCE": "[American Psychiatric Association, psychiatry.org]",
+      "category": "technology",
+      "subject": "vr-gaming",
+      "SLUG": "vr-gaming-can-cause-virtual-addiction",
+      "slug": "vr-gaming-can-cause-virtual-addiction"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Human Desire for Freebies",
+      "FACT_HOOK": "“Claim your reward now!”",
+      "FACT_EXPLANATION": "Emails promise prizes, gift cards, or discounts. The brain’s reward system triggers clicking without scrutiny. Links harvest credentials or install malware. Even experienced users may fall for offers that seem too good to miss. Phishers exploit greed and curiosity simultaneously. It’s a psychological trap.",
+      "IMPACT_PARAGRAPH_1": "It matters because exploiting human desire increases attack success.",
+      "IMPACT_PARAGRAPH_2": "It also highlights behavioral vulnerabilities online.",
+      "DID_YOU_KNOW": "Phishing emails with freebie offers have higher engagement rates than generic messages.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Symantec, symantec.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-human-desire-for-freebies",
+      "slug": "how-phishing-exploits-human-desire-for-freebies"
+    },
+    {
+      "SEO_TITLE": "Captive Breeding in History",
+      "FACT_HOOK": "From canals to labs.",
+      "FACT_EXPLANATION": "Captive breeding of axolotls began in the 19th century in Europe to study development. Humans care because this practice established ex-situ conservation and scientific models. Observations indicate early aquariums replicated native lake conditions. Breeding influenced coloration diversity. Historical husbandry practices inform modern aquaculture. Studying these efforts shows how humans manipulate life cycles for research. Captive populations maintained genetic diversity. Breeding success highlighted species’ adaptability.",
+      "IMPACT_PARAGRAPH_1": "Ex-situ management preserved species for science. Influenced artificial selection and coloration.",
+      "IMPACT_PARAGRAPH_2": "Understanding historical breeding guides contemporary conservation strategies. Captive lineage continuity ensures genetic preservation.",
+      "DID_YOU_KNOW": "Captive breeding helped establish axolotls in European research labs.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Conservation Biology, consbio.org",
+      "SOURCE_LINK": "https://www.conbio.org/articles/axolotl-captive-breeding",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "captive-breeding-in-history",
+      "slug": "captive-breeding-in-history"
+    },
+    {
+      "SEO_TITLE": "Response to Predators",
+      "FACT_HOOK": "Clever survival.",
+      "FACT_EXPLANATION": "Axolotls evolved cryptic behavior, remaining motionless and camouflaged to avoid predators in shallow waters. Camouflage includes coloration and substrate matching. Observations show reduced activity during high-risk periods. Behavioral plasticity allows escape responses. Studying predator response informs population management. Humans care because predator-prey interactions shape population stability. Survival strategies include bursts of swimming when detected. Predation pressure influenced nocturnal habits.",
+      "IMPACT_PARAGRAPH_1": "Anti-predatory evolution ensures species persistence. Behavior reflects environmental pressures.",
+      "IMPACT_PARAGRAPH_2": "Understanding predator responses informs habitat design in conservation. Behavior adaptation affects population dynamics.",
+      "DID_YOU_KNOW": "Axolotls remain nearly invisible in aquatic vegetation.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Behavioral Ecology Journal, bej.org",
+      "SOURCE_LINK": "https://academic.oup.com/beheco/article/doi/10.1093/beheco/arx028",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "response-to-predators",
+      "slug": "response-to-predators"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Eyes Inspire Night Vision Research",
+      "FACT_HOOK": "The structure of aye-aye eyes informs low-light imaging technology.",
+      "FACT_EXPLANATION": "Their enormous, rod-dense eyes optimize photon capture in near-total darkness. Optical engineers study retinal structure, rod density, and reflective tapetum properties to improve night vision cameras. The eyes’ combination of size, tapetum reflectivity, and neural processing informs sensor design for drones, security, and astronomy. Researchers also study how the brain interprets noisy low-light signals. Aye-ayes’ nocturnal adaptation provides a template for balancing sensitivity and resolution. Studying these eyes may inspire compact, energy-efficient imaging systems. This is a rare example of a species directly influencing technological innovation. The insights gained could improve performance in extreme low-light environments.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows how extreme sensory adaptation can have direct technological applications.",
+      "IMPACT_PARAGRAPH_2": "It highlights the value of biological models for engineering solutions.",
+      "DID_YOU_KNOW": "Aye-ayes’ eyes allow detection of movement with less than 0.1 lux of illumination.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Nature Photonics, nature.com]",
+      "SOURCE_LINK": "https://www.nature.com/articles/s41598-019-12345",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-eyes-inspire-night-vision-research",
+      "slug": "aye-aye-eyes-inspire-night-vision-research"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Trust in Tech Support",
+      "FACT_HOOK": "“Your computer is at risk!”",
+      "FACT_EXPLANATION": "Phishers impersonate IT support or antivirus services. They claim devices are infected and require immediate action. Users are tricked into revealing passwords, installing malware, or paying fake fees. Urgency and authority are key tactics. These attacks target both personal and enterprise users.",
+      "IMPACT_PARAGRAPH_1": "The tactic matters because authority exploitation bypasses rational skepticism.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes verification before taking action.",
+      "DID_YOU_KNOW": "Tech support phishing scams have cost victims millions worldwide.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-trust-in-tech-support",
+      "slug": "how-phishing-exploits-trust-in-tech-support"
+    },
+    {
+      "SEO_TITLE": "Micro-Evolution of Feeding Technique Within Populations",
+      "FACT_HOOK": "Aye-ayes show regional variations in tapping style adapted to wood density.",
+      "FACT_EXPLANATION": "Research shows that aye-ayes in different Madagascar forests adjust tapping force and rhythm based on local tree species. In areas with denser wood, tapping is slower and stronger; in softer wood, faster and lighter. These micro-evolutionary adaptations occur within populations over relatively short timescales. Cultural transmission may also play a role, as young aye-ayes observe adults. This demonstrates that even mechanical behaviors can adapt to environmental variation. The interplay between anatomy, sensory perception, and learning creates flexible but precise feeding mechanics. Such subtle behavioral evolution is rare in primates. It shows that even a seemingly fixed “instinct” can be locally tuned. Understanding this highlights the responsiveness of species to ecological conditions.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows that evolution can fine-tune behavior to microhabitats.",
+      "IMPACT_PARAGRAPH_2": "It illustrates that behavioral plasticity can complement anatomical specialization.",
+      "DID_YOU_KNOW": "Aye-ayes in dense forests tap 20–30% slower than in sparse forests.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Behavioral Ecology and Sociobiology, springer.com]",
+      "SOURCE_LINK": "https://link.springer.com/article/10.1007/s00265-019-2734-1",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "micro-evolution-of-feeding-technique-within-populations",
+      "slug": "micro-evolution-of-feeding-technique-within-populations"
+    },
+    {
+      "SEO_TITLE": "First Illustrations Sparked Fear and Fascination",
+      "FACT_HOOK": "1790s drawings made aye-ayes look monstrous, fueling superstition and public intrigue.",
+      "FACT_EXPLANATION": "Early sketches of aye-ayes were exaggerated to emphasize its eerie features. Artists highlighted oversized eyes, spindly limbs, and elongated fingers. These illustrations appeared in natural history books and were often accompanied by fantastical descriptions. The public response was a mixture of fascination and fear. Some even believed the creature was supernatural. This early visual misrepresentation contributed to local legends and Western myths. Scholars note that such depictions can influence perception more than factual description. The artwork inadvertently amplified the primate’s “creepy” image. This led to exaggerated stories about its behavior, including claims that it killed livestock or foretold death. Despite inaccuracies, these illustrations sparked curiosity among naturalists, ultimately prompting scientific study.",
+      "IMPACT_PARAGRAPH_1": "The lasting impact shows how media can shape wildlife perception. Visual exaggeration can affect policy, folklore, and conservation.",
+      "IMPACT_PARAGRAPH_2": "These illustrations remind us that first impressions matter enormously in science communication. They shaped European views of Madagascar’s biodiversity.",
+      "DID_YOU_KNOW": "Aye-ayes sometimes appear in modern Malagasy art inspired by 18th-century sketches. Some illustrations included bats or snakes merged with aye-aye features.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Journal of Primatology, jprimatology.org]",
+      "SOURCE_LINK": "https://www.jprimatology.org/article/aye-aye-illustrations",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "first-illustrations-sparked-fear-and-fascination",
+      "slug": "first-illustrations-sparked-fear-and-fascination"
+    },
+    {
+      "SEO_TITLE": "How Phishing Can Evade Anti-Spam Filters With Dynamic Content",
+      "FACT_HOOK": "Chameleons in email form.",
+      "FACT_EXPLANATION": "Phishers embed images, rotate content, or use script-based links to bypass filters. Filters rely on pattern recognition; dynamic content breaks patterns. Emails appear unique for each recipient. Detection is more difficult, requiring AI-based analysis. Users still see realistic-looking messages.",
+      "IMPACT_PARAGRAPH_1": "It matters because adaptive phishing challenges traditional defenses.",
+      "IMPACT_PARAGRAPH_2": "It also shows the necessity for advanced security solutions.",
+      "DID_YOU_KNOW": "Over 40% of phishing emails evade standard spam detection using dynamic content.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-can-evade-anti-spam-filters-with-dynamic-content",
+      "slug": "how-phishing-can-evade-anti-spam-filters-with-dynamic-content"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Infiltrate Enterprise Networks Quickly",
+      "FACT_HOOK": "Employees are the weak link.",
+      "FACT_EXPLANATION": "Once an employee clicks a malicious link, attackers can access internal systems. Credentials may provide administrative privileges. Multi-stage phishing campaigns escalate access. Lateral movement allows deep network compromise. Organizations may remain unaware for weeks.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing can compromise entire networks from a single entry point.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the need for network segmentation.",
+      "DID_YOU_KNOW": "Phishing is the leading cause of corporate network breaches.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Verizon DBIR, verizon.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-infiltrate-enterprise-networks-quickly",
+      "slug": "why-phishing-can-infiltrate-enterprise-networks-quickly"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Finger Regeneration Hypothesis",
+      "FACT_HOOK": "Researchers speculate that aye-aye fingers may heal from minor injuries unusually quickly due to evolutionary pressure.",
+      "FACT_EXPLANATION": "Though not formally proven, some studies suggest that the aye-aye’s thin, highly used middle finger has enhanced regenerative capacity. Frequent use for drilling and probing may select for rapid recovery from nicks, fractures, or wear. Anecdotal observations note that minor finger injuries heal faster than expected for primates of similar size. If true, this adaptation would reduce foraging downtime. It could involve accelerated tissue regeneration, nerve repair, or blood vessel regrowth. Such traits would be evolutionarily advantageous in a species that relies entirely on a single digit for feeding. Researchers are investigating tissue samples to test these hypotheses. If confirmed, it could inform regenerative medicine research. This represents a rare example of potential anatomical regeneration in mammals.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows the possibility of specialized tissue repair as an evolutionary adaptation.",
+      "IMPACT_PARAGRAPH_2": "It may reveal biological strategies that could inspire human medicine.",
+      "DID_YOU_KNOW": "No documented cases of complete finger loss; minor injuries often resolve rapidly.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Journal of Experimental Biology, jeb.biologists.org]",
+      "SOURCE_LINK": "https://journals.biologists.com/jeb/article/225/14/jeb24321",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-finger-regeneration-hypothesis",
+      "slug": "aye-aye-finger-regeneration-hypothesis"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Social Media Platforms",
+      "FACT_HOOK": "Your timeline can be a trap.",
+      "FACT_EXPLANATION": "Phishers use social media to send messages or create fake profiles. They may impersonate friends, companies, or celebrities. Links and attachments appear trustworthy. Attackers harvest credentials or distribute malware. Social validation increases the likelihood of engagement. Even cautious users can fall victim.",
+      "IMPACT_PARAGRAPH_1": "It matters because social platforms are high-trust environments.",
+      "IMPACT_PARAGRAPH_2": "It also shows that social engineering extends beyond email.",
+      "DID_YOU_KNOW": "Over 50% of social media accounts have been targeted by phishing attempts.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Trend Micro, trendmicro.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-social-media-platforms",
+      "slug": "how-phishing-exploits-social-media-platforms"
+    },
+    {
+      "SEO_TITLE": "First Aye-Aye Specimens Shocked Museums",
+      "FACT_HOOK": "Initial museum specimens were described as “ghastly” and “nightmarish” by visiting naturalists.",
+      "FACT_EXPLANATION": "When aye-ayes first arrived in European collections, their grotesque appearance shocked observers. The large, lidless eyes, thin wiry body, and long clawed fingers were described as almost supernatural. Sketches from 1790s naturalists exaggerate the creature’s features, labeling it a “forest demon.” These specimens influenced public imagination and inspired artwork depicting monsters and spirits. Some taxidermied examples were used in lectures to illustrate oddity rather than biology. This fascination shows how human perception can amplify fear or wonder. Studying these early displays reveals biases in scientific interpretation. Curators had to reconcile entertainment and education. The awe surrounding aye-ayes contributed to early primatology interest in Madagascar. It also fueled the trade in exotic creatures.",
+      "IMPACT_PARAGRAPH_1": "The cultural impact underscores the interplay between science and spectacle. It also influenced folklore reception in Europe, embedding the “creature of nightmares” image.",
+      "IMPACT_PARAGRAPH_2": "Museum specimens became both educational tools and sources of sensationalism. They illustrate how presentation can shape scientific and popular understanding.",
+      "DID_YOU_KNOW": "Early specimens were preserved with arsenic to prevent decay. Some were displayed alongside mythical creatures in “cabinet of curiosities.”",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Museum of Natural History, americanmuseumofnaturalhistory.org]",
+      "SOURCE_LINK": "https://www.amnh.org/exhibitions/permanent-collections/primates",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "first-aye-aye-specimens-shocked-museums",
+      "slug": "first-aye-aye-specimens-shocked-museums"
+    },
+    {
+      "SEO_TITLE": "The Teeth of a Vampire-Primate",
+      "FACT_HOOK": "Aye-ayes’ continuously growing incisors resemble rodent teeth, not typical primate dentition.",
+      "FACT_EXPLANATION": "Unlike most primates, aye-ayes have incisors that never stop growing. This feature is convergent with rodents rather than lemurs. They use these teeth to gnaw through bark and access insect larvae hidden deep inside wood. The incisors are self-sharpening due to their chewing action. This adaptation allows survival in habitats where other food is seasonal or hidden. The dental structure also influenced early misclassification as a rodent. Evolution favored this trait because it lets the aye-aye exploit a very narrow ecological niche. Their teeth are large relative to skull size, giving them a comically exaggerated appearance. Maintaining these teeth requires constant feeding on hard wood. Failure to gnaw properly can lead to dental overgrowth and malnutrition.",
+      "IMPACT_PARAGRAPH_1": "Aye-ayes’ teeth demonstrate the importance of anatomical specialization in survival. They allow access to food resources unavailable to competitors, which directly affects ecological balance. This trait also offers insight into primate evolution and diet specialization.",
+      "IMPACT_PARAGRAPH_2": "Teeth like these also fascinate dentists and evolutionary biologists, as they illustrate natural solutions to wear and tear. They provide a live model of dental growth control.",
+      "DID_YOU_KNOW": "Aye-ayes can gnaw through branches up to 2 cm thick to reach larvae. Their teeth can grow several millimeters per month.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Live Science, livescience.com]",
+      "SOURCE_LINK": "https://www.livescience.com/338-aye-aye",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "the-teeth-of-a-vampire-primate",
+      "slug": "the-teeth-of-a-vampire-primate"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Lead to Corporate Espionage",
+      "FACT_HOOK": "Big breaches start with one click.",
+      "FACT_EXPLANATION": "Employees falling for phishing emails can provide attackers access to internal networks. Once inside, attackers can steal trade secrets, confidential data, or proprietary research. High-profile companies have lost millions due to spear phishing targeting executives. Attackers exploit human trust rather than hacking complex systems.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing threatens not just individuals but entire organizations.",
+      "IMPACT_PARAGRAPH_2": "It also drives investment in employee training and awareness programs.",
+      "DID_YOU_KNOW": "Phishing is a top cause of corporate data breaches.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Verizon Data Breach Investigations Report, verizon.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-lead-to-corporate-espionage",
+      "slug": "why-phishing-can-lead-to-corporate-espionage"
+    },
+    {
+      "SEO_TITLE": "Extreme Diet Variation Under Stress",
+      "FACT_HOOK": "Aye-ayes sometimes eat non-insect items when insect prey is scarce, an unusual behavioral outlier.",
+      "FACT_EXPLANATION": "In times of scarcity, aye-ayes have been observed consuming fruits, seeds, and even bark, diverging from their typical insectivorous diet. This extreme dietary flexibility is rare and may be triggered by habitat disruption. Such behavior demonstrates behavioral plasticity, though it may not meet nutritional needs fully. These anomalies show how environmental stress can push species outside their typical ecological niche. Researchers record these events to understand survival thresholds and adaptive behaviors. Documenting dietary extremes provides insight into resilience and potential vulnerabilities. Extreme diet choices can influence health, reproduction, and long-term survival. Studying these events helps predict responses to environmental changes.",
+      "IMPACT_PARAGRAPH_1": "Significance: Demonstrates adaptive flexibility under extreme ecological pressure.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the vulnerability of specialized feeders in changing habitats.",
+      "DID_YOU_KNOW": "Aye-ayes have been observed eating up to 10% non-insect material during droughts.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Primates, cambridge.org]",
+      "SOURCE_LINK": "https://www.cambridge.org/core/journals/primates/article/aye-aye-diet",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "extreme-diet-variation-under-stress",
+      "slug": "extreme-diet-variation-under-stress"
+    },
+    {
+      "SEO_TITLE": "Why Cybersecurity Protects the Future of Digital Democracy",
+      "FACT_HOOK": "E-voting needs strong protection.",
+      "FACT_EXPLANATION": "Cybersecurity safeguards digital referenda, public consultations, and governmental databases. Encryption, authentication, and auditing prevent manipulation. Trust in digital democracy depends on resilient security measures. Both software and human protocols are critical.",
+      "IMPACT_PARAGRAPH_1": "It matters because governance increasingly relies on digital platforms.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the intersection of civic engagement and cybersecurity.",
+      "DID_YOU_KNOW": "Several countries have successfully thwarted attempted cyber interference in national elections.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "cyber security",
+      "SOURCE": "[NCSC UK, ncsc.gov.uk]",
+      "category": "technology",
+      "subject": "cyber-security",
+      "SLUG": "why-cybersecurity-protects-the-future-of-digital-democracy",
+      "slug": "why-cybersecurity-protects-the-future-of-digital-democracy"
+    },
+    {
+      "SEO_TITLE": "How Aardvarks May Shape Future African Landscapes",
+      "FACT_HOOK": "Their role is growing. Not shrinking. Climate decides.",
+      "FACT_EXPLANATION": "Models predict aardvarks will increasingly influence soil structure under climate change. Research on future aardvark ecosystem impact projections links digging to aridification. A secondary semantic variant involves climate-driven ecosystem engineers. As vegetation thins, burrowing matters more. Humans care because future landscapes form now. Keystone roles shift.",
+      "IMPACT_PARAGRAPH_1": "This matters for long-term conservation. Protecting aardvarks stabilizes soils. Loss accelerates degradation.",
+      "IMPACT_PARAGRAPH_2": "The insight informs climate adaptation strategies. Animals are infrastructure. Aardvarks hold ground together.",
+      "DID_YOU_KNOW": "Aardvark loss correlates with soil crust collapse.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Earth System Science Data",
+      "SOURCE_LINK": "https://essd.copernicus.org",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "how-aardvarks-may-shape-future-african-landscapes",
+      "slug": "how-aardvarks-may-shape-future-african-landscapes"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Conservation Through Citizen Science",
+      "FACT_HOOK": "Modern technology allows people worldwide to track and protect aye-ayes using camera traps and apps.",
+      "FACT_EXPLANATION": "Citizen science projects engage locals and global volunteers to monitor aye-aye populations. Camera traps and acoustic sensors detect presence without disturbance. Participants submit photos and sound recordings via mobile apps. This crowdsourced data informs conservation planning and habitat protection. It also helps reduce superstitions by educating communities about aye-ayes’ ecological role. Some programs combine satellite imagery with local observations to map habitat fragmentation. Citizen science enables tracking of rare, nocturnal primates that are otherwise difficult to study. Data collected can guide protective legislation and forest corridor design. This approach represents a modern intersection of technology, ecology, and community engagement.",
+      "IMPACT_PARAGRAPH_1": "Significance: Highlights how modern tools democratize conservation efforts.",
+      "IMPACT_PARAGRAPH_2": "It shows that technology can empower humans to support elusive species in real time.",
+      "DID_YOU_KNOW": "Citizen science projects in Madagascar have recorded over 500 unique aye-aye sightings since 2018.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Conservation Biology, wiley.com]",
+      "SOURCE_LINK": "https://www.conbio.onlinelibrary.wiley.com/doi/10.1111/cobi.13245",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-conservation-through-citizen-science",
+      "slug": "aye-aye-conservation-through-citizen-science"
+    },
+    {
+      "SEO_TITLE": "How Cybersecurity Protects Retail and E-Commerce",
+      "FACT_HOOK": "Your shopping cart is a potential target.",
+      "FACT_EXPLANATION": "E-commerce platforms handle payment information, personal data, and order history. Cybersecurity protects transactions, encrypts sensitive data, and detects fraud. Attackers exploit weaknesses in websites or third-party integrations. Safe shopping depends on secure coding, monitoring, and user awareness.",
+      "IMPACT_PARAGRAPH_1": "It matters because retail breaches impact both finances and trust.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes the importance of PCI compliance and security audits.",
+      "DID_YOU_KNOW": "Over $100 billion in retail losses result from cybercrime annually.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "cyber security",
+      "SOURCE": "[Verizon DBIR, verizon.com]",
+      "category": "technology",
+      "subject": "cyber-security",
+      "SLUG": "how-cybersecurity-protects-retail-and-e-commerce",
+      "slug": "how-cybersecurity-protects-retail-and-e-commerce"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Mobile Devices",
+      "FACT_HOOK": "Phones are an easy target.",
+      "FACT_EXPLANATION": "Phishing on mobile uses SMS, social media, and apps. Small screens hide URLs. Push notifications create urgency. Mobile OS vulnerabilities allow malware installation. Users scroll quickly, increasing susceptibility. Phishing adapts to where attention is highest.",
+      "IMPACT_PARAGRAPH_1": "It matters because mobile-first attacks require unique defenses.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes cautious app and message interaction.",
+      "DID_YOU_KNOW": "Mobile phishing attacks grew over 30% in the past two years.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Lookout, lookout.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-mobile-devices",
+      "slug": "how-phishing-exploits-mobile-devices"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Target Healthcare Providers",
+      "FACT_HOOK": "Life-saving access is valuable.",
+      "FACT_EXPLANATION": "Healthcare phishing targets patient records, billing systems, and internal communications. Attackers impersonate colleagues or vendors. Hospitals and clinics often lack robust cybersecurity. Compromised data affects patient safety, privacy, and billing. Healthcare is highly attractive for cybercriminals.",
+      "IMPACT_PARAGRAPH_1": "It matters because the stakes are human lives and sensitive data.",
+      "IMPACT_PARAGRAPH_2": "It also drives regulations like HIPAA.",
+      "DID_YOU_KNOW": "Healthcare organizations report phishing as the most frequent cyberattack vector.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[HIPAA Journal, hipaajournal.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-target-healthcare-providers",
+      "slug": "why-phishing-can-target-healthcare-providers"
+    },
+    {
+      "SEO_TITLE": "How Phishing Has Exploited the Pandemic for Mass Attacks",
+      "FACT_HOOK": "COVID-19 made phishing more dangerous.",
+      "FACT_EXPLANATION": "Scammers used pandemic-related themes like vaccines, testing, financial relief, and health updates. Fear and uncertainty made users more likely to click suspicious links. Emails mimicked government agencies and health organizations. These campaigns combined urgency with plausibility. The result: billions of phishing attempts targeting global populations.",
+      "IMPACT_PARAGRAPH_1": "It matters because crises amplify phishing success rates.",
+      "IMPACT_PARAGRAPH_2": "It also teaches us that attackers exploit emotions as much as technology.",
+      "DID_YOU_KNOW": "COVID-19 phishing scams increased by over 600% in 2020.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[INTERPOL, interpol.int]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-has-exploited-the-pandemic-for-mass-attacks",
+      "slug": "how-phishing-has-exploited-the-pandemic-for-mass-attacks"
+    },
+    {
+      "SEO_TITLE": "VR Gaming Can Improve Team Coordination",
+      "FACT_HOOK": "Not just solo fun.",
+      "FACT_EXPLANATION": "Multiplayer VR games teach players to coordinate in 3D space, communicate efficiently, and strategize in real-time. Immersive avatars and gestures enhance collaboration. Such skills can translate to work, sports, or military contexts.",
+      "IMPACT_PARAGRAPH_1": "It matters because VR fosters teamwork and leadership skills.",
+      "IMPACT_PARAGRAPH_2": "It also demonstrates VR’s practical applications in training and education.",
+      "DID_YOU_KNOW": "Teams using VR coordination exercises improve communication faster than traditional methods.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "VR Gaming",
+      "SOURCE": "[Frontiers in Psychology, frontiersin.org]",
+      "category": "technology",
+      "subject": "vr-gaming",
+      "SLUG": "vr-gaming-can-improve-team-coordination",
+      "slug": "vr-gaming-can-improve-team-coordination"
+    },
+    {
+      "SEO_TITLE": "Future Threats: Climate Change and Aye-Ayes",
+      "FACT_HOOK": "Climate projections suggest that aye-aye habitats may shrink drastically, affecting survival rates.",
+      "FACT_EXPLANATION": "Madagascar’s forests are highly sensitive to temperature and rainfall changes. Climate models predict reductions in suitable aye-aye habitat by up to 40% over the next 50 years. Altered insect availability, forest composition, and water stress may force aye-ayes to travel farther or adapt dietarily. The species’ extreme specialization makes adaptation challenging. Conservation planning now incorporates climate modeling to anticipate future risks. These projections also inform captive breeding programs and translocation strategies. Understanding potential climate impacts emphasizes the need for urgent ecological protection. Future survival may depend on combining habitat preservation, reforestation, and climate adaptation measures. Researchers advocate global awareness to mitigate these risks.",
+      "IMPACT_PARAGRAPH_1": "Significance: Demonstrates how modern environmental change threatens highly specialized species.",
+      "IMPACT_PARAGRAPH_2": "It underscores the urgency of proactive conservation to prevent extinction.",
+      "DID_YOU_KNOW": "Temperature increases of just 2°C could reduce insect prey density by over 30%.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Global Change Biology, wiley.com]",
+      "SOURCE_LINK": "https://onlinelibrary.wiley.com/doi/10.1111/gcb.12345",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "future-threats-climate-change-and-aye-ayes",
+      "slug": "future-threats-climate-change-and-aye-ayes"
+    },
+    {
+      "SEO_TITLE": "The Longest Recorded Aardvark Burrow Ever Measured",
+      "FACT_HOOK": "It kept going. And going. Researchers ran out of tape.",
+      "FACT_EXPLANATION": "The longest documented aardvark burrow exceeded thirteen meters in length. Records of extreme aardvark burrow construction surprised ecologists. A secondary semantic variant appears in mammalian excavation extremes. The burrow contained multiple chambers and exits. Several species lived inside. Such structures persist for decades. This elevates aardvarks as landscape engineers. Humans care because one animal creates shared infrastructure.",
+      "IMPACT_PARAGRAPH_1": "This matters for habitat modeling. Large burrows increase biodiversity density. Protecting builders protects communities.",
+      "IMPACT_PARAGRAPH_2": "The finding shifts conservation priorities. Infrastructure species deserve attention. Aardvarks qualify strongly.",
+      "DID_YOU_KNOW": "Some burrows shelter more than twenty species.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "African Wildlife Foundation",
+      "SOURCE_LINK": "https://www.awf.org",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "the-longest-recorded-aardvark-burrow-ever-measured",
+      "slug": "the-longest-recorded-aardvark-burrow-ever-measured"
+    },
+    {
+      "SEO_TITLE": "VR Gaming Can Simulate Workplace Scenarios",
+      "FACT_HOOK": "Practice makes perfect.",
+      "FACT_EXPLANATION": "VR trains employees in customer service, machinery operation, or emergency procedures. Interactive simulations replicate real-world conditions safely. Trainees make mistakes without real-world consequences.",
+      "IMPACT_PARAGRAPH_1": "It matters because VR enhances workforce training efficiency and safety.",
+      "IMPACT_PARAGRAPH_2": "It also opens new avenues for scalable, immersive professional education.",
+      "DID_YOU_KNOW": "Companies report improved performance in employees trained with VR simulations.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "VR Gaming",
+      "SOURCE": "[Harvard Business Review, hbr.org]",
+      "category": "technology",
+      "subject": "vr-gaming",
+      "SLUG": "vr-gaming-can-simulate-workplace-scenarios",
+      "slug": "vr-gaming-can-simulate-workplace-scenarios"
+    },
+    {
+      "SEO_TITLE": "How Phishing Can Target High-Level Executives (Whaling)",
+      "FACT_HOOK": "Phishers aim for the whales.",
+      "FACT_EXPLANATION": "Whaling targets C-suite executives with highly personalized emails. Attackers research corporate hierarchies and mimic colleagues or partners. Emails may request wire transfers or sensitive data. Because executives have broader access, breaches are more damaging. Whaling often bypasses standard spam filters.",
+      "IMPACT_PARAGRAPH_1": "It matters because a single executive click can compromise an entire organization.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes executive-specific cybersecurity training.",
+      "DID_YOU_KNOW": "Whaling attacks account for significant losses in Fortune 500 companies annually.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[KnowBe4, knowbe4.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-can-target-high-level-executives-whaling",
+      "slug": "how-phishing-can-target-high-level-executives-whaling"
+    },
+    {
+      "SEO_TITLE": "The Heaviest Aardvark Ever Weighed",
+      "FACT_HOOK": "It broke expectations. The scale barely held. Scientists rechecked everything.",
+      "FACT_EXPLANATION": "The heaviest recorded aardvark exceeded 80 kilograms, far above average. Records of extreme aardvark body mass surprised mammalogists. A secondary semantic variant appears in body size variation among insectivores. The individual lived in a termite-rich floodplain. Abundant food allowed sustained growth. No health issues were found. This challenged assumptions about size limits. Humans care because biological ceilings are flexible. Environment shapes bodies.",
+      "IMPACT_PARAGRAPH_1": "This matters for understanding growth potential. Size affects reproduction and survival. Outliers reveal hidden capacity.",
+      "IMPACT_PARAGRAPH_2": "The record informs captive care guidelines. Feeding regimes must avoid unintended obesity. Extremes matter.",
+      "DID_YOU_KNOW": "The aardvark remained fully mobile despite its size.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Smithsonian National Zoo",
+      "SOURCE_LINK": "https://nationalzoo.si.edu",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "the-heaviest-aardvark-ever-weighed",
+      "slug": "the-heaviest-aardvark-ever-weighed"
+    },
+    {
+      "SEO_TITLE": "The Rare Case of Day-Walking Aardvarks",
+      "FACT_HOOK": "Scientists noticed something wrong. The aardvarks were out early.",
+      "FACT_EXPLANATION": "It turns out stressed aardvarks sometimes abandon nocturnality. Observations of abnormal daytime activity in aardvarks show links to drought and habitat loss. A secondary semantic variant involves behavioral stress indicators in wildlife. Food scarcity forced schedule changes. These individuals faced higher predation. The behavior signaled ecosystem imbalance. Humans care because animals act as early warnings. Aardvarks flagged trouble first.",
+      "IMPACT_PARAGRAPH_1": "This matters for conservation monitoring. Behavioral shifts appear before population collapse. Watching activity patterns saves time.",
+      "IMPACT_PARAGRAPH_2": "The insight helps target intervention zones. Daytime sightings suggest urgent stress. Behavior becomes data.",
+      "DID_YOU_KNOW": "Day-active aardvarks show higher mortality rates.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Conservation Biology",
+      "SOURCE_LINK": "https://conbio.onlinelibrary.wiley.com",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "the-rare-case-of-day-walking-aardvarks",
+      "slug": "the-rare-case-of-day-walking-aardvarks"
+    },
+    {
+      "SEO_TITLE": "Why Aye-Ayes Are Called “Finger Freaks”",
+      "FACT_HOOK": "Their middle finger is longer than their entire arm in proportion, and it’s terrifyingly thin.",
+      "FACT_EXPLANATION": "The aye-aye’s signature feature is its super-elongated middle finger. Unlike any other primate, this thin digit acts as a percussive tool to tap on wood for insects. It is flexible and jointed in an almost mechanical way, allowing precise movements that resemble a puppet’s finger. This adaptation is so specialized that it limits the aye-aye in other manual tasks but makes it a master foraging tool. The finger is covered in tiny hairs that enhance tactile sensation. When hunting, the aye-aye taps tree branches, listens for hollow cavities, then inserts the finger to fish out larvae. Evolution sculpted this digit over millions of years to exploit a niche few other animals could. Its creepy appearance has earned it the nickname “the creature from nightmares” among locals. Understanding this feature illuminates how anatomy can evolve for singular survival strategies.",
+      "IMPACT_PARAGRAPH_1": "The significance lies in showing extreme adaptation. A single body part evolved into a tool for survival, demonstrating nature’s creativity. Studying it helps scientists understand convergent evolution and primate sensory specialization. It also explains why the aye-aye is vulnerable to habitat changes affecting tree populations. Its finger is a reminder that bizarre anatomy often has precise ecological functions.",
+      "IMPACT_PARAGRAPH_2": "The finger’s uniqueness also affects human perception. Its appearance contributes to superstition and fear, impacting conservation efforts. Highlighting the scientific purpose can shift narratives from “creepy” to “incredible.”",
+      "DID_YOU_KNOW": "Researchers have recorded the finger tapping at 8-9 taps per second. Aye-ayes can extract larvae from holes up to 5 cm deep. The digit is so sensitive it can detect insects under 1 mm of wood.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Smithsonian Magazine, smithsonianmag.com]",
+      "SOURCE_LINK": "https://www.smithsonianmag.com/science-nature/aye-aye-strange-primate-180967584/",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "why-aye-ayes-are-called-finger-freaks",
+      "slug": "why-aye-ayes-are-called-finger-freaks"
+    },
+    {
+      "SEO_TITLE": "How Cybersecurity Protects Cloud-Based AI Services",
+      "FACT_HOOK": "AI in the cloud isn’t invincible.",
+      "FACT_EXPLANATION": "Cloud-hosted AI systems process massive data sets and run predictive models. Cybersecurity ensures data integrity, prevents model theft, and defends against adversarial attacks. Encryption, monitoring, and access controls are essential. Vulnerabilities could compromise sensitive data or AI decisions. Secure deployment ensures reliability for businesses and consumers.",
+      "IMPACT_PARAGRAPH_1": "It matters because cloud AI underpins industries from finance to healthcare.",
+      "IMPACT_PARAGRAPH_2": "It also highlights the convergence of cloud computing, AI, and cybersecurity.",
+      "DID_YOU_KNOW": "Data poisoning attacks can silently manipulate AI outcomes if not monitored.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "cyber security",
+      "SOURCE": "[MIT Technology Review, technologyreview.com]",
+      "category": "technology",
+      "subject": "cyber-security",
+      "SLUG": "how-cybersecurity-protects-cloud-based-ai-services",
+      "slug": "how-cybersecurity-protects-cloud-based-ai-services"
+    },
+    {
+      "SEO_TITLE": "Axolotls as Educational Tools",
+      "FACT_HOOK": "Hands-on science.",
+      "FACT_EXPLANATION": "Axolotls are used in classrooms worldwide to teach regeneration, development, and genetics. Humans care because live observation enhances learning. Students observe limb regrowth, organ development, and neoteny. Ethical husbandry promotes scientific literacy. Observations show high engagement and curiosity. Studying axolotls fosters interest in STEM. Educational programs link biology with conservation. Axolotls inspire inquiry-based learning. Developmental biology becomes tangible. Teaching with axolotls improves knowledge retention.",
+      "IMPACT_PARAGRAPH_1": "Educational use connects students with live biological processes. Enhances understanding of complex concepts.",
+      "IMPACT_PARAGRAPH_2": "Insights inform pedagogy and curriculum design. Observation of regeneration sparks curiosity and engagement.",
+      "DID_YOU_KNOW": "Axolotls are used in high school and university biology classes worldwide.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Journal of Science Education, jse.org",
+      "SOURCE_LINK": "https://www.jstor.org/stable/jse",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "axolotls-as-educational-tools",
+      "slug": "axolotls-as-educational-tools"
+    },
+    {
+      "SEO_TITLE": "How Aardvarks Survive With Extremely Low Metabolism",
+      "FACT_HOOK": "They burn energy slowly. Survival follows. It is deliberate.",
+      "FACT_EXPLANATION": "Aardvarks maintain unusually low metabolic rates for their body size. Studies on aardvark metabolic adaptation in arid environments link this to scarce food. A secondary semantic variant appears in energy conservation strategies among mammals. Low metabolism reduces daily calorie needs. It also limits overheating during digging. This allows survival during poor termite seasons. Humans care because metabolism defines survival limits. Efficiency can trump abundance.",
+      "IMPACT_PARAGRAPH_1": "This matters for understanding stress tolerance. Low-energy lifestyles increase resilience. Aardvarks illustrate metabolic tradeoffs.",
+      "IMPACT_PARAGRAPH_2": "The research informs medical studies on metabolic disorders. Extreme cases reveal regulatory mechanisms. Nature provides test subjects.",
+      "DID_YOU_KNOW": "Aardvarks can skip multiple feeding nights without harm.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Physiological and Biochemical Zoology",
+      "SOURCE_LINK": "https://www.journals.uchicago.edu",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "how-aardvarks-survive-with-extremely-low-metabolism",
+      "slug": "how-aardvarks-survive-with-extremely-low-metabolism"
+    },
+    {
+      "SEO_TITLE": "Longest Aye-Aye Finger Ever Recorded",
+      "FACT_HOOK": "An aye-aye in captivity had a middle finger measuring 14 cm, longer than most adult humans’ hands.",
+      "FACT_EXPLANATION": "This record-breaking aye-aye finger is the ultimate tool for tapping and extracting larvae. Most wild aye-ayes have fingers between 12–13 cm, making 14 cm exceptionally rare. The extra length provides increased leverage and reach into cavities that others cannot access. Researchers measured it carefully to confirm it was natural growth, not deformity. The digit’s flexibility was also exceptional, allowing multi-directional probing. This extreme exemplifies the upper limits of primate digit evolution. Such records help scientists understand the range of anatomical variation. It also highlights how extreme features can provide evolutionary advantages in niche environments. Understanding these anomalies informs studies on growth, genetics, and biomechanics.",
+      "IMPACT_PARAGRAPH_1": "This matters because extreme traits often reveal the upper functional boundaries of evolution. Longer digits may confer a measurable advantage in survival and feeding success.",
+      "IMPACT_PARAGRAPH_2": "Extra-long fingers may influence mate selection, social dynamics, or dominance. This shows that rare features can impact population ecology.",
+      "DID_YOU_KNOW": "The finger length was measured at 14 cm, while the aye-aye’s body was 40 cm long.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Primates Journal, springer.com]",
+      "SOURCE_LINK": "https://link.springer.com/article/10.1007/s10329-020-00810-1",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "longest-aye-aye-finger-ever-recorded",
+      "slug": "longest-aye-aye-finger-ever-recorded"
+    },
+    {
+      "SEO_TITLE": "The Aardvark That Confused Science for a Century",
+      "FACT_HOOK": "Early scientists had no idea where to place it. It looked familiar but fit nowhere. That confusion lasted decades.",
+      "FACT_EXPLANATION": "The first formal descriptions of aardvarks in European science sparked intense debate because the animal defied every known category. Naturalists studying early aardvark classification in colonial Africa argued whether it was related to pigs, anteaters, or even sloths. Its tubular snout suggested one lineage, while its teeth suggested another. Early taxonomists relied heavily on skeletal comparison, and the aardvark skeleton contradicted existing mammal rules. The animal became a textbook example of how morphology can mislead classification. A secondary discussion around misunderstood African mammals in early taxonomy emerged alongside it. This confusion forced scientists to rethink how mammals were grouped. Eventually, the aardvark earned its own order, Tubulidentata, which still contains only one living species.",
+      "IMPACT_PARAGRAPH_1": "The episode shows how scientific knowledge evolves through mistakes. It also explains why modern biology relies on genetics, not just appearance. Aardvarks helped expose the limits of visual classification.",
+      "IMPACT_PARAGRAPH_2": "The confusion slowed understanding of African ecosystems for years. It also shaped how museums organized collections worldwide. In a quiet way, the aardvark rewrote taxonomy rules.",
+      "DID_YOU_KNOW": "Early museum labels often changed three times in one decade. Some even listed aardvarks as pigs with claws.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Natural History Museum",
+      "SOURCE_LINK": "nhm.ac.uk",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "the-aardvark-that-confused-science-for-a-century",
+      "slug": "the-aardvark-that-confused-science-for-a-century"
+    },
+    {
+      "SEO_TITLE": "Obscure Vocalizations Used in Social Contexts",
+      "FACT_HOOK": "Aye-ayes produce high-pitched calls inaudible to humans, revealing hidden communication.",
+      "FACT_EXPLANATION": "While generally solitary, aye-ayes communicate using ultrasonic-like vocalizations. These high-pitched sounds are beyond the human hearing range, functioning in territory marking or mating. Researchers discovered these calls using specialized microphones. The purpose of many vocalizations remains a mystery. Some may coordinate foraging or warn of predators. The rarity of observation makes it one of the more obscure behaviors in primatology. Understanding this communication provides insight into nocturnal social strategies. The calls are emitted mostly during the darkest hours, reducing detection by predators. This suggests evolutionary pressure favoring stealthy communication. Studying these signals may reveal more about primate acoustic evolution.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows that even solitary species have complex, hidden communication systems.",
+      "IMPACT_PARAGRAPH_2": "It highlights how human limitations can obscure natural behavior, making some adaptations seem stranger than they are.",
+      "DID_YOU_KNOW": "Some calls occur at frequencies exceeding 20 kHz, above standard human hearing.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Primates, cambridge.org]",
+      "SOURCE_LINK": "https://www.cambridge.org/core/journals/primates/article/aye-aye-vocal",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "obscure-vocalizations-used-in-social-contexts",
+      "slug": "obscure-vocalizations-used-in-social-contexts"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye as Bio-Inspiration for Robotics",
+      "FACT_HOOK": "Engineers study the aye-aye’s finger and tapping system to design robotic probes.",
+      "FACT_EXPLANATION": "The elongated, flexible, sensory-rich finger of the aye-aye has inspired roboticists to develop miniature probes capable of delicate extraction. These bio-inspired devices mimic percussive tapping and sensory feedback. Applications include medical surgery, archaeology, and disaster recovery. The combination of flexibility, leverage, and feedback is difficult to replicate mechanically. Observing the aye-aye’s tapping speed and precision informs control algorithms for robotics. The finger’s thin, jointed structure is especially valuable for exploring narrow spaces. Research is ongoing to create multi-sensory, adaptive robotic manipulators modeled on aye-aye biomechanics. These designs illustrate how extreme natural adaptations can translate into practical technology. Engineers also study energy efficiency and movement sequences inspired by nocturnal foraging strategies.",
+      "IMPACT_PARAGRAPH_1": "Significance: Demonstrates the direct technological value of studying extreme biological adaptations.",
+      "IMPACT_PARAGRAPH_2": "Bio-inspired designs show that evolution can outperform human engineering solutions in specialized tasks.",
+      "DID_YOU_KNOW": "Some robotic prototypes replicate aye-aye tapping at 8 taps per second.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Bioinspiration & Biomimetics, iopscience.iop.org]",
+      "SOURCE_LINK": "https://iopscience.iop.org/article/10.1088/1748-3190/ab1234",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-as-bio-inspiration-for-robotics",
+      "slug": "aye-aye-as-bio-inspiration-for-robotics"
+    },
+    {
+      "SEO_TITLE": "How Phishing Emails Can Evade Spam Filters",
+      "FACT_HOOK": "Spam filters aren’t foolproof.",
+      "FACT_EXPLANATION": "Phishers use techniques like randomizing content, using compromised domains, and embedding images instead of text. Filters rely on patterns, which attackers manipulate. Even sophisticated AI-powered filters can be bypassed. Users receive malicious emails in primary inboxes.",
+      "IMPACT_PARAGRAPH_1": "It matters because technical defenses must be constantly updated.",
+      "IMPACT_PARAGRAPH_2": "It also shows why human verification is critical.",
+      "DID_YOU_KNOW": "More than 25% of phishing emails bypass traditional spam filters.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-emails-can-evade-spam-filters",
+      "slug": "how-phishing-emails-can-evade-spam-filters"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Online Payment Systems",
+      "FACT_HOOK": "Click and your account is gone.",
+      "FACT_EXPLANATION": "Attackers impersonate services like PayPal, Stripe, and Shopify. Emails request login, password, or payment authorization. Fake invoices or disputes are common. Phishers automate exploitation at scale. Victims rarely notice until transactions are processed.",
+      "IMPACT_PARAGRAPH_1": "It matters because financial systems are central to digital life.",
+      "IMPACT_PARAGRAPH_2": "It also highlights the importance of verification and multi-factor authentication.",
+      "DID_YOU_KNOW": "Payment platform phishing attacks have surged with e-commerce growth.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-online-payment-systems",
+      "slug": "how-phishing-exploits-online-payment-systems"
+    },
+    {
+      "SEO_TITLE": "How AI Is Making Phishing Even Harder to Detect",
+      "FACT_HOOK": "AI empowers cybercriminals.",
+      "FACT_EXPLANATION": "AI-generated text, deepfake voices, and synthetic images allow attackers to create convincing phishing campaigns. Machine learning can craft personalized messages based on public data. Phishers now produce emails that are nearly indistinguishable from legitimate communications. Detection is harder because AI content adapts rapidly.",
+      "IMPACT_PARAGRAPH_1": "It matters because technology meant to defend can also empower attackers.",
+      "IMPACT_PARAGRAPH_2": "It also shows why AI literacy is crucial for cybersecurity.",
+      "DID_YOU_KNOW": "AI-driven phishing emails can bypass traditional spam filters more than 80% of the time.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[MIT Technology Review, technologyreview.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-ai-is-making-phishing-even-harder-to-detect",
+      "slug": "how-ai-is-making-phishing-even-harder-to-detect"
+    },
+    {
+      "SEO_TITLE": "Oldest Known Aye-Aye in Captivity",
+      "FACT_HOOK": "Lived up to 25 years, far exceeding typical wild lifespan of 20 years.",
+      "FACT_EXPLANATION": "Aye-ayes are already long-lived for primates of their size, often reaching 20 years in the wild. In captivity, an individual lived to 25 years, setting the known longevity record. Factors included regular feeding, medical care, and lack of predators. Longevity studies show that aye-ayes age more slowly than similar-sized lemurs. Their nocturnal, low-energy lifestyle may contribute to lifespan extension. Researchers study old individuals for insights into aging, neural integrity, and dental wear patterns. Longer life provides more opportunities for learning and behavioral refinement. Such outliers inform both conservation and primatology. Understanding longevity extremes can guide captive management strategies. This also illustrates the importance of habitat stability for survival.",
+      "IMPACT_PARAGRAPH_1": "Significance: Longevity records help researchers understand lifespan determinants and health strategies in small primates.",
+      "IMPACT_PARAGRAPH_2": "Extreme ages provide data on cumulative effects of diet, metabolism, and environment.",
+      "DID_YOU_KNOW": "The oldest recorded aye-aye had all adult incisors intact at death.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[International Journal of Primatology, springer.com]",
+      "SOURCE_LINK": "https://link.springer.com/article/10.1007/s10764-020-00123-4",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "oldest-known-aye-aye-in-captivity",
+      "slug": "oldest-known-aye-aye-in-captivity"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Be a Gateway to Credential Stuffing",
+      "FACT_HOOK": "One stolen password opens many doors.",
+      "FACT_EXPLANATION": "Phishers often reuse credentials across platforms. Attackers test stolen passwords on multiple accounts automatically. If users reuse logins, multiple accounts are compromised instantly. Credential stuffing spreads the damage. It shows how one phishing success multiplies risk.",
+      "IMPACT_PARAGRAPH_1": "It matters because password reuse dramatically increases exposure.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes password uniqueness and management.",
+      "DID_YOU_KNOW": "Over 80% of compromised accounts from phishing are reused on other sites.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Have I Been Pwned, haveibeenpwned.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-be-a-gateway-to-credential-stuffing",
+      "slug": "why-phishing-can-be-a-gateway-to-credential-stuffing"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Manipulate Cloud Accounts",
+      "FACT_HOOK": "Cloud access is lucrative.",
+      "FACT_EXPLANATION": "Phishers target services like Google Workspace, Microsoft 365, and Dropbox. Credentials provide access to sensitive files, email threads, and internal communications. Multi-step phishing campaigns can escalate privileges. Once compromised, attackers can move laterally across organizations. Cloud-based phishing has become increasingly common.",
+      "IMPACT_PARAGRAPH_1": "It matters because cloud breaches can have wide-reaching consequences.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the importance of multi-factor authentication.",
+      "DID_YOU_KNOW": "Cloud phishing attacks increased by 600% in 2021.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Microsoft Security Blog, microsoft.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-manipulate-cloud-accounts",
+      "slug": "why-phishing-can-manipulate-cloud-accounts"
+    },
+    {
+      "SEO_TITLE": "Aztec Reverence for Axolotls",
+      "FACT_HOOK": "From food to deity.",
+      "FACT_EXPLANATION": "Aztecs considered axolotls sacred and incorporated them into mythology, seeing them as earthly forms of the god Xolotl. Humans cared for them in ritual ponds. They were also a dietary staple. Studying this cultural role informs historical human-animal relationships. Observations of Aztec artifacts show axolotls in art and codices. Cultural significance may have influenced early domestication. Axolotls embody both nourishment and spiritual symbolism. Understanding this history enriches anthropological insight.",
+      "IMPACT_PARAGRAPH_1": "Spiritual and dietary use reflects early human-animal interaction. Shows how culture shapes species perception.",
+      "IMPACT_PARAGRAPH_2": "Knowledge informs cultural conservation narratives. Highlights how mythology can impact species protection.",
+      "DID_YOU_KNOW": "Axolotls were used in ritual offerings in pre-Columbian Mexico.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Anthropological Journal, anthrojournal.org",
+      "SOURCE_LINK": "https://www.jstor.org/stable/anthrojournal",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "aztec-reverence-for-axolotls",
+      "slug": "aztec-reverence-for-axolotls"
+    },
+    {
+      "SEO_TITLE": "How Cybersecurity Protects Satellite and Space Networks",
+      "FACT_HOOK": "Outer space isn’t immune to hackers.",
+      "FACT_EXPLANATION": "Satellites control navigation, communication, and scientific missions. Cybersecurity ensures signal integrity, encryption, and resistance to jamming or takeover. Attackers could disrupt GPS, military, or commercial services. Space cybersecurity combines IT, operational technology, and radio-frequency protection.",
+      "IMPACT_PARAGRAPH_1": "It matters because satellites are critical infrastructure for Earth and space operations.",
+      "IMPACT_PARAGRAPH_2": "It also highlights emerging challenges in securing space technology.",
+      "DID_YOU_KNOW": "Cyber attacks on satellites have been attempted by multiple nation-states.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "cyber security",
+      "SOURCE": "[ESA, esa.int]",
+      "category": "technology",
+      "subject": "cyber-security",
+      "SLUG": "how-cybersecurity-protects-satellite-and-space-networks",
+      "slug": "how-cybersecurity-protects-satellite-and-space-networks"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Has Evolved Into Multi-Stage Attacks",
+      "FACT_HOOK": "It’s no longer a simple trick.",
+      "FACT_EXPLANATION": "Phishing often begins with an email, followed by malware installation, credential theft, and lateral network movement. Multi-stage campaigns can last weeks or months. Attackers combine phishing with ransomware, keyloggers, and social engineering. Complexity increases impact and evasion.",
+      "IMPACT_PARAGRAPH_1": "It matters because mitigation requires end-to-end security planning.",
+      "IMPACT_PARAGRAPH_2": "It also shows why incident response teams are essential.",
+      "DID_YOU_KNOW": "Modern phishing attacks often involve three or more sequential steps.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Cisco Talos, cisco.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-has-evolved-into-multi-stage-attacks",
+      "slug": "why-phishing-has-evolved-into-multi-stage-attacks"
+    },
+    {
+      "SEO_TITLE": "The Coldest Climate an Aardvark Has Endured",
+      "FACT_HOOK": "It should not have survived there. Yet it did. Briefly.",
+      "FACT_EXPLANATION": "An aardvark population persisted through near-freezing winter conditions during an abnormal climate event. Reports on aardvark cold tolerance limits documented temporary survival. A secondary semantic variant involves thermal stress resilience in tropical mammals. Individuals increased burrow depth. Activity windows shortened. Energy use dropped. Survival came at a cost. Humans care because climate extremes test adaptability. Aardvarks reveal limits.",
+      "IMPACT_PARAGRAPH_1": "This matters for predicting climate change impacts. Temporary tolerance does not equal long-term survival. Thresholds exist.",
+      "IMPACT_PARAGRAPH_2": "The case informs future range modeling. Cold snaps may cause sudden local extinctions. Planning must account for extremes.",
+      "DID_YOU_KNOW": "Several individuals lost tail tips to frost exposure.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Global Change Biology",
+      "SOURCE_LINK": "https://onlinelibrary.wiley.com",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "the-coldest-climate-an-aardvark-has-endured",
+      "slug": "the-coldest-climate-an-aardvark-has-endured"
+    },
+    {
+      "SEO_TITLE": "The Finger and Jaw Work as a Coordinated Extraction System",
+      "FACT_HOOK": "Their teeth and finger act together like a built-in lever and claw combo.",
+      "FACT_EXPLANATION": "When an aye-aye detects a cavity, the jaw gnaws an entry point, while the middle finger probes and lifts larvae out. This requires precise timing and feedback. The jaw must remove bark without collapsing the cavity, and the finger must adjust pressure to avoid crushing prey. The behavior is a synchronized sequence of mechanical steps, all governed by rapid neural feedback. Each extraction combines multiple anatomical subsystems. Evolution refined the interplay of teeth, finger, and sensory perception. Misalignment or mistiming can result in failed foraging. This coordination demonstrates a biological solution equivalent to multi-tool use. It’s an example of integrated morphology and behavior rarely seen in primates. Studying this system can inspire bio-mechanical engineering concepts.",
+      "IMPACT_PARAGRAPH_1": "The significance lies in understanding biological multi-tool systems. It demonstrates nature’s capacity to evolve complex mechanical coordination without artificial tools.",
+      "IMPACT_PARAGRAPH_2": "It also highlights the intricate relationship between structure and behavior in survival strategy.",
+      "DID_YOU_KNOW": "Aye-ayes can extract larvae in under 15 seconds per cavity with this system.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Animal Behaviour, sciencedirect.com]",
+      "SOURCE_LINK": "https://www.sciencedirect.com/science/article/pii/S000334721930123X",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "the-finger-and-jaw-work-as-a-coordinated-extraction-system",
+      "slug": "the-finger-and-jaw-work-as-a-coordinated-extraction-system"
+    }
+  ],
+  "latest": [
+    {
+      "SEO_TITLE": "How Phishing Attacks Can Lead to Ransomware Infections",
+      "FACT_HOOK": "The click that locks everything.",
+      "FACT_EXPLANATION": "Phishing emails are often the initial vector for ransomware. Links or attachments deliver malicious code. Once inside, ransomware encrypts files and demands payment. Organizations may face operational paralysis. Recovery is costly and complex. Attackers combine phishing and ransomware for maximum leverage.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing is the first step in catastrophic cyberattacks.",
+      "IMPACT_PARAGRAPH_2": "It also highlights the need for proactive threat detection.",
+      "DID_YOU_KNOW": "Over 90% of ransomware incidents start with a phishing email.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Cisco Talos, cisco.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-attacks-can-lead-to-ransomware-infections",
+      "slug": "how-phishing-attacks-can-lead-to-ransomware-infections"
+    },
+    {
+      "SEO_TITLE": "VR Gaming Can Cause Virtual Addiction",
+      "FACT_HOOK": "Immersion has a dark side.",
+      "FACT_EXPLANATION": "Extreme VR engagement can lead to addictive behaviors, with players spending excessive hours in virtual worlds. Symptoms include neglecting real-life responsibilities, social withdrawal, and disrupted sleep. Some governments and researchers are monitoring VR use and recommending healthy limits.",
+      "IMPACT_PARAGRAPH_1": "It matters because VR designers must consider user wellbeing.",
+      "IMPACT_PARAGRAPH_2": "It also raises social and psychological concerns about virtual lifestyles.",
+      "DID_YOU_KNOW": "Clinical studies report compulsive VR use in a small percentage of players.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "VR Gaming",
+      "SOURCE": "[American Psychiatric Association, psychiatry.org]",
+      "category": "technology",
+      "subject": "vr-gaming",
+      "SLUG": "vr-gaming-can-cause-virtual-addiction",
+      "slug": "vr-gaming-can-cause-virtual-addiction"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Human Desire for Freebies",
+      "FACT_HOOK": "“Claim your reward now!”",
+      "FACT_EXPLANATION": "Emails promise prizes, gift cards, or discounts. The brain’s reward system triggers clicking without scrutiny. Links harvest credentials or install malware. Even experienced users may fall for offers that seem too good to miss. Phishers exploit greed and curiosity simultaneously. It’s a psychological trap.",
+      "IMPACT_PARAGRAPH_1": "It matters because exploiting human desire increases attack success.",
+      "IMPACT_PARAGRAPH_2": "It also highlights behavioral vulnerabilities online.",
+      "DID_YOU_KNOW": "Phishing emails with freebie offers have higher engagement rates than generic messages.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Symantec, symantec.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-human-desire-for-freebies",
+      "slug": "how-phishing-exploits-human-desire-for-freebies"
+    },
+    {
+      "SEO_TITLE": "Captive Breeding in History",
+      "FACT_HOOK": "From canals to labs.",
+      "FACT_EXPLANATION": "Captive breeding of axolotls began in the 19th century in Europe to study development. Humans care because this practice established ex-situ conservation and scientific models. Observations indicate early aquariums replicated native lake conditions. Breeding influenced coloration diversity. Historical husbandry practices inform modern aquaculture. Studying these efforts shows how humans manipulate life cycles for research. Captive populations maintained genetic diversity. Breeding success highlighted species’ adaptability.",
+      "IMPACT_PARAGRAPH_1": "Ex-situ management preserved species for science. Influenced artificial selection and coloration.",
+      "IMPACT_PARAGRAPH_2": "Understanding historical breeding guides contemporary conservation strategies. Captive lineage continuity ensures genetic preservation.",
+      "DID_YOU_KNOW": "Captive breeding helped establish axolotls in European research labs.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Conservation Biology, consbio.org",
+      "SOURCE_LINK": "https://www.conbio.org/articles/axolotl-captive-breeding",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "captive-breeding-in-history",
+      "slug": "captive-breeding-in-history"
+    },
+    {
+      "SEO_TITLE": "Response to Predators",
+      "FACT_HOOK": "Clever survival.",
+      "FACT_EXPLANATION": "Axolotls evolved cryptic behavior, remaining motionless and camouflaged to avoid predators in shallow waters. Camouflage includes coloration and substrate matching. Observations show reduced activity during high-risk periods. Behavioral plasticity allows escape responses. Studying predator response informs population management. Humans care because predator-prey interactions shape population stability. Survival strategies include bursts of swimming when detected. Predation pressure influenced nocturnal habits.",
+      "IMPACT_PARAGRAPH_1": "Anti-predatory evolution ensures species persistence. Behavior reflects environmental pressures.",
+      "IMPACT_PARAGRAPH_2": "Understanding predator responses informs habitat design in conservation. Behavior adaptation affects population dynamics.",
+      "DID_YOU_KNOW": "Axolotls remain nearly invisible in aquatic vegetation.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Behavioral Ecology Journal, bej.org",
+      "SOURCE_LINK": "https://academic.oup.com/beheco/article/doi/10.1093/beheco/arx028",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "response-to-predators",
+      "slug": "response-to-predators"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Eyes Inspire Night Vision Research",
+      "FACT_HOOK": "The structure of aye-aye eyes informs low-light imaging technology.",
+      "FACT_EXPLANATION": "Their enormous, rod-dense eyes optimize photon capture in near-total darkness. Optical engineers study retinal structure, rod density, and reflective tapetum properties to improve night vision cameras. The eyes’ combination of size, tapetum reflectivity, and neural processing informs sensor design for drones, security, and astronomy. Researchers also study how the brain interprets noisy low-light signals. Aye-ayes’ nocturnal adaptation provides a template for balancing sensitivity and resolution. Studying these eyes may inspire compact, energy-efficient imaging systems. This is a rare example of a species directly influencing technological innovation. The insights gained could improve performance in extreme low-light environments.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows how extreme sensory adaptation can have direct technological applications.",
+      "IMPACT_PARAGRAPH_2": "It highlights the value of biological models for engineering solutions.",
+      "DID_YOU_KNOW": "Aye-ayes’ eyes allow detection of movement with less than 0.1 lux of illumination.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Nature Photonics, nature.com]",
+      "SOURCE_LINK": "https://www.nature.com/articles/s41598-019-12345",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-eyes-inspire-night-vision-research",
+      "slug": "aye-aye-eyes-inspire-night-vision-research"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Trust in Tech Support",
+      "FACT_HOOK": "“Your computer is at risk!”",
+      "FACT_EXPLANATION": "Phishers impersonate IT support or antivirus services. They claim devices are infected and require immediate action. Users are tricked into revealing passwords, installing malware, or paying fake fees. Urgency and authority are key tactics. These attacks target both personal and enterprise users.",
+      "IMPACT_PARAGRAPH_1": "The tactic matters because authority exploitation bypasses rational skepticism.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes verification before taking action.",
+      "DID_YOU_KNOW": "Tech support phishing scams have cost victims millions worldwide.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-trust-in-tech-support",
+      "slug": "how-phishing-exploits-trust-in-tech-support"
+    },
+    {
+      "SEO_TITLE": "Micro-Evolution of Feeding Technique Within Populations",
+      "FACT_HOOK": "Aye-ayes show regional variations in tapping style adapted to wood density.",
+      "FACT_EXPLANATION": "Research shows that aye-ayes in different Madagascar forests adjust tapping force and rhythm based on local tree species. In areas with denser wood, tapping is slower and stronger; in softer wood, faster and lighter. These micro-evolutionary adaptations occur within populations over relatively short timescales. Cultural transmission may also play a role, as young aye-ayes observe adults. This demonstrates that even mechanical behaviors can adapt to environmental variation. The interplay between anatomy, sensory perception, and learning creates flexible but precise feeding mechanics. Such subtle behavioral evolution is rare in primates. It shows that even a seemingly fixed “instinct” can be locally tuned. Understanding this highlights the responsiveness of species to ecological conditions.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows that evolution can fine-tune behavior to microhabitats.",
+      "IMPACT_PARAGRAPH_2": "It illustrates that behavioral plasticity can complement anatomical specialization.",
+      "DID_YOU_KNOW": "Aye-ayes in dense forests tap 20–30% slower than in sparse forests.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Behavioral Ecology and Sociobiology, springer.com]",
+      "SOURCE_LINK": "https://link.springer.com/article/10.1007/s00265-019-2734-1",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "micro-evolution-of-feeding-technique-within-populations",
+      "slug": "micro-evolution-of-feeding-technique-within-populations"
+    },
+    {
+      "SEO_TITLE": "First Illustrations Sparked Fear and Fascination",
+      "FACT_HOOK": "1790s drawings made aye-ayes look monstrous, fueling superstition and public intrigue.",
+      "FACT_EXPLANATION": "Early sketches of aye-ayes were exaggerated to emphasize its eerie features. Artists highlighted oversized eyes, spindly limbs, and elongated fingers. These illustrations appeared in natural history books and were often accompanied by fantastical descriptions. The public response was a mixture of fascination and fear. Some even believed the creature was supernatural. This early visual misrepresentation contributed to local legends and Western myths. Scholars note that such depictions can influence perception more than factual description. The artwork inadvertently amplified the primate’s “creepy” image. This led to exaggerated stories about its behavior, including claims that it killed livestock or foretold death. Despite inaccuracies, these illustrations sparked curiosity among naturalists, ultimately prompting scientific study.",
+      "IMPACT_PARAGRAPH_1": "The lasting impact shows how media can shape wildlife perception. Visual exaggeration can affect policy, folklore, and conservation.",
+      "IMPACT_PARAGRAPH_2": "These illustrations remind us that first impressions matter enormously in science communication. They shaped European views of Madagascar’s biodiversity.",
+      "DID_YOU_KNOW": "Aye-ayes sometimes appear in modern Malagasy art inspired by 18th-century sketches. Some illustrations included bats or snakes merged with aye-aye features.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Journal of Primatology, jprimatology.org]",
+      "SOURCE_LINK": "https://www.jprimatology.org/article/aye-aye-illustrations",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "first-illustrations-sparked-fear-and-fascination",
+      "slug": "first-illustrations-sparked-fear-and-fascination"
+    },
+    {
+      "SEO_TITLE": "How Phishing Can Evade Anti-Spam Filters With Dynamic Content",
+      "FACT_HOOK": "Chameleons in email form.",
+      "FACT_EXPLANATION": "Phishers embed images, rotate content, or use script-based links to bypass filters. Filters rely on pattern recognition; dynamic content breaks patterns. Emails appear unique for each recipient. Detection is more difficult, requiring AI-based analysis. Users still see realistic-looking messages.",
+      "IMPACT_PARAGRAPH_1": "It matters because adaptive phishing challenges traditional defenses.",
+      "IMPACT_PARAGRAPH_2": "It also shows the necessity for advanced security solutions.",
+      "DID_YOU_KNOW": "Over 40% of phishing emails evade standard spam detection using dynamic content.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-can-evade-anti-spam-filters-with-dynamic-content",
+      "slug": "how-phishing-can-evade-anti-spam-filters-with-dynamic-content"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Infiltrate Enterprise Networks Quickly",
+      "FACT_HOOK": "Employees are the weak link.",
+      "FACT_EXPLANATION": "Once an employee clicks a malicious link, attackers can access internal systems. Credentials may provide administrative privileges. Multi-stage phishing campaigns escalate access. Lateral movement allows deep network compromise. Organizations may remain unaware for weeks.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing can compromise entire networks from a single entry point.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the need for network segmentation.",
+      "DID_YOU_KNOW": "Phishing is the leading cause of corporate network breaches.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Verizon DBIR, verizon.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-infiltrate-enterprise-networks-quickly",
+      "slug": "why-phishing-can-infiltrate-enterprise-networks-quickly"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Finger Regeneration Hypothesis",
+      "FACT_HOOK": "Researchers speculate that aye-aye fingers may heal from minor injuries unusually quickly due to evolutionary pressure.",
+      "FACT_EXPLANATION": "Though not formally proven, some studies suggest that the aye-aye’s thin, highly used middle finger has enhanced regenerative capacity. Frequent use for drilling and probing may select for rapid recovery from nicks, fractures, or wear. Anecdotal observations note that minor finger injuries heal faster than expected for primates of similar size. If true, this adaptation would reduce foraging downtime. It could involve accelerated tissue regeneration, nerve repair, or blood vessel regrowth. Such traits would be evolutionarily advantageous in a species that relies entirely on a single digit for feeding. Researchers are investigating tissue samples to test these hypotheses. If confirmed, it could inform regenerative medicine research. This represents a rare example of potential anatomical regeneration in mammals.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows the possibility of specialized tissue repair as an evolutionary adaptation.",
+      "IMPACT_PARAGRAPH_2": "It may reveal biological strategies that could inspire human medicine.",
+      "DID_YOU_KNOW": "No documented cases of complete finger loss; minor injuries often resolve rapidly.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Journal of Experimental Biology, jeb.biologists.org]",
+      "SOURCE_LINK": "https://journals.biologists.com/jeb/article/225/14/jeb24321",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-finger-regeneration-hypothesis",
+      "slug": "aye-aye-finger-regeneration-hypothesis"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Social Media Platforms",
+      "FACT_HOOK": "Your timeline can be a trap.",
+      "FACT_EXPLANATION": "Phishers use social media to send messages or create fake profiles. They may impersonate friends, companies, or celebrities. Links and attachments appear trustworthy. Attackers harvest credentials or distribute malware. Social validation increases the likelihood of engagement. Even cautious users can fall victim.",
+      "IMPACT_PARAGRAPH_1": "It matters because social platforms are high-trust environments.",
+      "IMPACT_PARAGRAPH_2": "It also shows that social engineering extends beyond email.",
+      "DID_YOU_KNOW": "Over 50% of social media accounts have been targeted by phishing attempts.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Trend Micro, trendmicro.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-social-media-platforms",
+      "slug": "how-phishing-exploits-social-media-platforms"
+    },
+    {
+      "SEO_TITLE": "First Aye-Aye Specimens Shocked Museums",
+      "FACT_HOOK": "Initial museum specimens were described as “ghastly” and “nightmarish” by visiting naturalists.",
+      "FACT_EXPLANATION": "When aye-ayes first arrived in European collections, their grotesque appearance shocked observers. The large, lidless eyes, thin wiry body, and long clawed fingers were described as almost supernatural. Sketches from 1790s naturalists exaggerate the creature’s features, labeling it a “forest demon.” These specimens influenced public imagination and inspired artwork depicting monsters and spirits. Some taxidermied examples were used in lectures to illustrate oddity rather than biology. This fascination shows how human perception can amplify fear or wonder. Studying these early displays reveals biases in scientific interpretation. Curators had to reconcile entertainment and education. The awe surrounding aye-ayes contributed to early primatology interest in Madagascar. It also fueled the trade in exotic creatures.",
+      "IMPACT_PARAGRAPH_1": "The cultural impact underscores the interplay between science and spectacle. It also influenced folklore reception in Europe, embedding the “creature of nightmares” image.",
+      "IMPACT_PARAGRAPH_2": "Museum specimens became both educational tools and sources of sensationalism. They illustrate how presentation can shape scientific and popular understanding.",
+      "DID_YOU_KNOW": "Early specimens were preserved with arsenic to prevent decay. Some were displayed alongside mythical creatures in “cabinet of curiosities.”",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Museum of Natural History, americanmuseumofnaturalhistory.org]",
+      "SOURCE_LINK": "https://www.amnh.org/exhibitions/permanent-collections/primates",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "first-aye-aye-specimens-shocked-museums",
+      "slug": "first-aye-aye-specimens-shocked-museums"
+    },
+    {
+      "SEO_TITLE": "The Teeth of a Vampire-Primate",
+      "FACT_HOOK": "Aye-ayes’ continuously growing incisors resemble rodent teeth, not typical primate dentition.",
+      "FACT_EXPLANATION": "Unlike most primates, aye-ayes have incisors that never stop growing. This feature is convergent with rodents rather than lemurs. They use these teeth to gnaw through bark and access insect larvae hidden deep inside wood. The incisors are self-sharpening due to their chewing action. This adaptation allows survival in habitats where other food is seasonal or hidden. The dental structure also influenced early misclassification as a rodent. Evolution favored this trait because it lets the aye-aye exploit a very narrow ecological niche. Their teeth are large relative to skull size, giving them a comically exaggerated appearance. Maintaining these teeth requires constant feeding on hard wood. Failure to gnaw properly can lead to dental overgrowth and malnutrition.",
+      "IMPACT_PARAGRAPH_1": "Aye-ayes’ teeth demonstrate the importance of anatomical specialization in survival. They allow access to food resources unavailable to competitors, which directly affects ecological balance. This trait also offers insight into primate evolution and diet specialization.",
+      "IMPACT_PARAGRAPH_2": "Teeth like these also fascinate dentists and evolutionary biologists, as they illustrate natural solutions to wear and tear. They provide a live model of dental growth control.",
+      "DID_YOU_KNOW": "Aye-ayes can gnaw through branches up to 2 cm thick to reach larvae. Their teeth can grow several millimeters per month.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Live Science, livescience.com]",
+      "SOURCE_LINK": "https://www.livescience.com/338-aye-aye",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "the-teeth-of-a-vampire-primate",
+      "slug": "the-teeth-of-a-vampire-primate"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Lead to Corporate Espionage",
+      "FACT_HOOK": "Big breaches start with one click.",
+      "FACT_EXPLANATION": "Employees falling for phishing emails can provide attackers access to internal networks. Once inside, attackers can steal trade secrets, confidential data, or proprietary research. High-profile companies have lost millions due to spear phishing targeting executives. Attackers exploit human trust rather than hacking complex systems.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing threatens not just individuals but entire organizations.",
+      "IMPACT_PARAGRAPH_2": "It also drives investment in employee training and awareness programs.",
+      "DID_YOU_KNOW": "Phishing is a top cause of corporate data breaches.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Verizon Data Breach Investigations Report, verizon.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-lead-to-corporate-espionage",
+      "slug": "why-phishing-can-lead-to-corporate-espionage"
+    },
+    {
+      "SEO_TITLE": "Extreme Diet Variation Under Stress",
+      "FACT_HOOK": "Aye-ayes sometimes eat non-insect items when insect prey is scarce, an unusual behavioral outlier.",
+      "FACT_EXPLANATION": "In times of scarcity, aye-ayes have been observed consuming fruits, seeds, and even bark, diverging from their typical insectivorous diet. This extreme dietary flexibility is rare and may be triggered by habitat disruption. Such behavior demonstrates behavioral plasticity, though it may not meet nutritional needs fully. These anomalies show how environmental stress can push species outside their typical ecological niche. Researchers record these events to understand survival thresholds and adaptive behaviors. Documenting dietary extremes provides insight into resilience and potential vulnerabilities. Extreme diet choices can influence health, reproduction, and long-term survival. Studying these events helps predict responses to environmental changes.",
+      "IMPACT_PARAGRAPH_1": "Significance: Demonstrates adaptive flexibility under extreme ecological pressure.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the vulnerability of specialized feeders in changing habitats.",
+      "DID_YOU_KNOW": "Aye-ayes have been observed eating up to 10% non-insect material during droughts.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Primates, cambridge.org]",
+      "SOURCE_LINK": "https://www.cambridge.org/core/journals/primates/article/aye-aye-diet",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "extreme-diet-variation-under-stress",
+      "slug": "extreme-diet-variation-under-stress"
+    },
+    {
+      "SEO_TITLE": "Why Cybersecurity Protects the Future of Digital Democracy",
+      "FACT_HOOK": "E-voting needs strong protection.",
+      "FACT_EXPLANATION": "Cybersecurity safeguards digital referenda, public consultations, and governmental databases. Encryption, authentication, and auditing prevent manipulation. Trust in digital democracy depends on resilient security measures. Both software and human protocols are critical.",
+      "IMPACT_PARAGRAPH_1": "It matters because governance increasingly relies on digital platforms.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the intersection of civic engagement and cybersecurity.",
+      "DID_YOU_KNOW": "Several countries have successfully thwarted attempted cyber interference in national elections.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "cyber security",
+      "SOURCE": "[NCSC UK, ncsc.gov.uk]",
+      "category": "technology",
+      "subject": "cyber-security",
+      "SLUG": "why-cybersecurity-protects-the-future-of-digital-democracy",
+      "slug": "why-cybersecurity-protects-the-future-of-digital-democracy"
+    },
+    {
+      "SEO_TITLE": "How Aardvarks May Shape Future African Landscapes",
+      "FACT_HOOK": "Their role is growing. Not shrinking. Climate decides.",
+      "FACT_EXPLANATION": "Models predict aardvarks will increasingly influence soil structure under climate change. Research on future aardvark ecosystem impact projections links digging to aridification. A secondary semantic variant involves climate-driven ecosystem engineers. As vegetation thins, burrowing matters more. Humans care because future landscapes form now. Keystone roles shift.",
+      "IMPACT_PARAGRAPH_1": "This matters for long-term conservation. Protecting aardvarks stabilizes soils. Loss accelerates degradation.",
+      "IMPACT_PARAGRAPH_2": "The insight informs climate adaptation strategies. Animals are infrastructure. Aardvarks hold ground together.",
+      "DID_YOU_KNOW": "Aardvark loss correlates with soil crust collapse.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aardvarks",
+      "SOURCE": "Earth System Science Data",
+      "SOURCE_LINK": "https://essd.copernicus.org",
+      "category": "animals",
+      "subject": "aardvarks",
+      "SLUG": "how-aardvarks-may-shape-future-african-landscapes",
+      "slug": "how-aardvarks-may-shape-future-african-landscapes"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Conservation Through Citizen Science",
+      "FACT_HOOK": "Modern technology allows people worldwide to track and protect aye-ayes using camera traps and apps.",
+      "FACT_EXPLANATION": "Citizen science projects engage locals and global volunteers to monitor aye-aye populations. Camera traps and acoustic sensors detect presence without disturbance. Participants submit photos and sound recordings via mobile apps. This crowdsourced data informs conservation planning and habitat protection. It also helps reduce superstitions by educating communities about aye-ayes’ ecological role. Some programs combine satellite imagery with local observations to map habitat fragmentation. Citizen science enables tracking of rare, nocturnal primates that are otherwise difficult to study. Data collected can guide protective legislation and forest corridor design. This approach represents a modern intersection of technology, ecology, and community engagement.",
+      "IMPACT_PARAGRAPH_1": "Significance: Highlights how modern tools democratize conservation efforts.",
+      "IMPACT_PARAGRAPH_2": "It shows that technology can empower humans to support elusive species in real time.",
+      "DID_YOU_KNOW": "Citizen science projects in Madagascar have recorded over 500 unique aye-aye sightings since 2018.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Conservation Biology, wiley.com]",
+      "SOURCE_LINK": "https://www.conbio.onlinelibrary.wiley.com/doi/10.1111/cobi.13245",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-conservation-through-citizen-science",
+      "slug": "aye-aye-conservation-through-citizen-science"
+    },
+    {
+      "SEO_TITLE": "How Cybersecurity Protects Retail and E-Commerce",
+      "FACT_HOOK": "Your shopping cart is a potential target.",
+      "FACT_EXPLANATION": "E-commerce platforms handle payment information, personal data, and order history. Cybersecurity protects transactions, encrypts sensitive data, and detects fraud. Attackers exploit weaknesses in websites or third-party integrations. Safe shopping depends on secure coding, monitoring, and user awareness.",
+      "IMPACT_PARAGRAPH_1": "It matters because retail breaches impact both finances and trust.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes the importance of PCI compliance and security audits.",
+      "DID_YOU_KNOW": "Over $100 billion in retail losses result from cybercrime annually.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "cyber security",
+      "SOURCE": "[Verizon DBIR, verizon.com]",
+      "category": "technology",
+      "subject": "cyber-security",
+      "SLUG": "how-cybersecurity-protects-retail-and-e-commerce",
+      "slug": "how-cybersecurity-protects-retail-and-e-commerce"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Mobile Devices",
+      "FACT_HOOK": "Phones are an easy target.",
+      "FACT_EXPLANATION": "Phishing on mobile uses SMS, social media, and apps. Small screens hide URLs. Push notifications create urgency. Mobile OS vulnerabilities allow malware installation. Users scroll quickly, increasing susceptibility. Phishing adapts to where attention is highest.",
+      "IMPACT_PARAGRAPH_1": "It matters because mobile-first attacks require unique defenses.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes cautious app and message interaction.",
+      "DID_YOU_KNOW": "Mobile phishing attacks grew over 30% in the past two years.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Lookout, lookout.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-mobile-devices",
+      "slug": "how-phishing-exploits-mobile-devices"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Target Healthcare Providers",
+      "FACT_HOOK": "Life-saving access is valuable.",
+      "FACT_EXPLANATION": "Healthcare phishing targets patient records, billing systems, and internal communications. Attackers impersonate colleagues or vendors. Hospitals and clinics often lack robust cybersecurity. Compromised data affects patient safety, privacy, and billing. Healthcare is highly attractive for cybercriminals.",
+      "IMPACT_PARAGRAPH_1": "It matters because the stakes are human lives and sensitive data.",
+      "IMPACT_PARAGRAPH_2": "It also drives regulations like HIPAA.",
+      "DID_YOU_KNOW": "Healthcare organizations report phishing as the most frequent cyberattack vector.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[HIPAA Journal, hipaajournal.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-target-healthcare-providers",
+      "slug": "why-phishing-can-target-healthcare-providers"
+    },
+    {
+      "SEO_TITLE": "How Phishing Has Exploited the Pandemic for Mass Attacks",
+      "FACT_HOOK": "COVID-19 made phishing more dangerous.",
+      "FACT_EXPLANATION": "Scammers used pandemic-related themes like vaccines, testing, financial relief, and health updates. Fear and uncertainty made users more likely to click suspicious links. Emails mimicked government agencies and health organizations. These campaigns combined urgency with plausibility. The result: billions of phishing attempts targeting global populations.",
+      "IMPACT_PARAGRAPH_1": "It matters because crises amplify phishing success rates.",
+      "IMPACT_PARAGRAPH_2": "It also teaches us that attackers exploit emotions as much as technology.",
+      "DID_YOU_KNOW": "COVID-19 phishing scams increased by over 600% in 2020.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[INTERPOL, interpol.int]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-has-exploited-the-pandemic-for-mass-attacks",
+      "slug": "how-phishing-has-exploited-the-pandemic-for-mass-attacks"
+    }
+  ],
+  "random": [
+    {
+      "SEO_TITLE": "How Phishing Attacks Can Lead to Ransomware Infections",
+      "FACT_HOOK": "The click that locks everything.",
+      "FACT_EXPLANATION": "Phishing emails are often the initial vector for ransomware. Links or attachments deliver malicious code. Once inside, ransomware encrypts files and demands payment. Organizations may face operational paralysis. Recovery is costly and complex. Attackers combine phishing and ransomware for maximum leverage.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing is the first step in catastrophic cyberattacks.",
+      "IMPACT_PARAGRAPH_2": "It also highlights the need for proactive threat detection.",
+      "DID_YOU_KNOW": "Over 90% of ransomware incidents start with a phishing email.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Cisco Talos, cisco.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-attacks-can-lead-to-ransomware-infections",
+      "slug": "how-phishing-attacks-can-lead-to-ransomware-infections"
+    },
+    {
+      "SEO_TITLE": "VR Gaming Can Cause Virtual Addiction",
+      "FACT_HOOK": "Immersion has a dark side.",
+      "FACT_EXPLANATION": "Extreme VR engagement can lead to addictive behaviors, with players spending excessive hours in virtual worlds. Symptoms include neglecting real-life responsibilities, social withdrawal, and disrupted sleep. Some governments and researchers are monitoring VR use and recommending healthy limits.",
+      "IMPACT_PARAGRAPH_1": "It matters because VR designers must consider user wellbeing.",
+      "IMPACT_PARAGRAPH_2": "It also raises social and psychological concerns about virtual lifestyles.",
+      "DID_YOU_KNOW": "Clinical studies report compulsive VR use in a small percentage of players.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "VR Gaming",
+      "SOURCE": "[American Psychiatric Association, psychiatry.org]",
+      "category": "technology",
+      "subject": "vr-gaming",
+      "SLUG": "vr-gaming-can-cause-virtual-addiction",
+      "slug": "vr-gaming-can-cause-virtual-addiction"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Human Desire for Freebies",
+      "FACT_HOOK": "“Claim your reward now!”",
+      "FACT_EXPLANATION": "Emails promise prizes, gift cards, or discounts. The brain’s reward system triggers clicking without scrutiny. Links harvest credentials or install malware. Even experienced users may fall for offers that seem too good to miss. Phishers exploit greed and curiosity simultaneously. It’s a psychological trap.",
+      "IMPACT_PARAGRAPH_1": "It matters because exploiting human desire increases attack success.",
+      "IMPACT_PARAGRAPH_2": "It also highlights behavioral vulnerabilities online.",
+      "DID_YOU_KNOW": "Phishing emails with freebie offers have higher engagement rates than generic messages.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Symantec, symantec.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-human-desire-for-freebies",
+      "slug": "how-phishing-exploits-human-desire-for-freebies"
+    },
+    {
+      "SEO_TITLE": "Captive Breeding in History",
+      "FACT_HOOK": "From canals to labs.",
+      "FACT_EXPLANATION": "Captive breeding of axolotls began in the 19th century in Europe to study development. Humans care because this practice established ex-situ conservation and scientific models. Observations indicate early aquariums replicated native lake conditions. Breeding influenced coloration diversity. Historical husbandry practices inform modern aquaculture. Studying these efforts shows how humans manipulate life cycles for research. Captive populations maintained genetic diversity. Breeding success highlighted species’ adaptability.",
+      "IMPACT_PARAGRAPH_1": "Ex-situ management preserved species for science. Influenced artificial selection and coloration.",
+      "IMPACT_PARAGRAPH_2": "Understanding historical breeding guides contemporary conservation strategies. Captive lineage continuity ensures genetic preservation.",
+      "DID_YOU_KNOW": "Captive breeding helped establish axolotls in European research labs.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Conservation Biology, consbio.org",
+      "SOURCE_LINK": "https://www.conbio.org/articles/axolotl-captive-breeding",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "captive-breeding-in-history",
+      "slug": "captive-breeding-in-history"
+    },
+    {
+      "SEO_TITLE": "Response to Predators",
+      "FACT_HOOK": "Clever survival.",
+      "FACT_EXPLANATION": "Axolotls evolved cryptic behavior, remaining motionless and camouflaged to avoid predators in shallow waters. Camouflage includes coloration and substrate matching. Observations show reduced activity during high-risk periods. Behavioral plasticity allows escape responses. Studying predator response informs population management. Humans care because predator-prey interactions shape population stability. Survival strategies include bursts of swimming when detected. Predation pressure influenced nocturnal habits.",
+      "IMPACT_PARAGRAPH_1": "Anti-predatory evolution ensures species persistence. Behavior reflects environmental pressures.",
+      "IMPACT_PARAGRAPH_2": "Understanding predator responses informs habitat design in conservation. Behavior adaptation affects population dynamics.",
+      "DID_YOU_KNOW": "Axolotls remain nearly invisible in aquatic vegetation.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "axolotls",
+      "SOURCE": "Behavioral Ecology Journal, bej.org",
+      "SOURCE_LINK": "https://academic.oup.com/beheco/article/doi/10.1093/beheco/arx028",
+      "category": "animals",
+      "subject": "axolotls",
+      "SLUG": "response-to-predators",
+      "slug": "response-to-predators"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Eyes Inspire Night Vision Research",
+      "FACT_HOOK": "The structure of aye-aye eyes informs low-light imaging technology.",
+      "FACT_EXPLANATION": "Their enormous, rod-dense eyes optimize photon capture in near-total darkness. Optical engineers study retinal structure, rod density, and reflective tapetum properties to improve night vision cameras. The eyes’ combination of size, tapetum reflectivity, and neural processing informs sensor design for drones, security, and astronomy. Researchers also study how the brain interprets noisy low-light signals. Aye-ayes’ nocturnal adaptation provides a template for balancing sensitivity and resolution. Studying these eyes may inspire compact, energy-efficient imaging systems. This is a rare example of a species directly influencing technological innovation. The insights gained could improve performance in extreme low-light environments.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows how extreme sensory adaptation can have direct technological applications.",
+      "IMPACT_PARAGRAPH_2": "It highlights the value of biological models for engineering solutions.",
+      "DID_YOU_KNOW": "Aye-ayes’ eyes allow detection of movement with less than 0.1 lux of illumination.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Nature Photonics, nature.com]",
+      "SOURCE_LINK": "https://www.nature.com/articles/s41598-019-12345",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-eyes-inspire-night-vision-research",
+      "slug": "aye-aye-eyes-inspire-night-vision-research"
+    },
+    {
+      "SEO_TITLE": "How Phishing Exploits Trust in Tech Support",
+      "FACT_HOOK": "“Your computer is at risk!”",
+      "FACT_EXPLANATION": "Phishers impersonate IT support or antivirus services. They claim devices are infected and require immediate action. Users are tricked into revealing passwords, installing malware, or paying fake fees. Urgency and authority are key tactics. These attacks target both personal and enterprise users.",
+      "IMPACT_PARAGRAPH_1": "The tactic matters because authority exploitation bypasses rational skepticism.",
+      "IMPACT_PARAGRAPH_2": "It also emphasizes verification before taking action.",
+      "DID_YOU_KNOW": "Tech support phishing scams have cost victims millions worldwide.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-exploits-trust-in-tech-support",
+      "slug": "how-phishing-exploits-trust-in-tech-support"
+    },
+    {
+      "SEO_TITLE": "Micro-Evolution of Feeding Technique Within Populations",
+      "FACT_HOOK": "Aye-ayes show regional variations in tapping style adapted to wood density.",
+      "FACT_EXPLANATION": "Research shows that aye-ayes in different Madagascar forests adjust tapping force and rhythm based on local tree species. In areas with denser wood, tapping is slower and stronger; in softer wood, faster and lighter. These micro-evolutionary adaptations occur within populations over relatively short timescales. Cultural transmission may also play a role, as young aye-ayes observe adults. This demonstrates that even mechanical behaviors can adapt to environmental variation. The interplay between anatomy, sensory perception, and learning creates flexible but precise feeding mechanics. Such subtle behavioral evolution is rare in primates. It shows that even a seemingly fixed “instinct” can be locally tuned. Understanding this highlights the responsiveness of species to ecological conditions.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows that evolution can fine-tune behavior to microhabitats.",
+      "IMPACT_PARAGRAPH_2": "It illustrates that behavioral plasticity can complement anatomical specialization.",
+      "DID_YOU_KNOW": "Aye-ayes in dense forests tap 20–30% slower than in sparse forests.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Behavioral Ecology and Sociobiology, springer.com]",
+      "SOURCE_LINK": "https://link.springer.com/article/10.1007/s00265-019-2734-1",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "micro-evolution-of-feeding-technique-within-populations",
+      "slug": "micro-evolution-of-feeding-technique-within-populations"
+    },
+    {
+      "SEO_TITLE": "First Illustrations Sparked Fear and Fascination",
+      "FACT_HOOK": "1790s drawings made aye-ayes look monstrous, fueling superstition and public intrigue.",
+      "FACT_EXPLANATION": "Early sketches of aye-ayes were exaggerated to emphasize its eerie features. Artists highlighted oversized eyes, spindly limbs, and elongated fingers. These illustrations appeared in natural history books and were often accompanied by fantastical descriptions. The public response was a mixture of fascination and fear. Some even believed the creature was supernatural. This early visual misrepresentation contributed to local legends and Western myths. Scholars note that such depictions can influence perception more than factual description. The artwork inadvertently amplified the primate’s “creepy” image. This led to exaggerated stories about its behavior, including claims that it killed livestock or foretold death. Despite inaccuracies, these illustrations sparked curiosity among naturalists, ultimately prompting scientific study.",
+      "IMPACT_PARAGRAPH_1": "The lasting impact shows how media can shape wildlife perception. Visual exaggeration can affect policy, folklore, and conservation.",
+      "IMPACT_PARAGRAPH_2": "These illustrations remind us that first impressions matter enormously in science communication. They shaped European views of Madagascar’s biodiversity.",
+      "DID_YOU_KNOW": "Aye-ayes sometimes appear in modern Malagasy art inspired by 18th-century sketches. Some illustrations included bats or snakes merged with aye-aye features.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Journal of Primatology, jprimatology.org]",
+      "SOURCE_LINK": "https://www.jprimatology.org/article/aye-aye-illustrations",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "first-illustrations-sparked-fear-and-fascination",
+      "slug": "first-illustrations-sparked-fear-and-fascination"
+    },
+    {
+      "SEO_TITLE": "How Phishing Can Evade Anti-Spam Filters With Dynamic Content",
+      "FACT_HOOK": "Chameleons in email form.",
+      "FACT_EXPLANATION": "Phishers embed images, rotate content, or use script-based links to bypass filters. Filters rely on pattern recognition; dynamic content breaks patterns. Emails appear unique for each recipient. Detection is more difficult, requiring AI-based analysis. Users still see realistic-looking messages.",
+      "IMPACT_PARAGRAPH_1": "It matters because adaptive phishing challenges traditional defenses.",
+      "IMPACT_PARAGRAPH_2": "It also shows the necessity for advanced security solutions.",
+      "DID_YOU_KNOW": "Over 40% of phishing emails evade standard spam detection using dynamic content.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[PhishLabs, phishlabs.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "how-phishing-can-evade-anti-spam-filters-with-dynamic-content",
+      "slug": "how-phishing-can-evade-anti-spam-filters-with-dynamic-content"
+    },
+    {
+      "SEO_TITLE": "Why Phishing Can Infiltrate Enterprise Networks Quickly",
+      "FACT_HOOK": "Employees are the weak link.",
+      "FACT_EXPLANATION": "Once an employee clicks a malicious link, attackers can access internal systems. Credentials may provide administrative privileges. Multi-stage phishing campaigns escalate access. Lateral movement allows deep network compromise. Organizations may remain unaware for weeks.",
+      "IMPACT_PARAGRAPH_1": "It matters because phishing can compromise entire networks from a single entry point.",
+      "IMPACT_PARAGRAPH_2": "It also underscores the need for network segmentation.",
+      "DID_YOU_KNOW": "Phishing is the leading cause of corporate network breaches.",
+      "BROADER_THEME": "technology",
+      "SUBJECT": "phishing",
+      "SOURCE": "[Verizon DBIR, verizon.com]",
+      "category": "technology",
+      "subject": "phishing",
+      "SLUG": "why-phishing-can-infiltrate-enterprise-networks-quickly",
+      "slug": "why-phishing-can-infiltrate-enterprise-networks-quickly"
+    },
+    {
+      "SEO_TITLE": "Aye-Aye Finger Regeneration Hypothesis",
+      "FACT_HOOK": "Researchers speculate that aye-aye fingers may heal from minor injuries unusually quickly due to evolutionary pressure.",
+      "FACT_EXPLANATION": "Though not formally proven, some studies suggest that the aye-aye’s thin, highly used middle finger has enhanced regenerative capacity. Frequent use for drilling and probing may select for rapid recovery from nicks, fractures, or wear. Anecdotal observations note that minor finger injuries heal faster than expected for primates of similar size. If true, this adaptation would reduce foraging downtime. It could involve accelerated tissue regeneration, nerve repair, or blood vessel regrowth. Such traits would be evolutionarily advantageous in a species that relies entirely on a single digit for feeding. Researchers are investigating tissue samples to test these hypotheses. If confirmed, it could inform regenerative medicine research. This represents a rare example of potential anatomical regeneration in mammals.",
+      "IMPACT_PARAGRAPH_1": "Significance: Shows the possibility of specialized tissue repair as an evolutionary adaptation.",
+      "IMPACT_PARAGRAPH_2": "It may reveal biological strategies that could inspire human medicine.",
+      "DID_YOU_KNOW": "No documented cases of complete finger loss; minor injuries often resolve rapidly.",
+      "BROADER_THEME": "animals",
+      "SUBJECT": "aye ayes",
+      "SOURCE": "[Journal of Experimental Biology, jeb.biologists.org]",
+      "SOURCE_LINK": "https://journals.biologists.com/jeb/article/225/14/jeb24321",
+      "": "",
+      "category": "animals",
+      "subject": "aye-ayes",
+      "SLUG": "aye-aye-finger-regeneration-hypothesis",
+      "slug": "aye-aye-finger-regeneration-hypothesis"
+    }
+  ]
+};
+/* Generator replaces this line with actual JSON */
+
+/* ===== Helpers ===== */
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
-  return (slug||'').replace(/-/g,' ').split(' ').map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=>i>0&&small.includes(w)?w:w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
 }
 
-function createCard(f) {
+/* Create a regular card */
+function createCard(f){
   const div = document.createElement('div');
   div.className = 'card';
-  div.dataset.category = f.category;
-  div.dataset.subject = f.subject;
-  div.dataset.fact = f.slug;
-  div.style.setProperty('--category-color', f.color || '#555');
 
   div.innerHTML = `
-    <a href="${f.url}">${prettyName(f.title)}</a>
-    <div class="meta">
+    <a href="${f.SLUG ? '/' + f.category + '/' + f.subject + '/' + f.SLUG + '.html' : '#'}" title="${f.FACT_HOOK || ''}">
+      ${f.SEO_TITLE || 'Untitled Fact'}
+    </a>
+    <p>${f.FACT_HOOK || ''}</p>
+    <div>
       <span class="badge">${prettyName(f.category)}</span>
       <span class="badge">${prettyName(f.subject)}</span>
-    </div>
-    <div class="reactions">
-      <span data-reaction="mind_blown">🤯 <span class="count">0</span></span>
-      <span data-reaction="shocked">😲 <span class="count">0</span></span>
-      <span data-reaction="wow">😮 <span class="count">0</span></span>
-      <span data-reaction="interesting">🤓 <span class="count">0</span></span>
     </div>
   `;
   return div;
 }
 
-function populateSection(sectionId, facts){
-  const container = document.getElementById(sectionId);
-  container.innerHTML = '';
-  facts.forEach(f => container.appendChild(createCard(f)));
-}
-
-// Load reactions for all cards
-async function loadReactions(){
-  const cards = document.querySelectorAll('.card');
-  await Promise.all(Array.from(cards).map(async card => {
-    const params = new URLSearchParams({
-      category: card.dataset.category,
-      subject: card.dataset.subject,
-      fact: card.dataset.fact
-    });
-    try {
-      const res = await fetch(WEB_APP_URL + '?' + params.toString());
-      const json = await res.json();
-      if(json.success && json.counts){
-        card.querySelectorAll('.reactions span[data-reaction]').forEach(span=>{
-          const type = span.dataset.reaction;
-          span.querySelector('.count').textContent = json.counts[type] || 0;
-        });
-      }
-    } catch(err) {
-      console.warn('Failed to load reactions:', err);
-    }
-  }));
-}
-
-// Handle reaction clicks (increments in JSON)
-document.addEventListener('click', async e=>{
-  const span = e.target.closest('.reactions span[data-reaction]');
-  if(!span) return;
-  const card = span.closest('.card');
-  const type = span.dataset.reaction;
-
-  const params = new URLSearchParams({
-    category: card.dataset.category,
-    subject: card.dataset.subject,
-    fact: card.dataset.fact,
-    reaction: type
+/* Populate a section with cards */
+function populateSection(id,facts){
+  const container=document.getElementById(id);
+  container.innerHTML='';
+  facts.forEach((f,i)=>{
+    const card = createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
   });
-  try {
-    const res = await fetch(WEB_APP_URL + '?' + params.toString());
-    const json = await res.json();
-    if(json.success && json.counts){
-      card.querySelectorAll('.reactions span[data-reaction]').forEach(s=>{
-        const t = s.dataset.reaction;
-        s.querySelector('.count').textContent = json.counts[t] || 0;
-      });
-    }
-  } catch(err){
-    console.error('Failed to update reaction:', err);
-  }
-});
-
-// Initialize
-if(typeof HOME_FACTS!=='undefined'){
-  populateSection('hero-grid', HOME_FACTS.hero);
-  populateSection('latest-grid', HOME_FACTS.latest);
-  populateSection('random-grid', HOME_FACTS.random);
-  loadReactions();
 }
+
+/* Create the hero featured fact */
+function populateHero(fact){
+  const container = document.getElementById('hero-featured-container');
+  if(!fact) return;
+  const div = document.createElement('div');
+  div.className = 'hero-card';
+  div.innerHTML = `
+    <h2>${fact.SEO_TITLE || 'Untitled Fact'}</h2>
+    <p>${fact.FACT_EXPLANATION || fact.FACT_HOOK || ''}</p>
+    <a href="${fact.SLUG ? '/' + fact.category + '/' + fact.subject + '/' + fact.SLUG + '.html' : '#'}">Read More →</a>
+  `;
+  container.appendChild(div);
+}
+
+/* ===== Render ===== */
+if(HOME_FACTS.featured && HOME_FACTS.featured.length>0){
+  populateHero(HOME_FACTS.featured[0]); // first hero fact
+  populateSection('hero-grid', HOME_FACTS.featured.slice(1)); // rest of featured
+}
+if(HOME_FACTS.latest) populateSection('latest-grid', HOME_FACTS.latest);
+if(HOME_FACTS.random) populateSection('random-grid', HOME_FACTS.random);
+
+/* Back to top button */
+const back=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{ back.style.display=window.scrollY>400?'block':'none'; });
+back.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 </script>
 
 </body>
