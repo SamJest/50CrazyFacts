@@ -6,6 +6,21 @@
 <title>Why Aardvarks Rarely Became Domesticated</title>
 <meta name="description" content="It was tried. It failed. Repeatedly. People stopped.">
 
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
 
 
 <style>
@@ -43,21 +58,22 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 .reaction-count { font-size:0.9em; color:#555; }
 @media(max-width:768px){ .reactions { position:sticky; bottom:0; background:#fff3e0; padding:10px; border-top:1px solid #ffcc80; margin:0; justify-content:space-around; } }
 
-/* Extras */
+/* Prev/Next Fact links */
 .next-fact { background:#ffffff; border-radius:14px; padding:24px; margin:40px 0; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
 .next-fact a { display:inline-block; margin-top:14px; padding:14px 22px; border-radius:30px; background:#e91e63; color:white; font-weight:bold; text-decoration:none; }
 
-.related-facts ul { list-style:none; padding:0; } 
-.related-facts li { margin:6px 0; } 
-.related-facts a { color:#e91e63; font-weight:bold; text-decoration:none; }
-
-#progressBar { position:fixed; top:0; left:0; width:0%; height:4px; background:#e91e63; z-index:1000; transition:width 0.2s; }
-.ad-placeholder { background:#e0e0e0; text-align:center; padding:20px; margin:20px 0; border-radius:10px; }
+/* Share buttons */
 .share-buttons { display:flex; gap:10px; justify-content:center; margin:20px 0; }
 .share-buttons a { color:white; padding:10px 16px; border-radius:6px; font-weight:bold; text-decoration:none; }
 .share-buttons a.facebook { background:#3b5998; }
 .share-buttons a.twitter { background:#1da1f2; }
 .share-buttons a.linkedin { background:#0077b5; }
+
+/* Progress bar */
+#progressBar { position:fixed; top:0; left:0; width:0%; height:4px; background:#e91e63; z-index:1000; transition:width 0.2s; }
+
+/* Ad placeholder */
+.ad-placeholder { background:#e0e0e0; text-align:center; padding:20px; margin:20px 0; border-radius:10px; }
 </style>
 </head>
 
@@ -111,36 +127,58 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 
   <!-- Reactions -->
   <div class="reactions">
-    
-      <button data-key="">
-         <span class="reaction-count"></span>
-      </button>
-    
+    <button data-key="mind_blown">
+       🤯 <span class="reaction-count">0</span>
+     </button>
+<button data-key="shocked">
+       😲 <span class="reaction-count">0</span>
+     </button>
+<button data-key="wow">
+       😮 <span class="reaction-count">0</span>
+     </button>
+<button data-key="interesting">
+       🤔 <span class="reaction-count">0</span>
+     </button>
   </div>
 
   <!-- Share buttons -->
   <div class="share-buttons">
-    <a href="https://facebook.com/sharer/sharer.php?u=" target="_blank" class="facebook">Facebook</a>
-    <a href="https://twitter.com/intent/tweet?url=" target="_blank" class="twitter">Twitter</a>
-    <a href="https://www.linkedin.com/sharing/share-offsite/?url=" target="_blank" class="linkedin">LinkedIn</a>
+    <a href="https://facebook.com/sharer/sharer.php?u=https://50crazyfacts.com/categories/animals/aardvarks/why-aardvarks-rarely-became-domesticated.html" target="_blank" class="facebook">Facebook</a>
+    <a href="https://twitter.com/intent/tweet?url=https://50crazyfacts.com/categories/animals/aardvarks/why-aardvarks-rarely-became-domesticated.html" target="_blank" class="twitter">Twitter</a>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://50crazyfacts.com/categories/animals/aardvarks/why-aardvarks-rarely-became-domesticated.html" target="_blank" class="linkedin">LinkedIn</a>
   </div>
 
-  <!-- Prev/Next links -->
+  <!-- Prev/Next Fact -->
   <div class="next-fact">
-    
-      <a href="">‹ Previous Fact</a>
-    
-    
-      <a href="" style="margin-left:20px;">Next Fact ›</a>
-    
+    {{#if PREV_FACT_URL}}<a href="#">‹ Previous Fact</a>{{/if}}
+    {{#if NEXT_FACT_URL}}<a href="https://50crazyfacts.com/categories/animals/aardvarks/how-aardvark-burrows-regulate-temperature.html" style="margin-left:20px;">Next Fact ›</a>{{/if}}
   </div>
 </div>
 
 <script>
+// Scroll progress
 window.addEventListener('scroll', () => {
   const st = document.documentElement.scrollTop || document.body.scrollTop;
   const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   document.getElementById('progressBar').style.width = (st/h*100) + '%';
+});
+
+// Reactions
+document.addEventListener('DOMContentLoaded', () => {
+  const reactionButtons = document.querySelectorAll('.reactions button');
+
+  reactionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const countSpan = btn.querySelector('.reaction-count');
+      let count = parseInt(countSpan.textContent || '0', 10);
+      count += 1;
+      countSpan.textContent = count;
+      btn.classList.add('selected');
+      setTimeout(() => btn.classList.remove('selected'), 400);
+      console.log(`Reaction clicked: ${btn.dataset.key}, new count: ${count}`);
+      // TODO: send update to spreadsheet
+    });
+  });
 });
 </script>
 
