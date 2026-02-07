@@ -25,19 +25,14 @@
 
 <style>
 body { font-family: Arial,sans-serif; margin:0; background:#f7f7f7; line-height:1.6; }
-
 header { background:#ff5722; color:white; padding:60px 20px; text-align:center; }
 header h1 { margin:0; font-size:3em; line-height:1.2; }
 .header-summary { background:rgba(255,255,255,0.2); padding:15px; margin-top:20px; border-radius:8px; display:inline-block; font-size:1.2em; }
-
 nav.top-nav { padding:10px 20px; background:#fff; display:flex; gap:10px; position:sticky; top:0; z-index:999; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
 nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
-
 .breadcrumbs { margin:10px 20px; font-size:0.9em; }
 .breadcrumbs a { color:#ff5722; text-decoration:none; text-transform:capitalize; }
-
 .content { padding:20px; max-width:800px; margin:auto; }
-
 details.expandable { margin:16px 0; border-radius:14px; background:#fff; border:1px solid #e5e7eb; box-shadow:0 4px 12px rgba(0,0,0,0.04); overflow:hidden; }
 details.expandable summary { list-style:none; cursor:pointer; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:1.05em; background:linear-gradient(90deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01)); }
 details.expandable summary::-webkit-details-marker { display:none; }
@@ -47,27 +42,22 @@ details.expandable summary::-webkit-details-marker { display:none; }
 details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 .expandable-content { padding:16px 18px 18px; animation:fadeIn 0.25s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-
 .reactions { display:flex; gap:12px; justify-content:center; margin:30px 0; flex-wrap:wrap; }
 .reactions button { background:#fff3e0; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:6px; transition:all 0.2s; }
 .reactions button:hover { background:#ffe0b2; transform:scale(1.05); }
+.reactions button.selected { background:#ffcc80; }
 .reaction-count { font-size:0.9em; color:#555; }
-
 .next-fact { background:#ffffff; border-radius:14px; padding:24px; margin:40px 0; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
 .next-fact a { display:inline-block; margin-top:14px; padding:14px 22px; border-radius:30px; background:#ff5722; color:white; font-weight:bold; text-decoration:none; }
-
 .share-buttons { display:flex; gap:10px; justify-content:center; margin:20px 0; }
 .share-buttons a { color:white; padding:10px 16px; border-radius:6px; font-weight:bold; text-decoration:none; }
 .share-buttons a.facebook { background:#3b5998; }
 .share-buttons a.twitter { background:#1da1f2; }
 .share-buttons a.linkedin { background:#0077b5; }
-
 #progressBar { position:fixed; top:0; left:0; width:0%; height:4px; background:#ff5722; z-index:1000; transition:width 0.2s; }
-
 .ad-placeholder { background:#e0e0e0; text-align:center; padding:20px; margin:20px 0; border-radius:10px; }
 </style>
 </head>
-
 <body>
 <div id="progressBar"></div>
 
@@ -90,7 +80,6 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 </header>
 
 <div class="content">
-
   <details class="expandable">
     <summary>
       <div class="expandable-title">💥 Impact<span class="expandable-hint">Click to expand</span></div>
@@ -119,22 +108,10 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 
   <!-- Reactions -->
   <div class="reactions">
-    
-    <button data-key="MIND_BLOWN">
-      🤯 <span class="reaction-count" id="MIND_BLOWN">0</span>
-    </button>
-
-    <button data-key="SHOCKED">
-      😲 <span class="reaction-count" id="SHOCKED">0</span>
-    </button>
-
-    <button data-key="WOW">
-      😮 <span class="reaction-count" id="WOW">0</span>
-    </button>
-
-    <button data-key="INTERESTING">
-      🤔 <span class="reaction-count" id="INTERESTING">0</span>
-    </button>
+    <button data-key="MIND_BLOWN">🤯 Mind Blown <span class="reaction-count">0</span></button>
+    <button data-key="SHOCKED">😱 Shocked <span class="reaction-count">0</span></button>
+    <button data-key="WOW">😮 Wow <span class="reaction-count">0</span></button>
+    <button data-key="INTERESTING">🤔 Interesting <span class="reaction-count">0</span></button>
   </div>
 
   <!-- Share buttons -->
@@ -149,84 +126,71 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
     <a href="the-fossil-aardvark-that-didnt-belong-where-found.html">‹ Previous Fact</a>
     <a href="the-longest-distance-an-aardvark-migrated-unexpectedly.html" style="margin-left:20px;">Next Fact ›</a>
   </div>
-
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-/* Scroll progress */
+const API_URL = "https://script.google.com/macros/s/AKfycbwjruCcHp80fsUjgZqp6dk3QRWIsyW3B5zNbghSV-2CPDWahTwnqspLTU4onP_yOfdVSA/exec";
+const SLUG = window.location.pathname.split("/").pop().replace(".html","");
+
+let lastSelected = null;
+const buttons = document.querySelectorAll('.reactions button');
+
+// Fetch initial counts
+fetch(`${API_URL}?slug=${SLUG}`).then(r=>r.json()).then(data=>{
+  if(data.success){
+    buttons.forEach(btn=>{
+      const key = btn.dataset.key;
+      btn.querySelector('.reaction-count').textContent = data.counts[key] || 0;
+    });
+  }
+});
+
+// Reaction click handler
+buttons.forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const key = btn.dataset.key;
+    if(lastSelected === key) return; // already selected
+
+    // Update UI instantly
+    buttons.forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    if(typeof confetti === "function") confetti({ particleCount: 80, spread: 60 });
+
+    const prev = lastSelected;
+    lastSelected = key;
+
+    const countSpan = btn.querySelector('.reaction-count');
+    countSpan.textContent = parseInt(countSpan.textContent || 0)+1;
+
+    // Decrement previous reaction visually
+    if(prev){
+      const prevBtn = Array.from(buttons).find(b=>b.dataset.key===prev);
+      if(prevBtn){
+        const prevCount = parseInt(prevBtn.querySelector('.reaction-count').textContent||0)-1;
+        prevBtn.querySelector('.reaction-count').textContent = Math.max(prevCount,0);
+      }
+    }
+
+    // Send to backend
+    try{
+      await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({ slug:SLUG, reaction:key, previous:prev })
+      });
+    }catch(e){
+      console.error("Reaction update failed", e);
+    }
+  });
+});
+
+// Scroll progress
 window.addEventListener('scroll', () => {
   const st = document.documentElement.scrollTop || document.body.scrollTop;
   const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   document.getElementById('progressBar').style.width = (st/h*100) + '%';
 });
-
-/* Reactions backend with throttling & initial counts */
-const API_URL = "https://script.google.com/macros/s/AKfycbwjruCcHp80fsUjgZqp6dk3QRWIsyW3B5zNbghSV-2CPDWahTwnqspLTU4onP_yOfdVSA/exec";
-const SLUG = window.location.pathname.split("/").pop().replace(".html","");
-
-const lastCounts = JSON.parse(localStorage.getItem(`reactions_${SLUG}`) || "{}");
-
-async function fetchCounts() {
-  try {
-    const res = await fetch(`${API_URL}?slug=${SLUG}`);
-    const data = await res.json();
-    if(data.success && data.counts){
-      for(const [key, val] of Object.entries(data.counts)){
-        const btn = document.querySelector(`.reactions button[data-key="${key}"]`);
-        if(btn){
-          btn.querySelector(".reaction-count").textContent = val;
-          lastCounts[key] = val;
-        }
-      }
-      localStorage.setItem(`reactions_${SLUG}`, JSON.stringify(lastCounts));
-    }
-  } catch(err){ console.error("Failed to fetch reactions:", err); }
-}
-
-// Initial render from last known counts
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.reactions button').forEach(btn => {
-    const key = btn.dataset.key;
-    if(lastCounts[key] !== undefined){
-      btn.querySelector(".reaction-count").textContent = lastCounts[key];
-    }
-  });
-  fetchCounts();
-
-  // Add click listener
-  let lastClickTime = 0;
-  document.querySelectorAll('.reactions button').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const reaction = btn.dataset.key;
-      const countSpan = btn.querySelector('.reaction-count');
-
-      // Instant update
-      const newVal = (parseInt(countSpan.textContent)||0)+1;
-      countSpan.textContent = newVal;
-      lastCounts[reaction] = newVal;
-      localStorage.setItem(`reactions_${SLUG}`, JSON.stringify(lastCounts));
-
-      // Confetti 🎉
-      if(typeof confetti === "function") confetti({ particleCount: 80, spread: 60 });
-
-      // Throttle requests (1 per 300ms)
-      const now = Date.now();
-      if(now - lastClickTime < 300) return;
-      lastClickTime = now;
-
-      try{
-        await fetch(API_URL, {
-          method:"POST",
-          body: JSON.stringify({ slug: SLUG, reaction })
-        });
-      } catch(err){
-        console.error("Reaction update failed:", err);
-      }
-    });
-  });
-});
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>
 </html>
