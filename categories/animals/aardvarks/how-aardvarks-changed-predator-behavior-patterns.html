@@ -160,32 +160,69 @@ window.addEventListener('scroll', () => {
   document.getElementById('progressBar').style.width = (st/h*100) + '%';
 });
 
-/* Reactions backend */
-const API_URL = "https://script.google.com/macros/s/AKfycbyPEhOd-FFcW3MTJ1q4ABb8ft9sWcp0qcF8Sez8xa0E7gdVigezZkMtN2E394djt8ekWg/exec"; // Replace with Apps Script Web App URL
+/* Reactions backend with throttling & initial counts */
+const API_URL = "https://script.google.com/macros/s/AKfycbwjruCcHp80fsUjgZqp6dk3QRWIsyW3B5zNbghSV-2CPDWahTwnqspLTU4onP_yOfdVSA/exec";
 const SLUG = window.location.pathname.split("/").pop().replace(".html","");
 
-document.querySelectorAll('.reactions button').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    const reaction = btn.dataset.key;
-    const countSpan = btn.querySelector('.reaction-count');
+const lastCounts = JSON.parse(localStorage.getItem(`reactions_${SLUG}`) || "{}");
 
-    // Update UI instantly
-    countSpan.textContent = parseInt(countSpan.textContent || 0) + 1;
-
-    // Confetti 🎉
-    if (typeof confetti === "function") {
-      confetti({ particleCount: 80, spread: 60 });
+async function fetchCounts() {
+  try {
+    const res = await fetch(`${API_URL}?slug=${SLUG}`);
+    const data = await res.json();
+    if(data.success && data.counts){
+      for(const [key, val] of Object.entries(data.counts)){
+        const btn = document.querySelector(`.reactions button[data-key="${key}"]`);
+        if(btn){
+          btn.querySelector(".reaction-count").textContent = val;
+          lastCounts[key] = val;
+        }
+      }
+      localStorage.setItem(`reactions_${SLUG}`, JSON.stringify(lastCounts));
     }
+  } catch(err){ console.error("Failed to fetch reactions:", err); }
+}
 
-    // Send update to spreadsheet
-    try {
-      await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ slug: SLUG, reaction: reaction })
-      });
-    } catch(err) {
-      console.error("Reaction failed:", err);
+// Initial render from last known counts
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.reactions button').forEach(btn => {
+    const key = btn.dataset.key;
+    if(lastCounts[key] !== undefined){
+      btn.querySelector(".reaction-count").textContent = lastCounts[key];
     }
+  });
+  fetchCounts();
+
+  // Add click listener
+  let lastClickTime = 0;
+  document.querySelectorAll('.reactions button').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const reaction = btn.dataset.key;
+      const countSpan = btn.querySelector('.reaction-count');
+
+      // Instant update
+      const newVal = (parseInt(countSpan.textContent)||0)+1;
+      countSpan.textContent = newVal;
+      lastCounts[reaction] = newVal;
+      localStorage.setItem(`reactions_${SLUG}`, JSON.stringify(lastCounts));
+
+      // Confetti 🎉
+      if(typeof confetti === "function") confetti({ particleCount: 80, spread: 60 });
+
+      // Throttle requests (1 per 300ms)
+      const now = Date.now();
+      if(now - lastClickTime < 300) return;
+      lastClickTime = now;
+
+      try{
+        await fetch(API_URL, {
+          method:"POST",
+          body: JSON.stringify({ slug: SLUG, reaction })
+        });
+      } catch(err){
+        console.error("Reaction update failed:", err);
+      }
+    });
   });
 });
 </script>
