@@ -284,6 +284,8 @@ How Phishing Started and Evolved Into a Multi-Billion Dollar Threat
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <script>
 /* Progress bar */
 window.addEventListener('scroll',()=>{
@@ -292,42 +294,74 @@ window.addEventListener('scroll',()=>{
   document.getElementById('progressBar').style.width=(st/h*100)+'%';
 });
 
-/* REACTIONS */
+/* Generate or get visitorId */
+let visitorId = localStorage.getItem('visitorId');
+if(!visitorId){
+  visitorId = crypto.randomUUID();
+  localStorage.setItem('visitorId', visitorId);
+}
+
 const API_URL="https://script.google.com/macros/s/AKfycbxtMPDiI0e1BUtNfmt-yt_x0cAxsfxde2C6sGZAmRR2tTvZFs6VMpWCIUbiHSDkkcoFYQ/exec";
 const SLUG=window.location.pathname.split("/").pop().replace(".html","");
 const SUBJECT="phishing";
 
+/* Load current reaction counts on page load */
+async function loadReactionCounts(){
+  try{
+    const res = await fetch(`${API_URL}?slug=${SLUG}&subject=${SUBJECT}`);
+    const data = await res.json();
+    if(data){
+      document.querySelectorAll('.reactions button').forEach(btn=>{
+        const key = btn.dataset.key.toLowerCase();
+        const span = btn.querySelector('.reaction-count');
+        span.textContent = data[key]||0;
+      });
+    }
+  }catch(err){
+    console.error("Failed to load reaction counts:",err);
+  }
+}
+loadReactionCounts();
+
+/* REACTIONS click handling */
 document.querySelectorAll('.reactions button').forEach(btn=>{
   btn.addEventListener('click',async()=>{
     const key=btn.dataset.key;
     const countSpan=btn.querySelector('.reaction-count');
     
-    /* Instant UI update */
-    let count=Number(countSpan.textContent)||0;
-    count++;
-    countSpan.textContent=count;
-    
-    /* Confetti */
-    if(typeof confetti==="function"){
-      confetti({particleCount:80,spread:60});
-    }
-    
+    // prevent multiple clicks per user
+    if(btn.dataset.clicked) return;
+    btn.dataset.clicked = true;
+
     /* Send to backend */
     try{
       const res=await fetch(API_URL,{
         method:"POST",
-        body:JSON.stringify({slug:SLUG,subject:SUBJECT,reaction:key})
+        body:JSON.stringify({slug:SLUG,subject:SUBJECT,reaction:key,visitorId:visitorId})
       });
       const data=await res.json();
       console.log("Reaction response:",data);
+
+      if(data.success){
+        // update counts from backend
+        if(data.counts){
+          document.querySelectorAll('.reactions button').forEach(b=>{
+            const k = b.dataset.key.toLowerCase();
+            const span = b.querySelector('.reaction-count');
+            span.textContent = data.counts[k]||0;
+          });
+        }
+        // Confetti
+        if(typeof confetti === "function") confetti({particleCount:80,spread:60});
+      } else {
+        alert(data.error || "Reaction failed");
+      }
     }catch(err){
       console.error("Reaction failed:",err);
     }
   });
 });
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 </body>
 </html>
