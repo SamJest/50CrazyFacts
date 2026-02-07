@@ -287,23 +287,43 @@ Why Urban Expansion Is Creating New Aardvark Behaviors
 <script>
 /* Progress bar */
 window.addEventListener('scroll',()=>{
-const st=document.documentElement.scrollTop;
-const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
-document.getElementById('progressBar').style.width=(st/h*100)+'%';
+  const st=document.documentElement.scrollTop;
+  const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  document.getElementById('progressBar').style.width=(st/h*100)+'%';
 });
 
 /* REACTIONS */
 const API_URL="https://script.google.com/macros/s/AKfycbxtMPDiI0e1BUtNfmt-yt_x0cAxsfxde2C6sGZAmRR2tTvZFs6VMpWCIUbiHSDkkcoFYQ/exec";
 const SLUG=window.location.pathname.split("/").pop().replace(".html","");
+const SUBJECT="aardvarks";
 
 document.querySelectorAll('.reactions button').forEach(btn=>{
-btn.addEventListener('click',async()=>{
-const key=btn.dataset.key;
-await fetch(API_URL,{
-method:"POST",
-body:JSON.stringify({slug:SLUG,reaction:key})
-});
-});
+  btn.addEventListener('click',async()=>{
+    const key=btn.dataset.key;
+    const countSpan=btn.querySelector('.reaction-count');
+    
+    /* Instant UI update */
+    let count=Number(countSpan.textContent)||0;
+    count++;
+    countSpan.textContent=count;
+    
+    /* Confetti */
+    if(typeof confetti==="function"){
+      confetti({particleCount:80,spread:60});
+    }
+    
+    /* Send to backend */
+    try{
+      const res=await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({slug:SLUG,subject:SUBJECT,reaction:key})
+      });
+      const data=await res.json();
+      console.log("Reaction response:",data);
+    }catch(err){
+      console.error("Reaction failed:",err);
+    }
+  });
 });
 </script>
 
