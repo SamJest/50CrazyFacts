@@ -24,7 +24,6 @@
 
 
 <style>
-/* Your existing CSS completely preserved */
 body { font-family: Arial,sans-serif; margin:0; background:#f7f7f7; line-height:1.6; }
 
 header { background:#ff5722; color:white; padding:60px 20px; text-align:center; }
@@ -39,7 +38,6 @@ nav.top-nav a { color:#ff5722; font-weight:bold; text-decoration:none; }
 
 .content { padding:20px; max-width:800px; margin:auto; }
 
-/* Expandable sections */
 details.expandable { margin:16px 0; border-radius:14px; background:#fff; border:1px solid #e5e7eb; box-shadow:0 4px 12px rgba(0,0,0,0.04); overflow:hidden; }
 details.expandable summary { list-style:none; cursor:pointer; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:1.05em; background:linear-gradient(90deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01)); }
 details.expandable summary::-webkit-details-marker { display:none; }
@@ -50,30 +48,22 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 .expandable-content { padding:16px 18px 18px; animation:fadeIn 0.25s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
-/* Reactions */
 .reactions { display:flex; gap:12px; justify-content:center; margin:30px 0; flex-wrap:wrap; }
 .reactions button { background:#fff3e0; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:6px; transition:all 0.2s; }
 .reactions button:hover { background:#ffe0b2; transform:scale(1.05); }
-.reactions button.selected { background:#ffcc80; }
-.reactions button.disabled { opacity:0.5; cursor:default; }
 .reaction-count { font-size:0.9em; color:#555; }
-@media(max-width:768px){ .reactions { position:sticky; bottom:0; background:#fff3e0; padding:10px; border-top:1px solid #ffcc80; margin:0; justify-content:space-around; } }
 
-/* Prev/Next Fact links */
 .next-fact { background:#ffffff; border-radius:14px; padding:24px; margin:40px 0; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
 .next-fact a { display:inline-block; margin-top:14px; padding:14px 22px; border-radius:30px; background:#ff5722; color:white; font-weight:bold; text-decoration:none; }
 
-/* Share buttons */
 .share-buttons { display:flex; gap:10px; justify-content:center; margin:20px 0; }
 .share-buttons a { color:white; padding:10px 16px; border-radius:6px; font-weight:bold; text-decoration:none; }
 .share-buttons a.facebook { background:#3b5998; }
 .share-buttons a.twitter { background:#1da1f2; }
 .share-buttons a.linkedin { background:#0077b5; }
 
-/* Progress bar */
 #progressBar { position:fixed; top:0; left:0; width:0%; height:4px; background:#ff5722; z-index:1000; transition:width 0.2s; }
 
-/* Ad placeholder */
 .ad-placeholder { background:#e0e0e0; text-align:center; padding:20px; margin:20px 0; border-radius:10px; }
 </style>
 </head>
@@ -100,6 +90,7 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
 </header>
 
 <div class="content">
+
   <details class="expandable">
     <summary>
       <div class="expandable-title">💥 Impact<span class="expandable-hint">Click to expand</span></div>
@@ -153,34 +144,48 @@ details.expandable[open] .expandable-arrow { transform:rotate(90deg); }
     <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://50crazyfacts.com/categories/animals/aardvarks/why-aardvarks-rarely-appear-in-ancient-art.html" target="_blank" class="linkedin">LinkedIn</a>
   </div>
 
-<!-- Prev / Next Fact Navigation -->
-<div class="next-fact">
-  <a href="why-aardvarks-may-outlive-many-larger-african-mammals.html" class="prev-btn">‹ Previous Fact</a>
-  <a href="why-aardvarks-rarely-became-domesticated.html" class="next-btn" style="margin-left:20px;">Next Fact ›</a>
+  <!-- Prev / Next Fact Navigation -->
+  <div class="next-fact">
+    <a href="why-aardvarks-may-outlive-many-larger-african-mammals.html">‹ Previous Fact</a>
+    <a href="why-aardvarks-rarely-became-domesticated.html" style="margin-left:20px;">Next Fact ›</a>
+  </div>
+
 </div>
 
 <script>
-// Scroll progress
+/* Scroll progress */
 window.addEventListener('scroll', () => {
   const st = document.documentElement.scrollTop || document.body.scrollTop;
   const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   document.getElementById('progressBar').style.width = (st/h*100) + '%';
 });
 
-// Reactions
-document.addEventListener('DOMContentLoaded', () => {
-  const reactionButtons = document.querySelectorAll('.reactions button');
-  reactionButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const countSpan = btn.querySelector('.reaction-count');
-      let count = parseInt(countSpan.textContent || '0', 10);
-      count += 1;
-      countSpan.textContent = count;
-      btn.classList.add('selected');
-      setTimeout(() => btn.classList.remove('selected'), 400);
-      console.log(`Reaction clicked: ${btn.dataset.key}, new count: ${count}`);
-      // TODO: send update to spreadsheet
-    });
+/* Reactions backend */
+const API_URL = "https://script.google.com/macros/s/AKfycbyPEhOd-FFcW3MTJ1q4ABb8ft9sWcp0qcF8Sez8xa0E7gdVigezZkMtN2E394djt8ekWg/exec"; // Replace with Apps Script Web App URL
+const SLUG = window.location.pathname.split("/").pop().replace(".html","");
+
+document.querySelectorAll('.reactions button').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const reaction = btn.dataset.key;
+    const countSpan = btn.querySelector('.reaction-count');
+
+    // Update UI instantly
+    countSpan.textContent = parseInt(countSpan.textContent || 0) + 1;
+
+    // Confetti 🎉
+    if (typeof confetti === "function") {
+      confetti({ particleCount: 80, spread: 60 });
+    }
+
+    // Send update to spreadsheet
+    try {
+      await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ slug: SLUG, reaction: reaction })
+      });
+    } catch(err) {
+      console.error("Reaction failed:", err);
+    }
   });
 });
 </script>
