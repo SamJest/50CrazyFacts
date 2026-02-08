@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facts in Axolotls</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+
+/* HEADER */
+
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+}
+
+header h1{
+  font-size:2.6em;
+  margin:0 0 10px;
+}
+
+header p{
+  font-size:1.1em;
+  opacity:0.9;
+  max-width:720px;
+  margin:0 auto;
+}
+
+.meta-bar{
+  margin-top:18px;
+  font-weight:bold;
+  opacity:0.9;
+}
+
+/* PROGRESS BAR */
+
+#progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0%;
+  background:#ff5722;
+  z-index:9999;
+}
+
+/* GRID */
+
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:.25s;
+  cursor:pointer;
+  opacity:0;
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* TITLE */
+
+.card a{
+  display:block;
+  font-weight:700;
+  color:#222;
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:1.1em;
+}
+
+/* REACTIONS */
+
+.reaction-count{
+  font-size:.9em;
+  opacity:.75;
+}
+
+/* TRENDING BADGE */
+
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ff5722;
+  color:white;
+  font-size:.7em;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+/* SHUFFLE BUTTON */
+
+.shuffle{
+  display:block;
+  margin:10px auto 0;
+  padding:12px 18px;
+  border:none;
+  border-radius:30px;
+  background:#ff5722;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MOMENTUM BOX */
+
+#momentum-box{
+  background:white;
+  border-radius:16px;
+  padding:26px;
+  margin:40px auto;
+  max-width:700px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  display:none;
+}
+
+/* BACK TO TOP */
+
+.back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:14px 18px;
+  background:#ff5722;
+  color:white;
+  border-radius:50px;
+  font-weight:bold;
+  cursor:pointer;
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <h1>Explore Facts in "Axolotls"</h1>
+  <p>Dive into fascinating, weird, and wonderful knowledge.</p>
+
+  <div class="meta-bar">
+    <span id="factCount"></span> Facts •
+    <span id="reactionCount"></span> Reactions
+  </div>
+
+  <button class="shuffle" onclick="shuffleFacts()">
+    🔀 Shuffle Facts
+  </button>
+</header>
+
+<section id="subject-grid" class="grid"></section>
+
+<div id="momentum-box">
+  <h2>Discover this next</h2>
+  <div id="momentumTitle"></div>
+  <a id="momentumLink" href="#">Explore →</a>
+</div>
+
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
+<script>
+
+/* INJECTED DATA */
+const SUBJECTS = [{"title":"Adaptation to Lake Xochimilco","slug":"adaptation-to-lake-xochimilco","url":"/categories/animals/axolotls/adaptation-to-lake-xochimilco.html","color":"#9C27B0","snippet":"Swimming against the odds.","reactions":0,"totalReactions":0},{"title":"Ancient Origins of the Axolotl","slug":"ancient-origins-of-the-axolotl","url":"/categories/animals/axolotls/ancient-origins-of-the-axolotl.html","color":"#9C27B0","snippet":"The axolotl has been around far longer than humans realized.","reactions":0,"totalReactions":0},{"title":"Artistic Representations","slug":"artistic-representations","url":"/categories/animals/axolotls/artistic-representations.html","color":"#9C27B0","snippet":"From codices to murals.","reactions":0,"totalReactions":0},{"title":"Axolotls as Educational Tools","slug":"axolotls-as-educational-tools","url":"/categories/animals/axolotls/axolotls-as-educational-tools.html","color":"#9C27B0","snippet":"Hands-on science.","reactions":0,"totalReactions":0},{"title":"Axolotls’ Role in Early Regeneration Research","slug":"axolotls-role-in-early-regeneration-research","url":"/categories/animals/axolotls/axolotls-role-in-early-regeneration-research.html","color":"#9C27B0","snippet":"Forever fascinating.","reactions":0,"totalReactions":0},{"title":"Aztec Reverence for Axolotls","slug":"aztec-reverence-for-axolotls","url":"/categories/animals/axolotls/aztec-reverence-for-axolotls.html","color":"#9C27B0","snippet":"Mystical amphibians of ancient Mexico.","reactions":0,"totalReactions":0},{"title":"Aztec Reverence for Axolotls","slug":"aztec-reverence-for-axolotls","url":"/categories/animals/axolotls/aztec-reverence-for-axolotls.html","color":"#9C27B0","snippet":"From food to deity.","reactions":0,"totalReactions":0},{"title":"Biomedical Research Potential","slug":"biomedical-research-potential","url":"/categories/animals/axolotls/biomedical-research-potential.html","color":"#9C27B0","snippet":"Future medicine models.","reactions":0,"totalReactions":0},{"title":"Captive Breeding in History","slug":"captive-breeding-in-history","url":"/categories/animals/axolotls/captive-breeding-in-history.html","color":"#9C27B0","snippet":"From canals to labs.","reactions":0,"totalReactions":0},{"title":"Dietary Adaptations","slug":"dietary-adaptations","url":"/categories/animals/axolotls/dietary-adaptations.html","color":"#9C27B0","snippet":"Not picky eaters.","reactions":0,"totalReactions":0},{"title":"Discovery by European Scientists","slug":"discovery-by-european-scientists","url":"/categories/animals/axolotls/discovery-by-european-scientists.html","color":"#9C27B0","snippet":"First European encounter.","reactions":0,"totalReactions":0},{"title":"Early Scientific Descriptions","slug":"early-scientific-descriptions","url":"/categories/animals/axolotls/early-scientific-descriptions.html","color":"#9C27B0","snippet":"From curiosity to biology.","reactions":0,"totalReactions":0},{"title":"Early Scientific Study","slug":"early-scientific-study","url":"/categories/animals/axolotls/early-scientific-study.html","color":"#9C27B0","snippet":"Mexico’s living marvels.","reactions":0,"totalReactions":0},{"title":"Evolutionary Lineage of Axolotls","slug":"evolutionary-lineage-of-axolotls","url":"/categories/animals/axolotls/evolutionary-lineage-of-axolotls.html","color":"#9C27B0","snippet":"Axolotls are living relics of a long amphibian lineage.","reactions":0,"totalReactions":0},{"title":"First Captive Breeding Success","slug":"first-captive-breeding-success","url":"/categories/animals/axolotls/first-captive-breeding-success.html","color":"#9C27B0","snippet":"Careful hands produce wonder.","reactions":0,"totalReactions":0},{"title":"Genetic Adaptations in Isolated Populations","slug":"genetic-adaptations-in-isolated-populations","url":"/categories/animals/axolotls/genetic-adaptations-in-isolated-populations.html","color":"#9C27B0","snippet":"Isolated but resilient.","reactions":0,"totalReactions":0},{"title":"Genetic Engineering Advances","slug":"genetic-engineering-advances","url":"/categories/animals/axolotls/genetic-engineering-advances.html","color":"#9C27B0","snippet":"Fixing nature with science.","reactions":0,"totalReactions":0},{"title":"Heart Tissue Regeneration","slug":"heart-tissue-regeneration","url":"/categories/animals/axolotls/heart-tissue-regeneration.html","color":"#9C27B0","snippet":"Hearts that heal themselves.","reactions":0,"totalReactions":0},{"title":"High Regenerative Capacity","slug":"high-regenerative-capacity","url":"/categories/animals/axolotls/high-regenerative-capacity.html","color":"#9C27B0","snippet":"Evolution’s miracle.","reactions":0,"totalReactions":0},{"title":"Hormonal Influence on Regeneration","slug":"hormonal-influence-on-regeneration","url":"/categories/animals/axolotls/hormonal-influence-on-regeneration.html","color":"#9C27B0","snippet":"Chemicals that control growth.","reactions":0,"totalReactions":0},{"title":"Immune System Role in Regeneration","slug":"immune-system-role-in-regeneration","url":"/categories/animals/axolotls/immune-system-role-in-regeneration.html","color":"#9C27B0","snippet":"Fighting and healing simultaneously.","reactions":0,"totalReactions":0},{"title":"Impact of Early Habitat Changes","slug":"impact-of-early-habitat-changes","url":"/categories/animals/axolotls/impact-of-early-habitat-changes.html","color":"#9C27B0","snippet":"Humans encroach, species respond.","reactions":0,"totalReactions":0},{"title":"Impact on Ecotourism","slug":"impact-on-ecotourism","url":"/categories/animals/axolotls/impact-on-ecotourism.html","color":"#9C27B0","snippet":"Visitors to the lake.","reactions":0,"totalReactions":0},{"title":"Influence on Developmental Biology","slug":"influence-on-developmental-biology","url":"/categories/animals/axolotls/influence-on-developmental-biology.html","color":"#9C27B0","snippet":"Living textbooks.","reactions":0,"totalReactions":0},{"title":"Influence on Modern Science Communication","slug":"influence-on-modern-science-communication","url":"/categories/animals/axolotls/influence-on-modern-science-communication.html","color":"#9C27B0","snippet":"Science made tangible.","reactions":0,"totalReactions":0},{"title":"Introduction to European Aquariums","slug":"introduction-to-european-aquariums","url":"/categories/animals/axolotls/introduction-to-european-aquariums.html","color":"#9C27B0","snippet":"Curious creatures across the Atlantic.","reactions":0,"totalReactions":0},{"title":"Limb Regeneration Mechanism","slug":"limb-regeneration-mechanism","url":"/categories/animals/axolotls/limb-regeneration-mechanism.html","color":"#9C27B0","snippet":"How axolotls regrow limbs.","reactions":0,"totalReactions":0},{"title":"Modern Conservation Efforts","slug":"modern-conservation-efforts","url":"/categories/animals/axolotls/modern-conservation-efforts.html","color":"#9C27B0","snippet":"Saving a living relic.","reactions":0,"totalReactions":0},{"title":"Neoteny Evolution","slug":"neoteny-evolution","url":"/categories/animals/axolotls/neoteny-evolution.html","color":"#9C27B0","snippet":"Retaining youth indefinitely.","reactions":0,"totalReactions":0},{"title":"Neoteny Recognized in Early Studies","slug":"neoteny-recognized-in-early-studies","url":"/categories/animals/axolotls/neoteny-recognized-in-early-studies.html","color":"#9C27B0","snippet":"Forever young, scientifically speaking.","reactions":0,"totalReactions":0},{"title":"Neural Control of Regeneration","slug":"neural-control-of-regeneration","url":"/categories/animals/axolotls/neural-control-of-regeneration.html","color":"#9C27B0","snippet":"Nerves guide regrowth.","reactions":0,"totalReactions":0},{"title":"Obscure Behavioral Traits","slug":"obscure-behavioral-traits","url":"/categories/animals/axolotls/obscure-behavioral-traits.html","color":"#9C27B0","snippet":"Strange social habits.","reactions":0,"totalReactions":0},{"title":"Obscure Laboratory Experiments","slug":"obscure-laboratory-experiments","url":"/categories/animals/axolotls/obscure-laboratory-experiments.html","color":"#9C27B0","snippet":"Axolotls in space.","reactions":0,"totalReactions":0},{"title":"Obsolete Natural Habitats","slug":"obsolete-natural-habitats","url":"/categories/animals/axolotls/obsolete-natural-habitats.html","color":"#9C27B0","snippet":"Lost canals and lakes.","reactions":0,"totalReactions":0},{"title":"Potential Future Biomedical Uses","slug":"potential-future-biomedical-uses","url":"/categories/animals/axolotls/potential-future-biomedical-uses.html","color":"#9C27B0","snippet":"Healing from the future.","reactions":0,"totalReactions":0},{"title":"Regeneration of Eyes","slug":"regeneration-of-eyes","url":"/categories/animals/axolotls/regeneration-of-eyes.html","color":"#9C27B0","snippet":"Seeing again naturally.","reactions":0,"totalReactions":0},{"title":"Regeneration of Jaws and Dentition","slug":"regeneration-of-jaws-and-dentition","url":"/categories/animals/axolotls/regeneration-of-jaws-and-dentition.html","color":"#9C27B0","snippet":"Mouths that rebuild themselves.","reactions":0,"totalReactions":0},{"title":"Response to Predators","slug":"response-to-predators","url":"/categories/animals/axolotls/response-to-predators.html","color":"#9C27B0","snippet":"Clever survival.","reactions":0,"totalReactions":0},{"title":"Skin Pigmentation Variation","slug":"skin-pigmentation-variation","url":"/categories/animals/axolotls/skin-pigmentation-variation.html","color":"#9C27B0","snippet":"Colors of survival.","reactions":0,"totalReactions":0},{"title":"Spinal Cord Regeneration","slug":"spinal-cord-regeneration","url":"/categories/animals/axolotls/spinal-cord-regeneration.html","color":"#9C27B0","snippet":"Brains that fix themselves.","reactions":0,"totalReactions":0},{"title":"Surprising Lifespan","slug":"surprising-lifespan","url":"/categories/animals/axolotls/surprising-lifespan.html","color":"#9C27B0","snippet":"Not just short-lived.","reactions":0,"totalReactions":0},{"title":"Symbolism in Modern Culture","slug":"symbolism-in-modern-culture","url":"/categories/animals/axolotls/symbolism-in-modern-culture.html","color":"#9C27B0","snippet":"Regeneration as metaphor.","reactions":0,"totalReactions":0},{"title":"Tail Regeneration","slug":"tail-regeneration","url":"/categories/animals/axolotls/tail-regeneration.html","color":"#9C27B0","snippet":"Rebuilding the tail.","reactions":0,"totalReactions":0},{"title":"Thermal Tolerance Evolution","slug":"thermal-tolerance-evolution","url":"/categories/animals/axolotls/thermal-tolerance-evolution.html","color":"#9C27B0","snippet":"Cold or warm, they cope.","reactions":0,"totalReactions":0},{"title":"Tolerance to Hypoxic Conditions","slug":"tolerance-to-hypoxic-conditions","url":"/categories/animals/axolotls/tolerance-to-hypoxic-conditions.html","color":"#9C27B0","snippet":"Surviving on low oxygen.","reactions":0,"totalReactions":0},{"title":"Traditional Culinary Use","slug":"traditional-culinary-use","url":"/categories/animals/axolotls/traditional-culinary-use.html","color":"#9C27B0","snippet":"Food of the lake.","reactions":0,"totalReactions":0}];
+const SUBJECT_META = {"factCount":46,"totalReactions":0};
+
+/* HEADER META */
+
+document.getElementById('factCount')
+  .textContent = SUBJECT_META.factCount;
+
+document.getElementById('reactionCount')
+  .textContent =
+    SUBJECT_META.totalReactions.toLocaleString();
+
+/* PRETTY NAME */
+
+function prettyName(slug){
+  return slug.replace(/-/g,' ')
+             .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+/* CREATE CARD */
+
+function createCard(fact){
+
+  const div=document.createElement('div');
+  div.className='card';
+
+  if(fact.reactions>50){
+    div.innerHTML+=`<div class="badge">Trending</div>`;
+  }
+
+  div.innerHTML+=`
+    <a href="${fact.url}">
+      ${prettyName(fact.title)}
+    </a>
+    <div class="reaction-count">
+      👍 ${fact.reactions.toLocaleString()}
+    </div>
+  `;
+
+  return div;
+}
+
+/* POPULATE */
+
+function populateGrid(facts){
+
+  const container=
+    document.getElementById('subject-grid');
+
+  container.innerHTML='';
+
+  facts.forEach((f,i)=>{
+    const card=createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*40);
+  });
+
+  setupMomentum();
+}
+
+/* SHUFFLE */
+
+function shuffleFacts(){
+  SUBJECTS.sort(()=>Math.random()-0.5);
+  populateGrid(SUBJECTS);
+}
+
+/* MOMENTUM */
+
+function setupMomentum(){
+
+  document.querySelectorAll('.card')
+  .forEach(card=>{
+
+    card.addEventListener('click',()=>{
+
+      const pool=[...document.querySelectorAll('.card')]
+        .filter(c=>c!==card);
+
+      if(!pool.length)return;
+
+      const next=
+        pool[Math.floor(Math.random()*pool.length)];
+
+      document.getElementById('momentumTitle')
+        .textContent=
+        next.querySelector('a').textContent;
+
+      document.getElementById('momentumLink')
+        .href=
+        next.querySelector('a').href;
+
+      document.getElementById('momentum-box')
+        .style.display='block';
+    });
+
+  });
+}
+
+/* PROGRESS BAR */
+
+window.addEventListener('scroll',()=>{
+
+  const winScroll=
+    document.documentElement.scrollTop;
+
+  const height=
+    document.documentElement.scrollHeight-
+    document.documentElement.clientHeight;
+
+  document.getElementById('progress').style.width=
+    (winScroll/height)*100+'%';
+});
+
+/* BACK TO TOP */
+
+const topBtn=document.getElementById('backToTop');
+
+window.addEventListener('scroll',()=>{
+  topBtn.style.display=
+    window.scrollY>400?'block':'none';
+});
+
+topBtn.onclick=()=>
+  window.scrollTo({top:0,behavior:'smooth'});
+
+/* INIT */
+
+populateGrid(SUBJECTS);
+
+</script>
+
+</body>
+</html>

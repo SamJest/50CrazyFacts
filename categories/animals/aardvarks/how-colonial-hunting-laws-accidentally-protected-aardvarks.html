@@ -23,6 +23,30 @@
 </script>
 
 
+<!-- SEO / Social -->
+<link rel="canonical" href="https://50crazyfacts.com/categories/animals/aardvarks/how-colonial-hunting-laws-accidentally-protected-aardvarks.html">
+<meta property="og:title" content="How Colonial Hunting Laws Accidentally Protected Aardvarks">
+<meta property="og:description" content="The law targeted others. Aardvarks slipped through. Survival followed.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://50crazyfacts.com/categories/animals/aardvarks/how-colonial-hunting-laws-accidentally-protected-aardvarks.html">
+<meta property="og:image" content="{{SOCIAL_IMAGE}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How Colonial Hunting Laws Accidentally Protected Aardvarks">
+<meta name="twitter:description" content="The law targeted others. Aardvarks slipped through. Survival followed.">
+<meta name="twitter:image" content="{{SOCIAL_IMAGE}}">
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "How Colonial Hunting Laws Accidentally Protected Aardvarks",
+ "description": "The law targeted others. Aardvarks slipped through. Survival followed.",
+ "author": { "@type": "Organization", "name": "{{SITE_NAME}}" },
+ "publisher": { "@type": "Organization", "name": "{{SITE_NAME}}" },
+ "mainEntityOfPage": "https://50crazyfacts.com/categories/animals/aardvarks/how-colonial-hunting-laws-accidentally-protected-aardvarks.html"
+}
+</script>
+
 <style>
 body{
   font-family:Arial,sans-serif;
@@ -33,7 +57,7 @@ body{
 
 /* HEADER */
 header{
-  background:#ff5722;
+  background:#9C27B0;
   color:white;
   padding:60px 20px;
   text-align:center;
@@ -63,7 +87,7 @@ nav.top-nav{
   box-shadow:0 2px 5px rgba(0,0,0,0.05);
 }
 nav.top-nav a{
-  color:#ff5722;
+  color:#9C27B0;
   font-weight:bold;
   text-decoration:none;
 }
@@ -74,11 +98,11 @@ nav.top-nav a{
   font-size:0.9em;
 }
 .breadcrumbs a{
-  color:#ff5722;
+  color:#9C27B0;
   text-decoration:none;
 }
 
-/* CONTENT WRAP — FIXES EDGE ISSUE */
+/* CONTENT WRAP */
 .content{
   padding:30px 24px;
   max-width:900px;
@@ -115,7 +139,7 @@ details.expandable summary::-webkit-details-marker{
 .expandable-arrow{
   font-size:1.4em;
   transition:transform .25s ease;
-  color:#ff5722;
+  color:#9C27B0;
 }
 details[open] .expandable-arrow{
   transform:rotate(90deg);
@@ -141,14 +165,40 @@ details[open] .expandable-arrow{
   font-weight:bold;
   display:flex;
   gap:6px;
+  align-items:center;
 }
 .reactions button.selected{
-  background:#ff5722;
+  background:#9C27B0;
   color:white;
   transform:scale(1.08);
 }
 .reaction-count{
   font-size:.9em;
+}
+
+/* Emoji animations */
+.reactions button .emoji{
+  display:inline-block;
+  transition:transform .2s ease;
+}
+.reactions button.animate .emoji{
+  animation:emojiPop .6s ease;
+}
+@keyframes emojiPop{
+  0%{ transform:scale(1) rotate(0deg); }
+  30%{ transform:scale(1.6) rotate(-8deg); }
+  60%{ transform:scale(1.2) rotate(6deg); }
+  100%{ transform:scale(1) rotate(0deg); }
+}
+.emoji-burst{
+  position:fixed;
+  font-size:22px;
+  pointer-events:none;
+  animation:floatUp 1s ease forwards;
+}
+@keyframes floatUp{
+  0%{ transform:translateY(0) scale(1); opacity:1; }
+  100%{ transform:translateY(-80px) scale(1.6); opacity:0; }
 }
 
 /* SHARE */
@@ -183,7 +233,7 @@ details[open] .expandable-arrow{
   margin-top:14px;
   padding:14px 22px;
   border-radius:30px;
-  background:#ff5722;
+  background:#9C27B0;
   color:white;
   font-weight:bold;
   text-decoration:none;
@@ -196,7 +246,7 @@ details[open] .expandable-arrow{
   left:0;
   width:0%;
   height:4px;
-  background:#ff5722;
+  background:#9C27B0;
   z-index:1000;
 }
 </style>
@@ -283,8 +333,8 @@ How Colonial Hunting Laws Accidentally Protected Aardvarks
 
 <!-- PREV NEXT -->
 <div class="next-fact">
-<a href="how-aardvarks-survive-with-extremely-low-metabolism.html">‹ Previous Fact</a>
-<a href="the-aardvark-that-confused-science-for-a-century.html" style="margin-left:20px;">Next Fact ›</a>
+<a href="#">‹ Previous Fact</a>
+<a href="#" style="margin-left:20px;">Next Fact ›</a>
 </div>
 
 </div>
@@ -329,30 +379,59 @@ async function loadReactionCounts(){
 }
 loadReactionCounts();
 
+/* Load previous reaction */
+const storedReaction = localStorage.getItem(`reaction_${SLUG}`);
+if(storedReaction){
+  const btn = document.querySelector(`.reactions button[data-key="${storedReaction}"]`);
+  if(btn) btn.classList.add('selected');
+}
+
 /* Reaction click */
 document.querySelectorAll('.reactions button').forEach(btn=>{
-  btn.addEventListener('click',async()=>{
+  btn.addEventListener('click', async (event)=>{
 
     const key = btn.dataset.key;
+    const previous = localStorage.getItem(`reaction_${SLUG}`);
+
+    /* Prevent duplicate click */
+    if(previous === key) return;
 
     /* Remove previous selection */
     document.querySelectorAll('.reactions button').forEach(b=>{
       b.classList.remove('selected');
     });
 
-    /* Highlight selected */
     btn.classList.add('selected');
+    localStorage.setItem(`reaction_${SLUG}`, key);
 
-    /* Instant +1 visual bump */
-    const span = btn.querySelector('.reaction-count');
-    span.textContent = Number(span.textContent||0) + 1;
+    /* Emoji animation */
+    btn.classList.add('animate');
+    setTimeout(()=>btn.classList.remove('animate'),600);
 
-    /* Confetti instantly */
+    const emoji = btn.querySelector('.emoji')?.textContent || "✨";
+
+    for(let i=0;i<6;i++){
+      const burst=document.createElement('div');
+      burst.className='emoji-burst';
+      burst.textContent=emoji;
+      burst.style.left=(event.clientX + (Math.random()*40-20))+'px';
+      burst.style.top=(event.clientY)+'px';
+      document.body.appendChild(burst);
+      setTimeout(()=>burst.remove(),1000);
+    }
+
+    /* Visual bump ONLY first time */
+    if(!previous){
+      const span = btn.querySelector('.reaction-count');
+      span.textContent = Number(span.textContent||0) + 1;
+    }
+
+    /* Confetti */
     if(typeof confetti==="function"){
       confetti({particleCount:80,spread:60});
     }
 
-    /* Send to backend (unchanged logic) */
+    /* Send to backend */
     try{
       const res = await fetch(API_URL,{
         method:"POST",
@@ -360,13 +439,13 @@ document.querySelectorAll('.reactions button').forEach(btn=>{
           slug:SLUG,
           subject:SUBJECT,
           reaction:key,
-          visitorId:visitorId
+          visitorId:visitorId,
+          previousReaction: previous || null
         })
       });
 
       const data = await res.json();
 
-      /* Sync real counts */
       if(data.success && data.counts){
         document.querySelectorAll('.reactions button').forEach(b=>{
           const k = b.dataset.key.toLowerCase();

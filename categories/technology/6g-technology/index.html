@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facts in 6g Technology</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+
+/* HEADER */
+
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+}
+
+header h1{
+  font-size:2.6em;
+  margin:0 0 10px;
+}
+
+header p{
+  font-size:1.1em;
+  opacity:0.9;
+  max-width:720px;
+  margin:0 auto;
+}
+
+.meta-bar{
+  margin-top:18px;
+  font-weight:bold;
+  opacity:0.9;
+}
+
+/* PROGRESS BAR */
+
+#progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0%;
+  background:#ff5722;
+  z-index:9999;
+}
+
+/* GRID */
+
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:.25s;
+  cursor:pointer;
+  opacity:0;
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* TITLE */
+
+.card a{
+  display:block;
+  font-weight:700;
+  color:#222;
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:1.1em;
+}
+
+/* REACTIONS */
+
+.reaction-count{
+  font-size:.9em;
+  opacity:.75;
+}
+
+/* TRENDING BADGE */
+
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ff5722;
+  color:white;
+  font-size:.7em;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+/* SHUFFLE BUTTON */
+
+.shuffle{
+  display:block;
+  margin:10px auto 0;
+  padding:12px 18px;
+  border:none;
+  border-radius:30px;
+  background:#ff5722;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MOMENTUM BOX */
+
+#momentum-box{
+  background:white;
+  border-radius:16px;
+  padding:26px;
+  margin:40px auto;
+  max-width:700px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  display:none;
+}
+
+/* BACK TO TOP */
+
+.back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:14px 18px;
+  background:#ff5722;
+  color:white;
+  border-radius:50px;
+  font-weight:bold;
+  cursor:pointer;
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <h1>Explore Facts in "6g Technology"</h1>
+  <p>Dive into fascinating, weird, and wonderful knowledge.</p>
+
+  <div class="meta-bar">
+    <span id="factCount"></span> Facts •
+    <span id="reactionCount"></span> Reactions
+  </div>
+
+  <button class="shuffle" onclick="shuffleFacts()">
+    🔀 Shuffle Facts
+  </button>
+</header>
+
+<section id="subject-grid" class="grid"></section>
+
+<div id="momentum-box">
+  <h2>Discover this next</h2>
+  <div id="momentumTitle"></div>
+  <a id="momentumLink" href="#">Explore →</a>
+</div>
+
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
+<script>
+
+/* INJECTED DATA */
+const SUBJECTS = [{"title":"6G and AI-Driven Networks: Smarter Connectivity","slug":"6g-and-ai-driven-networks-smarter-connectivity","url":"/categories/technology/6g-technology/6g-and-ai-driven-networks-smarter-connectivity.html","color":"#FFC107","snippet":"6G isn’t just faster; it’s smarter.","reactions":0,"totalReactions":0},{"title":"6G and AI-Powered Farming: Smart Agriculture","slug":"6g-and-ai-powered-farming-smart-agriculture","url":"/categories/technology/6g-technology/6g-and-ai-powered-farming-smart-agriculture.html","color":"#FFC107","snippet":"6G could transform food production.","reactions":0,"totalReactions":0},{"title":"6G and Autonomous Vehicles: Cars That React Instantly","slug":"6g-and-autonomous-vehicles-cars-that-react-instantly","url":"/categories/technology/6g-technology/6g-and-autonomous-vehicles-cars-that-react-instantly.html","color":"#FFC107","snippet":"6G will make self-driving cars faster and safer.","reactions":0,"totalReactions":0},{"title":"6G and Autonomous Vehicles: Roads That Think","slug":"6g-and-autonomous-vehicles-roads-that-think","url":"/categories/technology/6g-technology/6g-and-autonomous-vehicles-roads-that-think.html","color":"#FFC107","snippet":"6G could make self-driving cars smarter.","reactions":0,"totalReactions":0},{"title":"6G and Brain-Computer Interfaces: Mind Over Machines","slug":"6g-and-brain-computer-interfaces-mind-over-machines","url":"/categories/technology/6g-technology/6g-and-brain-computer-interfaces-mind-over-machines.html","color":"#FFC107","snippet":"6G could make brain-controlled devices seamless.","reactions":0,"totalReactions":0},{"title":"6G and Brain-Computer Interfaces: Telepathy for Machines","slug":"6g-and-brain-computer-interfaces-telepathy-for-machines","url":"/categories/technology/6g-technology/6g-and-brain-computer-interfaces-telepathy-for-machines.html","color":"#FFC107","snippet":"6G may allow real-time brain-to-device communication.","reactions":0,"totalReactions":0},{"title":"6G and Holographic Communications: Face-to-Face Anywhere","slug":"6g-and-holographic-communications-face-to-face-anywhere","url":"/categories/technology/6g-technology/6g-and-holographic-communications-face-to-face-anywhere.html","color":"#FFC107","snippet":"6G could bring holograms to your living room.","reactions":0,"totalReactions":0},{"title":"6G and Immersive Education: Classrooms of the Future","slug":"6g-and-immersive-education-classrooms-of-the-future","url":"/categories/technology/6g-technology/6g-and-immersive-education-classrooms-of-the-future.html","color":"#FFC107","snippet":"6G could transform learning into fully interactive experiences.","reactions":0,"totalReactions":0},{"title":"6G and Immersive Education: Learn Like Never Before","slug":"6g-and-immersive-education-learn-like-never-before","url":"/categories/technology/6g-technology/6g-and-immersive-education-learn-like-never-before.html","color":"#FFC107","snippet":"6G enables fully interactive VR/AR classrooms.","reactions":0,"totalReactions":0},{"title":"6G and Next-Level VR/AR: Lag-Free Immersion","slug":"6g-and-next-level-vrar-lag-free-immersion","url":"/categories/technology/6g-technology/6g-and-next-level-vrar-lag-free-immersion.html","color":"#FFC107","snippet":"VR and AR experiences will feel completely real with 6G.","reactions":0,"totalReactions":0},{"title":"6G and Remote Surgery: Doctors Across the World","slug":"6g-and-remote-surgery-doctors-across-the-world","url":"/categories/technology/6g-technology/6g-and-remote-surgery-doctors-across-the-world.html","color":"#FFC107","snippet":"6G could make robotic surgery instantaneous, anywhere on Earth.","reactions":0,"totalReactions":0},{"title":"6G and Remote Surgery: Medicine Without Borders","slug":"6g-and-remote-surgery-medicine-without-borders","url":"/categories/technology/6g-technology/6g-and-remote-surgery-medicine-without-borders.html","color":"#FFC107","snippet":"6G could revolutionize healthcare delivery.","reactions":0,"totalReactions":0},{"title":"6G and Smart Agriculture: Crops That React Instantly","slug":"6g-and-smart-agriculture-crops-that-react-instantly","url":"/categories/technology/6g-technology/6g-and-smart-agriculture-crops-that-react-instantly.html","color":"#FFC107","snippet":"6G could transform farming into a hyper-intelligent ecosystem.","reactions":0,"totalReactions":0},{"title":"6G and Smart Cities: Instant Urban Intelligence","slug":"6g-and-smart-cities-instant-urban-intelligence","url":"/categories/technology/6g-technology/6g-and-smart-cities-instant-urban-intelligence.html","color":"#FFC107","snippet":"Smart cities will become smarter with 6G.","reactions":0,"totalReactions":0},{"title":"6G and Smart Energy Grids: Instant Power Optimization","slug":"6g-and-smart-energy-grids-instant-power-optimization","url":"/categories/technology/6g-technology/6g-and-smart-energy-grids-instant-power-optimization.html","color":"#FFC107","snippet":"6G could revolutionize electricity distribution.","reactions":0,"totalReactions":0},{"title":"6G and Smart Wearables: Your Body as a Sensor","slug":"6g-and-smart-wearables-your-body-as-a-sensor","url":"/categories/technology/6g-technology/6g-and-smart-wearables-your-body-as-a-sensor.html","color":"#FFC107","snippet":"6G could make wearables hyper-responsive.","reactions":0,"totalReactions":0},{"title":"6G and Space Internet: Connecting Earth and Orbit","slug":"6g-and-space-internet-connecting-earth-and-orbit","url":"/categories/technology/6g-technology/6g-and-space-internet-connecting-earth-and-orbit.html","color":"#FFC107","snippet":"6G may extend internet coverage into space.","reactions":0,"totalReactions":0},{"title":"6G and Tele-Immersive Entertainment: Live Events Anywhere","slug":"6g-and-tele-immersive-entertainment-live-events-anywhere","url":"/categories/technology/6g-technology/6g-and-tele-immersive-entertainment-live-events-anywhere.html","color":"#FFC107","snippet":"Imagine attending a live concert in 3D from your living room.","reactions":0,"totalReactions":0},{"title":"6G and the Internet of Everything: Hyper-Connected Life","slug":"6g-and-the-internet-of-everything-hyper-connected-life","url":"/categories/technology/6g-technology/6g-and-the-internet-of-everything-hyper-connected-life.html","color":"#FFC107","snippet":"6G could turn every object into a smart device.","reactions":0,"totalReactions":0},{"title":"6G and Ultra-HD Telepresence: Work Feels Local","slug":"6g-and-ultra-hd-telepresence-work-feels-local","url":"/categories/technology/6g-technology/6g-and-ultra-hd-telepresence-work-feels-local.html","color":"#FFC107","snippet":"6G could make remote work indistinguishable from being in the office.","reactions":0,"totalReactions":0},{"title":"6G and Ultra-High-Speed AI Trading: Milliseconds Matter","slug":"6g-and-ultra-high-speed-ai-trading-milliseconds-matter","url":"/categories/technology/6g-technology/6g-and-ultra-high-speed-ai-trading-milliseconds-matter.html","color":"#FFC107","snippet":"6G could redefine financial markets.","reactions":0,"totalReactions":0},{"title":"6G for Disaster Response: Instant Global Coordination","slug":"6g-for-disaster-response-instant-global-coordination","url":"/categories/technology/6g-technology/6g-for-disaster-response-instant-global-coordination.html","color":"#FFC107","snippet":"6G could make emergency response hyper-efficient.","reactions":0,"totalReactions":0},{"title":"6G for Immersive Gaming: Zero-Lag Multiplayer Worlds","slug":"6g-for-immersive-gaming-zero-lag-multiplayer-worlds","url":"/categories/technology/6g-technology/6g-for-immersive-gaming-zero-lag-multiplayer-worlds.html","color":"#FFC107","snippet":"6G could eliminate lag in massive multiplayer games.","reactions":0,"totalReactions":0},{"title":"6G for Personal Digital Twins: Your AI Clone","slug":"6g-for-personal-digital-twins-your-ai-clone","url":"/categories/technology/6g-technology/6g-for-personal-digital-twins-your-ai-clone.html","color":"#FFC107","snippet":"6G may power real-time personal digital twins.","reactions":0,"totalReactions":0},{"title":"6G for Personalized AI Assistants: Instant Adaptation","slug":"6g-for-personalized-ai-assistants-instant-adaptation","url":"/categories/technology/6g-technology/6g-for-personalized-ai-assistants-instant-adaptation.html","color":"#FFC107","snippet":"6G could supercharge AI personal assistants.","reactions":0,"totalReactions":0},{"title":"6G for Quantum Communication: Securing the Future","slug":"6g-for-quantum-communication-securing-the-future","url":"/categories/technology/6g-technology/6g-for-quantum-communication-securing-the-future.html","color":"#FFC107","snippet":"6G may enable quantum encryption at scale.","reactions":0,"totalReactions":0},{"title":"6G for Real-Time Language Translation: Speak Without Barriers","slug":"6g-for-real-time-language-translation-speak-without-barriers","url":"/categories/technology/6g-technology/6g-for-real-time-language-translation-speak-without-barriers.html","color":"#FFC107","snippet":"6G may eliminate language barriers instantly.","reactions":0,"totalReactions":0},{"title":"6G for Smart Cities: Instant Infrastructure Response","slug":"6g-for-smart-cities-instant-infrastructure-response","url":"/categories/technology/6g-technology/6g-for-smart-cities-instant-infrastructure-response.html","color":"#FFC107","snippet":"6G could make cities hyper-responsive.","reactions":0,"totalReactions":0},{"title":"6G in Disaster Response: Faster Than Nature","slug":"6g-in-disaster-response-faster-than-nature","url":"/categories/technology/6g-technology/6g-in-disaster-response-faster-than-nature.html","color":"#FFC107","snippet":"6G could save lives in emergencies.","reactions":0,"totalReactions":0},{"title":"6G in Healthcare: Remote Surgery Anywhere","slug":"6g-in-healthcare-remote-surgery-anywhere","url":"/categories/technology/6g-technology/6g-in-healthcare-remote-surgery-anywhere.html","color":"#FFC107","snippet":"6G could make remote surgery routine.","reactions":0,"totalReactions":0},{"title":"6G in Space Exploration: Real-Time Mars Communication","slug":"6g-in-space-exploration-real-time-mars-communication","url":"/categories/technology/6g-technology/6g-in-space-exploration-real-time-mars-communication.html","color":"#FFC107","snippet":"6G could shorten communication delays with spacecraft.","reactions":0,"totalReactions":0},{"title":"6G in Space-Based Internet: Global Coverage Faster Than Ever","slug":"6g-in-space-based-internet-global-coverage-faster-than-ever","url":"/categories/technology/6g-technology/6g-in-space-based-internet-global-coverage-faster-than-ever.html","color":"#FFC107","snippet":"6G could link satellites to deliver ultra-fast global connectivity.","reactions":0,"totalReactions":0},{"title":"6G in Space: Interstellar Internet","slug":"6g-in-space-interstellar-internet","url":"/categories/technology/6g-technology/6g-in-space-interstellar-internet.html","color":"#FFC107","snippet":"6G may extend connectivity beyond Earth.","reactions":0,"totalReactions":0},{"title":"6G Quantum Networking: Speed Meets Security","slug":"6g-quantum-networking-speed-meets-security","url":"/categories/technology/6g-technology/6g-quantum-networking-speed-meets-security.html","color":"#FFC107","snippet":"6G may integrate quantum communication for unhackable networks.","reactions":0,"totalReactions":0},{"title":"6G Security and Privacy: The Next Frontier","slug":"6g-security-and-privacy-the-next-frontier","url":"/categories/technology/6g-technology/6g-security-and-privacy-the-next-frontier.html","color":"#FFC107","snippet":"6G will redefine digital security with speed and intelligence.","reactions":0,"totalReactions":0},{"title":"6G Technology: The Future of Hyper-Connectivity","slug":"6g-technology-the-future-of-hyper-connectivity","url":"/categories/technology/6g-technology/6g-technology-the-future-of-hyper-connectivity.html","color":"#FFC107","snippet":"6G promises to revolutionize connectivity beyond anything we know.","reactions":0,"totalReactions":0},{"title":"6G-Driven Autonomous Shipping: The Future of Oceans","slug":"6g-driven-autonomous-shipping-the-future-of-oceans","url":"/categories/technology/6g-technology/6g-driven-autonomous-shipping-the-future-of-oceans.html","color":"#FFC107","snippet":"6G could control fleets of self-piloting cargo ships.","reactions":0,"totalReactions":0},{"title":"6G-Driven Immersive Retail: Try Before You Buy, Virtually","slug":"6g-driven-immersive-retail-try-before-you-buy-virtually","url":"/categories/technology/6g-technology/6g-driven-immersive-retail-try-before-you-buy-virtually.html","color":"#FFC107","snippet":"6G could revolutionize shopping.","reactions":0,"totalReactions":0},{"title":"6G-Driven Remote Industrial Automation: Factories Anywhere","slug":"6g-driven-remote-industrial-automation-factories-anywhere","url":"/categories/technology/6g-technology/6g-driven-remote-industrial-automation-factories-anywhere.html","color":"#FFC107","snippet":"6G may enable fully remote-controlled factories.","reactions":0,"totalReactions":0},{"title":"6G-Enabled Drone Swarms: Precision at Scale","slug":"6g-enabled-drone-swarms-precision-at-scale","url":"/categories/technology/6g-technology/6g-enabled-drone-swarms-precision-at-scale.html","color":"#FFC107","snippet":"Drone swarms could operate with split-second coordination using 6G.","reactions":0,"totalReactions":0},{"title":"6G-Enabled Tactile Internet: Feeling Data","slug":"6g-enabled-tactile-internet-feeling-data","url":"/categories/technology/6g-technology/6g-enabled-tactile-internet-feeling-data.html","color":"#FFC107","snippet":"6G may let you touch the digital world.","reactions":0,"totalReactions":0},{"title":"6G-Enhanced AR Navigation: Never Get Lost Again","slug":"6g-enhanced-ar-navigation-never-get-lost-again","url":"/categories/technology/6g-technology/6g-enhanced-ar-navigation-never-get-lost-again.html","color":"#FFC107","snippet":"6G may make navigation seamless.","reactions":0,"totalReactions":0},{"title":"6G-Enhanced Entertainment: Real-Time Holograms","slug":"6g-enhanced-entertainment-real-time-holograms","url":"/categories/technology/6g-technology/6g-enhanced-entertainment-real-time-holograms.html","color":"#FFC107","snippet":"6G could bring live holographic performances to your home.","reactions":0,"totalReactions":0},{"title":"6G-Enhanced Environmental Monitoring: Planet in Real-Time","slug":"6g-enhanced-environmental-monitoring-planet-in-real-time","url":"/categories/technology/6g-technology/6g-enhanced-environmental-monitoring-planet-in-real-time.html","color":"#FFC107","snippet":"6G may allow instant ecological surveillance.","reactions":0,"totalReactions":0},{"title":"6G-Powered Autonomous Vehicles: Traffic Without Jams","slug":"6g-powered-autonomous-vehicles-traffic-without-jams","url":"/categories/technology/6g-technology/6g-powered-autonomous-vehicles-traffic-without-jams.html","color":"#FFC107","snippet":"6G could make car accidents nearly obsolete.","reactions":0,"totalReactions":0},{"title":"6G-Powered Drone Highways: The Sky Gets Smarter","slug":"6g-powered-drone-highways-the-sky-gets-smarter","url":"/categories/technology/6g-technology/6g-powered-drone-highways-the-sky-gets-smarter.html","color":"#FFC107","snippet":"6G could create drone superhighways.","reactions":0,"totalReactions":0},{"title":"6G-Powered Environmental Monitoring: Planetary Awareness","slug":"6g-powered-environmental-monitoring-planetary-awareness","url":"/categories/technology/6g-technology/6g-powered-environmental-monitoring-planetary-awareness.html","color":"#FFC107","snippet":"6G allows instant global monitoring of ecosystems.","reactions":0,"totalReactions":0},{"title":"6G-Powered Holographic Calls: Sci-Fi Meets Reality","slug":"6g-powered-holographic-calls-sci-fi-meets-reality","url":"/categories/technology/6g-technology/6g-powered-holographic-calls-sci-fi-meets-reality.html","color":"#FFC107","snippet":"Imagine making a video call where the person appears in your room as a hologram.","reactions":0,"totalReactions":0},{"title":"6G-Powered Smart Cities: Living in Real-Time","slug":"6g-powered-smart-cities-living-in-real-time","url":"/categories/technology/6g-technology/6g-powered-smart-cities-living-in-real-time.html","color":"#FFC107","snippet":"6G enables fully connected urban environments.","reactions":0,"totalReactions":0}];
+const SUBJECT_META = {"factCount":49,"totalReactions":0};
+
+/* HEADER META */
+
+document.getElementById('factCount')
+  .textContent = SUBJECT_META.factCount;
+
+document.getElementById('reactionCount')
+  .textContent =
+    SUBJECT_META.totalReactions.toLocaleString();
+
+/* PRETTY NAME */
+
+function prettyName(slug){
+  return slug.replace(/-/g,' ')
+             .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+/* CREATE CARD */
+
+function createCard(fact){
+
+  const div=document.createElement('div');
+  div.className='card';
+
+  if(fact.reactions>50){
+    div.innerHTML+=`<div class="badge">Trending</div>`;
+  }
+
+  div.innerHTML+=`
+    <a href="${fact.url}">
+      ${prettyName(fact.title)}
+    </a>
+    <div class="reaction-count">
+      👍 ${fact.reactions.toLocaleString()}
+    </div>
+  `;
+
+  return div;
+}
+
+/* POPULATE */
+
+function populateGrid(facts){
+
+  const container=
+    document.getElementById('subject-grid');
+
+  container.innerHTML='';
+
+  facts.forEach((f,i)=>{
+    const card=createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*40);
+  });
+
+  setupMomentum();
+}
+
+/* SHUFFLE */
+
+function shuffleFacts(){
+  SUBJECTS.sort(()=>Math.random()-0.5);
+  populateGrid(SUBJECTS);
+}
+
+/* MOMENTUM */
+
+function setupMomentum(){
+
+  document.querySelectorAll('.card')
+  .forEach(card=>{
+
+    card.addEventListener('click',()=>{
+
+      const pool=[...document.querySelectorAll('.card')]
+        .filter(c=>c!==card);
+
+      if(!pool.length)return;
+
+      const next=
+        pool[Math.floor(Math.random()*pool.length)];
+
+      document.getElementById('momentumTitle')
+        .textContent=
+        next.querySelector('a').textContent;
+
+      document.getElementById('momentumLink')
+        .href=
+        next.querySelector('a').href;
+
+      document.getElementById('momentum-box')
+        .style.display='block';
+    });
+
+  });
+}
+
+/* PROGRESS BAR */
+
+window.addEventListener('scroll',()=>{
+
+  const winScroll=
+    document.documentElement.scrollTop;
+
+  const height=
+    document.documentElement.scrollHeight-
+    document.documentElement.clientHeight;
+
+  document.getElementById('progress').style.width=
+    (winScroll/height)*100+'%';
+});
+
+/* BACK TO TOP */
+
+const topBtn=document.getElementById('backToTop');
+
+window.addEventListener('scroll',()=>{
+  topBtn.style.display=
+    window.scrollY>400?'block':'none';
+});
+
+topBtn.onclick=()=>
+  window.scrollTo({top:0,behavior:'smooth'});
+
+/* INIT */
+
+populateGrid(SUBJECTS);
+
+</script>
+
+</body>
+</html>

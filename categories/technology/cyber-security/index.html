@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facts in Cyber Security</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+
+/* HEADER */
+
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+}
+
+header h1{
+  font-size:2.6em;
+  margin:0 0 10px;
+}
+
+header p{
+  font-size:1.1em;
+  opacity:0.9;
+  max-width:720px;
+  margin:0 auto;
+}
+
+.meta-bar{
+  margin-top:18px;
+  font-weight:bold;
+  opacity:0.9;
+}
+
+/* PROGRESS BAR */
+
+#progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0%;
+  background:#ff5722;
+  z-index:9999;
+}
+
+/* GRID */
+
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:.25s;
+  cursor:pointer;
+  opacity:0;
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* TITLE */
+
+.card a{
+  display:block;
+  font-weight:700;
+  color:#222;
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:1.1em;
+}
+
+/* REACTIONS */
+
+.reaction-count{
+  font-size:.9em;
+  opacity:.75;
+}
+
+/* TRENDING BADGE */
+
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ff5722;
+  color:white;
+  font-size:.7em;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+/* SHUFFLE BUTTON */
+
+.shuffle{
+  display:block;
+  margin:10px auto 0;
+  padding:12px 18px;
+  border:none;
+  border-radius:30px;
+  background:#ff5722;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MOMENTUM BOX */
+
+#momentum-box{
+  background:white;
+  border-radius:16px;
+  padding:26px;
+  margin:40px auto;
+  max-width:700px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  display:none;
+}
+
+/* BACK TO TOP */
+
+.back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:14px 18px;
+  background:#ff5722;
+  color:white;
+  border-radius:50px;
+  font-weight:bold;
+  cursor:pointer;
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <h1>Explore Facts in "Cyber Security"</h1>
+  <p>Dive into fascinating, weird, and wonderful knowledge.</p>
+
+  <div class="meta-bar">
+    <span id="factCount"></span> Facts •
+    <span id="reactionCount"></span> Reactions
+  </div>
+
+  <button class="shuffle" onclick="shuffleFacts()">
+    🔀 Shuffle Facts
+  </button>
+</header>
+
+<section id="subject-grid" class="grid"></section>
+
+<div id="momentum-box">
+  <h2>Discover this next</h2>
+  <div id="momentumTitle"></div>
+  <a id="momentumLink" href="#">Explore →</a>
+</div>
+
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
+<script>
+
+/* INJECTED DATA */
+const SUBJECTS = [{"title":"How AI Is Both a Threat and a Tool in Cybersecurity","slug":"how-ai-is-both-a-threat-and-a-tool-in-cybersecurity","url":"/categories/technology/cyber-security/how-ai-is-both-a-threat-and-a-tool-in-cybersecurity.html","color":"#FFC107","snippet":"Artificial intelligence fights fire with fire.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Can Prevent Identity Theft","slug":"how-cybersecurity-can-prevent-identity-theft","url":"/categories/technology/cyber-security/how-cybersecurity-can-prevent-identity-theft.html","color":"#FFC107","snippet":"Your identity is valuable.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Defends Against Cyber Espionage","slug":"how-cybersecurity-defends-against-cyber-espionage","url":"/categories/technology/cyber-security/how-cybersecurity-defends-against-cyber-espionage.html","color":"#FFC107","snippet":"Corporate secrets are prime targets.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Defends Against DDoS Attacks","slug":"how-cybersecurity-defends-against-ddos-attacks","url":"/categories/technology/cyber-security/how-cybersecurity-defends-against-ddos-attacks.html","color":"#FFC107","snippet":"When traffic turns weaponized.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Defends Against Quantum Computing Threats","slug":"how-cybersecurity-defends-against-quantum-computing-threats","url":"/categories/technology/cyber-security/how-cybersecurity-defends-against-quantum-computing-threats.html","color":"#FFC107","snippet":"The future of hacking is coming fast.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Prevents Deepfake Attacks","slug":"how-cybersecurity-prevents-deepfake-attacks","url":"/categories/technology/cyber-security/how-cybersecurity-prevents-deepfake-attacks.html","color":"#FFC107","snippet":"Seeing isn’t always believing.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Against Supply Chain Attacks","slug":"how-cybersecurity-protects-against-supply-chain-attacks","url":"/categories/technology/cyber-security/how-cybersecurity-protects-against-supply-chain-attacks.html","color":"#FFC107","snippet":"The weakest link isn’t always yours.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Autonomous Vehicles","slug":"how-cybersecurity-protects-autonomous-vehicles","url":"/categories/technology/cyber-security/how-cybersecurity-protects-autonomous-vehicles.html","color":"#FFC107","snippet":"Driverless cars need digital defense.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Cloud Services","slug":"how-cybersecurity-protects-cloud-services","url":"/categories/technology/cyber-security/how-cybersecurity-protects-cloud-services.html","color":"#FFC107","snippet":"Your data isn’t floating unprotected.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Cloud-Based AI Services","slug":"how-cybersecurity-protects-cloud-based-ai-services","url":"/categories/technology/cyber-security/how-cybersecurity-protects-cloud-based-ai-services.html","color":"#FFC107","snippet":"AI in the cloud isn’t invincible.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Critical Infrastructure","slug":"how-cybersecurity-protects-critical-infrastructure","url":"/categories/technology/cyber-security/how-cybersecurity-protects-critical-infrastructure.html","color":"#FFC107","snippet":"Power, water, and transport rely on security.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Critical Research Data","slug":"how-cybersecurity-protects-critical-research-data","url":"/categories/technology/cyber-security/how-cybersecurity-protects-critical-research-data.html","color":"#FFC107","snippet":"Science relies on secure data.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Critical Water and Energy Systems","slug":"how-cybersecurity-protects-critical-water-and-energy-systems","url":"/categories/technology/cyber-security/how-cybersecurity-protects-critical-water-and-energy-systems.html","color":"#FFC107","snippet":"Water and electricity aren’t safe by default.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Elections","slug":"how-cybersecurity-protects-elections","url":"/categories/technology/cyber-security/how-cybersecurity-protects-elections.html","color":"#FFC107","snippet":"Democracy depends on digital defense.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Healthcare Systems","slug":"how-cybersecurity-protects-healthcare-systems","url":"/categories/technology/cyber-security/how-cybersecurity-protects-healthcare-systems.html","color":"#FFC107","snippet":"Patient data is at stake.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects IoT Devices","slug":"how-cybersecurity-protects-iot-devices","url":"/categories/technology/cyber-security/how-cybersecurity-protects-iot-devices.html","color":"#FFC107","snippet":"Your toaster could be hacked.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects National Security","slug":"how-cybersecurity-protects-national-security","url":"/categories/technology/cyber-security/how-cybersecurity-protects-national-security.html","color":"#FFC107","snippet":"More than just IT—it’s defense.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Retail and E-Commerce","slug":"how-cybersecurity-protects-retail-and-e-commerce","url":"/categories/technology/cyber-security/how-cybersecurity-protects-retail-and-e-commerce.html","color":"#FFC107","snippet":"Your shopping cart is a potential target.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Satellite and Space Networks","slug":"how-cybersecurity-protects-satellite-and-space-networks","url":"/categories/technology/cyber-security/how-cybersecurity-protects-satellite-and-space-networks.html","color":"#FFC107","snippet":"Outer space isn’t immune to hackers.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Smart Cities","slug":"how-cybersecurity-protects-smart-cities","url":"/categories/technology/cyber-security/how-cybersecurity-protects-smart-cities.html","color":"#FFC107","snippet":"Even urban infrastructure needs a firewall.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Protects Your Everyday Life","slug":"how-cybersecurity-protects-your-everyday-life","url":"/categories/technology/cyber-security/how-cybersecurity-protects-your-everyday-life.html","color":"#FFC107","snippet":"You touch it more than you think.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Secures Blockchain and Cryptocurrency","slug":"how-cybersecurity-secures-blockchain-and-cryptocurrency","url":"/categories/technology/cyber-security/how-cybersecurity-secures-blockchain-and-cryptocurrency.html","color":"#FFC107","snippet":"Your digital wallet relies on more than passwords.","reactions":0,"totalReactions":0},{"title":"How Cybersecurity Threats Evolve Every Minute","slug":"how-cybersecurity-threats-evolve-every-minute","url":"/categories/technology/cyber-security/how-cybersecurity-threats-evolve-every-minute.html","color":"#FFC107","snippet":"Attackers never sleep.","reactions":0,"totalReactions":0},{"title":"How Ransomware Can Hold Entire Cities Hostage","slug":"how-ransomware-can-hold-entire-cities-hostage","url":"/categories/technology/cyber-security/how-ransomware-can-hold-entire-cities-hostage.html","color":"#FFC107","snippet":"Digital attacks with real-world consequences.","reactions":0,"totalReactions":0},{"title":"The First Recorded Cyber Attack Happened in 1986","slug":"the-first-recorded-cyber-attack-happened-in-1986","url":"/categories/technology/cyber-security/the-first-recorded-cyber-attack-happened-in-1986.html","color":"#FFC107","snippet":"The dawn of digital crime started decades ago.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Education Is Essential","slug":"why-cybersecurity-education-is-essential","url":"/categories/technology/cyber-security/why-cybersecurity-education-is-essential.html","color":"#FFC107","snippet":"Knowledge is power.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Incidents Cost Billions","slug":"why-cybersecurity-incidents-cost-billions","url":"/categories/technology/cyber-security/why-cybersecurity-incidents-cost-billions.html","color":"#FFC107","snippet":"The price of a breach is staggering.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Is Critical for Online Banking","slug":"why-cybersecurity-is-critical-for-online-banking","url":"/categories/technology/cyber-security/why-cybersecurity-is-critical-for-online-banking.html","color":"#FFC107","snippet":"Your money isn’t safe by default.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Is Crucial for Critical Voting Systems","slug":"why-cybersecurity-is-crucial-for-critical-voting-systems","url":"/categories/technology/cyber-security/why-cybersecurity-is-crucial-for-critical-voting-systems.html","color":"#FFC107","snippet":"Your vote relies on digital protection.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Is Essential for Remote Work","slug":"why-cybersecurity-is-essential-for-remote-work","url":"/categories/technology/cyber-security/why-cybersecurity-is-essential-for-remote-work.html","color":"#FFC107","snippet":"Your home office is a target.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Is Now Worth Trillions","slug":"why-cybersecurity-is-now-worth-trillions","url":"/categories/technology/cyber-security/why-cybersecurity-is-now-worth-trillions.html","color":"#FFC107","snippet":"Cybersecurity isn’t just IT, it’s a global economy.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Is Vital for Social Media","slug":"why-cybersecurity-is-vital-for-social-media","url":"/categories/technology/cyber-security/why-cybersecurity-is-vital-for-social-media.html","color":"#FFC107","snippet":"Your profile isn’t just fun—it’s vulnerable.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Jobs Are Among the Fastest-Growing","slug":"why-cybersecurity-jobs-are-among-the-fastest-growing","url":"/categories/technology/cyber-security/why-cybersecurity-jobs-are-among-the-fastest-growing.html","color":"#FFC107","snippet":"Career opportunities are exploding.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Must Protect AI Systems","slug":"why-cybersecurity-must-protect-ai-systems","url":"/categories/technology/cyber-security/why-cybersecurity-must-protect-ai-systems.html","color":"#FFC107","snippet":"Even smart machines need security.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Against Insider Sabotage","slug":"why-cybersecurity-protects-against-insider-sabotage","url":"/categories/technology/cyber-security/why-cybersecurity-protects-against-insider-sabotage.html","color":"#FFC107","snippet":"Threats can lurk in plain sight.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Critical Manufacturing Systems","slug":"why-cybersecurity-protects-critical-manufacturing-systems","url":"/categories/technology/cyber-security/why-cybersecurity-protects-critical-manufacturing-systems.html","color":"#FFC107","snippet":"Factories are digital battlegrounds.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Critical Telecommunications","slug":"why-cybersecurity-protects-critical-telecommunications","url":"/categories/technology/cyber-security/why-cybersecurity-protects-critical-telecommunications.html","color":"#FFC107","snippet":"Invisible networks, massive risk.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Educational Systems","slug":"why-cybersecurity-protects-educational-systems","url":"/categories/technology/cyber-security/why-cybersecurity-protects-educational-systems.html","color":"#FFC107","snippet":"Schools are under digital attack.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Mobile Devices","slug":"why-cybersecurity-protects-mobile-devices","url":"/categories/technology/cyber-security/why-cybersecurity-protects-mobile-devices.html","color":"#FFC107","snippet":"Smartphones are tiny treasure troves.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Online Gaming Communities","slug":"why-cybersecurity-protects-online-gaming-communities","url":"/categories/technology/cyber-security/why-cybersecurity-protects-online-gaming-communities.html","color":"#FFC107","snippet":"Your avatar isn’t the only thing at risk.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Personal Health Devices","slug":"why-cybersecurity-protects-personal-health-devices","url":"/categories/technology/cyber-security/why-cybersecurity-protects-personal-health-devices.html","color":"#FFC107","snippet":"Your smartwatch isn’t just tracking steps—it tracks risk.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Smart Homes","slug":"why-cybersecurity-protects-smart-homes","url":"/categories/technology/cyber-security/why-cybersecurity-protects-smart-homes.html","color":"#FFC107","snippet":"Your smart fridge could betray you.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects the Future of Digital Democracy","slug":"why-cybersecurity-protects-the-future-of-digital-democracy","url":"/categories/technology/cyber-security/why-cybersecurity-protects-the-future-of-digital-democracy.html","color":"#FFC107","snippet":"E-voting needs strong protection.","reactions":0,"totalReactions":0},{"title":"Why Cybersecurity Protects Transportation Systems","slug":"why-cybersecurity-protects-transportation-systems","url":"/categories/technology/cyber-security/why-cybersecurity-protects-transportation-systems.html","color":"#FFC107","snippet":"Planes, trains, and cars need digital defense.","reactions":0,"totalReactions":0},{"title":"Why Hackers Love Human Error","slug":"why-hackers-love-human-error","url":"/categories/technology/cyber-security/why-hackers-love-human-error.html","color":"#FFC107","snippet":"Humans remain the weakest link.","reactions":0,"totalReactions":0},{"title":"Why Insider Threats Are Among the Most Dangerous","slug":"why-insider-threats-are-among-the-most-dangerous","url":"/categories/technology/cyber-security/why-insider-threats-are-among-the-most-dangerous.html","color":"#FFC107","snippet":"Threats can come from within.","reactions":0,"totalReactions":0},{"title":"Why Multi-Factor Authentication Can Save Your Digital Life","slug":"why-multi-factor-authentication-can-save-your-digital-life","url":"/categories/technology/cyber-security/why-multi-factor-authentication-can-save-your-digital-life.html","color":"#FFC107","snippet":"Passwords alone aren’t enough.","reactions":0,"totalReactions":0},{"title":"Why Not Updating Software Is a Major Cyber Risk","slug":"why-not-updating-software-is-a-major-cyber-risk","url":"/categories/technology/cyber-security/why-not-updating-software-is-a-major-cyber-risk.html","color":"#FFC107","snippet":"Your updates are more than cosmetic.","reactions":0,"totalReactions":0},{"title":"Why Small Businesses Are Surprisingly Vulnerable","slug":"why-small-businesses-are-surprisingly-vulnerable","url":"/categories/technology/cyber-security/why-small-businesses-are-surprisingly-vulnerable.html","color":"#FFC107","snippet":"Size doesn’t equal safety.","reactions":0,"totalReactions":0},{"title":"Why Zero-Day Vulnerabilities Are Cybersecurity Nightmares","slug":"why-zero-day-vulnerabilities-are-cybersecurity-nightmares","url":"/categories/technology/cyber-security/why-zero-day-vulnerabilities-are-cybersecurity-nightmares.html","color":"#FFC107","snippet":"Unknown flaws are the most dangerous.","reactions":0,"totalReactions":0}];
+const SUBJECT_META = {"factCount":50,"totalReactions":0};
+
+/* HEADER META */
+
+document.getElementById('factCount')
+  .textContent = SUBJECT_META.factCount;
+
+document.getElementById('reactionCount')
+  .textContent =
+    SUBJECT_META.totalReactions.toLocaleString();
+
+/* PRETTY NAME */
+
+function prettyName(slug){
+  return slug.replace(/-/g,' ')
+             .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+/* CREATE CARD */
+
+function createCard(fact){
+
+  const div=document.createElement('div');
+  div.className='card';
+
+  if(fact.reactions>50){
+    div.innerHTML+=`<div class="badge">Trending</div>`;
+  }
+
+  div.innerHTML+=`
+    <a href="${fact.url}">
+      ${prettyName(fact.title)}
+    </a>
+    <div class="reaction-count">
+      👍 ${fact.reactions.toLocaleString()}
+    </div>
+  `;
+
+  return div;
+}
+
+/* POPULATE */
+
+function populateGrid(facts){
+
+  const container=
+    document.getElementById('subject-grid');
+
+  container.innerHTML='';
+
+  facts.forEach((f,i)=>{
+    const card=createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*40);
+  });
+
+  setupMomentum();
+}
+
+/* SHUFFLE */
+
+function shuffleFacts(){
+  SUBJECTS.sort(()=>Math.random()-0.5);
+  populateGrid(SUBJECTS);
+}
+
+/* MOMENTUM */
+
+function setupMomentum(){
+
+  document.querySelectorAll('.card')
+  .forEach(card=>{
+
+    card.addEventListener('click',()=>{
+
+      const pool=[...document.querySelectorAll('.card')]
+        .filter(c=>c!==card);
+
+      if(!pool.length)return;
+
+      const next=
+        pool[Math.floor(Math.random()*pool.length)];
+
+      document.getElementById('momentumTitle')
+        .textContent=
+        next.querySelector('a').textContent;
+
+      document.getElementById('momentumLink')
+        .href=
+        next.querySelector('a').href;
+
+      document.getElementById('momentum-box')
+        .style.display='block';
+    });
+
+  });
+}
+
+/* PROGRESS BAR */
+
+window.addEventListener('scroll',()=>{
+
+  const winScroll=
+    document.documentElement.scrollTop;
+
+  const height=
+    document.documentElement.scrollHeight-
+    document.documentElement.clientHeight;
+
+  document.getElementById('progress').style.width=
+    (winScroll/height)*100+'%';
+});
+
+/* BACK TO TOP */
+
+const topBtn=document.getElementById('backToTop');
+
+window.addEventListener('scroll',()=>{
+  topBtn.style.display=
+    window.scrollY>400?'block':'none';
+});
+
+topBtn.onclick=()=>
+  window.scrollTo({top:0,behavior:'smooth'});
+
+/* INIT */
+
+populateGrid(SUBJECTS);
+
+</script>
+
+</body>
+</html>
