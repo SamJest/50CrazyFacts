@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facts in Phishing</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+
+/* HEADER */
+
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+}
+
+header h1{
+  font-size:2.6em;
+  margin:0 0 10px;
+}
+
+header p{
+  font-size:1.1em;
+  opacity:0.9;
+  max-width:720px;
+  margin:0 auto;
+}
+
+.meta-bar{
+  margin-top:18px;
+  font-weight:bold;
+  opacity:0.9;
+}
+
+/* PROGRESS BAR */
+
+#progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0%;
+  background:#ff5722;
+  z-index:9999;
+}
+
+/* GRID */
+
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:.25s;
+  cursor:pointer;
+  opacity:0;
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* TITLE */
+
+.card a{
+  display:block;
+  font-weight:700;
+  color:#222;
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:1.1em;
+}
+
+/* REACTIONS */
+
+.reaction-count{
+  font-size:.9em;
+  opacity:.75;
+}
+
+/* TRENDING BADGE */
+
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ff5722;
+  color:white;
+  font-size:.7em;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+/* SHUFFLE BUTTON */
+
+.shuffle{
+  display:block;
+  margin:10px auto 0;
+  padding:12px 18px;
+  border:none;
+  border-radius:30px;
+  background:#ff5722;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MOMENTUM BOX */
+
+#momentum-box{
+  background:white;
+  border-radius:16px;
+  padding:26px;
+  margin:40px auto;
+  max-width:700px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  display:none;
+}
+
+/* BACK TO TOP */
+
+.back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:14px 18px;
+  background:#ff5722;
+  color:white;
+  border-radius:50px;
+  font-weight:bold;
+  cursor:pointer;
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <h1>Explore Facts in "Phishing"</h1>
+  <p>Dive into fascinating, weird, and wonderful knowledge.</p>
+
+  <div class="meta-bar">
+    <span id="factCount"></span> Facts •
+    <span id="reactionCount"></span> Reactions
+  </div>
+
+  <button class="shuffle" onclick="shuffleFacts()">
+    🔀 Shuffle Facts
+  </button>
+</header>
+
+<section id="subject-grid" class="grid"></section>
+
+<div id="momentum-box">
+  <h2>Discover this next</h2>
+  <div id="momentumTitle"></div>
+  <a id="momentumLink" href="#">Explore →</a>
+</div>
+
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
+<script>
+
+/* INJECTED DATA */
+const SUBJECTS = [{"title":"How AI Is Making Phishing Even Harder to Detect","slug":"how-ai-is-making-phishing-even-harder-to-detect","url":"/categories/technology/phishing/how-ai-is-making-phishing-even-harder-to-detect.html","color":"#FFC107","snippet":"AI empowers cybercriminals.","reactions":0,"totalReactions":0},{"title":"How Phishing Attacks Can Lead to Ransomware Infections","slug":"how-phishing-attacks-can-lead-to-ransomware-infections","url":"/categories/technology/phishing/how-phishing-attacks-can-lead-to-ransomware-infections.html","color":"#FFC107","snippet":"The click that locks everything.","reactions":0,"totalReactions":0},{"title":"How Phishing Can Evade Anti-Spam Filters With Dynamic Content","slug":"how-phishing-can-evade-anti-spam-filters-with-dynamic-content","url":"/categories/technology/phishing/how-phishing-can-evade-anti-spam-filters-with-dynamic-content.html","color":"#FFC107","snippet":"Chameleons in email form.","reactions":0,"totalReactions":0},{"title":"How Phishing Can Exploit Charity Donations","slug":"how-phishing-can-exploit-charity-donations","url":"/categories/technology/phishing/how-phishing-can-exploit-charity-donations.html","color":"#FFC107","snippet":"Generosity becomes a trap.","reactions":0,"totalReactions":0},{"title":"How Phishing Can Exploit Fake Invoices","slug":"how-phishing-can-exploit-fake-invoices","url":"/categories/technology/phishing/how-phishing-can-exploit-fake-invoices.html","color":"#FFC107","snippet":"“Pay immediately!”","reactions":0,"totalReactions":0},{"title":"How Phishing Can Exploit Fake Job Offers","slug":"how-phishing-can-exploit-fake-job-offers","url":"/categories/technology/phishing/how-phishing-can-exploit-fake-job-offers.html","color":"#FFC107","snippet":"Job hunting becomes risky.","reactions":0,"totalReactions":0},{"title":"How Phishing Can Target High-Level Executives (Whaling)","slug":"how-phishing-can-target-high-level-executives-whaling","url":"/categories/technology/phishing/how-phishing-can-target-high-level-executives-whaling.html","color":"#FFC107","snippet":"Phishers aim for the whales.","reactions":0,"totalReactions":0},{"title":"How Phishing Emails Can Evade Spam Filters","slug":"how-phishing-emails-can-evade-spam-filters","url":"/categories/technology/phishing/how-phishing-emails-can-evade-spam-filters.html","color":"#FFC107","snippet":"Spam filters aren’t foolproof.","reactions":0,"totalReactions":0},{"title":"How Phishing Emails Hide Malicious Links","slug":"how-phishing-emails-hide-malicious-links","url":"/categories/technology/phishing/how-phishing-emails-hide-malicious-links.html","color":"#FFC107","snippet":"Links aren’t always obvious.","reactions":0,"totalReactions":0},{"title":"How Phishing Emails Manipulate Human Psychology","slug":"how-phishing-emails-manipulate-human-psychology","url":"/categories/technology/phishing/how-phishing-emails-manipulate-human-psychology.html","color":"#FFC107","snippet":"Scammers don’t hack computers—they hack minds.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Cloud File Sharing","slug":"how-phishing-exploits-cloud-file-sharing","url":"/categories/technology/phishing/how-phishing-exploits-cloud-file-sharing.html","color":"#FFC107","snippet":"Cloud is a lure.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Fake Package Delivery Notices","slug":"how-phishing-exploits-fake-package-delivery-notices","url":"/categories/technology/phishing/how-phishing-exploits-fake-package-delivery-notices.html","color":"#FFC107","snippet":"“Your parcel is delayed!”","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Fake Software Updates","slug":"how-phishing-exploits-fake-software-updates","url":"/categories/technology/phishing/how-phishing-exploits-fake-software-updates.html","color":"#FFC107","snippet":"Update or compromise.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Government Agencies","slug":"how-phishing-exploits-government-agencies","url":"/categories/technology/phishing/how-phishing-exploits-government-agencies.html","color":"#FFC107","snippet":"Official-looking emails deceive.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Human Curiosity","slug":"how-phishing-exploits-human-curiosity","url":"/categories/technology/phishing/how-phishing-exploits-human-curiosity.html","color":"#FFC107","snippet":"Curious minds click faster.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Human Desire for Freebies","slug":"how-phishing-exploits-human-desire-for-freebies","url":"/categories/technology/phishing/how-phishing-exploits-human-desire-for-freebies.html","color":"#FFC107","snippet":"“Claim your reward now!”","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Mobile Devices","slug":"how-phishing-exploits-mobile-devices","url":"/categories/technology/phishing/how-phishing-exploits-mobile-devices.html","color":"#FFC107","snippet":"Phones are an easy target.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Online Payment Systems","slug":"how-phishing-exploits-online-payment-systems","url":"/categories/technology/phishing/how-phishing-exploits-online-payment-systems.html","color":"#FFC107","snippet":"Click and your account is gone.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits QR Codes for Instant Access","slug":"how-phishing-exploits-qr-codes-for-instant-access","url":"/categories/technology/phishing/how-phishing-exploits-qr-codes-for-instant-access.html","color":"#FFC107","snippet":"QR codes aren’t always safe.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Shortened URLs","slug":"how-phishing-exploits-shortened-urls","url":"/categories/technology/phishing/how-phishing-exploits-shortened-urls.html","color":"#FFC107","snippet":"Short links hide danger.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Social Media Platforms","slug":"how-phishing-exploits-social-media-platforms","url":"/categories/technology/phishing/how-phishing-exploits-social-media-platforms.html","color":"#FFC107","snippet":"Your timeline can be a trap.","reactions":0,"totalReactions":0},{"title":"How Phishing Exploits Trust in Tech Support","slug":"how-phishing-exploits-trust-in-tech-support","url":"/categories/technology/phishing/how-phishing-exploits-trust-in-tech-support.html","color":"#FFC107","snippet":"“Your computer is at risk!”","reactions":0,"totalReactions":0},{"title":"How Phishing Has Exploited the Pandemic for Mass Attacks","slug":"how-phishing-has-exploited-the-pandemic-for-mass-attacks","url":"/categories/technology/phishing/how-phishing-has-exploited-the-pandemic-for-mass-attacks.html","color":"#FFC107","snippet":"COVID-19 made phishing more dangerous.","reactions":0,"totalReactions":0},{"title":"How Phishing Started and Evolved Into a Multi-Billion Dollar Threat","slug":"how-phishing-started-and-evolved-into-a-multi-billion-dollar-threat","url":"/categories/technology/phishing/how-phishing-started-and-evolved-into-a-multi-billion-dollar-threat.html","color":"#FFC107","snippet":"The origins of phishing are stranger than fiction.","reactions":0,"totalReactions":0},{"title":"How Spear Phishing Targets You Personally","slug":"how-spear-phishing-targets-you-personally","url":"/categories/technology/phishing/how-spear-phishing-targets-you-personally.html","color":"#FFC107","snippet":"Spear phishing is the sniper of cybercrime.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Be a Gateway to Credential Stuffing","slug":"why-phishing-can-be-a-gateway-to-credential-stuffing","url":"/categories/technology/phishing/why-phishing-can-be-a-gateway-to-credential-stuffing.html","color":"#FFC107","snippet":"One stolen password opens many doors.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Compromise Two-Factor Authentication (2FA)","slug":"why-phishing-can-compromise-two-factor-authentication-2fa","url":"/categories/technology/phishing/why-phishing-can-compromise-two-factor-authentication-2fa.html","color":"#FFC107","snippet":"Extra security isn’t always safe.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Exploit COVID-19 Vaccination Updates","slug":"why-phishing-can-exploit-covid-19-vaccination-updates","url":"/categories/technology/phishing/why-phishing-can-exploit-covid-19-vaccination-updates.html","color":"#FFC107","snippet":"Vaccine info as bait.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Hijack Email Forwarding Rules","slug":"why-phishing-can-hijack-email-forwarding-rules","url":"/categories/technology/phishing/why-phishing-can-hijack-email-forwarding-rules.html","color":"#FFC107","snippet":"Your inbox becomes a weapon.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Hijack SMS Messages","slug":"why-phishing-can-hijack-sms-messages","url":"/categories/technology/phishing/why-phishing-can-hijack-sms-messages.html","color":"#FFC107","snippet":"Mobile texts aren’t safe.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Infiltrate Enterprise Networks Quickly","slug":"why-phishing-can-infiltrate-enterprise-networks-quickly","url":"/categories/technology/phishing/why-phishing-can-infiltrate-enterprise-networks-quickly.html","color":"#FFC107","snippet":"Employees are the weak link.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Lead to Corporate Espionage","slug":"why-phishing-can-lead-to-corporate-espionage","url":"/categories/technology/phishing/why-phishing-can-lead-to-corporate-espionage.html","color":"#FFC107","snippet":"Big breaches start with one click.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Lead to Financial Ruin","slug":"why-phishing-can-lead-to-financial-ruin","url":"/categories/technology/phishing/why-phishing-can-lead-to-financial-ruin.html","color":"#FFC107","snippet":"Funds disappear fast.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Lead to Identity Theft Faster Than You Think","slug":"why-phishing-can-lead-to-identity-theft-faster-than-you-think","url":"/categories/technology/phishing/why-phishing-can-lead-to-identity-theft-faster-than-you-think.html","color":"#FFC107","snippet":"One click can ruin your identity.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Manipulate Calendar Invitations","slug":"why-phishing-can-manipulate-calendar-invitations","url":"/categories/technology/phishing/why-phishing-can-manipulate-calendar-invitations.html","color":"#FFC107","snippet":"Calendar traps hide in plain sight.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Manipulate Cloud Accounts","slug":"why-phishing-can-manipulate-cloud-accounts","url":"/categories/technology/phishing/why-phishing-can-manipulate-cloud-accounts.html","color":"#FFC107","snippet":"Cloud access is lucrative.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Spread Malware Alongside Credential Theft","slug":"why-phishing-can-spread-malware-alongside-credential-theft","url":"/categories/technology/phishing/why-phishing-can-spread-malware-alongside-credential-theft.html","color":"#FFC107","snippet":"One click does multiple things.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Target Cryptocurrency Users","slug":"why-phishing-can-target-cryptocurrency-users","url":"/categories/technology/phishing/why-phishing-can-target-cryptocurrency-users.html","color":"#FFC107","snippet":"Crypto wallets are lucrative.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Target Financial Systems Directly","slug":"why-phishing-can-target-financial-systems-directly","url":"/categories/technology/phishing/why-phishing-can-target-financial-systems-directly.html","color":"#FFC107","snippet":"Bank accounts are gold mines.","reactions":0,"totalReactions":0},{"title":"Why Phishing Can Target Healthcare Providers","slug":"why-phishing-can-target-healthcare-providers","url":"/categories/technology/phishing/why-phishing-can-target-healthcare-providers.html","color":"#FFC107","snippet":"Life-saving access is valuable.","reactions":0,"totalReactions":0},{"title":"Why Phishing Emails Can Fool Even Tech Experts","slug":"why-phishing-emails-can-fool-even-tech-experts","url":"/categories/technology/phishing/why-phishing-emails-can-fool-even-tech-experts.html","color":"#FFC107","snippet":"Even the smartest people get tricked.","reactions":0,"totalReactions":0},{"title":"Why Phishing Exploits Popular Brands for Maximum Impact","slug":"why-phishing-exploits-popular-brands-for-maximum-impact","url":"/categories/technology/phishing/why-phishing-exploits-popular-brands-for-maximum-impact.html","color":"#FFC107","snippet":"Attackers piggyback on trust.","reactions":0,"totalReactions":0},{"title":"Why Phishing Has Evolved Into Multi-Stage Attacks","slug":"why-phishing-has-evolved-into-multi-stage-attacks","url":"/categories/technology/phishing/why-phishing-has-evolved-into-multi-stage-attacks.html","color":"#FFC107","snippet":"It’s no longer a simple trick.","reactions":0,"totalReactions":0},{"title":"Why Phishing Is a Global Problem","slug":"why-phishing-is-a-global-problem","url":"/categories/technology/phishing/why-phishing-is-a-global-problem.html","color":"#FFC107","snippet":"No country is safe.","reactions":0,"totalReactions":0},{"title":"Why Phishing Isn’t Just Email—It’s Everywhere","slug":"why-phishing-isnt-just-emailits-everywhere","url":"/categories/technology/phishing/why-phishing-isnt-just-emailits-everywhere.html","color":"#FFC107","snippet":"Phishing is omnipresent.","reactions":0,"totalReactions":0},{"title":"Why Phishing Often Exploits Payment Scares","slug":"why-phishing-often-exploits-payment-scares","url":"/categories/technology/phishing/why-phishing-often-exploits-payment-scares.html","color":"#FFC107","snippet":"“Your payment failed!”","reactions":0,"totalReactions":0},{"title":"Why Phishing Often Targets Education Platforms","slug":"why-phishing-often-targets-education-platforms","url":"/categories/technology/phishing/why-phishing-often-targets-education-platforms.html","color":"#FFC107","snippet":"Learning can be risky.","reactions":0,"totalReactions":0},{"title":"Why Phishing Often Uses Urgency and Fear","slug":"why-phishing-often-uses-urgency-and-fear","url":"/categories/technology/phishing/why-phishing-often-uses-urgency-and-fear.html","color":"#FFC107","snippet":"Tick-tock, the email says.","reactions":0,"totalReactions":0},{"title":"Why Phishing Remains Effective Despite Warnings","slug":"why-phishing-remains-effective-despite-warnings","url":"/categories/technology/phishing/why-phishing-remains-effective-despite-warnings.html","color":"#FFC107","snippet":"Training isn’t perfect.","reactions":0,"totalReactions":0},{"title":"Why Phishing Targets Remote Workers","slug":"why-phishing-targets-remote-workers","url":"/categories/technology/phishing/why-phishing-targets-remote-workers.html","color":"#FFC107","snippet":"Home offices are vulnerable.","reactions":0,"totalReactions":0}];
+const SUBJECT_META = {"factCount":50,"totalReactions":0};
+
+/* HEADER META */
+
+document.getElementById('factCount')
+  .textContent = SUBJECT_META.factCount;
+
+document.getElementById('reactionCount')
+  .textContent =
+    SUBJECT_META.totalReactions.toLocaleString();
+
+/* PRETTY NAME */
+
+function prettyName(slug){
+  return slug.replace(/-/g,' ')
+             .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+/* CREATE CARD */
+
+function createCard(fact){
+
+  const div=document.createElement('div');
+  div.className='card';
+
+  if(fact.reactions>50){
+    div.innerHTML+=`<div class="badge">Trending</div>`;
+  }
+
+  div.innerHTML+=`
+    <a href="${fact.url}">
+      ${prettyName(fact.title)}
+    </a>
+    <div class="reaction-count">
+      👍 ${fact.reactions.toLocaleString()}
+    </div>
+  `;
+
+  return div;
+}
+
+/* POPULATE */
+
+function populateGrid(facts){
+
+  const container=
+    document.getElementById('subject-grid');
+
+  container.innerHTML='';
+
+  facts.forEach((f,i)=>{
+    const card=createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*40);
+  });
+
+  setupMomentum();
+}
+
+/* SHUFFLE */
+
+function shuffleFacts(){
+  SUBJECTS.sort(()=>Math.random()-0.5);
+  populateGrid(SUBJECTS);
+}
+
+/* MOMENTUM */
+
+function setupMomentum(){
+
+  document.querySelectorAll('.card')
+  .forEach(card=>{
+
+    card.addEventListener('click',()=>{
+
+      const pool=[...document.querySelectorAll('.card')]
+        .filter(c=>c!==card);
+
+      if(!pool.length)return;
+
+      const next=
+        pool[Math.floor(Math.random()*pool.length)];
+
+      document.getElementById('momentumTitle')
+        .textContent=
+        next.querySelector('a').textContent;
+
+      document.getElementById('momentumLink')
+        .href=
+        next.querySelector('a').href;
+
+      document.getElementById('momentum-box')
+        .style.display='block';
+    });
+
+  });
+}
+
+/* PROGRESS BAR */
+
+window.addEventListener('scroll',()=>{
+
+  const winScroll=
+    document.documentElement.scrollTop;
+
+  const height=
+    document.documentElement.scrollHeight-
+    document.documentElement.clientHeight;
+
+  document.getElementById('progress').style.width=
+    (winScroll/height)*100+'%';
+});
+
+/* BACK TO TOP */
+
+const topBtn=document.getElementById('backToTop');
+
+window.addEventListener('scroll',()=>{
+  topBtn.style.display=
+    window.scrollY>400?'block':'none';
+});
+
+topBtn.onclick=()=>
+  window.scrollTo({top:0,behavior:'smooth'});
+
+/* INIT */
+
+populateGrid(SUBJECTS);
+
+</script>
+
+</body>
+</html>
