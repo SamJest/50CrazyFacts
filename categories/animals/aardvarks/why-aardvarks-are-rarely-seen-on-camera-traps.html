@@ -333,15 +333,15 @@ if(SLUG === "index.html"){ SLUG = pathParts.pop(); }
 SLUG = SLUG.replace(".html","");
 
 const SUBJECT = encodeURIComponent("aardvarks");
-const API_URL="YOUR_WEB_APP_URL_HERE";
+const API_URL="https://script.google.com/macros/s/AKfycbxG6FEWfChFXA9TThZMqwUlwGJTF_3K344hOuDzB51PLD68Xg1fZtHnfRqS7EIwFBgkjA/exec";
 
 /* Load counts */
 async function loadReactionCounts(){
-  const res = await fetch(`${API_URL}?slug=${SLUG}&subject=${SUBJECT}`);
+  const res = await fetch(`${API_URL}?slug=${SLUG}&subject=${SUBJECT}&visitorId=${visitorId}`);
   const data = await res.json();
 
   document.querySelectorAll('.reaction-btn').forEach(btn=>{
-    const key = btn.dataset.key.toLowerCase();
+    const key = btn.dataset.key.toUpperCase();
     btn.querySelector('.reaction-count').textContent = data[key] || 0;
   });
 
@@ -384,7 +384,7 @@ btn.addEventListener('click',async()=>{
 
   if(data.success){
     document.querySelectorAll('.reaction-btn').forEach(b=>{
-      const k=b.dataset.key.toLowerCase();
+      const k=b.dataset.key.toUpperCase();
       b.querySelector('.reaction-count').textContent=data.counts[k]||0;
     });
   }
