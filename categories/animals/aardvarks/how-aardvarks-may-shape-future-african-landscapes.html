@@ -265,30 +265,10 @@ How Aardvarks May Shape Future African Landscapes
 
 <!-- REACTIONS -->
 <div class="reactions">
-
-    <button data-key="MIND_BLOWN">
-      <span class="reaction-emoji">🤯</span>
-      <span class="reaction-count">0</span>
-    </button>
-  
-
-    <button data-key="SHOCKED">
-      <span class="reaction-emoji">😲</span>
-      <span class="reaction-count">0</span>
-    </button>
-  
-
-    <button data-key="WOW">
-      <span class="reaction-emoji">😮</span>
-      <span class="reaction-count">0</span>
-    </button>
-  
-
-    <button data-key="INTERESTING">
-      <span class="reaction-emoji">🤔</span>
-      <span class="reaction-count">0</span>
-    </button>
-  
+  <button class="reaction-btn" data-key="MIND_BLOWN">🤯 <span class="reaction-count">0</span></button>
+  <button class="reaction-btn" data-key="SHOCKED">😲 <span class="reaction-count">0</span></button>
+  <button class="reaction-btn" data-key="WOW">😮 <span class="reaction-count">0</span></button>
+  <button class="reaction-btn" data-key="INTERESTING">💡 <span class="reaction-count">0</span></button>
 </div>
 
 <!-- SHARE -->
@@ -311,7 +291,6 @@ How Aardvarks May Shape Future African Landscapes
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-
 /* Progress bar */
 window.addEventListener('scroll',()=>{
   const st=document.documentElement.scrollTop;
@@ -333,9 +312,9 @@ if(SLUG === "index.html"){ SLUG = pathParts.pop(); }
 SLUG = SLUG.replace(".html","");
 
 const SUBJECT = encodeURIComponent("aardvarks");
-const API_URL="https://script.google.com/macros/s/AKfycbxG6FEWfChFXA9TThZMqwUlwGJTF_3K344hOuDzB51PLD68Xg1fZtHnfRqS7EIwFBgkjA/exec";
+const API_URL="https://script.google.com/macros/s/YOUR_WEB_APP_ID/exec";
 
-/* Load counts */
+/* Load counts + user reaction */
 async function loadReactionCounts(){
   const res = await fetch(`${API_URL}?slug=${SLUG}&subject=${SUBJECT}&visitorId=${visitorId}`);
   const data = await res.json();
@@ -353,45 +332,45 @@ async function loadReactionCounts(){
 }
 loadReactionCounts();
 
-/* Click */
+/* Reaction click */
 document.querySelectorAll('.reaction-btn').forEach(btn=>{
-btn.addEventListener('click',async()=>{
+  btn.addEventListener('click', async () => {
 
-  const key = btn.dataset.key;
+    const key = btn.dataset.key.toUpperCase(); // send uppercase
 
-  localStorage.setItem(`reaction_${SLUG}`, key);
+    localStorage.setItem(`reaction_${SLUG}`, key);
 
-  document.querySelectorAll('.reaction-btn')
-    .forEach(b=>b.classList.remove('selected'));
+    document.querySelectorAll('.reaction-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
 
-  btn.classList.add('selected');
+    if(typeof confetti === "function"){
+      confetti({ particleCount:80, spread:60 });
+    }
 
-  if(typeof confetti==="function"){
-    confetti({particleCount:80,spread:60});
-  }
-
-  const res = await fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({
-      slug:SLUG,
-      subject:decodeURIComponent(SUBJECT),
-      reaction:key,
-      visitorId:visitorId
-    })
-  });
-
-  const data = await res.json();
-
-  if(data.success){
-    document.querySelectorAll('.reaction-btn').forEach(b=>{
-      const k=b.dataset.key.toUpperCase();
-      b.querySelector('.reaction-count').textContent=data.counts[k]||0;
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slug: SLUG,
+        subject: decodeURIComponent(SUBJECT),
+        reaction: key,
+        visitorId: visitorId
+      })
     });
-  }
 
-});
-});
+    const data = await res.json();
 
+    if(data.success){
+      document.querySelectorAll('.reaction-btn').forEach(b=>{
+        const k = b.dataset.key.toUpperCase();
+        b.querySelector('.reaction-count').textContent = data.counts[k] || 0;
+      });
+    } else {
+      console.error("Reaction POST failed:", data.error);
+    }
+
+  });
+});
 </script>
 </body>
 </html>
