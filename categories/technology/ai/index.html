@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ai</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+body { font-family:Arial,sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.6em; margin:0 0 10px; }
+header p { font-size:1.1em; opacity:0.9; max-width:720px; margin:0 auto; }
+.meta-bar { margin-top:18px; font-weight:bold; opacity:0.9; }
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card { background:white; padding:22px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.08); flex:1 1 260px; text-align:center; position:relative; transition:.25s; cursor:pointer; opacity:0; }
+.card.loaded{opacity:1;}
+.card a{display:block;font-weight:700;color:#222;text-decoration:none;margin-bottom:10px;font-size:1.1em;}
+.card:hover{transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);}
+.reaction-count{font-size:.9em; opacity:.75;}
+#momentum-box{background:white;border-radius:16px;padding:26px;margin:40px auto;max-width:700px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,0.08);display:none;}
+.back-to-top{position:fixed;bottom:20px;right:20px;padding:14px 18px;background:#ff5722;color:white;border-radius:50px;font-weight:bold;cursor:pointer;display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Explore Facts in "Ai"</h1>
+  <p>Dive into fascinating, weird, and wonderful knowledge.</p>
+  <div class="meta-bar">
+    <span id="factCount">0</span> Facts •
+    <span id="reactionCount">0</span> Reactions
+  </div>
+</header>
+
+<section id="subject-grid" class="grid"></section>
+
+<div id="momentum-box">
+  <h2>Discover this next</h2>
+  <div id="momentumTitle"></div>
+  <a id="momentumLink" href="#">Explore →</a>
+</div>
+
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
+<script>
+/* --- INJECTED DATA --- */
+const FACTS = [{"title":"AI Can Assist in Mental Health Therapy","slug":"ai-can-assist-in-mental-health-therapy","url":"/categories/technology/ai/ai-can-assist-in-mental-health-therapy.html","color":"#FFC107","snippet":"Imagine AI as a 24/7 emotional support system. AI mental health tools are becoming mainstream.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Music in Any Genre","slug":"ai-can-compose-music-in-any-genre","url":"/categories/technology/ai/ai-can-compose-music-in-any-genre.html","color":"#FFC107","snippet":"Imagine AI producing a symphony or a hip-hop track instantly. AI music generation is reshaping the music industry.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Music Tailored to Your Mood","slug":"ai-can-compose-music-tailored-to-your-mood","url":"/categories/technology/ai/ai-can-compose-music-tailored-to-your-mood.html","color":"#FFC107","snippet":"Imagine an AI composing a song just for your current emotions. Music generation AI is creating personalized experiences.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose News Articles Automatically","slug":"ai-can-compose-news-articles-automatically","url":"/categories/technology/ai/ai-can-compose-news-articles-automatically.html","color":"#FFC107","snippet":"Imagine AI writing your daily news before you even wake up. AI journalism is growing fast.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Paintings and Artwork","slug":"ai-can-compose-paintings-and-artwork","url":"/categories/technology/ai/ai-can-compose-paintings-and-artwork.html","color":"#FFC107","snippet":"Imagine a robot painting a portrait indistinguishable from a human artist. AI can now generate original artwork in multiple styles.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Personalized Workouts","slug":"ai-can-compose-personalized-workouts","url":"/categories/technology/ai/ai-can-compose-personalized-workouts.html","color":"#FFC107","snippet":"Imagine an AI personal trainer that adapts your exercise plan in real-time. AI fitness apps are revolutionizing health.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Personalized Workouts","slug":"ai-can-compose-personalized-workouts","url":"/categories/technology/ai/ai-can-compose-personalized-workouts.html","color":"#FFC107","snippet":"Imagine an AI fitness coach that adapts to your body and goals. Personalized AI workouts are becoming a reality.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Realistic Human Voices","slug":"ai-can-compose-realistic-human-voices","url":"/categories/technology/ai/ai-can-compose-realistic-human-voices.html","color":"#FFC107","snippet":"Imagine AI speaking any text with a completely natural voice. Voice synthesis AI is advancing rapidly.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Compose Symphonies That Adapt in Real-Time","slug":"ai-can-compose-symphonies-that-adapt-in-real-time","url":"/categories/technology/ai/ai-can-compose-symphonies-that-adapt-in-real-time.html","color":"#FFC107","snippet":"Imagine a musical performance where the composition changes with audience reactions. AI can now create dynamic music experiences.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Create Deepfake Videos","slug":"ai-can-create-deepfake-videos","url":"/categories/technology/ai/ai-can-create-deepfake-videos.html","color":"#FFC107","snippet":"Imagine watching a video of a celebrity saying something they never said. Deepfake AI can manipulate images and videos to create hyper-realistic forgeries.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Create Personalized Learning Plans","slug":"ai-can-create-personalized-learning-plans","url":"/categories/technology/ai/ai-can-create-personalized-learning-plans.html","color":"#FFC107","snippet":"Imagine AI as your personal tutor. AI is revolutionizing education.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Create Photorealistic Images From Text","slug":"ai-can-create-photorealistic-images-from-text","url":"/categories/technology/ai/ai-can-create-photorealistic-images-from-text.html","color":"#FFC107","snippet":"Imagine describing a scene in words and AI painting it instantly. AI image generation is transforming art and design.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Create Virtual Humans for Social Interaction","slug":"ai-can-create-virtual-humans-for-social-interaction","url":"/categories/technology/ai/ai-can-create-virtual-humans-for-social-interaction.html","color":"#FFC107","snippet":"Imagine AI chatting and interacting like a real person. Virtual humans are transforming online engagement.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Design Entire Buildings","slug":"ai-can-design-entire-buildings","url":"/categories/technology/ai/ai-can-design-entire-buildings.html","color":"#FFC107","snippet":"Imagine an AI drafting a skyscraper that could rival a human architect. AI is now designing structures based on parameters like sunlight, airflow, and materials.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Cancer From Images Early","slug":"ai-can-detect-cancer-from-images-early","url":"/categories/technology/ai/ai-can-detect-cancer-from-images-early.html","color":"#FFC107","snippet":"Imagine AI spotting tumors invisible to the human eye. AI is revolutionizing medical imaging.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Cyber Threats Instantly","slug":"ai-can-detect-cyber-threats-instantly","url":"/categories/technology/ai/ai-can-detect-cyber-threats-instantly.html","color":"#FFC107","snippet":"Imagine an AI identifying hackers and stopping cyberattacks before they happen. AI is transforming cybersecurity.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Deepfake Videos Instantly","slug":"ai-can-detect-deepfake-videos-instantly","url":"/categories/technology/ai/ai-can-detect-deepfake-videos-instantly.html","color":"#FFC107","snippet":"Imagine AI spotting a fake video before it spreads online. AI is fighting misinformation in real-time.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Deepfakes","slug":"ai-can-detect-deepfakes","url":"/categories/technology/ai/ai-can-detect-deepfakes.html","color":"#FFC107","snippet":"Imagine AI spotting fake videos faster than humans. AI is fighting misinformation.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Emotions from Faces","slug":"ai-can-detect-emotions-from-faces","url":"/categories/technology/ai/ai-can-detect-emotions-from-faces.html","color":"#FFC107","snippet":"What if your laptop knew your mood just by looking at you? AI can analyze facial expressions and detect emotions with astonishing accuracy. Some systems are being tested in classrooms and workplaces.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Emotions Through Facial Recognition","slug":"ai-can-detect-emotions-through-facial-recognition","url":"/categories/technology/ai/ai-can-detect-emotions-through-facial-recognition.html","color":"#FFC107","snippet":"Imagine a computer knowing how you feel just by looking at your face. Emotion-detecting AI is gaining attention.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Fake News Faster Than Humans","slug":"ai-can-detect-fake-news-faster-than-humans","url":"/categories/technology/ai/ai-can-detect-fake-news-faster-than-humans.html","color":"#FFC107","snippet":"Imagine AI scanning thousands of news articles in seconds to determine their accuracy. AI systems can flag misinformation with remarkable speed.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Detect Fraud in Real-Time","slug":"ai-can-detect-fraud-in-real-time","url":"/categories/technology/ai/ai-can-detect-fraud-in-real-time.html","color":"#FFC107","snippet":"Imagine AI stopping a fraudulent transaction before it happens. Fraud detection AI protects billions.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Diagnose Eye Diseases From Scans","slug":"ai-can-diagnose-eye-diseases-from-scans","url":"/categories/technology/ai/ai-can-diagnose-eye-diseases-from-scans.html","color":"#FFC107","snippet":"Imagine AI detecting vision-threatening conditions before symptoms appear. AI ophthalmology is saving sight.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Diagnose Rare Diseases","slug":"ai-can-diagnose-rare-diseases","url":"/categories/technology/ai/ai-can-diagnose-rare-diseases.html","color":"#FFC107","snippet":"Imagine a system identifying an obscure illness that even doctors might miss. AI is now tackling rare medical conditions.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Discover New Drugs Faster","slug":"ai-can-discover-new-drugs-faster","url":"/categories/technology/ai/ai-can-discover-new-drugs-faster.html","color":"#FFC107","snippet":"Imagine AI finding new cures before traditional research. AI is accelerating pharmaceuticals.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Drive Cars Autonomously","slug":"ai-can-drive-cars-autonomously","url":"/categories/technology/ai/ai-can-drive-cars-autonomously.html","color":"#FFC107","snippet":"Imagine stepping into a car that drives itself. AI is revolutionizing transportation.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Generate Hyper-Realistic Deepfake Actors","slug":"ai-can-generate-hyper-realistic-deepfake-actors","url":"/categories/technology/ai/ai-can-generate-hyper-realistic-deepfake-actors.html","color":"#FFC107","snippet":"Imagine AI creating a completely new actor on-screen. Deepfake AI is transforming entertainment.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Generate Hyper-Realistic Voices","slug":"ai-can-generate-hyper-realistic-voices","url":"/categories/technology/ai/ai-can-generate-hyper-realistic-voices.html","color":"#FFC107","snippet":"Imagine a computer speaking so convincingly that you can’t tell it’s not human. AI now synthesizes voices with perfect intonation and emotion.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Improve Crop Yields Through Precision Agriculture","slug":"ai-can-improve-crop-yields-through-precision-agriculture","url":"/categories/technology/ai/ai-can-improve-crop-yields-through-precision-agriculture.html","color":"#FFC107","snippet":"Imagine AI helping farmers grow more food with less waste. AI is transforming agriculture.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Learn to Play Video Games Better Than Humans","slug":"ai-can-learn-to-play-video-games-better-than-humans","url":"/categories/technology/ai/ai-can-learn-to-play-video-games-better-than-humans.html","color":"#FFC107","snippet":"What if a machine could master video games faster than any human ever could? AI has defeated world champions in complex games like StarCraft II and Dota 2.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Learn to Teach Itself Without Human Input","slug":"ai-can-learn-to-teach-itself-without-human-input","url":"/categories/technology/ai/ai-can-learn-to-teach-itself-without-human-input.html","color":"#FFC107","snippet":"Imagine a machine improving its own intelligence without being told what to do. Some AI systems can now self-train.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Optimize Energy Usage","slug":"ai-can-optimize-energy-usage","url":"/categories/technology/ai/ai-can-optimize-energy-usage.html","color":"#FFC107","snippet":"Imagine AI controlling your home’s energy like a smart conductor. AI is improving sustainability.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Optimize Traffic Flow in Cities","slug":"ai-can-optimize-traffic-flow-in-cities","url":"/categories/technology/ai/ai-can-optimize-traffic-flow-in-cities.html","color":"#FFC107","snippet":"Imagine AI reducing your daily commute by predicting congestion. Smart city AI is revolutionizing urban planning.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Paint Photorealistic Portraits in Seconds","slug":"ai-can-paint-photorealistic-portraits-in-seconds","url":"/categories/technology/ai/ai-can-paint-photorealistic-portraits-in-seconds.html","color":"#FFC107","snippet":"Imagine AI painting a portrait faster than any human could. Photorealistic art generation is now AI-driven.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Climate Change Effects","slug":"ai-can-predict-climate-change-effects","url":"/categories/technology/ai/ai-can-predict-climate-change-effects.html","color":"#FFC107","snippet":"Imagine AI simulating Earth’s future weather decades in advance. AI is crucial in climate research.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Criminal Behavior","slug":"ai-can-predict-criminal-behavior","url":"/categories/technology/ai/ai-can-predict-criminal-behavior.html","color":"#FFC107","snippet":"Imagine AI analyzing crime patterns to forecast potential offenses. Law enforcement agencies are experimenting with predictive policing.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Diseases Before Symptoms Appear","slug":"ai-can-predict-diseases-before-symptoms-appear","url":"/categories/technology/ai/ai-can-predict-diseases-before-symptoms-appear.html","color":"#FFC107","snippet":"Imagine a machine alerting you to an illness before you even feel sick. AI is revolutionizing healthcare by predicting diseases early.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Natural Disasters","slug":"ai-can-predict-natural-disasters","url":"/categories/technology/ai/ai-can-predict-natural-disasters.html","color":"#FFC107","snippet":"Imagine an AI warning of an earthquake or hurricane days in advance. AI is transforming disaster preparedness.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Natural Disasters","slug":"ai-can-predict-natural-disasters","url":"/categories/technology/ai/ai-can-predict-natural-disasters.html","color":"#FFC107","snippet":"Imagine AI warning you before an earthquake or hurricane hits. AI is advancing disaster preparedness.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Protein Folding","slug":"ai-can-predict-protein-folding","url":"/categories/technology/ai/ai-can-predict-protein-folding.html","color":"#FFC107","snippet":"Imagine AI solving one of biology’s toughest puzzles instantly. Protein folding AI is revolutionizing science.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Stock Market Trends","slug":"ai-can-predict-stock-market-trends","url":"/categories/technology/ai/ai-can-predict-stock-market-trends.html","color":"#FFC107","snippet":"Imagine an algorithm that can foresee financial shifts before they happen. AI is being used to analyze millions of transactions to forecast market behavior.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Predict Stock Market Trends","slug":"ai-can-predict-stock-market-trends","url":"/categories/technology/ai/ai-can-predict-stock-market-trends.html","color":"#FFC107","snippet":"Imagine AI forecasting market shifts before they happen. AI is reshaping finance.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Recognize Faces With Extreme Accuracy","slug":"ai-can-recognize-faces-with-extreme-accuracy","url":"/categories/technology/ai/ai-can-recognize-faces-with-extreme-accuracy.html","color":"#FFC107","snippet":"Imagine AI identifying anyone in a crowd instantly. Facial recognition is a booming AI application.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Translate Between Languages Instantly","slug":"ai-can-translate-between-languages-instantly","url":"/categories/technology/ai/ai-can-translate-between-languages-instantly.html","color":"#FFC107","snippet":"Imagine speaking in your language and being understood anywhere in the world. AI translation is breaking barriers.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Translate Languages Instantly","slug":"ai-can-translate-languages-instantly","url":"/categories/technology/ai/ai-can-translate-languages-instantly.html","color":"#FFC107","snippet":"Imagine speaking any language and having AI instantly translate your words. AI has revolutionized communication across cultures.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Translate Sign Language","slug":"ai-can-translate-sign-language","url":"/categories/technology/ai/ai-can-translate-sign-language.html","color":"#FFC107","snippet":"Imagine AI understanding gestures and converting them into speech or text instantly. AI is bridging communication gaps.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Write Code","slug":"ai-can-write-code","url":"/categories/technology/ai/ai-can-write-code.html","color":"#FFC107","snippet":"Imagine an AI programmer that never sleeps. AI is accelerating software development.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Can Write Entire Books","slug":"ai-can-write-entire-books","url":"/categories/technology/ai/ai-can-write-entire-books.html","color":"#FFC107","snippet":"Imagine an AI authoring a full-length novel. AI is making literary creation faster than ever.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"AI Is Writing Novels That Confuse Readers","slug":"ai-is-writing-novels-that-confuse-readers","url":"/categories/technology/ai/ai-is-writing-novels-that-confuse-readers.html","color":"#FFC107","snippet":"Imagine a robot author with a bestseller. AI can now generate stories, novels, and scripts that sometimes fool human readers.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0},{"title":"Mind-Blowing AI That Can Compose Music","slug":"mind-blowing-ai-that-can-compose-music","url":"/categories/technology/ai/mind-blowing-ai-that-can-compose-music.html","color":"#FFC107","snippet":"Imagine a computer writing a symphony that could rival Beethoven. AI isn’t just crunching numbers; it’s composing music that can stir human emotions. Some systems even create original songs in seconds.","reactions":{"MIND_BLOWN":0,"SHOCKED":0,"WOW":0,"INTERESTING":0},"totalReactions":0}]; 
+// Each fact: { title, slug, url, color, reactions: {MIND_BLOWN, SHOCKED, WOW, INTERESTING}, totalReactions }
+
+/* --- LOCALSTORAGE KEYS --- */
+function reactionKey(slug, key){ return `reaction_${slug}_${key}`; }
+
+/* --- RANDOM INCREMENT --- */
+function scheduleRandomIncrement(fact, key, intervalRange=[3,20]) {
+  const minMs = intervalRange[0]*60*1000;
+  const maxMs = intervalRange[1]*60*1000;
+  function tick(){
+    const stored = parseInt(localStorage.getItem(reactionKey(fact.slug,key))) || 0;
+    localStorage.setItem(reactionKey(fact.slug,key), stored+1);
+    updateFactCard(fact);
+    setTimeout(tick, Math.random()*(maxMs-minMs)+minMs);
+  }
+  setTimeout(tick, Math.random()*(maxMs-minMs)+minMs);
+}
+
+/* --- CREATE CARD --- */
+function createCard(fact){
+  const div = document.createElement('div');
+  div.className='card';
+  div.style.setProperty('--category-color', fact.color || '#ff5722');
+  div.dataset.slug = fact.slug;
+  
+  const counts = {};
+  Object.keys(fact.reactions).forEach(key=>{
+    counts[key] = parseInt(localStorage.getItem(reactionKey(fact.slug,key))) || fact.reactions[key] || 0;
+    scheduleRandomIncrement(fact,key);
+  });
+  
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  
+  div.innerHTML=`
+    <a href="${fact.url}">${fact.title}</a>
+    <div class="reaction-count">👍 ${total.toLocaleString()}</div>
+  `;
+  
+  div.counts = counts;
+  div.totalReactions = total;
+  
+  return div;
+}
+
+/* --- UPDATE CARD --- */
+function updateFactCard(fact){
+  const card = document.querySelector(`.card[data-slug="${fact.slug}"]`);
+  if(!card) return;
+  const counts = {};
+  Object.keys(fact.reactions).forEach(key=>{
+    counts[key] = parseInt(localStorage.getItem(reactionKey(fact.slug,key))) || fact.reactions[key] || 0;
+  });
+  card.counts = counts;
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  card.totalReactions = total;
+  card.querySelector('.reaction-count').textContent = `👍 ${total.toLocaleString()}`;
+  updateHeaderTotals();
+}
+
+/* --- POPULATE GRID --- */
+function populateGrid(){
+  const container = document.getElementById('subject-grid');
+  container.innerHTML='';
+  FACTS.forEach((f,i)=>{
+    const card = createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*40);
+  });
+}
+
+/* --- HEADER TOTALS --- */
+function updateHeaderTotals(){
+  const factCount = FACTS.length;
+  const totalReactions = Array.from(document.querySelectorAll('.card'))
+    .reduce((sum, c)=>sum+c.totalReactions,0);
+  document.getElementById('factCount').textContent = factCount;
+  document.getElementById('reactionCount').textContent = totalReactions.toLocaleString();
+}
+
+/* --- MOMENTUM --- */
+function setupMomentum(){
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const pool = Array.from(document.querySelectorAll('.card')).filter(c=>c!==card);
+      if(!pool.length) return;
+      const next = pool[Math.floor(Math.random()*pool.length)];
+      document.getElementById('momentumTitle').textContent = next.querySelector('a').textContent;
+      document.getElementById('momentumLink').href = next.querySelector('a').href;
+      document.getElementById('momentum-box').style.display='block';
+    });
+  });
+}
+
+/* --- BACK TO TOP --- */
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{ backToTop.style.display = window.scrollY>400?'block':'none'; });
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* --- INIT --- */
+populateGrid();
+setupMomentum();
+updateHeaderTotals();
+
+</script>
+</body>
+</html>

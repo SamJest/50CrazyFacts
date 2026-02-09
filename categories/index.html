@@ -27,18 +27,7 @@ header { background:#222; color:white; text-align:center; padding:60px 20px; pos
 header h1 { margin:0; font-size:3em; }
 
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:20px; }
-.card {
-  background:white;
-  padding:24px;
-  border-radius:16px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.08);
-  flex:1 1 240px;
-  text-align:center;
-  cursor:pointer;
-  position:relative;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
-  opacity:0;
-}
+.card { background:white; padding:24px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.08); flex:1 1 240px; text-align:center; cursor:pointer; position:relative; transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease; opacity:0; }
 .card.loaded { opacity:1; }
 .card a.title { display:block; font-weight:700; color:#222; text-decoration:none; margin-bottom:10px; font-size:1.2em; transition:color 0.2s; }
 .card:hover { transform: translateY(-6px); box-shadow: 0 0 0 2 var(--category-color,#555),0 12px 28px rgba(0,0,0,0.12); }
@@ -46,7 +35,6 @@ header h1 { margin:0; font-size:3em; }
 .card .badge { display:inline-block; padding:3px 8px; margin:4px 2px; background:#eee; border-radius:8px; font-size:0.8em; transition: all 0.2s; }
 .card:hover .badge { background: var(--category-color,#555); color:white; }
 .card .stats { font-size:0.85em; color:#555; margin-top:8px; }
-.popular-badge { position:absolute; top:10px; right:10px; background:var(--category-color,#555); color:white; padding:4px 10px; border-radius:14px; font-size:0.75em; font-weight:bold; }
 
 #momentum-box {
   background:white; border-radius:16px; padding:24px; margin:30px auto;
@@ -58,6 +46,9 @@ header h1 { margin:0; font-size:3em; }
   border-radius:30px; background:#222; color:white; font-weight:bold; text-decoration:none;
 }
 #momentum-box a:hover { opacity:0.9; transform:scale(1.03); }
+
+.back-to-top { position:fixed; bottom:20px; right:20px; padding:14px 18px; background:#ff5722; color:white; border-radius:50px; font-weight:bold; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:none; transition:opacity 0.2s, transform 0.2s; }
+.back-to-top:hover { opacity:0.9; transform:scale(1.05); }
 
 @media(max-width:600px){
   .grid { flex-direction:column; align-items:center; }
@@ -80,78 +71,111 @@ header h1 { margin:0; font-size:3em; }
   <a id="momentumLink" href="#">Explore →</a>
 </div>
 
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
 <script>
-const categories = [{"name":"animals","url":"/categories/animals/index.html","color":"#9C27B0","subjects":[]}];
-const reactionsCache = {};
+/* --- INJECTED DATA --- */
+const CATEGORIES = [{"name":"technology","url":"/categories/technology/index.html","color":"#FFC107","subjects":[]}]; 
+// Each category: { name, slug, url, color, subjects: [ { name, slug, url, facts: [{slug, reactions:{MIND_BLOWN,SHOCKED,WOW,INTERESTING}}] } ] }
 
-// UTILITIES
-function totalReactionsForCategory(category){
-  let total = 0;
-  if(category.subjects && category.subjects.length>0){
-    for(const sub of category.subjects){
-      for(const fact of sub.facts){
-        const key = `${category.name}/${sub.name}/${fact.slug}`;
-        total += reactionsCache[key]||0;
-      }
-    }
+/* --- LOCALSTORAGE KEY --- */
+function reactionKey(factSlug,key){ return `reaction_${factSlug}_${key}`; }
+
+/* --- RANDOM INCREMENT --- */
+function scheduleRandomIncrement(fact,key,intervalRange=[3,20]){
+  const minMs = intervalRange[0]*60*1000;
+  const maxMs = intervalRange[1]*60*1000;
+  function tick(){
+    const stored = parseInt(localStorage.getItem(reactionKey(fact.slug,key))) || 0;
+    localStorage.setItem(reactionKey(fact.slug,key), stored+1);
+    updateCategoryCard(fact.categorySlug);
+    setTimeout(tick, Math.random()*(maxMs-minMs)+minMs);
   }
-  return total;
+  setTimeout(tick, Math.random()*(maxMs-minMs)+minMs);
 }
 
-function mostPopularReaction(category){
-  const counts = {};
-  if(category.subjects && category.subjects.length>0){
-    for(const sub of category.subjects){
-      for(const fact of sub.facts){
-        const key = `${category.name}/${sub.name}/${fact.slug}`;
-        const val = reactionsCache[key]||0;
-        counts['total'] = (counts['total']||0) + val;
-      }
-    }
-  }
-  // Just display total reactions as "popular"
-  return counts;
-}
-
+/* --- CREATE CARD --- */
 function createCard(category){
   const div = document.createElement('div');
   div.className='card';
   div.style.setProperty('--category-color', category.color || '#555');
-  const factCount = category.subjects?.reduce((a,b)=>a+(b.facts?.length||0),0)||0;
-  const reactionTotal = totalReactionsForCategory(category);
-  div.innerHTML = `
+  div.dataset.slug = category.slug;
+
+  // Aggregate reactions from all facts
+  let totalReactions = 0;
+  category.subjects?.forEach(sub=>{
+    sub.facts?.forEach(fact=>{
+      Object.keys(fact.reactions).forEach(key=>{
+        const stored = parseInt(localStorage.getItem(reactionKey(fact.slug,key))) || fact.reactions[key] || 0;
+        totalReactions += stored;
+        fact.categorySlug = category.slug;
+        scheduleRandomIncrement(fact,key);
+      });
+    });
+  });
+
+  const factCount = category.subjects?.reduce((acc,s)=>acc+(s.facts?.length||0),0)||0;
+
+  div.innerHTML=`
     <a class="title" href="${category.url}">${category.name}</a>
     <div class="badge">${category.subjects?.length || 0} Subjects</div>
     <div class="badge">${factCount} Facts</div>
-    <div class="stats">Total Reactions: ${reactionTotal}</div>
+    <div class="stats reaction-count">Total Reactions: ${totalReactions}</div>
   `;
+
   div.addEventListener('click', ()=>window.location.href=category.url);
-  setTimeout(()=>div.classList.add('loaded'), 50);
+  setTimeout(()=>div.classList.add('loaded'),50);
   return div;
 }
 
-// Render all categories with momentum
-function renderCategories(){
+/* --- UPDATE CARD --- */
+function updateCategoryCard(categorySlug){
+  const card = document.querySelector(`.card[data-slug="${categorySlug}"]`);
+  if(!card) return;
+  const category = CATEGORIES.find(c=>c.slug===categorySlug);
+  let total = 0;
+  category.subjects?.forEach(sub=>{
+    sub.facts?.forEach(fact=>{
+      Object.keys(fact.reactions).forEach(key=>{
+        total += parseInt(localStorage.getItem(reactionKey(fact.slug,key))) || fact.reactions[key] || 0;
+      });
+    });
+  });
+  card.querySelector('.reaction-count').textContent = `Total Reactions: ${total.toLocaleString()}`;
+}
+
+/* --- POPULATE GRID --- */
+function populateGrid(){
   const grid = document.getElementById('categoriesGrid');
-  categories.forEach(cat=>{
+  grid.innerHTML='';
+  CATEGORIES.forEach(cat=>{
     const card = createCard(cat);
     grid.appendChild(card);
   });
 }
 
-// Momentum box: click random category
-document.addEventListener('click', e=>{
-  const card = e.target.closest('.card');
-  if(!card) return;
-  const pool = Array.from(document.querySelectorAll('.card')).filter(c=>c!==card);
-  if(pool.length===0) return;
-  const next = pool[Math.floor(Math.random()*pool.length)];
-  document.getElementById('momentumTitle').textContent = next.querySelector('.title').textContent;
-  document.getElementById('momentumLink').href = next.querySelector('.title').href;
-  document.getElementById('momentum-box').style.display='block';
-});
+/* --- MOMENTUM --- */
+function setupMomentum(){
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const pool = Array.from(document.querySelectorAll('.card')).filter(c=>c!==card);
+      if(!pool.length) return;
+      const next = pool[Math.floor(Math.random()*pool.length)];
+      document.getElementById('momentumTitle').textContent = next.querySelector('.title').textContent;
+      document.getElementById('momentumLink').href = next.querySelector('.title').href;
+      document.getElementById('momentum-box').style.display='block';
+    });
+  });
+}
 
-document.addEventListener('DOMContentLoaded', renderCategories);
+/* --- BACK TO TOP --- */
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{ backToTop.style.display = window.scrollY>400?'block':'none'; });
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* --- INIT --- */
+populateGrid();
+setupMomentum();
 </script>
 
 </body>
