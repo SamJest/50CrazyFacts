@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facts in Red Pandas</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+
+/* HEADER */
+
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+}
+
+header h1{
+  font-size:2.6em;
+  margin:0 0 10px;
+}
+
+header p{
+  font-size:1.1em;
+  opacity:0.9;
+  max-width:720px;
+  margin:0 auto;
+}
+
+.meta-bar{
+  margin-top:18px;
+  font-weight:bold;
+  opacity:0.9;
+}
+
+/* PROGRESS BAR */
+
+#progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0%;
+  background:#ff5722;
+  z-index:9999;
+}
+
+/* GRID */
+
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:.25s;
+  cursor:pointer;
+  opacity:0;
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* TITLE */
+
+.card a{
+  display:block;
+  font-weight:700;
+  color:#222;
+  text-decoration:none;
+  margin-bottom:10px;
+  font-size:1.1em;
+}
+
+/* REACTIONS */
+
+.reaction-count{
+  font-size:.9em;
+  opacity:.75;
+}
+
+/* TRENDING BADGE */
+
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ff5722;
+  color:white;
+  font-size:.7em;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+/* SHUFFLE BUTTON */
+
+.shuffle{
+  display:block;
+  margin:10px auto 0;
+  padding:12px 18px;
+  border:none;
+  border-radius:30px;
+  background:#ff5722;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* MOMENTUM BOX */
+
+#momentum-box{
+  background:white;
+  border-radius:16px;
+  padding:26px;
+  margin:40px auto;
+  max-width:700px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  display:none;
+}
+
+/* BACK TO TOP */
+
+.back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:14px 18px;
+  background:#ff5722;
+  color:white;
+  border-radius:50px;
+  font-weight:bold;
+  cursor:pointer;
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="progress"></div>
+
+<header>
+  <h1>Explore Facts in "Red Pandas"</h1>
+  <p>Dive into fascinating, weird, and wonderful knowledge.</p>
+
+  <div class="meta-bar">
+    <span id="factCount"></span> Facts •
+    <span id="reactionCount"></span> Reactions
+  </div>
+
+  <button class="shuffle" onclick="shuffleFacts()">
+    🔀 Shuffle Facts
+  </button>
+</header>
+
+<section id="subject-grid" class="grid"></section>
+
+<div id="momentum-box">
+  <h2>Discover this next</h2>
+  <div id="momentumTitle"></div>
+  <a id="momentumLink" href="#">Explore →</a>
+</div>
+
+<div class="back-to-top" id="backToTop">↑ Top</div>
+
+<script>
+
+/* INJECTED DATA */
+const SUBJECTS = [{"title":"Red Pandas Are Crepuscular","slug":"red-pandas-are-crepuscular","url":"/categories/animals/red-pandas/red-pandas-are-crepuscular.html","color":"#9C27B0","snippet":"Active at dawn and dusk.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Excellent Jumpers","slug":"red-pandas-are-excellent-jumpers","url":"/categories/animals/red-pandas/red-pandas-are-excellent-jumpers.html","color":"#9C27B0","snippet":"Leap of survival.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Excellent Swimmers","slug":"red-pandas-are-excellent-swimmers","url":"/categories/animals/red-pandas/red-pandas-are-excellent-swimmers.html","color":"#9C27B0","snippet":"Aquatic abilities surprise.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Masters of Camouflage","slug":"red-pandas-are-masters-of-camouflage","url":"/categories/animals/red-pandas/red-pandas-are-masters-of-camouflage.html","color":"#9C27B0","snippet":"Red fur in green forests.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Mostly Active at Dawn and Dusk","slug":"red-pandas-are-mostly-active-at-dawn-and-dusk","url":"/categories/animals/red-pandas/red-pandas-are-mostly-active-at-dawn-and-dusk.html","color":"#9C27B0","snippet":"Crepuscular lifestyles.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Primarily Nocturnal","slug":"red-pandas-are-primarily-nocturnal","url":"/categories/animals/red-pandas/red-pandas-are-primarily-nocturnal.html","color":"#9C27B0","snippet":"Shadow-dwellers of the forest.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Primarily Solitary","slug":"red-pandas-are-primarily-solitary","url":"/categories/animals/red-pandas/red-pandas-are-primarily-solitary.html","color":"#9C27B0","snippet":"Solo forest dwellers.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Solitary Animals Outside Mating Season","slug":"red-pandas-are-solitary-animals-outside-mating-season","url":"/categories/animals/red-pandas/red-pandas-are-solitary-animals-outside-mating-season.html","color":"#9C27B0","snippet":"Loners of the forest.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Vulnerable to Habitat Fragmentation","slug":"red-pandas-are-vulnerable-to-habitat-fragmentation","url":"/categories/animals/red-pandas/red-pandas-are-vulnerable-to-habitat-fragmentation.html","color":"#9C27B0","snippet":"Forest dwellers at risk.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Vulnerable to Habitat Loss","slug":"red-pandas-are-vulnerable-to-habitat-loss","url":"/categories/animals/red-pandas/red-pandas-are-vulnerable-to-habitat-loss.html","color":"#9C27B0","snippet":"Deforestation danger.","reactions":0,"totalReactions":0},{"title":"Red Pandas Are Vulnerable to Predators Like Snow Leopards and Martens","slug":"red-pandas-are-vulnerable-to-predators-like-snow-leopards-and-martens","url":"/categories/animals/red-pandas/red-pandas-are-vulnerable-to-predators-like-snow-leopards-and-martens.html","color":"#9C27B0","snippet":"Forest survival challenges.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Be Active in Cold and Wet Conditions","slug":"red-pandas-can-be-active-in-cold-and-wet-conditions","url":"/categories/animals/red-pandas/red-pandas-can-be-active-in-cold-and-wet-conditions.html","color":"#9C27B0","snippet":"Tough little climbers.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Curl Up Like a Ball to Sleep","slug":"red-pandas-can-curl-up-like-a-ball-to-sleep","url":"/categories/animals/red-pandas/red-pandas-can-curl-up-like-a-ball-to-sleep.html","color":"#9C27B0","snippet":"Covered by tail warmth.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Curl Up Like a Cinnamon Bun","slug":"red-pandas-can-curl-up-like-a-cinnamon-bun","url":"/categories/animals/red-pandas/red-pandas-can-curl-up-like-a-cinnamon-bun.html","color":"#9C27B0","snippet":"Sleeping strategies.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Descend to the Ground to Feed","slug":"red-pandas-can-descend-to-the-ground-to-feed","url":"/categories/animals/red-pandas/red-pandas-can-descend-to-the-ground-to-feed.html","color":"#9C27B0","snippet":"Arboreal and terrestrial flexibility.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Descend Trees Headfirst","slug":"red-pandas-can-descend-trees-headfirst","url":"/categories/animals/red-pandas/red-pandas-can-descend-trees-headfirst.html","color":"#9C27B0","snippet":"Gravity-defying skills.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Eat Fruits, Eggs, and Small Birds","slug":"red-pandas-can-eat-fruits-eggs-and-small-birds","url":"/categories/animals/red-pandas/red-pandas-can-eat-fruits-eggs-and-small-birds.html","color":"#9C27B0","snippet":"Flexible feeders.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Eat Insects and Bird Eggs","slug":"red-pandas-can-eat-insects-and-bird-eggs","url":"/categories/animals/red-pandas/red-pandas-can-eat-insects-and-bird-eggs.html","color":"#9C27B0","snippet":"Omnivorous surprises.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Eat Up to 2 Pounds of Bamboo Daily","slug":"red-pandas-can-eat-up-to-2-pounds-of-bamboo-daily","url":"/categories/animals/red-pandas/red-pandas-can-eat-up-to-2-pounds-of-bamboo-daily.html","color":"#9C27B0","snippet":"Bamboo buffet.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Live Up to 14 Years in the Wild","slug":"red-pandas-can-live-up-to-14-years-in-the-wild","url":"/categories/animals/red-pandas/red-pandas-can-live-up-to-14-years-in-the-wild.html","color":"#9C27B0","snippet":"Unexpected longevity.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Live Up to 14 Years in the Wild","slug":"red-pandas-can-live-up-to-14-years-in-the-wild","url":"/categories/animals/red-pandas/red-pandas-can-live-up-to-14-years-in-the-wild.html","color":"#9C27B0","snippet":"Moderate lifespan.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Perform Agile Leaps Between Branches","slug":"red-pandas-can-perform-agile-leaps-between-branches","url":"/categories/animals/red-pandas/red-pandas-can-perform-agile-leaps-between-branches.html","color":"#9C27B0","snippet":"Forest gymnasts.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Rotate Their Ankles 180 Degrees","slug":"red-pandas-can-rotate-their-ankles-180-degrees","url":"/categories/animals/red-pandas/red-pandas-can-rotate-their-ankles-180-degrees.html","color":"#9C27B0","snippet":"Climbing headfirst made easy.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Rotate Their Ankles to Climb Headfirst Down Trees","slug":"red-pandas-can-rotate-their-ankles-to-climb-headfirst-down-trees","url":"/categories/animals/red-pandas/red-pandas-can-rotate-their-ankles-to-climb-headfirst-down-trees.html","color":"#9C27B0","snippet":"Inverted acrobatics.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Suffer From Climate Change Effects","slug":"red-pandas-can-suffer-from-climate-change-effects","url":"/categories/animals/red-pandas/red-pandas-can-suffer-from-climate-change-effects.html","color":"#9C27B0","snippet":"Temperature and bamboo shifts.","reactions":0,"totalReactions":0},{"title":"Red Pandas Can Swim If Necessary","slug":"red-pandas-can-swim-if-necessary","url":"/categories/animals/red-pandas/red-pandas-can-swim-if-necessary.html","color":"#9C27B0","snippet":"Aquatic survival skills.","reactions":0,"totalReactions":0},{"title":"Red Pandas Communicate with High-Pitched Whistles","slug":"red-pandas-communicate-with-high-pitched-whistles","url":"/categories/animals/red-pandas/red-pandas-communicate-with-high-pitched-whistles.html","color":"#9C27B0","snippet":"Vocal signals of the forest.","reactions":0,"totalReactions":0},{"title":"Red Pandas Communicate With Whistles, Tweets, and Huffs","slug":"red-pandas-communicate-with-whistles-tweets-and-huffs","url":"/categories/animals/red-pandas/red-pandas-communicate-with-whistles-tweets-and-huffs.html","color":"#9C27B0","snippet":"Secret conversations.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a False Thumb for Grasping","slug":"red-pandas-have-a-false-thumb-for-grasping","url":"/categories/animals/red-pandas/red-pandas-have-a-false-thumb-for-grasping.html","color":"#9C27B0","snippet":"Bamboo grip mastery.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a False Thumb That Acts Like a Sixth Finger","slug":"red-pandas-have-a-false-thumb-that-acts-like-a-sixth-finger","url":"/categories/animals/red-pandas/red-pandas-have-a-false-thumb-that-acts-like-a-sixth-finger.html","color":"#9C27B0","snippet":"Meet the bamboo grappler.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a Long, Bushy Tail for Balance and Warmth","slug":"red-pandas-have-a-long-bushy-tail-for-balance-and-warmth","url":"/categories/animals/red-pandas/red-pandas-have-a-long-bushy-tail-for-balance-and-warmth.html","color":"#9C27B0","snippet":"Multifunctional tails.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a Low Reproductive Rate","slug":"red-pandas-have-a-low-reproductive-rate","url":"/categories/animals/red-pandas/red-pandas-have-a-low-reproductive-rate.html","color":"#9C27B0","snippet":"Slow population growth.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a Pseudo-Thumb for Manipulating Food","slug":"red-pandas-have-a-pseudo-thumb-for-manipulating-food","url":"/categories/animals/red-pandas/red-pandas-have-a-pseudo-thumb-for-manipulating-food.html","color":"#9C27B0","snippet":"Extra digit advantage.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a Specialized Diet Mostly of Bamboo","slug":"red-pandas-have-a-specialized-diet-mostly-of-bamboo","url":"/categories/animals/red-pandas/red-pandas-have-a-specialized-diet-mostly-of-bamboo.html","color":"#9C27B0","snippet":"Vegetarian specialists.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have a Unique Color Pattern for Camouflage","slug":"red-pandas-have-a-unique-color-pattern-for-camouflage","url":"/categories/animals/red-pandas/red-pandas-have-a-unique-color-pattern-for-camouflage.html","color":"#9C27B0","snippet":"Hidden in plain sight.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Distinct Facial Markings","slug":"red-pandas-have-distinct-facial-markings","url":"/categories/animals/red-pandas/red-pandas-have-distinct-facial-markings.html","color":"#9C27B0","snippet":"Masked uniqueness.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Rotating Wrists That Aid in Climbing","slug":"red-pandas-have-rotating-wrists-that-aid-in-climbing","url":"/categories/animals/red-pandas/red-pandas-have-rotating-wrists-that-aid-in-climbing.html","color":"#9C27B0","snippet":"Tree acrobatics in action.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Scent Glands on Their Paws for Communication","slug":"red-pandas-have-scent-glands-on-their-paws-for-communication","url":"/categories/animals/red-pandas/red-pandas-have-scent-glands-on-their-paws-for-communication.html","color":"#9C27B0","snippet":"Walking messages.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Specialized Molars for Bamboo","slug":"red-pandas-have-specialized-molars-for-bamboo","url":"/categories/animals/red-pandas/red-pandas-have-specialized-molars-for-bamboo.html","color":"#9C27B0","snippet":"Chewing innovation.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Strong Claws for Climbing","slug":"red-pandas-have-strong-claws-for-climbing","url":"/categories/animals/red-pandas/red-pandas-have-strong-claws-for-climbing.html","color":"#9C27B0","snippet":"Razor-sharp grip.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Thick Fur to Survive Cold Climates","slug":"red-pandas-have-thick-fur-to-survive-cold-climates","url":"/categories/animals/red-pandas/red-pandas-have-thick-fur-to-survive-cold-climates.html","color":"#9C27B0","snippet":"Woolly forest coats.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Thick Fur to Survive Cold Mountains","slug":"red-pandas-have-thick-fur-to-survive-cold-mountains","url":"/categories/animals/red-pandas/red-pandas-have-thick-fur-to-survive-cold-mountains.html","color":"#9C27B0","snippet":"Arctic-ready coat.","reactions":0,"totalReactions":0},{"title":"Red Pandas Have Unique Rotational Ankles for Climbing","slug":"red-pandas-have-unique-rotational-ankles-for-climbing","url":"/categories/animals/red-pandas/red-pandas-have-unique-rotational-ankles-for-climbing.html","color":"#9C27B0","snippet":"Grip from all angles.","reactions":0,"totalReactions":0},{"title":"Red Pandas Mark Territory Using Anal Glands","slug":"red-pandas-mark-territory-using-anal-glands","url":"/categories/animals/red-pandas/red-pandas-mark-territory-using-anal-glands.html","color":"#9C27B0","snippet":"Scent secrets of the forest.","reactions":0,"totalReactions":0},{"title":"Red Pandas Mark Territory Using Scent Glands","slug":"red-pandas-mark-territory-using-scent-glands","url":"/categories/animals/red-pandas/red-pandas-mark-territory-using-scent-glands.html","color":"#9C27B0","snippet":"Scented signals.","reactions":0,"totalReactions":0},{"title":"Red Pandas Play and Engage in Enrichment in Captivity","slug":"red-pandas-play-and-engage-in-enrichment-in-captivity","url":"/categories/animals/red-pandas/red-pandas-play-and-engage-in-enrichment-in-captivity.html","color":"#9C27B0","snippet":"Smart and playful.","reactions":0,"totalReactions":0},{"title":"Red Pandas Scent-Mark With Anal and Wrist Glands","slug":"red-pandas-scent-mark-with-anal-and-wrist-glands","url":"/categories/animals/red-pandas/red-pandas-scent-mark-with-anal-and-wrist-glands.html","color":"#9C27B0","snippet":"Olfactory territory.","reactions":0,"totalReactions":0},{"title":"Red Pandas Use Tail Signals to Communicate","slug":"red-pandas-use-tail-signals-to-communicate","url":"/categories/animals/red-pandas/red-pandas-use-tail-signals-to-communicate.html","color":"#9C27B0","snippet":"Messaging through posture.","reactions":0,"totalReactions":0},{"title":"Red Pandas Use Their Bushy Tail for Balance and Warmth","slug":"red-pandas-use-their-bushy-tail-for-balance-and-warmth","url":"/categories/animals/red-pandas/red-pandas-use-their-bushy-tail-for-balance-and-warmth.html","color":"#9C27B0","snippet":"Multi-purpose tail magic.","reactions":0,"totalReactions":0},{"title":"Red Pandas Use Their Tail for Communication","slug":"red-pandas-use-their-tail-for-communication","url":"/categories/animals/red-pandas/red-pandas-use-their-tail-for-communication.html","color":"#9C27B0","snippet":"Tail language.","reactions":0,"totalReactions":0},{"title":"Red Pandas Use Their Whiskers for Navigation in the Dark","slug":"red-pandas-use-their-whiskers-for-navigation-in-the-dark","url":"/categories/animals/red-pandas/red-pandas-use-their-whiskers-for-navigation-in-the-dark.html","color":"#9C27B0","snippet":"Night-time radar.","reactions":0,"totalReactions":0},{"title":"Red Pandas Use Vocalizations to Communicate","slug":"red-pandas-use-vocalizations-to-communicate","url":"/categories/animals/red-pandas/red-pandas-use-vocalizations-to-communicate.html","color":"#9C27B0","snippet":"Whistles, squeals, and chatter.","reactions":0,"totalReactions":0}];
+const SUBJECT_META = {"factCount":52,"totalReactions":0};
+
+/* HEADER META */
+
+document.getElementById('factCount')
+  .textContent = SUBJECT_META.factCount;
+
+document.getElementById('reactionCount')
+  .textContent =
+    SUBJECT_META.totalReactions.toLocaleString();
+
+/* PRETTY NAME */
+
+function prettyName(slug){
+  return slug.replace(/-/g,' ')
+             .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+/* CREATE CARD */
+
+function createCard(fact){
+
+  const div=document.createElement('div');
+  div.className='card';
+
+  if(fact.reactions>50){
+    div.innerHTML+=`<div class="badge">Trending</div>`;
+  }
+
+  div.innerHTML+=`
+    <a href="${fact.url}">
+      ${prettyName(fact.title)}
+    </a>
+    <div class="reaction-count">
+      👍 ${fact.reactions.toLocaleString()}
+    </div>
+  `;
+
+  return div;
+}
+
+/* POPULATE */
+
+function populateGrid(facts){
+
+  const container=
+    document.getElementById('subject-grid');
+
+  container.innerHTML='';
+
+  facts.forEach((f,i)=>{
+    const card=createCard(f);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*40);
+  });
+
+  setupMomentum();
+}
+
+/* SHUFFLE */
+
+function shuffleFacts(){
+  SUBJECTS.sort(()=>Math.random()-0.5);
+  populateGrid(SUBJECTS);
+}
+
+/* MOMENTUM */
+
+function setupMomentum(){
+
+  document.querySelectorAll('.card')
+  .forEach(card=>{
+
+    card.addEventListener('click',()=>{
+
+      const pool=[...document.querySelectorAll('.card')]
+        .filter(c=>c!==card);
+
+      if(!pool.length)return;
+
+      const next=
+        pool[Math.floor(Math.random()*pool.length)];
+
+      document.getElementById('momentumTitle')
+        .textContent=
+        next.querySelector('a').textContent;
+
+      document.getElementById('momentumLink')
+        .href=
+        next.querySelector('a').href;
+
+      document.getElementById('momentum-box')
+        .style.display='block';
+    });
+
+  });
+}
+
+/* PROGRESS BAR */
+
+window.addEventListener('scroll',()=>{
+
+  const winScroll=
+    document.documentElement.scrollTop;
+
+  const height=
+    document.documentElement.scrollHeight-
+    document.documentElement.clientHeight;
+
+  document.getElementById('progress').style.width=
+    (winScroll/height)*100+'%';
+});
+
+/* BACK TO TOP */
+
+const topBtn=document.getElementById('backToTop');
+
+window.addEventListener('scroll',()=>{
+  topBtn.style.display=
+    window.scrollY>400?'block':'none';
+});
+
+topBtn.onclick=()=>
+  window.scrollTo({top:0,behavior:'smooth'});
+
+/* INIT */
+
+populateGrid(SUBJECTS);
+
+</script>
+
+</body>
+</html>
