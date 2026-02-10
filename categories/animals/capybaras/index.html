@@ -23,12 +23,16 @@
 
 
 <style>
-/* YOUR CSS — UNCHANGED */
-body { font-family: Arial,sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
 header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
 header h1 { font-size:2.8em; margin:0 0 10px; }
-header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-height:1.4; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
 
+/* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
 .card {
   background:white;
@@ -44,7 +48,7 @@ header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-he
 }
 .card.loaded { opacity:1; }
 
-.card a { display:block; font-weight:700; color:#222; text-decoration:none; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
@@ -53,6 +57,12 @@ header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-he
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
 
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
 @media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
 </style>
 </head>
@@ -61,136 +71,82 @@ header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-he
 
 <header>
   <h1>Capybaras</h1>
-  <p>Explore all facts in this subject.</p>
+  <p>Explore all facts in the subject "Capybaras".</p>
 </header>
 
-<section id="subjects-grid" class="grid"></section>
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
 
 <script>
-
 /**************************************************
- DATA FROM GENERATOR (UNCHANGED)
+ DATA FROM GENERATOR
 **************************************************/
-const SUBJECTS = [{"title":"Ancient South Americans Named Rivers After Capybaras","slug":"ancient-south-americans-named-rivers-after-capybaras","url":"/categories/animals/capybaras/ancient-south-americans-named-rivers-after-capybaras.html","color":"#9C27B0","snippet":"Geography still carries their fingerprints.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Accidentally Popularized Wetland Tourism","slug":"capybaras-accidentally-popularized-wetland-tourism","url":"/categories/animals/capybaras/capybaras-accidentally-popularized-wetland-tourism.html","color":"#9C27B0","snippet":"People came for something else.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Adapted Their Skin to Act Like a Heat Regulator","slug":"capybaras-adapted-their-skin-to-act-like-a-heat-regulator","url":"/categories/animals/capybaras/capybaras-adapted-their-skin-to-act-like-a-heat-regulator.html","color":"#9C27B0","snippet":"Fur alone was not enough.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Adjust Their Metabolism Seasonally","slug":"capybaras-adjust-their-metabolism-seasonally","url":"/categories/animals/capybaras/capybaras-adjust-their-metabolism-seasonally.html","color":"#9C27B0","snippet":"Their bodies read calendars.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Appear in Indigenous Flood Myths","slug":"capybaras-appear-in-indigenous-flood-myths","url":"/categories/animals/capybaras/capybaras-appear-in-indigenous-flood-myths.html","color":"#9C27B0","snippet":"Long memory, deep water.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Accidentally Rewriting Invasive Species Models","slug":"capybaras-are-accidentally-rewriting-invasive-species-models","url":"/categories/animals/capybaras/capybaras-are-accidentally-rewriting-invasive-species-models.html","color":"#9C27B0","snippet":"The rules bent.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Driving New Laws on Urban Wildlife Coexistence","slug":"capybaras-are-driving-new-laws-on-urban-wildlife-coexistence","url":"/categories/animals/capybaras/capybaras-are-driving-new-laws-on-urban-wildlife-coexistence.html","color":"#9C27B0","snippet":"Policy follows behavior.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Influencing How Zoos Design Mixed-Species Habitats","slug":"capybaras-are-influencing-how-zoos-design-mixed-species-habitats","url":"/categories/animals/capybaras/capybaras-are-influencing-how-zoos-design-mixed-species-habitats.html","color":"#9C27B0","snippet":"They change the blueprint.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Now Studied as Stress-Resistance Models","slug":"capybaras-are-now-studied-as-stress-resistance-models","url":"/categories/animals/capybaras/capybaras-are-now-studied-as-stress-resistance-models.html","color":"#9C27B0","snippet":"Calm is measurable.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Older Than the Amazon Rainforest","slug":"capybaras-are-older-than-the-amazon-rainforest","url":"/categories/animals/capybaras/capybaras-are-older-than-the-amazon-rainforest.html","color":"#9C27B0","snippet":"It feels backward but it is true.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Still Evolving Faster Than Expected","slug":"capybaras-are-still-evolving-faster-than-expected","url":"/categories/animals/capybaras/capybaras-are-still-evolving-faster-than-expected.html","color":"#9C27B0","snippet":"Their genome is not done yet.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Used in Education to Teach Cooperative Systems","slug":"capybaras-are-used-in-education-to-teach-cooperative-systems","url":"/categories/animals/capybaras/capybaras-are-used-in-education-to-teach-cooperative-systems.html","color":"#9C27B0","snippet":"They make theory visible.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Are Used to Predict Flood Timing by Local Farmers","slug":"capybaras-are-used-to-predict-flood-timing-by-local-farmers","url":"/categories/animals/capybaras/capybaras-are-used-to-predict-flood-timing-by-local-farmers.html","color":"#9C27B0","snippet":"Behavior becomes forecast.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Became Political Symbols in Rural South America","slug":"capybaras-became-political-symbols-in-rural-south-america","url":"/categories/animals/capybaras/capybaras-became-political-symbols-in-rural-south-america.html","color":"#9C27B0","snippet":"Farm policy followed fur.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Can Alter Daily Activity Patterns Within Days","slug":"capybaras-can-alter-daily-activity-patterns-within-days","url":"/categories/animals/capybaras/capybaras-can-alter-daily-activity-patterns-within-days.html","color":"#9C27B0","snippet":"Behavior updates fast.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Can Hold Their Breath Longer Than Most Ungulates","slug":"capybaras-can-hold-their-breath-longer-than-most-ungulates","url":"/categories/animals/capybaras/capybaras-can-hold-their-breath-longer-than-most-ungulates.html","color":"#9C27B0","snippet":"Water rewired their reflexes.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Can Lose Territory Without Fighting","slug":"capybaras-can-lose-territory-without-fighting","url":"/categories/animals/capybaras/capybaras-can-lose-territory-without-fighting.html","color":"#9C27B0","snippet":"They prioritize survival over pride.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Can Survive Predation Rates That Would Wipe Out Other Mammals","slug":"capybaras-can-survive-predation-rates-that-would-wipe-out-other-mammals","url":"/categories/animals/capybaras/capybaras-can-survive-predation-rates-that-would-wipe-out-other-mammals.html","color":"#9C27B0","snippet":"Loss is built into the system.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Can Trigger Chain Reactions by Dying in Water","slug":"capybaras-can-trigger-chain-reactions-by-dying-in-water","url":"/categories/animals/capybaras/capybaras-can-trigger-chain-reactions-by-dying-in-water.html","color":"#9C27B0","snippet":"Death still matters.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Changed How Scientists Define Social Dominance","slug":"capybaras-changed-how-scientists-define-social-dominance","url":"/categories/animals/capybaras/capybaras-changed-how-scientists-define-social-dominance.html","color":"#9C27B0","snippet":"Old models failed.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Changed Size to Match Predator Eyesight","slug":"capybaras-changed-size-to-match-predator-eyesight","url":"/categories/animals/capybaras/capybaras-changed-size-to-match-predator-eyesight.html","color":"#9C27B0","snippet":"Being medium was safer than being big or small.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Changed Their Diet Without Changing Their Guts","slug":"capybaras-changed-their-diet-without-changing-their-guts","url":"/categories/animals/capybaras/capybaras-changed-their-diet-without-changing-their-guts.html","color":"#9C27B0","snippet":"Flexibility beat specialization.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Confuse Predators by Mixing With Livestock","slug":"capybaras-confuse-predators-by-mixing-with-livestock","url":"/categories/animals/capybaras/capybaras-confuse-predators-by-mixing-with-livestock.html","color":"#9C27B0","snippet":"Blending becomes defense.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Coordinate Group Movement Without Leaders","slug":"capybaras-coordinate-group-movement-without-leaders","url":"/categories/animals/capybaras/capybaras-coordinate-group-movement-without-leaders.html","color":"#9C27B0","snippet":"Order emerges quietly.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Developed Night Vision Without Large Eyes","slug":"capybaras-developed-night-vision-without-large-eyes","url":"/categories/animals/capybaras/capybaras-developed-night-vision-without-large-eyes.html","color":"#9C27B0","snippet":"They optimized instead of enlarging.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Developed Social Herding Later Than Most Mammals","slug":"capybaras-developed-social-herding-later-than-most-mammals","url":"/categories/animals/capybaras/capybaras-developed-social-herding-later-than-most-mammals.html","color":"#9C27B0","snippet":"They were loners before danger increased.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Digest Food Twice Using a Recycling Loop","slug":"capybaras-digest-food-twice-using-a-recycling-loop","url":"/categories/animals/capybaras/capybaras-digest-food-twice-using-a-recycling-loop.html","color":"#9C27B0","snippet":"It sounds gross but works.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Evolved Alongside Ancient Wetlands That No Longer Exist","slug":"capybaras-evolved-alongside-ancient-wetlands-that-no-longer-exist","url":"/categories/animals/capybaras/capybaras-evolved-alongside-ancient-wetlands-that-no-longer-exist.html","color":"#9C27B0","snippet":"Their bodies are maps of vanished landscapes.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Evolved Teeth That Never Stop Growing","slug":"capybaras-evolved-teeth-that-never-stop-growing","url":"/categories/animals/capybaras/capybaras-evolved-teeth-that-never-stop-growing.html","color":"#9C27B0","snippet":"Their smile is a maintenance project.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Evolved to Be Calm Because Panic Was Fatal","slug":"capybaras-evolved-to-be-calm-because-panic-was-fatal","url":"/categories/animals/capybaras/capybaras-evolved-to-be-calm-because-panic-was-fatal.html","color":"#9C27B0","snippet":"Fear killed faster than predators.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Experience Aging Slower Than Expected for Their Size","slug":"capybaras-experience-aging-slower-than-expected-for-their-size","url":"/categories/animals/capybaras/capybaras-experience-aging-slower-than-expected-for-their-size.html","color":"#9C27B0","snippet":"Time stretches quietly.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Form Temporary Super-Herds During Drought","slug":"capybaras-form-temporary-super-herds-during-drought","url":"/categories/animals/capybaras/capybaras-form-temporary-super-herds-during-drought.html","color":"#9C27B0","snippet":"The landscape forces alliances.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Help Scientists Predict Wetland Collapse Thresholds","slug":"capybaras-help-scientists-predict-wetland-collapse-thresholds","url":"/categories/animals/capybaras/capybaras-help-scientists-predict-wetland-collapse-thresholds.html","color":"#9C27B0","snippet":"They signal tipping points.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Hold the Record for Largest Living Rodent Size","slug":"capybaras-hold-the-record-for-largest-living-rodent-size","url":"/categories/animals/capybaras/capybaras-hold-the-record-for-largest-living-rodent-size.html","color":"#9C27B0","snippet":"Nothing else comes close.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Influence Plant Growth Patterns Where They Graze","slug":"capybaras-influence-plant-growth-patterns-where-they-graze","url":"/categories/animals/capybaras/capybaras-influence-plant-growth-patterns-where-they-graze.html","color":"#9C27B0","snippet":"Their mouths shape landscapes.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Maintain Social Bonds Through Physical Contact","slug":"capybaras-maintain-social-bonds-through-physical-contact","url":"/categories/animals/capybaras/capybaras-maintain-social-bonds-through-physical-contact.html","color":"#9C27B0","snippet":"Touch replaces constant vigilance.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras May Influence Future Climate Adaptation Planning","slug":"capybaras-may-influence-future-climate-adaptation-planning","url":"/categories/animals/capybaras/capybaras-may-influence-future-climate-adaptation-planning.html","color":"#9C27B0","snippet":"They model flexibility.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras May Shape Future Wetland Restoration Plans","slug":"capybaras-may-shape-future-wetland-restoration-plans","url":"/categories/animals/capybaras/capybaras-may-shape-future-wetland-restoration-plans.html","color":"#9C27B0","snippet":"Engineers with fur.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Once Shared Earth With Car-Sized Rodents","slug":"capybaras-once-shared-earth-with-car-sized-rodents","url":"/categories/animals/capybaras/capybaras-once-shared-earth-with-car-sized-rodents.html","color":"#9C27B0","snippet":"Their ancestors were bigger than cows. Humans would not have stood a chance.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Rarely Panic Even When Attacked","slug":"capybaras-rarely-panic-even-when-attacked","url":"/categories/animals/capybaras/capybaras-rarely-panic-even-when-attacked.html","color":"#9C27B0","snippet":"Their response surprises predators.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Rewired Their Muscles for Swimming Without Looking Aquatic","slug":"capybaras-rewired-their-muscles-for-swimming-without-looking-aquatic","url":"/categories/animals/capybaras/capybaras-rewired-their-muscles-for-swimming-without-looking-aquatic.html","color":"#9C27B0","snippet":"The change is internal.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Sometimes Act as Living Furniture for Other Animals","slug":"capybaras-sometimes-act-as-living-furniture-for-other-animals","url":"/categories/animals/capybaras/capybaras-sometimes-act-as-living-furniture-for-other-animals.html","color":"#9C27B0","snippet":"The calm attracts passengers.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Survived the Great American Biotic Interchange","slug":"capybaras-survived-the-great-american-biotic-interchange","url":"/categories/animals/capybaras/capybaras-survived-the-great-american-biotic-interchange.html","color":"#9C27B0","snippet":"They crossed continents without leaving home.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Thrive in Cities Without Becoming Aggressive","slug":"capybaras-thrive-in-cities-without-becoming-aggressive","url":"/categories/animals/capybaras/capybaras-thrive-in-cities-without-becoming-aggressive.html","color":"#9C27B0","snippet":"Urban calm persists.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Use Chemical Communication More Than Sound","slug":"capybaras-use-chemical-communication-more-than-sound","url":"/categories/animals/capybaras/capybaras-use-chemical-communication-more-than-sound.html","color":"#9C27B0","snippet":"Silence carries information.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"Capybaras Were Hunted Into Near Silence Before Conservation Intervened","slug":"capybaras-were-hunted-into-near-silence-before-conservation-intervened","url":"/categories/animals/capybaras/capybaras-were-hunted-into-near-silence-before-conservation-intervened.html","color":"#9C27B0","snippet":"The absence was noticeable.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0},{"title":"The First Humans Met Capybaras as Wild Game, Not Pets","slug":"the-first-humans-met-capybaras-as-wild-game-not-pets","url":"/categories/animals/capybaras/the-first-humans-met-capybaras-as-wild-game-not-pets.html","color":"#9C27B0","snippet":"Early hunters saw meat, not memes.","reactions":{"mindblown":0,"interesting":0,"lol":0,"whoa":0},"totalReactions":0}];
+const ITEMS = [{"title":"Capybara Altitude Records","slug":"capybara-altitude-records","url":"/categories/animals/capybaras/capybara-altitude-records.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Ancient Diet","slug":"capybara-ancient-diet","url":"/categories/animals/capybaras/capybara-ancient-diet.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Aquatic Adaptation","slug":"capybara-aquatic-adaptation","url":"/categories/animals/capybaras/capybara-aquatic-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Bioindicator Potential","slug":"capybara-bioindicator-potential","url":"/categories/animals/capybaras/capybara-bioindicator-potential.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Climate Adaptation","slug":"capybara-climate-adaptation","url":"/categories/animals/capybaras/capybara-climate-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Climate Change Resilience","slug":"capybara-climate-change-resilience","url":"/categories/animals/capybaras/capybara-climate-change-resilience.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Coat Evolution","slug":"capybara-coat-evolution","url":"/categories/animals/capybaras/capybara-coat-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Dental Evolution","slug":"capybara-dental-evolution","url":"/categories/animals/capybaras/capybara-dental-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Digestive Evolution","slug":"capybara-digestive-evolution","url":"/categories/animals/capybaras/capybara-digestive-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Digestive Mechanics","slug":"capybara-digestive-mechanics","url":"/categories/animals/capybaras/capybara-digestive-mechanics.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Domestication Attempts","slug":"capybara-domestication-attempts","url":"/categories/animals/capybaras/capybara-domestication-attempts.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Early Human Interaction","slug":"capybara-early-human-interaction","url":"/categories/animals/capybaras/capybara-early-human-interaction.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Early Predators","slug":"capybara-early-predators","url":"/categories/animals/capybaras/capybara-early-predators.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Ecotourism Impact","slug":"capybara-ecotourism-impact","url":"/categories/animals/capybaras/capybara-ecotourism-impact.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Floating Social Circles","slug":"capybara-floating-social-circles","url":"/categories/animals/capybaras/capybara-floating-social-circles.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Fossil Footprints","slug":"capybara-fossil-footprints","url":"/categories/animals/capybaras/capybara-fossil-footprints.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Friendship Oddities","slug":"capybara-friendship-oddities","url":"/categories/animals/capybaras/capybara-friendship-oddities.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Geographic Expansion","slug":"capybara-geographic-expansion","url":"/categories/animals/capybaras/capybara-geographic-expansion.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Group Size Records","slug":"capybara-group-size-records","url":"/categories/animals/capybaras/capybara-group-size-records.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Gut Microbiome","slug":"capybara-gut-microbiome","url":"/categories/animals/capybaras/capybara-gut-microbiome.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Hydration Strategies","slug":"capybara-hydration-strategies","url":"/categories/animals/capybaras/capybara-hydration-strategies.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Lifespan Extremes","slug":"capybara-lifespan-extremes","url":"/categories/animals/capybaras/capybara-lifespan-extremes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Lifespan Outliers","slug":"capybara-lifespan-outliers","url":"/categories/animals/capybaras/capybara-lifespan-outliers.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Limb Adaptation","slug":"capybara-limb-adaptation","url":"/categories/animals/capybaras/capybara-limb-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Locomotion Strategies","slug":"capybara-locomotion-strategies","url":"/categories/animals/capybaras/capybara-locomotion-strategies.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Night Vision Evolution","slug":"capybara-night-vision-evolution","url":"/categories/animals/capybaras/capybara-night-vision-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Origins in Ancient South America","slug":"capybara-origins-in-ancient-south-america","url":"/categories/animals/capybaras/capybara-origins-in-ancient-south-america.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Pet Phenomenon","slug":"capybara-pet-phenomenon","url":"/categories/animals/capybaras/capybara-pet-phenomenon.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Predator Avoidance Evolution","slug":"capybara-predator-avoidance-evolution","url":"/categories/animals/capybaras/capybara-predator-avoidance-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Reproductive Extremes","slug":"capybara-reproductive-extremes","url":"/categories/animals/capybaras/capybara-reproductive-extremes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Reproductive Mechanics","slug":"capybara-reproductive-mechanics","url":"/categories/animals/capybaras/capybara-reproductive-mechanics.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Riverine Adaptation","slug":"capybara-riverine-adaptation","url":"/categories/animals/capybaras/capybara-riverine-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Sensory Evolution","slug":"capybara-sensory-evolution","url":"/categories/animals/capybaras/capybara-sensory-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Sensory Systems","slug":"capybara-sensory-systems","url":"/categories/animals/capybaras/capybara-sensory-systems.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Social Evolution","slug":"capybara-social-evolution","url":"/categories/animals/capybaras/capybara-social-evolution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Sunbathing Paradox","slug":"capybara-sunbathing-paradox","url":"/categories/animals/capybaras/capybara-sunbathing-paradox.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Swimming Endurance Records","slug":"capybara-swimming-endurance-records","url":"/categories/animals/capybaras/capybara-swimming-endurance-records.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Swimming Mechanics","slug":"capybara-swimming-mechanics","url":"/categories/animals/capybaras/capybara-swimming-mechanics.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Swimming Speed Records","slug":"capybara-swimming-speed-records","url":"/categories/animals/capybaras/capybara-swimming-speed-records.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Temperature Tolerance Extremes","slug":"capybara-temperature-tolerance-extremes","url":"/categories/animals/capybaras/capybara-temperature-tolerance-extremes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Thermoregulation","slug":"capybara-thermoregulation","url":"/categories/animals/capybaras/capybara-thermoregulation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Tick Hosting","slug":"capybara-tick-hosting","url":"/categories/animals/capybaras/capybara-tick-hosting.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Urban Adaptation","slug":"capybara-urban-adaptation","url":"/categories/animals/capybaras/capybara-urban-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Vampire Bat Myth","slug":"capybara-vampire-bat-myth","url":"/categories/animals/capybaras/capybara-vampire-bat-myth.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Vocal Communication","slug":"capybara-vocal-communication","url":"/categories/animals/capybaras/capybara-vocal-communication.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybara Weight-to-Length Extremes","slug":"capybara-weight-to-length-extremes","url":"/categories/animals/capybaras/capybara-weight-to-length-extremes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Capybaras in Indigenous Lore","slug":"capybaras-in-indigenous-lore","url":"/categories/animals/capybaras/capybaras-in-indigenous-lore.html","color":"#ff5722","category":"animals","factCount":1},{"title":"First European Encounter with Capybaras","slug":"first-european-encounter-with-capybaras","url":"/categories/animals/capybaras/first-european-encounter-with-capybaras.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Largest Recorded Capybara","slug":"largest-recorded-capybara","url":"/categories/animals/capybaras/largest-recorded-capybara.html","color":"#ff5722","category":"animals","factCount":1}];
 
 /**************************************************
- UTIL — Pretty name
+ UTILITIES
 **************************************************/
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
   return (slug||'')
     .replace(/-/g,' ')
     .split(' ')
-    .map((w,i)=>
-      i>0 && small.includes(w)
-        ? w
-        : w.charAt(0).toUpperCase()+w.slice(1)
-    )
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
     .join(' ');
-}
-
-/**************************************************
- GLOBAL REACTION SYNC
-**************************************************/
-function getFactReactionTotal(subject, slug){
-
-  const keyPrefix = `reactions_`;
-
-  let total = 0;
-
-  for(let i=0;i<localStorage.length;i++){
-
-    const key = localStorage.key(i);
-
-    if(
-      key.includes(`_${subject.toLowerCase()}_${slug.toLowerCase()}`)
-    ){
-
-      const data =
-        JSON.parse(localStorage.getItem(key)) || {};
-
-      total +=
-        (data.mindblown||0) +
-        (data.interesting||0) +
-        (data.lol||0) +
-        (data.whoa||0);
-
-    }
-
-  }
-
-  return total;
-
 }
 
 /**************************************************
  CREATE CARD
 **************************************************/
-function createCard(subject){
-
+function createCard(item){
   const div = document.createElement('div');
-  div.className = 'card';
-  div.dataset.slug = subject.slug;
-  div.style.setProperty(
-    '--category-color',
-    subject.color || '#ff5722'
-  );
-
-  const reactionsTotal =
-    getFactReactionTotal(
-      "Capybaras",
-      subject.slug
-    );
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
 
   div.innerHTML = `
-    <a href="${subject.url}">
-      ${prettyName(subject.title)}
-    </a>
+    <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
-      <span class="badge">
-        Facts: ${subject.factCount || 1}
-      </span>
-      <span class="badge">
-        Reactions: ${reactionsTotal}
-      </span>
+      <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
   `;
-
   return div;
 }
 
 /**************************************************
  POPULATE GRID
 **************************************************/
-function populateGrid(subjects){
-
-  const container =
-    document.getElementById('subjects-grid');
-
-  container.innerHTML = '';
-
-  subjects.forEach((s,i)=>{
-
-    const card = createCard(s);
-
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
     container.appendChild(card);
-
-    setTimeout(
-      ()=>card.classList.add('loaded'),
-      i*50
-    );
-
+    setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+}
 
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
 }
 
 /**************************************************
  INIT
 **************************************************/
-if(typeof SUBJECTS !== 'undefined'){
-  populateGrid(SUBJECTS);
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
 }
-
 </script>
 
 </body>

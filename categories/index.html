@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>All Categories</title>
+<title>Categories</title>
 
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -23,12 +23,16 @@
 
 
 <style>
-/* PRESERVED CSS — EXACTLY AS BEFORE */
-body { font-family: Arial,sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
 header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
 header h1 { font-size:2.8em; margin:0 0 10px; }
-header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-height:1.4; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
 
+/* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
 .card {
   background:white;
@@ -44,7 +48,7 @@ header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-he
 }
 .card.loaded { opacity:1; }
 
-.card a { display:block; font-weight:700; color:#222; text-decoration:none; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
@@ -53,6 +57,12 @@ header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-he
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
 
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
 @media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
 </style>
 </head>
@@ -60,72 +70,48 @@ header p { font-size:1.2em; opacity:0.9; max-width:700px; margin:0 auto; line-he
 <body>
 
 <header>
-  <h1>All Categories</h1>
-  <p>Browse all categories and explore subjects within each.</p>
+  <h1>Categories</h1>
+  <p>Explore all categories and the total number of facts each contains.</p>
 </header>
 
-<section id="category-grid" class="grid"></section>
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
 
 <script>
-
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const CATEGORIES = [{"name":"technology","url":"/categories/technology/index.html","color":"#FFC107","subjects":[]},{"name":"animals","url":"/categories/animals/index.html","color":"#9C27B0","subjects":[]}];
+const ITEMS = [{"title":"animals","slug":"animals","url":"/categories/animals/index.html","color":"#ff5722","category":"animals","factCount":566}];
 
 /**************************************************
- UTIL — Pretty Name
+ UTILITIES
 **************************************************/
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
   return (slug||'')
     .replace(/-/g,' ')
     .split(' ')
-    .map((w,i)=>
-      i>0 && small.includes(w)
-        ? w
-        : w.charAt(0).toUpperCase()+w.slice(1)
-    )
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
     .join(' ');
 }
 
 /**************************************************
- GLOBAL REACTION SUM PER CATEGORY
+ CREATE CARD
 **************************************************/
-function getCategoryReactionTotal(categorySlug){
-  const keyPrefix = 'reactions_';
-  let total = 0;
-
-  for(let i=0;i<localStorage.length;i++){
-    const key = localStorage.key(i);
-    if(key.includes(`_${categorySlug.toLowerCase()}`)){
-      const data = JSON.parse(localStorage.getItem(key)) || {};
-      total += (data.mindblown||0) + (data.interesting||0) + (data.lol||0) + (data.whoa||0);
-    }
-  }
-
-  return total;
-}
-
-/**************************************************
- CREATE CATEGORY CARD
-**************************************************/
-function createCategoryCard(category){
+function createCard(item){
   const div = document.createElement('div');
-  div.className = 'card';
-  div.dataset.slug = category.slug;
-  div.style.setProperty('--category-color', category.color || '#ff5722');
-
-  const reactionsTotal = getCategoryReactionTotal(category.slug);
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
 
   div.innerHTML = `
-    <a href="${category.url}">
-      ${prettyName(category.title)}
-    </a>
+    <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
-      <span class="badge">Subjects: ${category.subjectCount || 1}</span>
-      <span class="badge">Facts: ${category.factCount || 1}</span>
-      <span class="badge">Reactions: ${reactionsTotal}</span>
+      <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
   `;
   return div;
@@ -134,24 +120,33 @@ function createCategoryCard(category){
 /**************************************************
  POPULATE GRID
 **************************************************/
-function populateCategoryGrid(categories){
-  const container = document.getElementById('category-grid');
-  container.innerHTML = '';
-
-  categories.forEach((c,i)=>{
-    const card = createCategoryCard(c);
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
 }
 
 /**************************************************
- INIT
+ SEARCH / FILTER
 **************************************************/
-if(typeof CATEGORIES !== 'undefined'){
-  populateCategoryGrid(CATEGORIES);
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
 }
 
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
 </script>
 
 </body>
