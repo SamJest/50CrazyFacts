@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Solar System</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>The Solar System</h1>
+  <p>Explore all facts in the subject "The Solar System".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Asteroid Belt Diversity","slug":"asteroid-belt-diversity","url":"/categories/astronomy/the-solar-system/asteroid-belt-diversity.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Asteroid Belt: Not Empty, Just Crowded","slug":"asteroid-belt-not-empty-just-crowded","url":"/categories/astronomy/the-solar-system/asteroid-belt-not-empty-just-crowded.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Asteroids: Solar System Time Capsules","slug":"asteroids-solar-system-time-capsules","url":"/categories/astronomy/the-solar-system/asteroids-solar-system-time-capsules.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Ceres’ Bright Spots","slug":"ceres-bright-spots","url":"/categories/astronomy/the-solar-system/ceres-bright-spots.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Comet Chemistry Clues","slug":"comet-chemistry-clues","url":"/categories/astronomy/the-solar-system/comet-chemistry-clues.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Cometary Visitors: Solar System Messengers","slug":"cometary-visitors-solar-system-messengers","url":"/categories/astronomy/the-solar-system/cometary-visitors-solar-system-messengers.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Earth-Moon Tidal Tango","slug":"earth-moon-tidal-tango","url":"/categories/astronomy/the-solar-system/earth-moon-tidal-tango.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Earth’s Moon Tidal Lock","slug":"earths-moon-tidal-lock","url":"/categories/astronomy/the-solar-system/earths-moon-tidal-lock.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Earth’s Trojan Asteroids","slug":"earths-trojan-asteroids","url":"/categories/astronomy/the-solar-system/earths-trojan-asteroids.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Enceladus’ Geysers","slug":"enceladus-geysers","url":"/categories/astronomy/the-solar-system/enceladus-geysers.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanet Detection via Solar System Analogues","slug":"exoplanet-detection-via-solar-system-analogues","url":"/categories/astronomy/the-solar-system/exoplanet-detection-via-solar-system-analogues.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanet Insights from Our Solar System","slug":"exoplanet-insights-from-our-solar-system","url":"/categories/astronomy/the-solar-system/exoplanet-insights-from-our-solar-system.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Interplanetary Magnetic Fields","slug":"interplanetary-magnetic-fields","url":"/categories/astronomy/the-solar-system/interplanetary-magnetic-fields.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Io’s Volcanic Fury","slug":"ios-volcanic-fury","url":"/categories/astronomy/the-solar-system/ios-volcanic-fury.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Jupiter’s Great Red Spot","slug":"jupiters-great-red-spot","url":"/categories/astronomy/the-solar-system/jupiters-great-red-spot.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Jupiter’s Great Red Spot","slug":"jupiters-great-red-spot","url":"/categories/astronomy/the-solar-system/jupiters-great-red-spot.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Jupiter’s Metallic Hydrogen Heart","slug":"jupiters-metallic-hydrogen-heart","url":"/categories/astronomy/the-solar-system/jupiters-metallic-hydrogen-heart.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Jupiter’s Shocking Lightning","slug":"jupiters-shocking-lightning","url":"/categories/astronomy/the-solar-system/jupiters-shocking-lightning.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kuiper Belt’s Frozen Worlds","slug":"kuiper-belts-frozen-worlds","url":"/categories/astronomy/the-solar-system/kuiper-belts-frozen-worlds.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Mars’ Dust Devils","slug":"mars-dust-devils","url":"/categories/astronomy/the-solar-system/mars-dust-devils.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Mars’ Hidden Water","slug":"mars-hidden-water","url":"/categories/astronomy/the-solar-system/mars-hidden-water.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Mercury’s Extreme Temperatures","slug":"mercurys-extreme-temperatures","url":"/categories/astronomy/the-solar-system/mercurys-extreme-temperatures.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Mercury’s Ice in the Shadows","slug":"mercurys-ice-in-the-shadows","url":"/categories/astronomy/the-solar-system/mercurys-ice-in-the-shadows.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Mercury’s Magnetic Heart","slug":"mercurys-magnetic-heart","url":"/categories/astronomy/the-solar-system/mercurys-magnetic-heart.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Neptune’s Dark Spots","slug":"neptunes-dark-spots","url":"/categories/astronomy/the-solar-system/neptunes-dark-spots.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Neptune’s Supersonic Winds","slug":"neptunes-supersonic-winds","url":"/categories/astronomy/the-solar-system/neptunes-supersonic-winds.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Neptune’s Supersonic Winds","slug":"neptunes-supersonic-winds","url":"/categories/astronomy/the-solar-system/neptunes-supersonic-winds.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Neptune’s Supersonic Winds","slug":"neptunes-supersonic-winds","url":"/categories/astronomy/the-solar-system/neptunes-supersonic-winds.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Oort Cloud Mystery","slug":"oort-cloud-mystery","url":"/categories/astronomy/the-solar-system/oort-cloud-mystery.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Planetary Defense Planning","slug":"planetary-defense-planning","url":"/categories/astronomy/the-solar-system/planetary-defense-planning.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Pluto’s Blue Haze Layers","slug":"plutos-blue-haze-layers","url":"/categories/astronomy/the-solar-system/plutos-blue-haze-layers.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Pluto’s Heart-Shaped Basin","slug":"plutos-heart-shaped-basin","url":"/categories/astronomy/the-solar-system/plutos-heart-shaped-basin.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Pluto’s Heart-Shaped Tombaugh Regio","slug":"plutos-heart-shaped-tombaugh-regio","url":"/categories/astronomy/the-solar-system/plutos-heart-shaped-tombaugh-regio.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Pluto’s Heartbeat: Nitrogen Glaciers","slug":"plutos-heartbeat-nitrogen-glaciers","url":"/categories/astronomy/the-solar-system/plutos-heartbeat-nitrogen-glaciers.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Rings of Ice and Fire: Saturn’s Diversity","slug":"rings-of-ice-and-fire-saturns-diversity","url":"/categories/astronomy/the-solar-system/rings-of-ice-and-fire-saturns-diversity.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Rogue Planets in the Solar Neighborhood","slug":"rogue-planets-in-the-solar-neighborhood","url":"/categories/astronomy/the-solar-system/rogue-planets-in-the-solar-neighborhood.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Saturn’s Hexagon","slug":"saturns-hexagon","url":"/categories/astronomy/the-solar-system/saturns-hexagon.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Saturn’s Hexagonal Storm","slug":"saturns-hexagonal-storm","url":"/categories/astronomy/the-solar-system/saturns-hexagonal-storm.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Saturn’s Rings’ Age Mystery","slug":"saturns-rings-age-mystery","url":"/categories/astronomy/the-solar-system/saturns-rings-age-mystery.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Solar System Formation Timeline","slug":"solar-system-formation-timeline","url":"/categories/astronomy/the-solar-system/solar-system-formation-timeline.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Solar System’s Hidden Planet Nine","slug":"solar-systems-hidden-planet-nine","url":"/categories/astronomy/the-solar-system/solar-systems-hidden-planet-nine.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Sun’s Tiny Siblings","slug":"the-suns-tiny-siblings","url":"/categories/astronomy/the-solar-system/the-suns-tiny-siblings.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Titan’s Methane Lakes","slug":"titans-methane-lakes","url":"/categories/astronomy/the-solar-system/titans-methane-lakes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Titan’s Methane Lakes","slug":"titans-methane-lakes","url":"/categories/astronomy/the-solar-system/titans-methane-lakes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Uranus’ Tilted Secrets","slug":"uranus-tilted-secrets","url":"/categories/astronomy/the-solar-system/uranus-tilted-secrets.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Uranus’ Tilted Spin","slug":"uranus-tilted-spin","url":"/categories/astronomy/the-solar-system/uranus-tilted-spin.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Venus’ Retrograde Rotation","slug":"venus-retrograde-rotation","url":"/categories/astronomy/the-solar-system/venus-retrograde-rotation.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Venus’ Retrograde Spin","slug":"venus-retrograde-spin","url":"/categories/astronomy/the-solar-system/venus-retrograde-spin.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Venus’ Volcanic Past","slug":"venus-volcanic-past","url":"/categories/astronomy/the-solar-system/venus-volcanic-past.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Venus’ Volcanoes","slug":"venus-volcanoes","url":"/categories/astronomy/the-solar-system/venus-volcanoes.html","color":"#3f51b5","category":"astronomy","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

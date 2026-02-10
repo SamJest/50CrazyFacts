@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Horizon</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Event Horizon</h1>
+  <p>Explore all facts in the subject "Event Horizon".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Accretion Impact: Shaping the Event Horizon","slug":"accretion-impact-shaping-the-event-horizon","url":"/categories/astronomy/event-horizon/accretion-impact-shaping-the-event-horizon.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Artificial Event Horizons: Labs Simulating Black Holes","slug":"artificial-event-horizons-labs-simulating-black-holes","url":"/categories/astronomy/event-horizon/artificial-event-horizons-labs-simulating-black-holes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Black Hole Mimickers: Horizon Illusions","slug":"black-hole-mimickers-horizon-illusions","url":"/categories/astronomy/event-horizon/black-hole-mimickers-horizon-illusions.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Black Holes on the Silver Screen","slug":"black-holes-on-the-silver-screen","url":"/categories/astronomy/event-horizon/black-holes-on-the-silver-screen.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Dynamic Horizons: How Event Horizons Evolve","slug":"dynamic-horizons-how-event-horizons-evolve","url":"/categories/astronomy/event-horizon/dynamic-horizons-how-event-horizons-evolve.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Echoes from the Abyss: Horizon Signals","slug":"echoes-from-the-abyss-horizon-signals","url":"/categories/astronomy/event-horizon/echoes-from-the-abyss-horizon-signals.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Ergosphere Mechanics: Twisted Horizons","slug":"ergosphere-mechanics-twisted-horizons","url":"/categories/astronomy/event-horizon/ergosphere-mechanics-twisted-horizons.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Collisions: Cosmic Rarity","slug":"event-horizon-collisions-cosmic-rarity","url":"/categories/astronomy/event-horizon/event-horizon-collisions-cosmic-rarity.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Discovery: Tracing the Invisible Line","slug":"event-horizon-discovery-tracing-the-invisible-line","url":"/categories/astronomy/event-horizon/event-horizon-discovery-tracing-the-invisible-line.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Growth: From Stellar to Supermassive","slug":"event-horizon-growth-from-stellar-to-supermassive","url":"/categories/astronomy/event-horizon/event-horizon-growth-from-stellar-to-supermassive.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon in Pop Culture: From Fiction to Fact","slug":"event-horizon-in-pop-culture-from-fiction-to-fact","url":"/categories/astronomy/event-horizon/event-horizon-in-pop-culture-from-fiction-to-fact.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Mysteries: Singularities and Beyond","slug":"event-horizon-mysteries-singularities-and-beyond","url":"/categories/astronomy/event-horizon/event-horizon-mysteries-singularities-and-beyond.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Naming: Who coined the cosmic term?","slug":"event-horizon-naming-who-coined-the-cosmic-term","url":"/categories/astronomy/event-horizon/event-horizon-naming-who-coined-the-cosmic-term.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Origins: Birth of a Cosmic Boundary","slug":"event-horizon-origins-birth-of-a-cosmic-boundary","url":"/categories/astronomy/event-horizon/event-horizon-origins-birth-of-a-cosmic-boundary.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizon Stability Over Time","slug":"event-horizon-stability-over-time","url":"/categories/astronomy/event-horizon/event-horizon-stability-over-time.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizons and Global Scientific Collaboration","slug":"event-horizons-and-global-scientific-collaboration","url":"/categories/astronomy/event-horizon/event-horizons-and-global-scientific-collaboration.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizons and Hawking Radiation","slug":"event-horizons-and-hawking-radiation","url":"/categories/astronomy/event-horizon/event-horizons-and-hawking-radiation.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Event Horizons in Myth and Legend","slug":"event-horizons-in-myth-and-legend","url":"/categories/astronomy/event-horizon/event-horizons-in-myth-and-legend.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Fastest Horizon Growth: Cosmic Behemoths","slug":"fastest-horizon-growth-cosmic-behemoths","url":"/categories/astronomy/event-horizon/fastest-horizon-growth-cosmic-behemoths.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Frozen Stars: When Horizons Defy Time","slug":"frozen-stars-when-horizons-defy-time","url":"/categories/astronomy/event-horizon/frozen-stars-when-horizons-defy-time.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Future Space Telescopes: Sharpening the Horizon","slug":"future-space-telescopes-sharpening-the-horizon","url":"/categories/astronomy/event-horizon/future-space-telescopes-sharpening-the-horizon.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Gravitational Wave Horizons: Listening to Cosmic Collisions","slug":"gravitational-wave-horizons-listening-to-cosmic-collisions","url":"/categories/astronomy/event-horizon/gravitational-wave-horizons-listening-to-cosmic-collisions.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Hawking Radiation: Evaporation from the Abyss","slug":"hawking-radiation-evaporation-from-the-abyss","url":"/categories/astronomy/event-horizon/hawking-radiation-evaporation-from-the-abyss.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Hawking Radiation: Quantum Mechanics Meets Horizons","slug":"hawking-radiation-quantum-mechanics-meets-horizons","url":"/categories/astronomy/event-horizon/hawking-radiation-quantum-mechanics-meets-horizons.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Hawking’s Public Influence: Making Horizons Famous","slug":"hawkings-public-influence-making-horizons-famous","url":"/categories/astronomy/event-horizon/hawkings-public-influence-making-horizons-famous.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon Adaptation: Learning from Observations","slug":"horizon-adaptation-learning-from-observations","url":"/categories/astronomy/event-horizon/horizon-adaptation-learning-from-observations.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon Holography: Encoding the Universe on a Boundary","slug":"horizon-holography-encoding-the-universe-on-a-boundary","url":"/categories/astronomy/event-horizon/horizon-holography-encoding-the-universe-on-a-boundary.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon Mergers: When Two Become One","slug":"horizon-mergers-when-two-become-one","url":"/categories/astronomy/event-horizon/horizon-mergers-when-two-become-one.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon Science and Philosophy: Limits of Knowledge","slug":"horizon-science-and-philosophy-limits-of-knowledge","url":"/categories/astronomy/event-horizon/horizon-science-and-philosophy-limits-of-knowledge.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon Thermodynamics: Energy at the Edge","slug":"horizon-thermodynamics-energy-at-the-edge","url":"/categories/astronomy/event-horizon/horizon-thermodynamics-energy-at-the-edge.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon Thermodynamics: Extreme Entropy","slug":"horizon-thermodynamics-extreme-entropy","url":"/categories/astronomy/event-horizon/horizon-thermodynamics-extreme-entropy.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Horizon-Inspired Art and Literature","slug":"horizon-inspired-art-and-literature","url":"/categories/astronomy/event-horizon/horizon-inspired-art-and-literature.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Information Paradox: What Happens Inside?","slug":"information-paradox-what-happens-inside","url":"/categories/astronomy/event-horizon/information-paradox-what-happens-inside.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Inside the Event Horizon: Beyond the Point of No Return","slug":"inside-the-event-horizon-beyond-the-point-of-no-return","url":"/categories/astronomy/event-horizon/inside-the-event-horizon-beyond-the-point-of-no-return.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kerr Event Horizons: Spinning Into Mystery","slug":"kerr-event-horizons-spinning-into-mystery","url":"/categories/astronomy/event-horizon/kerr-event-horizons-spinning-into-mystery.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Observing Event Horizons: The 2019 M87 Breakthrough","slug":"observing-event-horizons-the-2019-m87-breakthrough","url":"/categories/astronomy/event-horizon/observing-event-horizons-the-2019-m87-breakthrough.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Photon Orbits: Dancing on the Edge","slug":"photon-orbits-dancing-on-the-edge","url":"/categories/astronomy/event-horizon/photon-orbits-dancing-on-the-edge.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Political Metaphors from Event Horizons","slug":"political-metaphors-from-event-horizons","url":"/categories/astronomy/event-horizon/political-metaphors-from-event-horizons.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Quantum Computing and Event Horizons: Learning from the Abyss","slug":"quantum-computing-and-event-horizons-learning-from-the-abyss","url":"/categories/astronomy/event-horizon/quantum-computing-and-event-horizons-learning-from-the-abyss.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Rotating Horizons: The Strange Kerr Effect","slug":"rotating-horizons-the-strange-kerr-effect","url":"/categories/astronomy/event-horizon/rotating-horizons-the-strange-kerr-effect.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Schwarzschild Radius: Calculating the Invisible","slug":"schwarzschild-radius-calculating-the-invisible","url":"/categories/astronomy/event-horizon/schwarzschild-radius-calculating-the-invisible.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Spin Evolution: Twisting Event Horizons","slug":"spin-evolution-twisting-event-horizons","url":"/categories/astronomy/event-horizon/spin-evolution-twisting-event-horizons.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Fastest Spaghettification","slug":"the-fastest-spaghettification","url":"/categories/astronomy/event-horizon/the-fastest-spaghettification.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Firewall Paradox: Burning at the Horizon","slug":"the-firewall-paradox-burning-at-the-horizon","url":"/categories/astronomy/event-horizon/the-firewall-paradox-burning-at-the-horizon.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Largest Known Event Horizon","slug":"the-largest-known-event-horizon","url":"/categories/astronomy/event-horizon/the-largest-known-event-horizon.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Smallest Event Horizon Ever Calculated","slug":"the-smallest-event-horizon-ever-calculated","url":"/categories/astronomy/event-horizon/the-smallest-event-horizon-ever-calculated.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Weirdest Event Horizon: Naked Singularities","slug":"the-weirdest-event-horizon-naked-singularities","url":"/categories/astronomy/event-horizon/the-weirdest-event-horizon-naked-singularities.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Tidal Forces: Stretching Reality","slug":"tidal-forces-stretching-reality","url":"/categories/astronomy/event-horizon/tidal-forces-stretching-reality.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Time Dilation: Frozen at the Edge","slug":"time-dilation-frozen-at-the-edge","url":"/categories/astronomy/event-horizon/time-dilation-frozen-at-the-edge.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Wormhole Possibilities: Horizons with a Twist","slug":"wormhole-possibilities-horizons-with-a-twist","url":"/categories/astronomy/event-horizon/wormhole-possibilities-horizons-with-a-twist.html","color":"#3f51b5","category":"astronomy","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
