@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vegetarian Food</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Vegetarian Food</h1>
+  <p>Explore all facts in "Vegetarian Food".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Ancient Roots of Vegetarianism","slug":"ancient-roots-of-vegetarianism","url":"/categories/food-and-drink/vegetarian-food/ancient-roots-of-vegetarianism.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ancient Vegetarian Monarchs","slug":"ancient-vegetarian-monarchs","url":"/categories/food-and-drink/vegetarian-food/ancient-vegetarian-monarchs.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Antioxidant Synergy: Plants as Multitools","slug":"antioxidant-synergy-plants-as-multitools","url":"/categories/food-and-drink/vegetarian-food/antioxidant-synergy-plants-as-multitools.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Celebrity Vegetarianism","slug":"celebrity-vegetarianism","url":"/categories/food-and-drink/vegetarian-food/celebrity-vegetarianism.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Colonial Vegetarian Adaptations","slug":"colonial-vegetarian-adaptations","url":"/categories/food-and-drink/vegetarian-food/colonial-vegetarian-adaptations.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Digestive Microbiome Boosters","slug":"digestive-microbiome-boosters","url":"/categories/food-and-drink/vegetarian-food/digestive-microbiome-boosters.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Early Asian Plant-Based Diets","slug":"early-asian-plant-based-diets","url":"/categories/food-and-drink/vegetarian-food/early-asian-plant-based-diets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fastest Growing Edible Plant Tower","slug":"fastest-growing-edible-plant-tower","url":"/categories/food-and-drink/vegetarian-food/fastest-growing-edible-plant-tower.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fastest Plant-Based Soup Service","slug":"fastest-plant-based-soup-service","url":"/categories/food-and-drink/vegetarian-food/fastest-plant-based-soup-service.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Foraging Revival","slug":"foraging-revival","url":"/categories/food-and-drink/vegetarian-food/foraging-revival.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Future Protein Alternatives","slug":"future-protein-alternatives","url":"/categories/food-and-drink/vegetarian-food/future-protein-alternatives.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Heaviest Salad Ever Made","slug":"heaviest-salad-ever-made","url":"/categories/food-and-drink/vegetarian-food/heaviest-salad-ever-made.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Industrial Revolution and Vegetarianism","slug":"industrial-revolution-and-vegetarianism","url":"/categories/food-and-drink/vegetarian-food/industrial-revolution-and-vegetarianism.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Iron Absorption Secrets: Plants vs. Meat","slug":"iron-absorption-secrets-plants-vs-meat","url":"/categories/food-and-drink/vegetarian-food/iron-absorption-secrets-plants-vs-meat.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Largest Vegetarian Smoothie","slug":"largest-vegetarian-smoothie","url":"/categories/food-and-drink/vegetarian-food/largest-vegetarian-smoothie.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Legumes: The Ancient Superfood","slug":"legumes-the-ancient-superfood","url":"/categories/food-and-drink/vegetarian-food/legumes-the-ancient-superfood.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Longest Vegetarian Feast in History","slug":"longest-vegetarian-feast-in-history","url":"/categories/food-and-drink/vegetarian-food/longest-vegetarian-feast-in-history.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Medieval Monks and Meatless Mondays","slug":"medieval-monks-and-meatless-mondays","url":"/categories/food-and-drink/vegetarian-food/medieval-monks-and-meatless-mondays.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Medieval Vegetarian Guilds","slug":"medieval-vegetarian-guilds","url":"/categories/food-and-drink/vegetarian-food/medieval-vegetarian-guilds.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Mediterranean Vegetarian Origins","slug":"mediterranean-vegetarian-origins","url":"/categories/food-and-drink/vegetarian-food/mediterranean-vegetarian-origins.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Micronutrient Magic: Hidden Power of Greens","slug":"micronutrient-magic-hidden-power-of-greens","url":"/categories/food-and-drink/vegetarian-food/micronutrient-magic-hidden-power-of-greens.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Expensive Plant-Based Meal","slug":"most-expensive-plant-based-meal","url":"/categories/food-and-drink/vegetarian-food/most-expensive-plant-based-meal.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Varieties in One Meal","slug":"most-varieties-in-one-meal","url":"/categories/food-and-drink/vegetarian-food/most-varieties-in-one-meal.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Plant Protein Power: Why Beans Beat Beef","slug":"plant-protein-power-why-beans-beat-beef","url":"/categories/food-and-drink/vegetarian-food/plant-protein-power-why-beans-beat-beef.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Plant-Based Festivals","slug":"plant-based-festivals","url":"/categories/food-and-drink/vegetarian-food/plant-based-festivals.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Protein Complementation in Action","slug":"protein-complementation-in-action","url":"/categories/food-and-drink/vegetarian-food/protein-complementation-in-action.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Pythagoras: Philosophy on a Plate","slug":"pythagoras-philosophy-on-a-plate","url":"/categories/food-and-drink/vegetarian-food/pythagoras-philosophy-on-a-plate.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Tallest Vegetable Tower","slug":"tallest-vegetable-tower","url":"/categories/food-and-drink/vegetarian-food/tallest-vegetable-tower.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Temples and Vegetarian Festivals","slug":"temples-and-vegetarian-festivals","url":"/categories/food-and-drink/vegetarian-food/temples-and-vegetarian-festivals.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Fiber Advantage: How Plants Clean the Body","slug":"the-fiber-advantage-how-plants-clean-the-body","url":"/categories/food-and-drink/vegetarian-food/the-fiber-advantage-how-plants-clean-the-body.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The First Vegetarian Tax Protest","slug":"the-first-vegetarian-tax-protest","url":"/categories/food-and-drink/vegetarian-food/the-first-vegetarian-tax-protest.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Glycemic Control Mechanism","slug":"the-glycemic-control-mechanism","url":"/categories/food-and-drink/vegetarian-food/the-glycemic-control-mechanism.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Omega-3 Equation: Plants vs. Fish","slug":"the-omega-3-equation-plants-vs-fish","url":"/categories/food-and-drink/vegetarian-food/the-omega-3-equation-plants-vs-fish.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Prison Garden Reform","slug":"the-prison-garden-reform","url":"/categories/food-and-drink/vegetarian-food/the-prison-garden-reform.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Railway Vegetarian Boom","slug":"the-railway-vegetarian-boom","url":"/categories/food-and-drink/vegetarian-food/the-railway-vegetarian-boom.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Rise of Mock Meats","slug":"the-rise-of-mock-meats","url":"/categories/food-and-drink/vegetarian-food/the-rise-of-mock-meats.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Spread of Lentils Across Continents","slug":"the-spread-of-lentils-across-continents","url":"/categories/food-and-drink/vegetarian-food/the-spread-of-lentils-across-continents.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Vegetarian Influence of Ayurveda","slug":"the-vegetarian-influence-of-ayurveda","url":"/categories/food-and-drink/vegetarian-food/the-vegetarian-influence-of-ayurveda.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Wartime “Meatless Victory” Campaign","slug":"the-wartime-meatless-victory-campaign","url":"/categories/food-and-drink/vegetarian-food/the-wartime-meatless-victory-campaign.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Boxing Champions","slug":"vegetarian-boxing-champions","url":"/categories/food-and-drink/vegetarian-food/vegetarian-boxing-champions.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Feasts in Ancient Rome","slug":"vegetarian-feasts-in-ancient-rome","url":"/categories/food-and-drink/vegetarian-food/vegetarian-feasts-in-ancient-rome.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Food and Revolution","slug":"vegetarian-food-and-revolution","url":"/categories/food-and-drink/vegetarian-food/vegetarian-food-and-revolution.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Food in Space","slug":"vegetarian-food-in-space","url":"/categories/food-and-drink/vegetarian-food/vegetarian-food-in-space.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Food Waste Innovation","slug":"vegetarian-food-waste-innovation","url":"/categories/food-and-drink/vegetarian-food/vegetarian-food-waste-innovation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Innovations in Renaissance Italy","slug":"vegetarian-innovations-in-renaissance-italy","url":"/categories/food-and-drink/vegetarian-food/vegetarian-innovations-in-renaissance-italy.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Societies in the 19th Century","slug":"vegetarian-societies-in-the-19th-century","url":"/categories/food-and-drink/vegetarian-food/vegetarian-societies-in-the-19th-century.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarian Street Food Phenomenon","slug":"vegetarian-street-food-phenomenon","url":"/categories/food-and-drink/vegetarian-food/vegetarian-street-food-phenomenon.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarianism and Global Travel","slug":"vegetarianism-and-global-travel","url":"/categories/food-and-drink/vegetarian-food/vegetarianism-and-global-travel.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vegetarianism in Early American Settlements","slug":"vegetarianism-in-early-american-settlements","url":"/categories/food-and-drink/vegetarian-food/vegetarianism-in-early-american-settlements.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"World’s Largest Lentil Stew","slug":"worlds-largest-lentil-stew","url":"/categories/food-and-drink/vegetarian-food/worlds-largest-lentil-stew.html","color":"#3f51b5","category":"food-and-drink","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Preservation</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Food Preservation</h1>
+  <p>Explore all facts in "Food Preservation".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Ancient Fermentation Labs","slug":"ancient-fermentation-labs","url":"/categories/food-and-drink/food-preservation/ancient-fermentation-labs.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ancient Salt Preservation Secrets","slug":"ancient-salt-preservation-secrets","url":"/categories/food-and-drink/food-preservation/ancient-salt-preservation-secrets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ash-Cured Cheese: Smoke, Salt, and Surprise","slug":"ash-cured-cheese-smoke-salt-and-surprise","url":"/categories/food-and-drink/food-preservation/ash-cured-cheese-smoke-salt-and-surprise.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Biodegradable Packaging with Antimicrobial Magic","slug":"biodegradable-packaging-with-antimicrobial-magic","url":"/categories/food-and-drink/food-preservation/biodegradable-packaging-with-antimicrobial-magic.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Bone Marrow Storage: The Caveman’s Pantry","slug":"bone-marrow-storage-the-cavemans-pantry","url":"/categories/food-and-drink/food-preservation/bone-marrow-storage-the-cavemans-pantry.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Canning Craze: Metal vs Microbes","slug":"canning-craze-metal-vs-microbes","url":"/categories/food-and-drink/food-preservation/canning-craze-metal-vs-microbes.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Canning: War, Science, and Survival","slug":"canning-war-science-and-survival","url":"/categories/food-and-drink/food-preservation/canning-war-science-and-survival.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ceramic Ice Cream Origins","slug":"ceramic-ice-cream-origins","url":"/categories/food-and-drink/food-preservation/ceramic-ice-cream-origins.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Chemical Preservatives Emerge","slug":"chemical-preservatives-emerge","url":"/categories/food-and-drink/food-preservation/chemical-preservatives-emerge.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cold Caves: Nature’s Refrigerators","slug":"cold-caves-natures-refrigerators","url":"/categories/food-and-drink/food-preservation/cold-caves-natures-refrigerators.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cold Chain Logistics: Preservation Meets Transport","slug":"cold-chain-logistics-preservation-meets-transport","url":"/categories/food-and-drink/food-preservation/cold-chain-logistics-preservation-meets-transport.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cryogenic Preservation: Beyond Freezing","slug":"cryogenic-preservation-beyond-freezing","url":"/categories/food-and-drink/food-preservation/cryogenic-preservation-beyond-freezing.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Edible Coatings: Nature’s Invisible Preserver","slug":"edible-coatings-natures-invisible-preserver","url":"/categories/food-and-drink/food-preservation/edible-coatings-natures-invisible-preserver.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Eggs in Ashes: Volcanic Preservation","slug":"eggs-in-ashes-volcanic-preservation","url":"/categories/food-and-drink/food-preservation/eggs-in-ashes-volcanic-preservation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermentation Festivals: Social Life in a Jar","slug":"fermentation-festivals-social-life-in-a-jar","url":"/categories/food-and-drink/food-preservation/fermentation-festivals-social-life-in-a-jar.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermentation: Microbes as Allies","slug":"fermentation-microbes-as-allies","url":"/categories/food-and-drink/food-preservation/fermentation-microbes-as-allies.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Fish Eggs: Ancient Delicacy or Biochemical Hazard?","slug":"fermented-fish-eggs-ancient-delicacy-or-biochemical-hazard","url":"/categories/food-and-drink/food-preservation/fermented-fish-eggs-ancient-delicacy-or-biochemical-hazard.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Pickling vs Vinegar Pickling","slug":"fermented-pickling-vs-vinegar-pickling","url":"/categories/food-and-drink/food-preservation/fermented-pickling-vs-vinegar-pickling.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Freeze-Drying for Space and Survival","slug":"freeze-drying-for-space-and-survival","url":"/categories/food-and-drink/food-preservation/freeze-drying-for-space-and-survival.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Freeze-Drying: Ancient Ice Reimagined","slug":"freeze-drying-ancient-ice-reimagined","url":"/categories/food-and-drink/food-preservation/freeze-drying-ancient-ice-reimagined.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"High-Pressure Preservation: Crushing Bacteria, Not Flavor","slug":"high-pressure-preservation-crushing-bacteria-not-flavor","url":"/categories/food-and-drink/food-preservation/high-pressure-preservation-crushing-bacteria-not-flavor.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Honey Preservation: Nature’s Sweet Vault","slug":"honey-preservation-natures-sweet-vault","url":"/categories/food-and-drink/food-preservation/honey-preservation-natures-sweet-vault.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Honey: The Eternal Preservative","slug":"honey-the-eternal-preservative","url":"/categories/food-and-drink/food-preservation/honey-the-eternal-preservative.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ice Cellars: Pre-Refrigeration Freezers","slug":"ice-cellars-pre-refrigeration-freezers","url":"/categories/food-and-drink/food-preservation/ice-cellars-pre-refrigeration-freezers.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ice Harvesting: Winter’s Refrigeration Revolution","slug":"ice-harvesting-winters-refrigeration-revolution","url":"/categories/food-and-drink/food-preservation/ice-harvesting-winters-refrigeration-revolution.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Irradiation: Light as Preservation","slug":"irradiation-light-as-preservation","url":"/categories/food-and-drink/food-preservation/irradiation-light-as-preservation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Modified Atmosphere Packaging","slug":"modified-atmosphere-packaging","url":"/categories/food-and-drink/food-preservation/modified-atmosphere-packaging.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Mummified Meat: Egypt’s Forgotten Fridge","slug":"mummified-meat-egypts-forgotten-fridge","url":"/categories/food-and-drink/food-preservation/mummified-meat-egypts-forgotten-fridge.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Oxygen Exclusion: Anaerobic Defense","slug":"oxygen-exclusion-anaerobic-defense","url":"/categories/food-and-drink/food-preservation/oxygen-exclusion-anaerobic-defense.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"pH Manipulation: Acid vs Microbe","slug":"ph-manipulation-acid-vs-microbe","url":"/categories/food-and-drink/food-preservation/ph-manipulation-acid-vs-microbe.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Pickled Poetry: Fermentation as Expression","slug":"pickled-poetry-fermentation-as-expression","url":"/categories/food-and-drink/food-preservation/pickled-poetry-fermentation-as-expression.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Pickling Origins: Vinegar as Time Machine","slug":"pickling-origins-vinegar-as-time-machine","url":"/categories/food-and-drink/food-preservation/pickling-origins-vinegar-as-time-machine.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Pottery and Preservation","slug":"pottery-and-preservation","url":"/categories/food-and-drink/food-preservation/pottery-and-preservation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Refrigeration and Urbanization: Cool Cities","slug":"refrigeration-and-urbanization-cool-cities","url":"/categories/food-and-drink/food-preservation/refrigeration-and-urbanization-cool-cities.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Refrigeration Revolution: Ice Machines","slug":"refrigeration-revolution-ice-machines","url":"/categories/food-and-drink/food-preservation/refrigeration-revolution-ice-machines.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Salt and Osmosis: Ancient Microbe Foes","slug":"salt-and-osmosis-ancient-microbe-foes","url":"/categories/food-and-drink/food-preservation/salt-and-osmosis-ancient-microbe-foes.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Salt Wars: The Commodity That Fed Empires","slug":"salt-wars-the-commodity-that-fed-empires","url":"/categories/food-and-drink/food-preservation/salt-wars-the-commodity-that-fed-empires.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Saltpeter and Meat: Medieval Chemistry","slug":"saltpeter-and-meat-medieval-chemistry","url":"/categories/food-and-drink/food-preservation/saltpeter-and-meat-medieval-chemistry.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Smart Refrigeration: AI Meets Freshness","slug":"smart-refrigeration-ai-meets-freshness","url":"/categories/food-and-drink/food-preservation/smart-refrigeration-ai-meets-freshness.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Smart Refrigeration: Early Sensors","slug":"smart-refrigeration-early-sensors","url":"/categories/food-and-drink/food-preservation/smart-refrigeration-early-sensors.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Smoke as Early Refrigeration","slug":"smoke-as-early-refrigeration","url":"/categories/food-and-drink/food-preservation/smoke-as-early-refrigeration.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Smoking and Cultural Identity: Flavor as Heritage","slug":"smoking-and-cultural-identity-flavor-as-heritage","url":"/categories/food-and-drink/food-preservation/smoking-and-cultural-identity-flavor-as-heritage.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Smoking: Flavor Meets Function","slug":"smoking-flavor-meets-function","url":"/categories/food-and-drink/food-preservation/smoking-flavor-meets-function.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Sugar Preservation: Sweet Science","slug":"sugar-preservation-sweet-science","url":"/categories/food-and-drink/food-preservation/sugar-preservation-sweet-science.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Temperature Control: Cold as a Weapon","slug":"temperature-control-cold-as-a-weapon","url":"/categories/food-and-drink/food-preservation/temperature-control-cold-as-a-weapon.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Temperature Shock: Blanching and Pasteurization","slug":"temperature-shock-blanching-and-pasteurization","url":"/categories/food-and-drink/food-preservation/temperature-shock-blanching-and-pasteurization.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vacuum and MAP Hybrid Techniques","slug":"vacuum-and-map-hybrid-techniques","url":"/categories/food-and-drink/food-preservation/vacuum-and-map-hybrid-techniques.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vacuum Sealing: Airless Longevity","slug":"vacuum-sealing-airless-longevity","url":"/categories/food-and-drink/food-preservation/vacuum-sealing-airless-longevity.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vacuum-Sealed Superfoods: Modern Preservation Magic","slug":"vacuum-sealed-superfoods-modern-preservation-magic","url":"/categories/food-and-drink/food-preservation/vacuum-sealed-superfoods-modern-preservation-magic.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Water Activity Control: Drying and Sugar Magic","slug":"water-activity-control-drying-and-sugar-magic","url":"/categories/food-and-drink/food-preservation/water-activity-control-drying-and-sugar-magic.html","color":"#3f51b5","category":"food-and-drink","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

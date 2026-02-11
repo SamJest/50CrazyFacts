@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Street Food</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Street Food</h1>
+  <p>Explore all facts in "Street Food".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"AI-Driven Street Food Carts","slug":"ai-driven-street-food-carts","url":"/categories/food-and-drink/street-food/ai-driven-street-food-carts.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Colonialism and Street Food Evolution","slug":"colonialism-and-street-food-evolution","url":"/categories/food-and-drink/street-food/colonialism-and-street-food-evolution.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Experimental Flavors: Insects, Seaweed, and Ferments","slug":"experimental-flavors-insects-seaweed-and-ferments","url":"/categories/food-and-drink/street-food/experimental-flavors-insects-seaweed-and-ferments.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Extreme Late-Night Street Food Scenes","slug":"extreme-late-night-street-food-scenes","url":"/categories/food-and-drink/street-food/extreme-late-night-street-food-scenes.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Extreme Regional Ingredients: Durian and Surströmming","slug":"extreme-regional-ingredients-durian-and-surstrmming","url":"/categories/food-and-drink/street-food/extreme-regional-ingredients-durian-and-surstrmming.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Frozen Street Treat Extremes: Japan’s Kakigōri","slug":"frozen-street-treat-extremes-japans-kakigri","url":"/categories/food-and-drink/street-food/frozen-street-treat-extremes-japans-kakigri.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Globalization Through Street Food","slug":"globalization-through-street-food","url":"/categories/food-and-drink/street-food/globalization-through-street-food.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Glow-in-the-Dark Foods: Night Market Spectacle","slug":"glow-in-the-dark-foods-night-market-spectacle","url":"/categories/food-and-drink/street-food/glow-in-the-dark-foods-night-market-spectacle.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Indian Chaat: Spices on the Streets","slug":"indian-chaat-spices-on-the-streets","url":"/categories/food-and-drink/street-food/indian-chaat-spices-on-the-streets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Insect Street Foods: Crunching the Unexpected","slug":"insect-street-foods-crunching-the-unexpected","url":"/categories/food-and-drink/street-food/insect-street-foods-crunching-the-unexpected.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Longest Continuous Food Line: NYC Hot Dog Stand","slug":"longest-continuous-food-line-nyc-hot-dog-stand","url":"/categories/food-and-drink/street-food/longest-continuous-food-line-nyc-hot-dog-stand.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Mechanics of the Modern Food Truck","slug":"mechanics-of-the-modern-food-truck","url":"/categories/food-and-drink/street-food/mechanics-of-the-modern-food-truck.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Medieval Europe’s Frying Pans in the Streets","slug":"medieval-europes-frying-pans-in-the-streets","url":"/categories/food-and-drink/street-food/medieval-europes-frying-pans-in-the-streets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Mexico’s Taco Evolution","slug":"mexicos-taco-evolution","url":"/categories/food-and-drink/street-food/mexicos-taco-evolution.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Expensive Street Food Bites","slug":"most-expensive-street-food-bites","url":"/categories/food-and-drink/street-food/most-expensive-street-food-bites.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Varied Street Food Menus","slug":"most-varied-street-food-menus","url":"/categories/food-and-drink/street-food/most-varied-street-food-menus.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Parisian Crêpes: Revolution on the Sidewalk","slug":"parisian-crpes-revolution-on-the-sidewalk","url":"/categories/food-and-drink/street-food/parisian-crpes-revolution-on-the-sidewalk.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Religious Influence on Street Foods","slug":"religious-influence-on-street-foods","url":"/categories/food-and-drink/street-food/religious-influence-on-street-foods.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Rice Balls and Satay: Asia’s Earliest Street Snacks","slug":"rice-balls-and-satay-asias-earliest-street-snacks","url":"/categories/food-and-drink/street-food/rice-balls-and-satay-asias-earliest-street-snacks.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Spiciest Street Foods Around the Globe","slug":"spiciest-street-foods-around-the-globe","url":"/categories/food-and-drink/street-food/spiciest-street-foods-around-the-globe.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Spicy Survival: Street Food in Extreme Conditions","slug":"spicy-survival-street-food-in-extreme-conditions","url":"/categories/food-and-drink/street-food/spicy-survival-street-food-in-extreme-conditions.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food and Climate Change","slug":"street-food-and-climate-change","url":"/categories/food-and-drink/street-food/street-food-and-climate-change.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food and Cryptocurrency Payments","slug":"street-food-and-cryptocurrency-payments","url":"/categories/food-and-drink/street-food/street-food-and-cryptocurrency-payments.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food and Political Movements","slug":"street-food-and-political-movements","url":"/categories/food-and-drink/street-food/street-food-and-political-movements.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food and Social Protest","slug":"street-food-and-social-protest","url":"/categories/food-and-drink/street-food/street-food-and-social-protest.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food and Urban Microbiomes","slug":"street-food-and-urban-microbiomes","url":"/categories/food-and-drink/street-food/street-food-and-urban-microbiomes.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food and Urban Planning","slug":"street-food-and-urban-planning","url":"/categories/food-and-drink/street-food/street-food-and-urban-planning.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food as a Global Health Experiment","slug":"street-food-as-a-global-health-experiment","url":"/categories/food-and-drink/street-food/street-food-as-a-global-health-experiment.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food as Political Propaganda","slug":"street-food-as-political-propaganda","url":"/categories/food-and-drink/street-food/street-food-as-political-propaganda.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food as Social Equalizer","slug":"street-food-as-social-equalizer","url":"/categories/food-and-drink/street-food/street-food-as-social-equalizer.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food Festivals as Cultural Heritage","slug":"street-food-festivals-as-cultural-heritage","url":"/categories/food-and-drink/street-food/street-food-festivals-as-cultural-heritage.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food Goes Global: Fusion Phenomenon","slug":"street-food-goes-global-fusion-phenomenon","url":"/categories/food-and-drink/street-food/street-food-goes-global-fusion-phenomenon.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food in Extreme Weather","slug":"street-food-in-extreme-weather","url":"/categories/food-and-drink/street-food/street-food-in-extreme-weather.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Street Food of the Future: 3D-Printed Snacks","slug":"street-food-of-the-future-3d-printed-snacks","url":"/categories/food-and-drink/street-food/street-food-of-the-future-3d-printed-snacks.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Guinness World Record for Longest Skewer","slug":"the-guinness-world-record-for-longest-skewer","url":"/categories/food-and-drink/street-food/the-guinness-world-record-for-longest-skewer.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Halal Cart Transformation in NYC","slug":"the-halal-cart-transformation-in-nyc","url":"/categories/food-and-drink/street-food/the-halal-cart-transformation-in-nyc.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Night Market Phenomenon","slug":"the-night-market-phenomenon","url":"/categories/food-and-drink/street-food/the-night-market-phenomenon.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Origins of Street Food: Ancient Snacks in the Streets","slug":"the-origins-of-street-food-ancient-snacks-in-the-streets","url":"/categories/food-and-drink/street-food/the-origins-of-street-food-ancient-snacks-in-the-streets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Portable Skewer: Innovation Through Necessity","slug":"the-portable-skewer-innovation-through-necessity","url":"/categories/food-and-drink/street-food/the-portable-skewer-innovation-through-necessity.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Rise of Food Stalls in Edo Japan","slug":"the-rise-of-food-stalls-in-edo-japan","url":"/categories/food-and-drink/street-food/the-rise-of-food-stalls-in-edo-japan.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Science of Street Food Safety","slug":"the-science-of-street-food-safety","url":"/categories/food-and-drink/street-food/the-science-of-street-food-safety.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Spicy Trade: Street Food and Global Flavors","slug":"the-spicy-trade-street-food-and-global-flavors","url":"/categories/food-and-drink/street-food/the-spicy-trade-street-food-and-global-flavors.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Street Food Entrepreneur","slug":"the-street-food-entrepreneur","url":"/categories/food-and-drink/street-food/the-street-food-entrepreneur.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Street Food Survival Toolkit","slug":"the-street-food-survival-toolkit","url":"/categories/food-and-drink/street-food/the-street-food-survival-toolkit.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Sweet Tooth Street: Confectionery on the Go","slug":"the-sweet-tooth-street-confectionery-on-the-go","url":"/categories/food-and-drink/street-food/the-sweet-tooth-street-confectionery-on-the-go.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"World’s Largest Street Food Festival","slug":"worlds-largest-street-food-festival","url":"/categories/food-and-drink/street-food/worlds-largest-street-food-festival.html","color":"#3f51b5","category":"food-and-drink","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

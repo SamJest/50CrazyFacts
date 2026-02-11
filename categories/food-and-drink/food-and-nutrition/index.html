@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food And Nutrition</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Food And Nutrition</h1>
+  <p>Explore all facts in "Food And Nutrition".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Ancient Egyptians and the Science of Bread","slug":"ancient-egyptians-and-the-science-of-bread","url":"/categories/food-and-drink/food-and-nutrition/ancient-egyptians-and-the-science-of-bread.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ancient Fermented Dairy: Yogurt Before Science","slug":"ancient-fermented-dairy-yogurt-before-science","url":"/categories/food-and-drink/food-and-nutrition/ancient-fermented-dairy-yogurt-before-science.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ancient Legumes: Protein Powerhouses of Civilization","slug":"ancient-legumes-protein-powerhouses-of-civilization","url":"/categories/food-and-drink/food-and-nutrition/ancient-legumes-protein-powerhouses-of-civilization.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Antioxidants: Cellular Firefighters","slug":"antioxidants-cellular-firefighters","url":"/categories/food-and-drink/food-and-nutrition/antioxidants-cellular-firefighters.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Artificial Sweeteners: A Sweet Paradox","slug":"artificial-sweeteners-a-sweet-paradox","url":"/categories/food-and-drink/food-and-nutrition/artificial-sweeteners-a-sweet-paradox.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Calorie-Heavy Diet Records","slug":"calorie-heavy-diet-records","url":"/categories/food-and-drink/food-and-nutrition/calorie-heavy-diet-records.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Canning and Nutrient Preservation","slug":"canning-and-nutrient-preservation","url":"/categories/food-and-drink/food-and-nutrition/canning-and-nutrient-preservation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cod Liver Oil: Medicine in a Bottle","slug":"cod-liver-oil-medicine-in-a-bottle","url":"/categories/food-and-drink/food-and-nutrition/cod-liver-oil-medicine-in-a-bottle.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cultured Meat: Nutrition from the Lab","slug":"cultured-meat-nutrition-from-the-lab","url":"/categories/food-and-drink/food-and-nutrition/cultured-meat-nutrition-from-the-lab.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Dietary Fiber: The Unseen Mechanic","slug":"dietary-fiber-the-unseen-mechanic","url":"/categories/food-and-drink/food-and-nutrition/dietary-fiber-the-unseen-mechanic.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Edible Insects: Protein on the Fringe","slug":"edible-insects-protein-on-the-fringe","url":"/categories/food-and-drink/food-and-nutrition/edible-insects-protein-on-the-fringe.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Enzymes in Food: Nature’s Digestive Helpers","slug":"enzymes-in-food-natures-digestive-helpers","url":"/categories/food-and-drink/food-and-nutrition/enzymes-in-food-natures-digestive-helpers.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Extreme Vitamin C Sources","slug":"extreme-vitamin-c-sources","url":"/categories/food-and-drink/food-and-nutrition/extreme-vitamin-c-sources.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fasting Feasts: Nutritional Extremes in Rituals","slug":"fasting-feasts-nutritional-extremes-in-rituals","url":"/categories/food-and-drink/food-and-nutrition/fasting-feasts-nutritional-extremes-in-rituals.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fortified Foods: Nutrition on Demand","slug":"fortified-foods-nutrition-on-demand","url":"/categories/food-and-drink/food-and-nutrition/fortified-foods-nutrition-on-demand.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Functional Foods: Beyond Calories","slug":"functional-foods-beyond-calories","url":"/categories/food-and-drink/food-and-nutrition/functional-foods-beyond-calories.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Global Spread of Superfoods","slug":"global-spread-of-superfoods","url":"/categories/food-and-drink/food-and-nutrition/global-spread-of-superfoods.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Glycemic Index: How Carbs Talk to Blood Sugar","slug":"glycemic-index-how-carbs-talk-to-blood-sugar","url":"/categories/food-and-drink/food-and-nutrition/glycemic-index-how-carbs-talk-to-blood-sugar.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"High-Fat Extreme Diets in Nature","slug":"high-fat-extreme-diets-in-nature","url":"/categories/food-and-drink/food-and-nutrition/high-fat-extreme-diets-in-nature.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Honey: Nature’s Preservative and Nutrient","slug":"honey-natures-preservative-and-nutrient","url":"/categories/food-and-drink/food-and-nutrition/honey-natures-preservative-and-nutrient.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Hydration Chemistry: Electrolytes at Work","slug":"hydration-chemistry-electrolytes-at-work","url":"/categories/food-and-drink/food-and-nutrition/hydration-chemistry-electrolytes-at-work.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Hypercaffeinated Diets: Survival on Stimulants","slug":"hypercaffeinated-diets-survival-on-stimulants","url":"/categories/food-and-drink/food-and-nutrition/hypercaffeinated-diets-survival-on-stimulants.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Industrial Sugar: From Luxury to Staple","slug":"industrial-sugar-from-luxury-to-staple","url":"/categories/food-and-drink/food-and-nutrition/industrial-sugar-from-luxury-to-staple.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Largest Single Fruit Consumed","slug":"largest-single-fruit-consumed","url":"/categories/food-and-drink/food-and-nutrition/largest-single-fruit-consumed.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Mineral Bioavailability: The Nutrient Tug-of-War","slug":"mineral-bioavailability-the-nutrient-tug-of-war","url":"/categories/food-and-drink/food-and-nutrition/mineral-bioavailability-the-nutrient-tug-of-war.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Micronutrients in a Single Bite","slug":"most-micronutrients-in-a-single-bite","url":"/categories/food-and-drink/food-and-nutrition/most-micronutrients-in-a-single-bite.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Nutritional Urban Legends: Weird but True","slug":"nutritional-urban-legends-weird-but-true","url":"/categories/food-and-drink/food-and-nutrition/nutritional-urban-legends-weird-but-true.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Personalized Nutrition: DNA Diets","slug":"personalized-nutrition-dna-diets","url":"/categories/food-and-drink/food-and-nutrition/personalized-nutrition-dna-diets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Protein Folding and Digestibility","slug":"protein-folding-and-digestibility","url":"/categories/food-and-drink/food-and-nutrition/protein-folding-and-digestibility.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Rare Allergen Extremes: Nutritional Risk Outliers","slug":"rare-allergen-extremes-nutritional-risk-outliers","url":"/categories/food-and-drink/food-and-nutrition/rare-allergen-extremes-nutritional-risk-outliers.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Record-Low Calorie Foods","slug":"record-low-calorie-foods","url":"/categories/food-and-drink/food-and-nutrition/record-low-calorie-foods.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Sailors’ Diets and the Vitamin Puzzle","slug":"sailors-diets-and-the-vitamin-puzzle","url":"/categories/food-and-drink/food-and-nutrition/sailors-diets-and-the-vitamin-puzzle.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Seaweed: The Ocean’s Nutritional Treasure","slug":"seaweed-the-oceans-nutritional-treasure","url":"/categories/food-and-drink/food-and-nutrition/seaweed-the-oceans-nutritional-treasure.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Blue Zones Diet: Longevity Secrets","slug":"the-blue-zones-diet-longevity-secrets","url":"/categories/food-and-drink/food-and-nutrition/the-blue-zones-diet-longevity-secrets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Chocolate Paradox: Bitter to Beneficial","slug":"the-chocolate-paradox-bitter-to-beneficial","url":"/categories/food-and-drink/food-and-nutrition/the-chocolate-paradox-bitter-to-beneficial.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The First Nutritional Science Experiment","slug":"the-first-nutritional-science-experiment","url":"/categories/food-and-drink/food-and-nutrition/the-first-nutritional-science-experiment.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Gut Microbiome: Your Internal Nutritional Factory","slug":"the-gut-microbiome-your-internal-nutritional-factory","url":"/categories/food-and-drink/food-and-nutrition/the-gut-microbiome-your-internal-nutritional-factory.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Oldest Known Edible Seeds","slug":"the-oldest-known-edible-seeds","url":"/categories/food-and-drink/food-and-nutrition/the-oldest-known-edible-seeds.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Potato Revolution","slug":"the-potato-revolution","url":"/categories/food-and-drink/food-and-nutrition/the-potato-revolution.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Renaissance of Nutritional Science","slug":"the-renaissance-of-nutritional-science","url":"/categories/food-and-drink/food-and-nutrition/the-renaissance-of-nutritional-science.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Rise of Convenience Foods","slug":"the-rise-of-convenience-foods","url":"/categories/food-and-drink/food-and-nutrition/the-rise-of-convenience-foods.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Spice Trade and Hidden Nutrients","slug":"the-spice-trade-and-hidden-nutrients","url":"/categories/food-and-drink/food-and-nutrition/the-spice-trade-and-hidden-nutrients.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vitamin Absorption: Fat-Soluble Secrets","slug":"vitamin-absorption-fat-soluble-secrets","url":"/categories/food-and-drink/food-and-nutrition/vitamin-absorption-fat-soluble-secrets.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Vitamin Discovery: From Deficiency to Diet","slug":"vitamin-discovery-from-deficiency-to-diet","url":"/categories/food-and-drink/food-and-nutrition/vitamin-discovery-from-deficiency-to-diet.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"World’s Largest Single Meal Ever Recorded","slug":"worlds-largest-single-meal-ever-recorded","url":"/categories/food-and-drink/food-and-nutrition/worlds-largest-single-meal-ever-recorded.html","color":"#3f51b5","category":"food-and-drink","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

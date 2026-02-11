@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fermented Foods</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* RESPONSIVE */
+@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Fermented Foods</h1>
+  <p>Explore all facts in "Fermented Foods".</p>
+</header>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Ancient Beer: The First Social Network","slug":"ancient-beer-the-first-social-network","url":"/categories/food-and-drink/fermented-foods/ancient-beer-the-first-social-network.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Ancient Brain Food: Fermented Fish as Aphrodisiac","slug":"ancient-brain-food-fermented-fish-as-aphrodisiac","url":"/categories/food-and-drink/fermented-foods/ancient-brain-food-fermented-fish-as-aphrodisiac.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Beer and Empire: Brewing as Political Tool","slug":"beer-and-empire-brewing-as-political-tool","url":"/categories/food-and-drink/fermented-foods/beer-and-empire-brewing-as-political-tool.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Beer’s Global Migration: From Mesopotamia to Munich","slug":"beers-global-migration-from-mesopotamia-to-munich","url":"/categories/food-and-drink/fermented-foods/beers-global-migration-from-mesopotamia-to-munich.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Bioengineered Kombucha: Lab Meets Tradition","slug":"bioengineered-kombucha-lab-meets-tradition","url":"/categories/food-and-drink/fermented-foods/bioengineered-kombucha-lab-meets-tradition.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cheese Before Cheese: Microbes in Antiquity","slug":"cheese-before-cheese-microbes-in-antiquity","url":"/categories/food-and-drink/fermented-foods/cheese-before-cheese-microbes-in-antiquity.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cheese Guilds and Medieval Trade","slug":"cheese-guilds-and-medieval-trade","url":"/categories/food-and-drink/fermented-foods/cheese-guilds-and-medieval-trade.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cheese Renaissance: Medieval Monks and Microbes","slug":"cheese-renaissance-medieval-monks-and-microbes","url":"/categories/food-and-drink/fermented-foods/cheese-renaissance-medieval-monks-and-microbes.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Cheonggukjang: Quick Fermentation Innovation","slug":"cheonggukjang-quick-fermentation-innovation","url":"/categories/food-and-drink/fermented-foods/cheonggukjang-quick-fermentation-innovation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Extreme Sour: Ethiopian Teff Injera","slug":"extreme-sour-ethiopian-teff-injera","url":"/categories/food-and-drink/fermented-foods/extreme-sour-ethiopian-teff-injera.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fastest Fermentation: Kombucha in Days","slug":"fastest-fermentation-kombucha-in-days","url":"/categories/food-and-drink/fermented-foods/fastest-fermentation-kombucha-in-days.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermentation Chemistry: Microbes as Alchemists","slug":"fermentation-chemistry-microbes-as-alchemists","url":"/categories/food-and-drink/fermented-foods/fermentation-chemistry-microbes-as-alchemists.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermentation in Space: Microbes Beyond Earth","slug":"fermentation-in-space-microbes-beyond-earth","url":"/categories/food-and-drink/fermented-foods/fermentation-in-space-microbes-beyond-earth.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Chocolate: Flavor Through Microbes","slug":"fermented-chocolate-flavor-through-microbes","url":"/categories/food-and-drink/fermented-foods/fermented-chocolate-flavor-through-microbes.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Cosmetics: Beauty in a Jar","slug":"fermented-cosmetics-beauty-in-a-jar","url":"/categories/food-and-drink/fermented-foods/fermented-cosmetics-beauty-in-a-jar.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Fish and Scandinavian Diplomacy","slug":"fermented-fish-and-scandinavian-diplomacy","url":"/categories/food-and-drink/fermented-foods/fermented-fish-and-scandinavian-diplomacy.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Fish: A Stink That Survived Centuries","slug":"fermented-fish-a-stink-that-survived-centuries","url":"/categories/food-and-drink/fermented-foods/fermented-fish-a-stink-that-survived-centuries.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Foods as Brain Fuel: Microbes and Mood","slug":"fermented-foods-as-brain-fuel-microbes-and-mood","url":"/categories/food-and-drink/fermented-foods/fermented-foods-as-brain-fuel-microbes-and-mood.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Foods Fight Climate Change?","slug":"fermented-foods-fight-climate-change","url":"/categories/food-and-drink/fermented-foods/fermented-foods-fight-climate-change.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Fermented Meat Alternatives: Beyond Tofu","slug":"fermented-meat-alternatives-beyond-tofu","url":"/categories/food-and-drink/fermented-foods/fermented-meat-alternatives-beyond-tofu.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Forgotten Fruit Wines: Europe’s Lost Microbial Diversity","slug":"forgotten-fruit-wines-europes-lost-microbial-diversity","url":"/categories/food-and-drink/fermented-foods/forgotten-fruit-wines-europes-lost-microbial-diversity.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Funky Soy: Natto’s Smell vs. Science","slug":"funky-soy-nattos-smell-vs-science","url":"/categories/food-and-drink/fermented-foods/funky-soy-nattos-smell-vs-science.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Kimchi and Korean Identity","slug":"kimchi-and-korean-identity","url":"/categories/food-and-drink/fermented-foods/kimchi-and-korean-identity.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Kimchi Origins: A Winter Lifesaver","slug":"kimchi-origins-a-winter-lifesaver","url":"/categories/food-and-drink/fermented-foods/kimchi-origins-a-winter-lifesaver.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Kimchi Through Dynasties: Spicy Evolution","slug":"kimchi-through-dynasties-spicy-evolution","url":"/categories/food-and-drink/fermented-foods/kimchi-through-dynasties-spicy-evolution.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Kvass and Russian Daily Life","slug":"kvass-and-russian-daily-life","url":"/categories/food-and-drink/fermented-foods/kvass-and-russian-daily-life.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Kvass to Kombucha: Eastern Europe Meets Asia","slug":"kvass-to-kombucha-eastern-europe-meets-asia","url":"/categories/food-and-drink/fermented-foods/kvass-to-kombucha-eastern-europe-meets-asia.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Kvass: Russia’s Forgotten Brew","slug":"kvass-russias-forgotten-brew","url":"/categories/food-and-drink/fermented-foods/kvass-russias-forgotten-brew.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Lactic Acid Bacteria: Sourness Specialists","slug":"lactic-acid-bacteria-sourness-specialists","url":"/categories/food-and-drink/fermented-foods/lactic-acid-bacteria-sourness-specialists.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Longest Fermentation: Traditional Jeotgal in Korea","slug":"longest-fermentation-traditional-jeotgal-in-korea","url":"/categories/food-and-drink/fermented-foods/longest-fermentation-traditional-jeotgal-in-korea.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Microbial Succession: The Hidden Timeline","slug":"microbial-succession-the-hidden-timeline","url":"/categories/food-and-drink/fermented-foods/microbial-succession-the-hidden-timeline.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Miso and Samurai Nutrition","slug":"miso-and-samurai-nutrition","url":"/categories/food-and-drink/fermented-foods/miso-and-samurai-nutrition.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Miso: Japan’s Liquid Gold for a Millennium","slug":"miso-japans-liquid-gold-for-a-millennium","url":"/categories/food-and-drink/fermented-foods/miso-japans-liquid-gold-for-a-millennium.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Moon Milk and Fermentation Folklore","slug":"moon-milk-and-fermentation-folklore","url":"/categories/food-and-drink/fermented-foods/moon-milk-and-fermentation-folklore.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Alcohol from Rice: Chinese Huangjiu Records","slug":"most-alcohol-from-rice-chinese-huangjiu-records","url":"/categories/food-and-drink/fermented-foods/most-alcohol-from-rice-chinese-huangjiu-records.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Most Microbes in a Food: Traditional Natto","slug":"most-microbes-in-a-food-traditional-natto","url":"/categories/food-and-drink/fermented-foods/most-microbes-in-a-food-traditional-natto.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Natto: Fermented Funk from Japan","slug":"natto-fermented-funk-from-japan","url":"/categories/food-and-drink/fermented-foods/natto-fermented-funk-from-japan.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Pickles Across Continents: Brine Travels","slug":"pickles-across-continents-brine-travels","url":"/categories/food-and-drink/fermented-foods/pickles-across-continents-brine-travels.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Record-Setting Cheese: Casu Marzu’s Rogue Larvae","slug":"record-setting-cheese-casu-marzus-rogue-larvae","url":"/categories/food-and-drink/fermented-foods/record-setting-cheese-casu-marzus-rogue-larvae.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Sake and Samurai Prestige","slug":"sake-and-samurai-prestige","url":"/categories/food-and-drink/fermented-foods/sake-and-samurai-prestige.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Salt’s Subtle Role: Guardian of Fermentation","slug":"salts-subtle-role-guardian-of-fermentation","url":"/categories/food-and-drink/fermented-foods/salts-subtle-role-guardian-of-fermentation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Sourdough: Civilization’s First Bread","slug":"sourdough-civilizations-first-bread","url":"/categories/food-and-drink/fermented-foods/sourdough-civilizations-first-bread.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Soy Sauce Crosses Oceans: Fermentation Meets Trade","slug":"soy-sauce-crosses-oceans-fermentation-meets-trade","url":"/categories/food-and-drink/fermented-foods/soy-sauce-crosses-oceans-fermentation-meets-trade.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Soy Sauce’s Accidental Birth","slug":"soy-sauces-accidental-birth","url":"/categories/food-and-drink/fermented-foods/soy-sauces-accidental-birth.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Tempeh: Fermentation Reinvents Protein","slug":"tempeh-fermentation-reinvents-protein","url":"/categories/food-and-drink/fermented-foods/tempeh-fermentation-reinvents-protein.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Temperature: Fermentation’s Invisible Hand","slug":"temperature-fermentations-invisible-hand","url":"/categories/food-and-drink/fermented-foods/temperature-fermentations-invisible-hand.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Cheese That Walked Off Tables: Cows’ Milk Gone Rogue","slug":"the-cheese-that-walked-off-tables-cows-milk-gone-rogue","url":"/categories/food-and-drink/fermented-foods/the-cheese-that-walked-off-tables-cows-milk-gone-rogue.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Kombucha Controversy: SCOBY as Biohazard or Superfood?","slug":"the-kombucha-controversy-scoby-as-biohazard-or-superfood","url":"/categories/food-and-drink/fermented-foods/the-kombucha-controversy-scoby-as-biohazard-or-superfood.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"The Pickle That Survived the Titanic","slug":"the-pickle-that-survived-the-titanic","url":"/categories/food-and-drink/fermented-foods/the-pickle-that-survived-the-titanic.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Umami Alchemy: Proteins into Flavor","slug":"umami-alchemy-proteins-into-flavor","url":"/categories/food-and-drink/fermented-foods/umami-alchemy-proteins-into-flavor.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Wine Before Words: Ancient Fermentation","slug":"wine-before-words-ancient-fermentation","url":"/categories/food-and-drink/fermented-foods/wine-before-words-ancient-fermentation.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Wine Varietals: Fermentation Meets Geography","slug":"wine-varietals-fermentation-meets-geography","url":"/categories/food-and-drink/fermented-foods/wine-varietals-fermentation-meets-geography.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"World’s Smelliest Ferment: Surströmming","slug":"worlds-smelliest-ferment-surstrmming","url":"/categories/food-and-drink/fermented-foods/worlds-smelliest-ferment-surstrmming.html","color":"#3f51b5","category":"food-and-drink","factCount":1},{"title":"Yeast Diversity: Brewing Beyond Saccharomyces","slug":"yeast-diversity-brewing-beyond-saccharomyces","url":"/categories/food-and-drink/fermented-foods/yeast-diversity-brewing-beyond-saccharomyces.html","color":"#3f51b5","category":"food-and-drink","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    card.style.display = title.includes(query)? 'block':'none';
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
