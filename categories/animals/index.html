@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; }
+.breadcrumb a:hover { text-decoration:underline; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; }
+.quick-jump a:hover { text-decoration:underline; }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,18 +66,23 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s, transform 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
 
@@ -62,17 +91,49 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0.8;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+#back-to-top:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Animals</h1>
   <p>Explore all subjects in "Animals".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Animals</span>
+</nav>
+
+<div class="quick-jump">Jump to:
+  <a href="#A">A</a> | <a href="#B">B</a> | <a href="#C">C</a>
+</div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +141,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"aardvarks","slug":"aardvarks","url":"/categories/animals/aardvarks/","color":"#ff5722","category":"animals","factCount":46},{"title":"aardwolfs","slug":"aardwolfs","url":"/categories/animals/aardwolfs/","color":"#ff5722","category":"animals","factCount":45},{"title":"axolotls","slug":"axolotls","url":"/categories/animals/axolotls/","color":"#ff5722","category":"animals","factCount":46},{"title":"aye-ayes","slug":"aye-ayes","url":"/categories/animals/aye-ayes/","color":"#ff5722","category":"animals","factCount":48},{"title":"baboons","slug":"baboons","url":"/categories/animals/baboons/","color":"#ff5722","category":"animals","factCount":46},{"title":"bactrian-camel","slug":"bactrian-camel","url":"/categories/animals/bactrian-camel/","color":"#ff5722","category":"animals","factCount":46},{"title":"capybaras","slug":"capybaras","url":"/categories/animals/capybaras/","color":"#ff5722","category":"animals","factCount":49},{"title":"cassowary","slug":"cassowary","url":"/categories/animals/cassowary/","color":"#ff5722","category":"animals","factCount":46},{"title":"crows","slug":"crows","url":"/categories/animals/crows/","color":"#ff5722","category":"animals","factCount":48},{"title":"dingos","slug":"dingos","url":"/categories/animals/dingos/","color":"#ff5722","category":"animals","factCount":48},{"title":"earthworms","slug":"earthworms","url":"/categories/animals/earthworms/","color":"#ff5722","category":"animals","factCount":49},{"title":"elephants","slug":"elephants","url":"/categories/animals/elephants/","color":"#ff5722","category":"animals","factCount":49},{"title":"fennec-fox","slug":"fennec-fox","url":"/categories/animals/fennec-fox/","color":"#ff5722","category":"animals","factCount":49},{"title":"ferrets","slug":"ferrets","url":"/categories/animals/ferrets/","color":"#ff5722","category":"animals","factCount":46},{"title":"narwhals","slug":"narwhals","url":"/categories/animals/narwhals/","color":"#ff5722","category":"animals","factCount":33},{"title":"okapids","slug":"okapids","url":"/categories/animals/okapids/","color":"#ff5722","category":"animals","factCount":48},{"title":"pangolins","slug":"pangolins","url":"/categories/animals/pangolins/","color":"#ff5722","category":"animals","factCount":48},{"title":"platypuses","slug":"platypuses","url":"/categories/animals/platypuses/","color":"#ff5722","category":"animals","factCount":49},{"title":"red-pandas","slug":"red-pandas","url":"/categories/animals/red-pandas/","color":"#ff5722","category":"animals","factCount":49},{"title":"sloths","slug":"sloths","url":"/categories/animals/sloths/","color":"#ff5722","category":"animals","factCount":49},{"title":"tarsiers","slug":"tarsiers","url":"/categories/animals/tarsiers/","color":"#ff5722","category":"animals","factCount":49}];
+const ITEMS = [{"title":"alligators","slug":"alligators","url":"/categories/animals/alligators/","color":"#ff5722","category":"animals","factCount":50},{"title":"badgers","slug":"badgers","url":"/categories/animals/badgers/","color":"#ff5722","category":"animals","factCount":52},{"title":"albatross","slug":"albatross","url":"/categories/animals/albatross/","color":"#ff5722","category":"animals","factCount":44},{"title":"bandicoots","slug":"bandicoots","url":"/categories/animals/bandicoots/","color":"#ff5722","category":"animals","factCount":27},{"title":"box-jellyfish","slug":"box-jellyfish","url":"/categories/animals/box-jellyfish/","color":"#ff5722","category":"animals","factCount":21},{"title":"bees","slug":"bees","url":"/categories/animals/bees/","color":"#ff5722","category":"animals","factCount":52},{"title":"beavers","slug":"beavers","url":"/categories/animals/beavers/","color":"#ff5722","category":"animals","factCount":46},{"title":"cheetahs","slug":"cheetahs","url":"/categories/animals/cheetahs/","color":"#ff5722","category":"animals","factCount":9},{"title":"caracals","slug":"caracals","url":"/categories/animals/caracals/","color":"#ff5722","category":"animals","factCount":55},{"title":"chameleons","slug":"chameleons","url":"/categories/animals/chameleons/","color":"#ff5722","category":"animals","factCount":49},{"title":"aardvarks","slug":"aardvarks","url":"/categories/animals/aardvarks/","color":"#ff5722","category":"animals","factCount":46},{"title":"aardwolfs","slug":"aardwolfs","url":"/categories/animals/aardwolfs/","color":"#ff5722","category":"animals","factCount":45},{"title":"axolotls","slug":"axolotls","url":"/categories/animals/axolotls/","color":"#ff5722","category":"animals","factCount":46},{"title":"aye-ayes","slug":"aye-ayes","url":"/categories/animals/aye-ayes/","color":"#ff5722","category":"animals","factCount":48},{"title":"baboons","slug":"baboons","url":"/categories/animals/baboons/","color":"#ff5722","category":"animals","factCount":46},{"title":"bactrian-camel","slug":"bactrian-camel","url":"/categories/animals/bactrian-camel/","color":"#ff5722","category":"animals","factCount":46},{"title":"capybaras","slug":"capybaras","url":"/categories/animals/capybaras/","color":"#ff5722","category":"animals","factCount":49},{"title":"cassowary","slug":"cassowary","url":"/categories/animals/cassowary/","color":"#ff5722","category":"animals","factCount":46},{"title":"crows","slug":"crows","url":"/categories/animals/crows/","color":"#ff5722","category":"animals","factCount":48},{"title":"dingos","slug":"dingos","url":"/categories/animals/dingos/","color":"#ff5722","category":"animals","factCount":48},{"title":"earthworms","slug":"earthworms","url":"/categories/animals/earthworms/","color":"#ff5722","category":"animals","factCount":49},{"title":"elephants","slug":"elephants","url":"/categories/animals/elephants/","color":"#ff5722","category":"animals","factCount":49},{"title":"fennec-fox","slug":"fennec-fox","url":"/categories/animals/fennec-fox/","color":"#ff5722","category":"animals","factCount":49},{"title":"ferrets","slug":"ferrets","url":"/categories/animals/ferrets/","color":"#ff5722","category":"animals","factCount":46},{"title":"narwhals","slug":"narwhals","url":"/categories/animals/narwhals/","color":"#ff5722","category":"animals","factCount":33},{"title":"okapids","slug":"okapids","url":"/categories/animals/okapids/","color":"#ff5722","category":"animals","factCount":48},{"title":"pangolins","slug":"pangolins","url":"/categories/animals/pangolins/","color":"#ff5722","category":"animals","factCount":48},{"title":"platypuses","slug":"platypuses","url":"/categories/animals/platypuses/","color":"#ff5722","category":"animals","factCount":49},{"title":"red-pandas","slug":"red-pandas","url":"/categories/animals/red-pandas/","color":"#ff5722","category":"animals","factCount":49},{"title":"sloths","slug":"sloths","url":"/categories/animals/sloths/","color":"#ff5722","category":"animals","factCount":49},{"title":"tarsiers","slug":"tarsiers","url":"/categories/animals/tarsiers/","color":"#ff5722","category":"animals","factCount":49}];
 
 /**************************************************
  UTILITIES
@@ -137,7 +200,11 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
 

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Albatross</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; }
+.breadcrumb a:hover { text-decoration:underline; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; }
+.quick-jump a:hover { text-decoration:underline; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s, transform 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0.8;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+#back-to-top:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Albatross</h1>
+  <p>Explore all facts in "Albatross".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Albatross</span>
+</nav>
+
+<div class="quick-jump">Jump to:
+  <a href="#A">A</a> | <a href="#B">B</a> | <a href="#C">C</a>
+</div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Albatross Chicks Can Recognize Their Parents by Call","slug":"albatross-chicks-can-recognize-their-parents-by-call","url":"/categories/animals/albatross/albatross-chicks-can-recognize-their-parents-by-call.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatross Feathers Can Record Ocean Pollution","slug":"albatross-feathers-can-record-ocean-pollution","url":"/categories/animals/albatross/albatross-feathers-can-record-ocean-pollution.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatross Wingspan is Optimized for Dynamic Soaring","slug":"albatross-wingspan-is-optimized-for-dynamic-soaring","url":"/categories/animals/albatross/albatross-wingspan-is-optimized-for-dynamic-soaring.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Are Natural Weather Forecasters","slug":"albatrosses-are-natural-weather-forecasters","url":"/categories/animals/albatross/albatrosses-are-natural-weather-forecasters.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Circumnavigate the Southern Ocean Repeatedly","slug":"albatrosses-can-circumnavigate-the-southern-ocean-repeatedly","url":"/categories/animals/albatross/albatrosses-can-circumnavigate-the-southern-ocean-repeatedly.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Communicate Across Miles","slug":"albatrosses-can-communicate-across-miles","url":"/categories/animals/albatross/albatrosses-can-communicate-across-miles.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Detect Prey by Smell","slug":"albatrosses-can-detect-prey-by-smell","url":"/categories/animals/albatross/albatrosses-can-detect-prey-by-smell.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Drink Saltwater Directly","slug":"albatrosses-can-drink-saltwater-directly","url":"/categories/animals/albatross/albatrosses-can-drink-saltwater-directly.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Engage in Cooperative Defense","slug":"albatrosses-can-engage-in-cooperative-defense","url":"/categories/animals/albatross/albatrosses-can-engage-in-cooperative-defense.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Go Without Food for Weeks","slug":"albatrosses-can-go-without-food-for-weeks","url":"/categories/animals/albatross/albatrosses-can-go-without-food-for-weeks.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Live Entirely at Sea","slug":"albatrosses-can-live-entirely-at-sea","url":"/categories/animals/albatross/albatrosses-can-live-entirely-at-sea.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Live Over 60 Years","slug":"albatrosses-can-live-over-60-years","url":"/categories/animals/albatross/albatrosses-can-live-over-60-years.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Mate for Life","slug":"albatrosses-can-mate-for-life","url":"/categories/animals/albatross/albatrosses-can-mate-for-life.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Mate for Life, Literally","slug":"albatrosses-can-mate-for-life-literally","url":"/categories/animals/albatross/albatrosses-can-mate-for-life-literally.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Sleep While Flying","slug":"albatrosses-can-sleep-while-flying","url":"/categories/animals/albatross/albatrosses-can-sleep-while-flying.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Can Sleep While Flying","slug":"albatrosses-can-sleep-while-flying","url":"/categories/animals/albatross/albatrosses-can-sleep-while-flying.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Inspire Aviation Design","slug":"albatrosses-inspire-aviation-design","url":"/categories/animals/albatross/albatrosses-inspire-aviation-design.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses May Fall Victim to “Death by Plastic”","slug":"albatrosses-may-fall-victim-to-death-by-plastic","url":"/categories/animals/albatross/albatrosses-may-fall-victim-to-death-by-plastic.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Once Guided Sailors Across Oceans","slug":"albatrosses-once-guided-sailors-across-oceans","url":"/categories/animals/albatross/albatrosses-once-guided-sailors-across-oceans.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Once Inspired Maritime Superstitions","slug":"albatrosses-once-inspired-maritime-superstitions","url":"/categories/animals/albatross/albatrosses-once-inspired-maritime-superstitions.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Rely on Microhabitat Variability for Nesting","slug":"albatrosses-rely-on-microhabitat-variability-for-nesting","url":"/categories/animals/albatross/albatrosses-rely-on-microhabitat-variability-for-nesting.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Show Evidence of Cultural Transmission","slug":"albatrosses-show-evidence-of-cultural-transmission","url":"/categories/animals/albatross/albatrosses-show-evidence-of-cultural-transmission.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Were Charted Before Antarctica","slug":"albatrosses-were-charted-before-antarctica","url":"/categories/animals/albatross/albatrosses-were-charted-before-antarctica.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses Were Once Thought to Never Land","slug":"albatrosses-were-once-thought-to-never-land","url":"/categories/animals/albatross/albatrosses-were-once-thought-to-never-land.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Albatrosses’ Blood Chemistry Supports Extreme Endurance","slug":"albatrosses-blood-chemistry-supports-extreme-endurance","url":"/categories/animals/albatross/albatrosses-blood-chemistry-supports-extreme-endurance.html","color":"#ff5722","category":"animals","factCount":1},{"title":"How 16th-Century Explorers Named the Albatross","slug":"how-16th-century-explorers-named-the-albatross","url":"/categories/animals/albatross/how-16th-century-explorers-named-the-albatross.html","color":"#ff5722","category":"animals","factCount":1},{"title":"How Albatross Flight Evolved for Endless Gliding","slug":"how-albatross-flight-evolved-for-endless-gliding","url":"/categories/animals/albatross/how-albatross-flight-evolved-for-endless-gliding.html","color":"#ff5722","category":"animals","factCount":1},{"title":"How Early Whalers Used Albatrosses as Wind Meters","slug":"how-early-whalers-used-albatrosses-as-wind-meters","url":"/categories/animals/albatross/how-early-whalers-used-albatrosses-as-wind-meters.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross Colony That Vanished Overnight","slug":"the-albatross-colony-that-vanished-overnight","url":"/categories/animals/albatross/the-albatross-colony-that-vanished-overnight.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross Egg That Shocked Early Scientists","slug":"the-albatross-egg-that-shocked-early-scientists","url":"/categories/animals/albatross/the-albatross-egg-that-shocked-early-scientists.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Breeds Once Every Two Years","slug":"the-albatross-that-breeds-once-every-two-years","url":"/categories/animals/albatross/the-albatross-that-breeds-once-every-two-years.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Crossed 10 Oceans","slug":"the-albatross-that-crossed-10-oceans","url":"/categories/animals/albatross/the-albatross-that-crossed-10-oceans.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Inspired a Curse","slug":"the-albatross-that-inspired-a-curse","url":"/categories/animals/albatross/the-albatross-that-inspired-a-curse.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Refused to Mate with Humans (Literally)","slug":"the-albatross-that-refused-to-mate-with-humans-literally","url":"/categories/animals/albatross/the-albatross-that-refused-to-mate-with-humans-literally.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Skipped 7,000 Miles of Ocean","slug":"the-albatross-that-skipped-7000-miles-of-ocean","url":"/categories/animals/albatross/the-albatross-that-skipped-7000-miles-of-ocean.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Smells Plankton from Miles Away","slug":"the-albatross-that-smells-plankton-from-miles-away","url":"/categories/animals/albatross/the-albatross-that-smells-plankton-from-miles-away.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross That Travels 40,000 Miles a Year","slug":"the-albatross-that-travels-40000-miles-a-year","url":"/categories/animals/albatross/the-albatross-that-travels-40000-miles-a-year.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Albatross With a GPS Better Than Early Explorers","slug":"the-albatross-with-a-gps-better-than-early-explorers","url":"/categories/animals/albatross/the-albatross-with-a-gps-better-than-early-explorers.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The First Scientific Albatross Sketch Was a Guess","slug":"the-first-scientific-albatross-sketch-was-a-guess","url":"/categories/animals/albatross/the-first-scientific-albatross-sketch-was-a-guess.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Heaviest Albatross Ever Measured","slug":"the-heaviest-albatross-ever-measured","url":"/categories/animals/albatross/the-heaviest-albatross-ever-measured.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Longest Recorded Albatross Flight","slug":"the-longest-recorded-albatross-flight","url":"/categories/animals/albatross/the-longest-recorded-albatross-flight.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Oldest Known Albatross Colony Is 500,000 Years Old","slug":"the-oldest-known-albatross-colony-is-500000-years-old","url":"/categories/animals/albatross/the-oldest-known-albatross-colony-is-500000-years-old.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Record Wingspan of the Wandering Albatross","slug":"the-record-wingspan-of-the-wandering-albatross","url":"/categories/animals/albatross/the-record-wingspan-of-the-wandering-albatross.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Secret Compass of Albatrosses","slug":"the-secret-compass-of-albatrosses","url":"/categories/animals/albatross/the-secret-compass-of-albatrosses.html","color":"#ff5722","category":"animals","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

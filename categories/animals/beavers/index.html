@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beavers</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; }
+.breadcrumb a:hover { text-decoration:underline; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; }
+.quick-jump a:hover { text-decoration:underline; }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s, transform 0.2s; }
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0.8;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+#back-to-top:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Beavers</h1>
+  <p>Explore all facts in "Beavers".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Beavers</span>
+</nav>
+
+<div class="quick-jump">Jump to:
+  <a href="#A">A</a> | <a href="#B">B</a> | <a href="#C">C</a>
+</div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Beaver Canals Precede Human Engineering","slug":"beaver-canals-precede-human-engineering","url":"/categories/animals/beavers/beaver-canals-precede-human-engineering.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beaver Castoreum Was Once Used as Medicine","slug":"beaver-castoreum-was-once-used-as-medicine","url":"/categories/animals/beavers/beaver-castoreum-was-once-used-as-medicine.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beaver Dams Can Alter Local Climate","slug":"beaver-dams-can-alter-local-climate","url":"/categories/animals/beavers/beaver-dams-can-alter-local-climate.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beaver Teeth Are Self-Sharpening Tools","slug":"beaver-teeth-are-self-sharpening-tools","url":"/categories/animals/beavers/beaver-teeth-are-self-sharpening-tools.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Alter Local Microclimates","slug":"beavers-can-alter-local-microclimates","url":"/categories/animals/beavers/beavers-can-alter-local-microclimates.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Alter Snowmelt Timing","slug":"beavers-can-alter-snowmelt-timing","url":"/categories/animals/beavers/beavers-can-alter-snowmelt-timing.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Be Nocturnal and Diurnal Adaptively","slug":"beavers-can-be-nocturnal-and-diurnal-adaptively","url":"/categories/animals/beavers/beavers-can-be-nocturnal-and-diurnal-adaptively.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Be Reintroduced Successfully for Restoration","slug":"beavers-can-be-reintroduced-successfully-for-restoration","url":"/categories/animals/beavers/beavers-can-be-reintroduced-successfully-for-restoration.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Boost Bird Diversity","slug":"beavers-can-boost-bird-diversity","url":"/categories/animals/beavers/beavers-can-boost-bird-diversity.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Cause Invasive Plant Spread","slug":"beavers-can-cause-invasive-plant-spread","url":"/categories/animals/beavers/beavers-can-cause-invasive-plant-spread.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Dig Caches for Winter Food","slug":"beavers-can-dig-caches-for-winter-food","url":"/categories/animals/beavers/beavers-can-dig-caches-for-winter-food.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Dig Extensive Underwater Tunnels","slug":"beavers-can-dig-extensive-underwater-tunnels","url":"/categories/animals/beavers/beavers-can-dig-extensive-underwater-tunnels.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Eat Bark Without Digestive Illness","slug":"beavers-can-eat-bark-without-digestive-illness","url":"/categories/animals/beavers/beavers-can-eat-bark-without-digestive-illness.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Engineer Entire Watersheds","slug":"beavers-can-engineer-entire-watersheds","url":"/categories/animals/beavers/beavers-can-engineer-entire-watersheds.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Flatten Trees Strategically for Food and Dams","slug":"beavers-can-flatten-trees-strategically-for-food-and-dams","url":"/categories/animals/beavers/beavers-can-flatten-trees-strategically-for-food-and-dams.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Improve Water Quality","slug":"beavers-can-improve-water-quality","url":"/categories/animals/beavers/beavers-can-improve-water-quality.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Influence Algal Blooms","slug":"beavers-can-influence-algal-blooms","url":"/categories/animals/beavers/beavers-can-influence-algal-blooms.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Influence Carbon Emissions","slug":"beavers-can-influence-carbon-emissions","url":"/categories/animals/beavers/beavers-can-influence-carbon-emissions.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Influence Disease Ecology","slug":"beavers-can-influence-disease-ecology","url":"/categories/animals/beavers/beavers-can-influence-disease-ecology.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Influence Human Settlement Patterns","slug":"beavers-can-influence-human-settlement-patterns","url":"/categories/animals/beavers/beavers-can-influence-human-settlement-patterns.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Influence Tree Species Composition","slug":"beavers-can-influence-tree-species-composition","url":"/categories/animals/beavers/beavers-can-influence-tree-species-composition.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Influence Wetland Invertebrate Diversity","slug":"beavers-can-influence-wetland-invertebrate-diversity","url":"/categories/animals/beavers/beavers-can-influence-wetland-invertebrate-diversity.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Lower Salmonid Predation","slug":"beavers-can-lower-salmonid-predation","url":"/categories/animals/beavers/beavers-can-lower-salmonid-predation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Move Trees Underwater","slug":"beavers-can-move-trees-underwater","url":"/categories/animals/beavers/beavers-can-move-trees-underwater.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Reduce Flood Damage","slug":"beavers-can-reduce-flood-damage","url":"/categories/animals/beavers/beavers-can-reduce-flood-damage.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Reduce Wildfire Risk","slug":"beavers-can-reduce-wildfire-risk","url":"/categories/animals/beavers/beavers-can-reduce-wildfire-risk.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Resurface Abandoned Dams","slug":"beavers-can-resurface-abandoned-dams","url":"/categories/animals/beavers/beavers-can-resurface-abandoned-dams.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Reverse Desertification Locally","slug":"beavers-can-reverse-desertification-locally","url":"/categories/animals/beavers/beavers-can-reverse-desertification-locally.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Spread Plant Seeds","slug":"beavers-can-spread-plant-seeds","url":"/categories/animals/beavers/beavers-can-spread-plant-seeds.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Starve Themselves Deliberately","slug":"beavers-can-starve-themselves-deliberately","url":"/categories/animals/beavers/beavers-can-starve-themselves-deliberately.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Support Rare Amphibians","slug":"beavers-can-support-rare-amphibians","url":"/categories/animals/beavers/beavers-can-support-rare-amphibians.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Survive Extreme Cold with Insulating Fur","slug":"beavers-can-survive-extreme-cold-with-insulating-fur","url":"/categories/animals/beavers/beavers-can-survive-extreme-cold-with-insulating-fur.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Survive Underwater for Up to 15 Minutes","slug":"beavers-can-survive-underwater-for-up-to-15-minutes","url":"/categories/animals/beavers/beavers-can-survive-underwater-for-up-to-15-minutes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Can Trigger Fish Migration Changes","slug":"beavers-can-trigger-fish-migration-changes","url":"/categories/animals/beavers/beavers-can-trigger-fish-migration-changes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Have Been Used in Ancient Diplomacy","slug":"beavers-have-been-used-in-ancient-diplomacy","url":"/categories/animals/beavers/beavers-have-been-used-in-ancient-diplomacy.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Influence Carbon Storage","slug":"beavers-influence-carbon-storage","url":"/categories/animals/beavers/beavers-influence-carbon-storage.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Influence Fish Populations Dramatically","slug":"beavers-influence-fish-populations-dramatically","url":"/categories/animals/beavers/beavers-influence-fish-populations-dramatically.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers Invented Natural Water Engineering","slug":"beavers-invented-natural-water-engineering","url":"/categories/animals/beavers/beavers-invented-natural-water-engineering.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Activity Can Affect Local Soil Chemistry","slug":"beavers-activity-can-affect-local-soil-chemistry","url":"/categories/animals/beavers/beavers-activity-can-affect-local-soil-chemistry.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Activity Can Reverse Erosion","slug":"beavers-activity-can-reverse-erosion","url":"/categories/animals/beavers/beavers-activity-can-reverse-erosion.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Gnawing Shapes River Morphology","slug":"beavers-gnawing-shapes-river-morphology","url":"/categories/animals/beavers/beavers-gnawing-shapes-river-morphology.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Historical Fur Trade Shaped Landscapes","slug":"beavers-historical-fur-trade-shaped-landscapes","url":"/categories/animals/beavers/beavers-historical-fur-trade-shaped-landscapes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Lodges Can House Multiple Generations","slug":"beavers-lodges-can-house-multiple-generations","url":"/categories/animals/beavers/beavers-lodges-can-house-multiple-generations.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Lodges Provide Refuge for Other Mammals","slug":"beavers-lodges-provide-refuge-for-other-mammals","url":"/categories/animals/beavers/beavers-lodges-provide-refuge-for-other-mammals.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Tail Functions as a Multipurpose Tool","slug":"beavers-tail-functions-as-a-multipurpose-tool","url":"/categories/animals/beavers/beavers-tail-functions-as-a-multipurpose-tool.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Beavers’ Teeth Grow Continuously","slug":"beavers-teeth-grow-continuously","url":"/categories/animals/beavers/beavers-teeth-grow-continuously.html","color":"#ff5722","category":"animals","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = item.title.toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
