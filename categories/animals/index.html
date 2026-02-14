@@ -24,7 +24,13 @@
 
 <style>
 /* RESET & BASE */
-body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
@@ -48,16 +54,33 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   margin: 10px 0 20px;
   color:#555;
 }
-.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
 .breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
 
 /* QUICK JUMP */
-.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
-.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
-.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
 
 /* GRID & CARDS */
-.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
 .card {
   background:white;
   padding:24px;
@@ -66,15 +89,26 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
 .card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
-.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
-.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
 .card:hover a { color: var(--category-color,#ff5722); }
 
 /* Alternating backgrounds */
@@ -90,18 +124,22 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   background:#eee;
   transition:all 0.2s, transform 0.2s;
 }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
 
-/* RANDOM FACT PREVIEW */
+/* RANDOM FACT PREVIEW TOOLTIP */
 .card .fact-preview {
   display:none;
   position:absolute;
   top:100%;
   left:50%;
-  transform:translateX(-50%);
-  width:220px;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
   background:#fff;
   border-radius:12px;
   box-shadow:0 6px 18px rgba(0,0,0,0.15);
@@ -109,13 +147,43 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   font-size:0.85em;
   color:#333;
   z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.card:hover .fact-preview { display:block; }
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
-#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
-#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
 
 /* BACK TO TOP */
 #back-to-top {
@@ -136,13 +204,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 }
 
 /* RESPONSIVE */
-@media(max-width:600px){ 
-  .grid{flex-direction:column;align-items:center;} 
-  .card{flex:1 1 100%;} 
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
 }
 </style>
 </head>
-
 <body id="top">
 
 <header>
@@ -168,7 +236,7 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"alpacas","slug":"alpacas","url":"/categories/animals/alpacas/","color":"#ff5722","category":"animals","factCount":51},{"title":"bats","slug":"bats","url":"/categories/animals/bats/","color":"#ff5722","category":"animals","factCount":42},{"title":"basilisk-lizards","slug":"basilisk-lizards","url":"/categories/animals/basilisk-lizards/","color":"#ff5722","category":"animals","factCount":49},{"title":"barracudas","slug":"barracudas","url":"/categories/animals/barracudas/","color":"#ff5722","category":"animals","factCount":56},{"title":"armadillos","slug":"armadillos","url":"/categories/animals/armadillos/","color":"#ff5722","category":"animals","factCount":56},{"title":"antelopes","slug":"antelopes","url":"/categories/animals/antelopes/","color":"#ff5722","category":"animals","factCount":48},{"title":"anteaters","slug":"anteaters","url":"/categories/animals/anteaters/","color":"#ff5722","category":"animals","factCount":40},{"title":"ants","slug":"ants","url":"/categories/animals/ants/","color":"#ff5722","category":"animals","factCount":47},{"title":"anglerfish","slug":"anglerfish","url":"/categories/animals/anglerfish/","color":"#ff5722","category":"animals","factCount":45},{"title":"anacondas","slug":"anacondas","url":"/categories/animals/anacondas/","color":"#ff5722","category":"animals","factCount":49},{"title":"aardvarks","slug":"aardvarks","url":"/categories/animals/aardvarks/","color":"#ff5722","category":"animals","factCount":46},{"title":"aardwolfs","slug":"aardwolfs","url":"/categories/animals/aardwolfs/","color":"#ff5722","category":"animals","factCount":45},{"title":"axolotls","slug":"axolotls","url":"/categories/animals/axolotls/","color":"#ff5722","category":"animals","factCount":46},{"title":"aye-ayes","slug":"aye-ayes","url":"/categories/animals/aye-ayes/","color":"#ff5722","category":"animals","factCount":48},{"title":"baboons","slug":"baboons","url":"/categories/animals/baboons/","color":"#ff5722","category":"animals","factCount":46},{"title":"bactrian-camel","slug":"bactrian-camel","url":"/categories/animals/bactrian-camel/","color":"#ff5722","category":"animals","factCount":46},{"title":"capybaras","slug":"capybaras","url":"/categories/animals/capybaras/","color":"#ff5722","category":"animals","factCount":49},{"title":"cassowary","slug":"cassowary","url":"/categories/animals/cassowary/","color":"#ff5722","category":"animals","factCount":46},{"title":"crows","slug":"crows","url":"/categories/animals/crows/","color":"#ff5722","category":"animals","factCount":48},{"title":"dingos","slug":"dingos","url":"/categories/animals/dingos/","color":"#ff5722","category":"animals","factCount":0},{"title":"earthworms","slug":"earthworms","url":"/categories/animals/earthworms/","color":"#ff5722","category":"animals","factCount":49},{"title":"elephants","slug":"elephants","url":"/categories/animals/elephants/","color":"#ff5722","category":"animals","factCount":49},{"title":"fennec-fox","slug":"fennec-fox","url":"/categories/animals/fennec-fox/","color":"#ff5722","category":"animals","factCount":49},{"title":"ferrets","slug":"ferrets","url":"/categories/animals/ferrets/","color":"#ff5722","category":"animals","factCount":46},{"title":"narwhals","slug":"narwhals","url":"/categories/animals/narwhals/","color":"#ff5722","category":"animals","factCount":33},{"title":"okapids","slug":"okapids","url":"/categories/animals/okapids/","color":"#ff5722","category":"animals","factCount":48},{"title":"pangolins","slug":"pangolins","url":"/categories/animals/pangolins/","color":"#ff5722","category":"animals","factCount":48},{"title":"platypuses","slug":"platypuses","url":"/categories/animals/platypuses/","color":"#ff5722","category":"animals","factCount":49},{"title":"red-pandas","slug":"red-pandas","url":"/categories/animals/red-pandas/","color":"#ff5722","category":"animals","factCount":49},{"title":"sloths","slug":"sloths","url":"/categories/animals/sloths/","color":"#ff5722","category":"animals","factCount":49},{"title":"tarsiers","slug":"tarsiers","url":"/categories/animals/tarsiers/","color":"#ff5722","category":"animals","factCount":49},{"title":"alligators","slug":"alligators","url":"/categories/animals/alligators/","color":"#ff5722","category":"animals","factCount":50},{"title":"badgers","slug":"badgers","url":"/categories/animals/badgers/","color":"#ff5722","category":"animals","factCount":52},{"title":"albatross","slug":"albatross","url":"/categories/animals/albatross/","color":"#ff5722","category":"animals","factCount":44},{"title":"box-jellyfish","slug":"box-jellyfish","url":"/categories/animals/box-jellyfish/","color":"#ff5722","category":"animals","factCount":21},{"title":"bees","slug":"bees","url":"/categories/animals/bees/","color":"#ff5722","category":"animals","factCount":52},{"title":"beavers","slug":"beavers","url":"/categories/animals/beavers/","color":"#ff5722","category":"animals","factCount":46},{"title":"cheetahs","slug":"cheetahs","url":"/categories/animals/cheetahs/","color":"#ff5722","category":"animals","factCount":9},{"title":"caracals","slug":"caracals","url":"/categories/animals/caracals/","color":"#ff5722","category":"animals","factCount":55},{"title":"chameleons","slug":"chameleons","url":"/categories/animals/chameleons/","color":"#ff5722","category":"animals","factCount":49},{"title":"bandicoots","slug":"bandicoots","url":"/categories/animals/bandicoots/","color":"#ff5722","category":"animals","factCount":27}];
+const ITEMS = [{"title":"alpacas","slug":"alpacas","url":"/categories/animals/alpacas/","color":"#ff5722","category":"animals","factCount":51,"factPreview":"The diameter of each alpaca fiber is a precise survival and comfort tool."},{"title":"bats","slug":"bats","url":"/categories/animals/bats/","color":"#ff5722","category":"animals","factCount":42,"factPreview":"Some species endure subzero temperatures for months."},{"title":"basilisk-lizards","slug":"basilisk-lizards","url":"/categories/animals/basilisk-lizards/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Why call it a basilisk? The name itself is a story."},{"title":"barracudas","slug":"barracudas","url":"/categories/animals/barracudas/","color":"#ff5722","category":"animals","factCount":56,"factPreview":"Did barracudas always stick to reefs? Evolution tells a different story."},{"title":"armadillos","slug":"armadillos","url":"/categories/animals/armadillos/","color":"#ff5722","category":"animals","factCount":56,"factPreview":"Some armadillo species existed millions of years before humans even walked the Earth."},{"title":"antelopes","slug":"antelopes","url":"/categories/animals/antelopes/","color":"#ff5722","category":"animals","factCount":48,"factPreview":"Vision, hearing, and smell work as an integrated survival network."},{"title":"anteaters","slug":"anteaters","url":"/categories/animals/anteaters/","color":"#ff5722","category":"animals","factCount":40,"factPreview":"Can a seemingly clumsy mammal be a biomechanical marvel?"},{"title":"ants","slug":"ants","url":"/categories/animals/ants/","color":"#ff5722","category":"animals","factCount":47,"factPreview":"You think all ants looked alike back then? Think again."},{"title":"anglerfish","slug":"anglerfish","url":"/categories/animals/anglerfish/","color":"#ff5722","category":"animals","factCount":45,"factPreview":"Anglerfish lure glows thanks to bacteria and specialized tissues—a deep-sea LED on a stick."},{"title":"anacondas","slug":"anacondas","url":"/categories/animals/anacondas/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Females break records—and dominate the rivers."},{"title":"aardvarks","slug":"aardvarks","url":"/categories/animals/aardvarks/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"Aardvarks’ tails evolved to assist digging and stability."},{"title":"aardwolfs","slug":"aardwolfs","url":"/categories/animals/aardwolfs/","color":"#ff5722","category":"animals","factCount":45,"factPreview":"Aardwolfs help scientists understand extreme specialization."},{"title":"axolotls","slug":"axolotls","url":"/categories/animals/axolotls/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"Axolotls’ DNA is massive by amphibian standards."},{"title":"aye-ayes","slug":"aye-ayes","url":"/categories/animals/aye-ayes/","color":"#ff5722","category":"animals","factCount":48,"factPreview":"Nocturnal eyes school human optics."},{"title":"baboons","slug":"baboons","url":"/categories/animals/baboons/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"From jungle antics to viral videos."},{"title":"bactrian-camel","slug":"bactrian-camel","url":"/categories/animals/bactrian-camel/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"Evolution gave camels feet designed to avoid sinking—why are Bactrian feet so wide?"},{"title":"capybaras","slug":"capybaras","url":"/categories/animals/capybaras/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Friends in unlikely places: why they bond with other species."},{"title":"cassowary","slug":"cassowary","url":"/categories/animals/cassowary/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"New neighbors in the suburbs?"},{"title":"crows","slug":"crows","url":"/categories/animals/crows/","color":"#ff5722","category":"animals","factCount":48,"factPreview":"From mythology to modern memes."},{"title":"dingos","slug":"dingos","url":"/categories/animals/dingos/","color":"#ff5722","category":"animals","factCount":0,"factPreview":"No facts available"},{"title":"earthworms","slug":"earthworms","url":"/categories/animals/earthworms/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Nature’s plowmen underground."},{"title":"elephants","slug":"elephants","url":"/categories/animals/elephants/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Evolution isn’t just anatomy."},{"title":"fennec-fox","slug":"fennec-fox","url":"/categories/animals/fennec-fox/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Small foxes, lightning reflexes."},{"title":"ferrets","slug":"ferrets","url":"/categories/animals/ferrets/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"Yes—hunting licenses."},{"title":"narwhals","slug":"narwhals","url":"/categories/animals/narwhals/","color":"#ff5722","category":"animals","factCount":33,"factPreview":"They “sing” under Arctic ice."},{"title":"okapids","slug":"okapids","url":"/categories/animals/okapids/","color":"#ff5722","category":"animals","factCount":48,"factPreview":"The elusive okapi stayed invisible to Western science until the 20th century. How did a large mammal remain unseen?"},{"title":"pangolins","slug":"pangolins","url":"/categories/animals/pangolins/","color":"#ff5722","category":"animals","factCount":48,"factPreview":"Pangolins eat ants and termites exclusively. But how efficient are they at insect hunting?"},{"title":"platypuses","slug":"platypuses","url":"/categories/animals/platypuses/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"They steer efficiently underwater."},{"title":"red-pandas","slug":"red-pandas","url":"/categories/animals/red-pandas/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Forest gardeners."},{"title":"sloths","slug":"sloths","url":"/categories/animals/sloths/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Arboreal ecosystems."},{"title":"tarsiers","slug":"tarsiers","url":"/categories/animals/tarsiers/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Feast of the moving."},{"title":"alligators","slug":"alligators","url":"/categories/animals/alligators/","color":"#ff5722","category":"animals","factCount":50,"factPreview":"By the 1960s, wild alligators were vanishing fast. Fashion almost erased them."},{"title":"badgers","slug":"badgers","url":"/categories/animals/badgers/","color":"#ff5722","category":"animals","factCount":52,"factPreview":"A European badger weighing 17 kg set records in the wild."},{"title":"albatross","slug":"albatross","url":"/categories/animals/albatross/","color":"#ff5722","category":"animals","factCount":44,"factPreview":"Colonies deter predators with coordinated actions."},{"title":"box-jellyfish","slug":"box-jellyfish","url":"/categories/animals/box-jellyfish/","color":"#ff5722","category":"animals","factCount":21,"factPreview":"Fatal efficiency."},{"title":"bees","slug":"bees","url":"/categories/animals/bees/","color":"#ff5722","category":"animals","factCount":52,"factPreview":"Watching neighbors is a survival strategy."},{"title":"beavers","slug":"beavers","url":"/categories/animals/beavers/","color":"#ff5722","category":"animals","factCount":46,"factPreview":"Dams create habitats for insects, mollusks, and amphibians."},{"title":"cheetahs","slug":"cheetahs","url":"/categories/animals/cheetahs/","color":"#ff5722","category":"animals","factCount":9,"factPreview":"From zero to 60 in 3 seconds."},{"title":"caracals","slug":"caracals","url":"/categories/animals/caracals/","color":"#ff5722","category":"animals","factCount":55,"factPreview":"Heat or chill, survival persists."},{"title":"chameleons","slug":"chameleons","url":"/categories/animals/chameleons/","color":"#ff5722","category":"animals","factCount":49,"factPreview":"Painting reptiles as omens."},{"title":"bandicoots","slug":"bandicoots","url":"/categories/animals/bandicoots/","color":"#ff5722","category":"animals","factCount":27,"factPreview":"They’re gardeners of the forest floor."}];
 
 /**************************************************
  UTILITIES
@@ -190,23 +258,21 @@ function createCard(item){
   div.className='card';
   div.dataset.slug = item.slug;
   div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
-  // Fact preview for hover
-  const previewText = item.factPreview || item.FACT_HOOK || '';
-  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
-    <div class="fact-preview">${previewText}</div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
   `;
   return div;
 }
 
 /**************************************************
- POPULATE GRID
+ POPULATE GRID & QUICK JUMP
 **************************************************/
 function populateGrid(items){
   const container = document.getElementById('items-grid');
@@ -217,10 +283,26 @@ function populateGrid(items){
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
 
-  // Generate Quick Jump based on first letters
-  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
   const quickJump = document.getElementById('quickJump');
-  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
 }
 
 /**************************************************
@@ -232,7 +314,6 @@ function filterCards(){
     const title = card.dataset.title;
     if(title.includes(query)){
       card.classList.remove('hidden');
-      // Highlight match
       const a = card.querySelector('a');
       a.innerHTML = a.textContent.replace(
         new RegExp(query,'gi'),
@@ -250,6 +331,50 @@ function filterCards(){
 const backTop = document.getElementById('back-to-top');
 window.addEventListener('scroll', ()=> {
   backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
 });
 
 /**************************************************

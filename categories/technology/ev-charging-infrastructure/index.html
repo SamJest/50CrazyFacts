@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ev Charging Infrastructure</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Ev Charging Infrastructure</h1>
+  <p>Explore all facts in "Ev Charging Infrastructure".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ev Charging Infrastructure</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Charging Before the Grid: Horse-Drawn Carriages Meet EVs","slug":"charging-before-the-grid-horse-drawn-carriages-meet-evs","url":"/categories/technology/ev-charging-infrastructure/charging-before-the-grid-horse-drawn-carriages-meet-evs.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"China’s EV Charging Leap in the Early 2000s","slug":"chinas-ev-charging-leap-in-the-early-2000s","url":"/categories/technology/ev-charging-infrastructure/chinas-ev-charging-leap-in-the-early-2000s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Europe’s First EV Chargers Were Solar-Powered","slug":"europes-first-ev-chargers-were-solar-powered","url":"/categories/technology/ev-charging-infrastructure/europes-first-ev-chargers-were-solar-powered.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"European EV Chargers Adapted to Cold Climates","slug":"european-ev-chargers-adapted-to-cold-climates","url":"/categories/technology/ev-charging-infrastructure/european-ev-chargers-adapted-to-cold-climates.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Charger Network With Most Countries Covered","slug":"ev-charger-network-with-most-countries-covered","url":"/categories/technology/ev-charging-infrastructure/ev-charger-network-with-most-countries-covered.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Charger With the Highest Energy Storage Backup","slug":"ev-charger-with-the-highest-energy-storage-backup","url":"/categories/technology/ev-charging-infrastructure/ev-charger-with-the-highest-energy-storage-backup.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Chargers and Consumer Psychology","slug":"ev-chargers-and-consumer-psychology","url":"/categories/technology/ev-charging-infrastructure/ev-chargers-and-consumer-psychology.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Chargers and Gender Dynamics","slug":"ev-chargers-and-gender-dynamics","url":"/categories/technology/ev-charging-infrastructure/ev-chargers-and-gender-dynamics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Chargers as Social Gathering Points","slug":"ev-chargers-as-social-gathering-points","url":"/categories/technology/ev-charging-infrastructure/ev-chargers-as-social-gathering-points.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Chargers Once Needed Secret Codes to Operate","slug":"ev-chargers-once-needed-secret-codes-to-operate","url":"/categories/technology/ev-charging-infrastructure/ev-chargers-once-needed-secret-codes-to-operate.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Charging and Workplace Culture","slug":"ev-charging-and-workplace-culture","url":"/categories/technology/ev-charging-infrastructure/ev-charging-and-workplace-culture.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Charging Began With Hidden City Alleys","slug":"ev-charging-began-with-hidden-city-alleys","url":"/categories/technology/ev-charging-infrastructure/ev-charging-began-with-hidden-city-alleys.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EV Infrastructure Sparks Political Debate","slug":"ev-infrastructure-sparks-political-debate","url":"/categories/technology/ev-charging-infrastructure/ev-infrastructure-sparks-political-debate.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Fastest EV Charger Delivers 600 kW—A Mini Power Plant","slug":"fastest-ev-charger-delivers-600-kwa-mini-power-plant","url":"/categories/technology/ev-charging-infrastructure/fastest-ev-charger-delivers-600-kwa-mini-power-plant.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"First EV Charging Apps Appeared in the 1990s","slug":"first-ev-charging-apps-appeared-in-the-1990s","url":"/categories/technology/ev-charging-infrastructure/first-ev-charging-apps-appeared-in-the-1990s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"First EV Charging Networks Were Political Tools","slug":"first-ev-charging-networks-were-political-tools","url":"/categories/technology/ev-charging-infrastructure/first-ev-charging-networks-were-political-tools.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Battery Preconditioning Speeds Charging","slug":"how-battery-preconditioning-speeds-charging","url":"/categories/technology/ev-charging-infrastructure/how-battery-preconditioning-speeds-charging.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Early EV Chargers Shaped Consumer Habits","slug":"how-early-ev-chargers-shaped-consumer-habits","url":"/categories/technology/ev-charging-infrastructure/how-early-ev-chargers-shaped-consumer-habits.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How EV Chargers Changed Urban Planning","slug":"how-ev-chargers-changed-urban-planning","url":"/categories/technology/ev-charging-infrastructure/how-ev-chargers-changed-urban-planning.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How EV Chargers Influenced Car Sharing Programs","slug":"how-ev-chargers-influenced-car-sharing-programs","url":"/categories/technology/ev-charging-infrastructure/how-ev-chargers-influenced-car-sharing-programs.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How EV Charging Evolved With Grid Expansion","slug":"how-ev-charging-evolved-with-grid-expansion","url":"/categories/technology/ev-charging-infrastructure/how-ev-charging-evolved-with-grid-expansion.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Load Balancing Prevents Blackouts","slug":"how-load-balancing-prevents-blackouts","url":"/categories/technology/ev-charging-infrastructure/how-load-balancing-prevents-blackouts.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Regenerative Braking Integrates With Chargers","slug":"how-regenerative-braking-integrates-with-chargers","url":"/categories/technology/ev-charging-infrastructure/how-regenerative-braking-integrates-with-chargers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Smart Chargers Communicate With Cars","slug":"how-smart-chargers-communicate-with-cars","url":"/categories/technology/ev-charging-infrastructure/how-smart-chargers-communicate-with-cars.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Japan’s EV Charging Boom in the 1970s","slug":"japans-ev-charging-boom-in-the-1970s","url":"/categories/technology/ev-charging-infrastructure/japans-ev-charging-boom-in-the-1970s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Longest Continuous Charging Session Recorded","slug":"longest-continuous-charging-session-recorded","url":"/categories/technology/ev-charging-infrastructure/longest-continuous-charging-session-recorded.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Longest EV Charging Network Deployment","slug":"longest-ev-charging-network-deployment","url":"/categories/technology/ev-charging-infrastructure/longest-ev-charging-network-deployment.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Most Expensive Single EV Charging Installation","slug":"most-expensive-single-ev-charging-installation","url":"/categories/technology/ev-charging-infrastructure/most-expensive-single-ev-charging-installation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Patent Wars Fueled Early EV Charging Innovation","slug":"patent-wars-fueled-early-ev-charging-innovation","url":"/categories/technology/ev-charging-infrastructure/patent-wars-fueled-early-ev-charging-innovation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Post-War Standardization Fueled Charging Growth","slug":"post-war-standardization-fueled-charging-growth","url":"/categories/technology/ev-charging-infrastructure/post-war-standardization-fueled-charging-growth.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Public Art Meets EV Chargers","slug":"public-art-meets-ev-chargers","url":"/categories/technology/ev-charging-infrastructure/public-art-meets-ev-chargers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Public EV Charging Once Came With a Waiting List Longer Than Trains","slug":"public-ev-charging-once-came-with-a-waiting-list-longer-than-trains","url":"/categories/technology/ev-charging-infrastructure/public-ev-charging-once-came-with-a-waiting-list-longer-than-trains.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The 1940s Wartime Pause Shaped EV Development","slug":"the-1940s-wartime-pause-shaped-ev-development","url":"/categories/technology/ev-charging-infrastructure/the-1940s-wartime-pause-shaped-ev-development.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The 1960s Experiment With Inductive Charging","slug":"the-1960s-experiment-with-inductive-charging","url":"/categories/technology/ev-charging-infrastructure/the-1960s-experiment-with-inductive-charging.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First “Fast Charger” Was Essentially a Steam Engine","slug":"the-first-fast-charger-was-essentially-a-steam-engine","url":"/categories/technology/ev-charging-infrastructure/the-first-fast-charger-was-essentially-a-steam-engine.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Heaviest EV Charging Station Ever Installed","slug":"the-heaviest-ev-charging-station-ever-installed","url":"/categories/technology/ev-charging-infrastructure/the-heaviest-ev-charging-station-ever-installed.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Hidden Origins of EV Charging Stations","slug":"the-hidden-origins-of-ev-charging-stations","url":"/categories/technology/ev-charging-infrastructure/the-hidden-origins-of-ev-charging-stations.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Lightest EV Charging Cable Weighs Less Than a Laptop","slug":"the-lightest-ev-charging-cable-weighs-less-than-a-laptop","url":"/categories/technology/ev-charging-infrastructure/the-lightest-ev-charging-cable-weighs-less-than-a-laptop.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Rarest EV Charger Type: Wireless Highway Stations","slug":"the-rarest-ev-charger-type-wireless-highway-stations","url":"/categories/technology/ev-charging-infrastructure/the-rarest-ev-charger-type-wireless-highway-stations.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Rise of Multi-Voltage EV Stations in the 1980s","slug":"the-rise-of-multi-voltage-ev-stations-in-the-1980s","url":"/categories/technology/ev-charging-infrastructure/the-rise-of-multi-voltage-ev-stations-in-the-1980s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Role of EV Infrastructure in Policy Milestones","slug":"the-role-of-ev-infrastructure-in-policy-milestones","url":"/categories/technology/ev-charging-infrastructure/the-role-of-ev-infrastructure-in-policy-milestones.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Secret Role of Hotels in Early EV Charging","slug":"the-secret-role-of-hotels-in-early-ev-charging","url":"/categories/technology/ev-charging-infrastructure/the-secret-role-of-hotels-in-early-ev-charging.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Secret Science Behind Ultra-Fast Chargers","slug":"the-secret-science-behind-ultra-fast-chargers","url":"/categories/technology/ev-charging-infrastructure/the-secret-science-behind-ultra-fast-chargers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Batteries Dictate Charging Station Design","slug":"why-batteries-dictate-charging-station-design","url":"/categories/technology/ev-charging-infrastructure/why-batteries-dictate-charging-station-design.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Cable Length and Thickness Matter","slug":"why-cable-length-and-thickness-matter","url":"/categories/technology/ev-charging-infrastructure/why-cable-length-and-thickness-matter.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Connector Shape Affects Charging Efficiency","slug":"why-connector-shape-affects-charging-efficiency","url":"/categories/technology/ev-charging-infrastructure/why-connector-shape-affects-charging-efficiency.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why EV Chargers Can Zap Your Car Faster Than Lightning","slug":"why-ev-chargers-can-zap-your-car-faster-than-lightning","url":"/categories/technology/ev-charging-infrastructure/why-ev-chargers-can-zap-your-car-faster-than-lightning.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Voltage Matters in EV Charging","slug":"why-voltage-matters-in-ev-charging","url":"/categories/technology/ev-charging-infrastructure/why-voltage-matters-in-ev-charging.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"World’s Largest EV Charging Hub Packs 1,000 Plugs","slug":"worlds-largest-ev-charging-hub-packs-1000-plugs","url":"/categories/technology/ev-charging-infrastructure/worlds-largest-ev-charging-hub-packs-1000-plugs.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
