@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galaxies</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Galaxies</h1>
+  <p>Explore all facts in "Galaxies".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Galaxies</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Galactic Bars Are Star-Making Engines","slug":"galactic-bars-are-star-making-engines","url":"/categories/astronomy/galaxies/galactic-bars-are-star-making-engines.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Blazing Infrared Sources","slug":"galaxies-can-be-blazing-infrared-sources","url":"/categories/astronomy/galaxies/galaxies-can-be-blazing-infrared-sources.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Hollow Shells","slug":"galaxies-can-be-hollow-shells","url":"/categories/astronomy/galaxies/galaxies-can-be-hollow-shells.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Interacting Trios","slug":"galaxies-can-be-interacting-trios","url":"/categories/astronomy/galaxies/galaxies-can-be-interacting-trios.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Invisible","slug":"galaxies-can-be-invisible","url":"/categories/astronomy/galaxies/galaxies-can-be-invisible.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Invisible in Visible Light","slug":"galaxies-can-be-invisible-in-visible-light","url":"/categories/astronomy/galaxies/galaxies-can-be-invisible-in-visible-light.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Misclassified","slug":"galaxies-can-be-misclassified","url":"/categories/astronomy/galaxies/galaxies-can-be-misclassified.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Rings of Stars","slug":"galaxies-can-be-rings-of-stars","url":"/categories/astronomy/galaxies/galaxies-can-be-rings-of-stars.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Be Stripped Bare","slug":"galaxies-can-be-stripped-bare","url":"/categories/astronomy/galaxies/galaxies-can-be-stripped-bare.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Collide Without Merging","slug":"galaxies-can-collide-without-merging","url":"/categories/astronomy/galaxies/galaxies-can-collide-without-merging.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Contain Relic Star Clusters","slug":"galaxies-can-contain-relic-star-clusters","url":"/categories/astronomy/galaxies/galaxies-can-contain-relic-star-clusters.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Form Streams of Stars","slug":"galaxies-can-form-streams-of-stars","url":"/categories/astronomy/galaxies/galaxies-can-form-streams-of-stars.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Glow in Radio Waves","slug":"galaxies-can-glow-in-radio-waves","url":"/categories/astronomy/galaxies/galaxies-can-glow-in-radio-waves.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Harbor Double Nuclei","slug":"galaxies-can-harbor-double-nuclei","url":"/categories/astronomy/galaxies/galaxies-can-harbor-double-nuclei.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Merge Into Ultra-Massive Ellipticals","slug":"galaxies-can-merge-into-ultra-massive-ellipticals","url":"/categories/astronomy/galaxies/galaxies-can-merge-into-ultra-massive-ellipticals.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Produce Enormous Jets","slug":"galaxies-can-produce-enormous-jets","url":"/categories/astronomy/galaxies/galaxies-can-produce-enormous-jets.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Rotate Without Distortion","slug":"galaxies-can-rotate-without-distortion","url":"/categories/astronomy/galaxies/galaxies-can-rotate-without-distortion.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Run Out of Fuel","slug":"galaxies-can-run-out-of-fuel","url":"/categories/astronomy/galaxies/galaxies-can-run-out-of-fuel.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Spin in Reverse","slug":"galaxies-can-spin-in-reverse","url":"/categories/astronomy/galaxies/galaxies-can-spin-in-reverse.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Spin to Limit","slug":"galaxies-can-spin-to-limit","url":"/categories/astronomy/galaxies/galaxies-can-spin-to-limit.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Trigger Starbursts When They Collide","slug":"galaxies-can-trigger-starbursts-when-they-collide","url":"/categories/astronomy/galaxies/galaxies-can-trigger-starbursts-when-they-collide.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Can Warp Each Other’s Shapes","slug":"galaxies-can-warp-each-others-shapes","url":"/categories/astronomy/galaxies/galaxies-can-warp-each-others-shapes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Evolve Through Mergers","slug":"galaxies-evolve-through-mergers","url":"/categories/astronomy/galaxies/galaxies-evolve-through-mergers.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Were Discovered by Accident","slug":"galaxies-were-discovered-by-accident","url":"/categories/astronomy/galaxies/galaxies-were-discovered-by-accident.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Galaxies Were Once Called “Island Universes”","slug":"galaxies-were-once-called-island-universes","url":"/categories/astronomy/galaxies/galaxies-were-once-called-island-universes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are “Green Peas”","slug":"some-galaxies-are-green-peas","url":"/categories/astronomy/galaxies/some-galaxies-are-green-peas.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Cosmic Cannibals","slug":"some-galaxies-are-cosmic-cannibals","url":"/categories/astronomy/galaxies/some-galaxies-are-cosmic-cannibals.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Extremely Metal-Poor","slug":"some-galaxies-are-extremely-metal-poor","url":"/categories/astronomy/galaxies/some-galaxies-are-extremely-metal-poor.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Head-On Collisions","slug":"some-galaxies-are-head-on-collisions","url":"/categories/astronomy/galaxies/some-galaxies-are-head-on-collisions.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Hyper-Luminous","slug":"some-galaxies-are-hyper-luminous","url":"/categories/astronomy/galaxies/some-galaxies-are-hyper-luminous.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Leftover Cores of Destroyed Giants","slug":"some-galaxies-are-leftover-cores-of-destroyed-giants","url":"/categories/astronomy/galaxies/some-galaxies-are-leftover-cores-of-destroyed-giants.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Missing Stars","slug":"some-galaxies-are-missing-stars","url":"/categories/astronomy/galaxies/some-galaxies-are-missing-stars.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Older Than Expected","slug":"some-galaxies-are-older-than-expected","url":"/categories/astronomy/galaxies/some-galaxies-are-older-than-expected.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Rapidly Quenched","slug":"some-galaxies-are-rapidly-quenched","url":"/categories/astronomy/galaxies/some-galaxies-are-rapidly-quenched.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Starburst Factories","slug":"some-galaxies-are-starburst-factories","url":"/categories/astronomy/galaxies/some-galaxies-are-starburst-factories.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Ultra-Diffuse","slug":"some-galaxies-are-ultra-diffuse","url":"/categories/astronomy/galaxies/some-galaxies-are-ultra-diffuse.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Are Ultra-Massive","slug":"some-galaxies-are-ultra-massive","url":"/categories/astronomy/galaxies/some-galaxies-are-ultra-massive.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Contain Rogue Stars","slug":"some-galaxies-contain-rogue-stars","url":"/categories/astronomy/galaxies/some-galaxies-contain-rogue-stars.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Form Bridges","slug":"some-galaxies-form-bridges","url":"/categories/astronomy/galaxies/some-galaxies-form-bridges.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Form Stars at Extreme Rates","slug":"some-galaxies-form-stars-at-extreme-rates","url":"/categories/astronomy/galaxies/some-galaxies-form-stars-at-extreme-rates.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Harbor Binary Black Holes","slug":"some-galaxies-harbor-binary-black-holes","url":"/categories/astronomy/galaxies/some-galaxies-harbor-binary-black-holes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Harbor Rogue Black Holes","slug":"some-galaxies-harbor-rogue-black-holes","url":"/categories/astronomy/galaxies/some-galaxies-harbor-rogue-black-holes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Have Gigantic Star Clusters","slug":"some-galaxies-have-gigantic-star-clusters","url":"/categories/astronomy/galaxies/some-galaxies-have-gigantic-star-clusters.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Rotate Backwards","slug":"some-galaxies-rotate-backwards","url":"/categories/astronomy/galaxies/some-galaxies-rotate-backwards.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Galaxies Spin Faster Than Expected","slug":"some-galaxies-spin-faster-than-expected","url":"/categories/astronomy/galaxies/some-galaxies-spin-faster-than-expected.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Supermassive Black Holes Rule Galaxies","slug":"supermassive-black-holes-rule-galaxies","url":"/categories/astronomy/galaxies/supermassive-black-holes-rule-galaxies.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Andromeda Galaxy Was Visible to Ancient Eyes","slug":"the-andromeda-galaxy-was-visible-to-ancient-eyes","url":"/categories/astronomy/galaxies/the-andromeda-galaxy-was-visible-to-ancient-eyes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First Galaxies Formed Shockingly Early","slug":"the-first-galaxies-formed-shockingly-early","url":"/categories/astronomy/galaxies/the-first-galaxies-formed-shockingly-early.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First Photograph of a Galaxy Changed Everything","slug":"the-first-photograph-of-a-galaxy-changed-everything","url":"/categories/astronomy/galaxies/the-first-photograph-of-a-galaxy-changed-everything.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Milky Way Once Ate Another Galaxy","slug":"the-milky-way-once-ate-another-galaxy","url":"/categories/astronomy/galaxies/the-milky-way-once-ate-another-galaxy.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Word “Galaxy” Comes from Milk","slug":"the-word-galaxy-comes-from-milk","url":"/categories/astronomy/galaxies/the-word-galaxy-comes-from-milk.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Ultra-Compact Galaxies Defy Gravity","slug":"ultra-compact-galaxies-defy-gravity","url":"/categories/astronomy/galaxies/ultra-compact-galaxies-defy-gravity.html","color":"#3f51b5","category":"astronomy","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

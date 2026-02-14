@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmic Microwave Background</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Cosmic Microwave Background</h1>
+  <p>Explore all facts in "Cosmic Microwave Background".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Cosmic Microwave Background</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"CMB Can Detect Primordial Magnetic Fields","slug":"cmb-can-detect-primordial-magnetic-fields","url":"/categories/astronomy/cosmic-microwave-background/cmb-can-detect-primordial-magnetic-fields.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Can Test Alternative Gravity Theories","slug":"cmb-can-test-alternative-gravity-theories","url":"/categories/astronomy/cosmic-microwave-background/cmb-can-test-alternative-gravity-theories.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Cold Spot Could Be Another Universe","slug":"cmb-cold-spot-could-be-another-universe","url":"/categories/astronomy/cosmic-microwave-background/cmb-cold-spot-could-be-another-universe.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Cold Spot Could Test Multiverse Ideas","slug":"cmb-cold-spot-could-test-multiverse-ideas","url":"/categories/astronomy/cosmic-microwave-background/cmb-cold-spot-could-test-multiverse-ideas.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Cold Spot Mystery","slug":"cmb-cold-spot-mystery","url":"/categories/astronomy/cosmic-microwave-background/cmb-cold-spot-mystery.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Could Reveal Cosmic Defects","slug":"cmb-could-reveal-cosmic-defects","url":"/categories/astronomy/cosmic-microwave-background/cmb-could-reveal-cosmic-defects.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Could Reveal Primordial Black Holes","slug":"cmb-could-reveal-primordial-black-holes","url":"/categories/astronomy/cosmic-microwave-background/cmb-could-reveal-primordial-black-holes.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Could Test Multiverse Physics","slug":"cmb-could-test-multiverse-physics","url":"/categories/astronomy/cosmic-microwave-background/cmb-could-test-multiverse-physics.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Data Aids Cosmological Simulations","slug":"cmb-data-aids-cosmological-simulations","url":"/categories/astronomy/cosmic-microwave-background/cmb-data-aids-cosmological-simulations.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Data Drives Machine Learning Innovations","slug":"cmb-data-drives-machine-learning-innovations","url":"/categories/astronomy/cosmic-microwave-background/cmb-data-drives-machine-learning-innovations.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Data Refines Exoplanet Detection Methods","slug":"cmb-data-refines-exoplanet-detection-methods","url":"/categories/astronomy/cosmic-microwave-background/cmb-data-refines-exoplanet-detection-methods.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Detection Changed Physics Careers","slug":"cmb-detection-changed-physics-careers","url":"/categories/astronomy/cosmic-microwave-background/cmb-detection-changed-physics-careers.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Drives Next-Gen Sensor Design","slug":"cmb-drives-next-gen-sensor-design","url":"/categories/astronomy/cosmic-microwave-background/cmb-drives-next-gen-sensor-design.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Fluctuations Predict Galaxy Formation","slug":"cmb-fluctuations-predict-galaxy-formation","url":"/categories/astronomy/cosmic-microwave-background/cmb-fluctuations-predict-galaxy-formation.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Guides Future Space Missions","slug":"cmb-guides-future-space-missions","url":"/categories/astronomy/cosmic-microwave-background/cmb-guides-future-space-missions.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Helps Measure Universe Expansion Rate","slug":"cmb-helps-measure-universe-expansion-rate","url":"/categories/astronomy/cosmic-microwave-background/cmb-helps-measure-universe-expansion-rate.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Helps Measure Universe’s Age","slug":"cmb-helps-measure-universes-age","url":"/categories/astronomy/cosmic-microwave-background/cmb-helps-measure-universes-age.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Helps Predict Future Cosmic Fate","slug":"cmb-helps-predict-future-cosmic-fate","url":"/categories/astronomy/cosmic-microwave-background/cmb-helps-predict-future-cosmic-fate.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Helps Test Exotic Physics","slug":"cmb-helps-test-exotic-physics","url":"/categories/astronomy/cosmic-microwave-background/cmb-helps-test-exotic-physics.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Is a Map of Ancient Sound Waves","slug":"cmb-is-a-map-of-ancient-sound-waves","url":"/categories/astronomy/cosmic-microwave-background/cmb-is-a-map-of-ancient-sound-waves.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Mapping Techniques Improve Earth Observation","slug":"cmb-mapping-techniques-improve-earth-observation","url":"/categories/astronomy/cosmic-microwave-background/cmb-mapping-techniques-improve-earth-observation.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Maps Are Data Goldmines","slug":"cmb-maps-are-data-goldmines","url":"/categories/astronomy/cosmic-microwave-background/cmb-maps-are-data-goldmines.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Observations Constrain Neutrino Masses","slug":"cmb-observations-constrain-neutrino-masses","url":"/categories/astronomy/cosmic-microwave-background/cmb-observations-constrain-neutrino-masses.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Observations Shape Future Cosmology Missions","slug":"cmb-observations-shape-future-cosmology-missions","url":"/categories/astronomy/cosmic-microwave-background/cmb-observations-shape-future-cosmology-missions.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Polarization Confirms Inflation","slug":"cmb-polarization-confirms-inflation","url":"/categories/astronomy/cosmic-microwave-background/cmb-polarization-confirms-inflation.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Polarization Inspires Gravitational Wave Detectors","slug":"cmb-polarization-inspires-gravitational-wave-detectors","url":"/categories/astronomy/cosmic-microwave-background/cmb-polarization-inspires-gravitational-wave-detectors.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Research Informs Quantum Gravity Experiments","slug":"cmb-research-informs-quantum-gravity-experiments","url":"/categories/astronomy/cosmic-microwave-background/cmb-research-informs-quantum-gravity-experiments.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Reveals Dark Energy Signature","slug":"cmb-reveals-dark-energy-signature","url":"/categories/astronomy/cosmic-microwave-background/cmb-reveals-dark-energy-signature.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Reveals the Universe is Lopsided","slug":"cmb-reveals-the-universe-is-lopsided","url":"/categories/astronomy/cosmic-microwave-background/cmb-reveals-the-universe-is-lopsided.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Reveals Universe’s Shape","slug":"cmb-reveals-universes-shape","url":"/categories/astronomy/cosmic-microwave-background/cmb-reveals-universes-shape.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Shows Early Universe Expanded Faster Than Light","slug":"cmb-shows-early-universe-expanded-faster-than-light","url":"/categories/astronomy/cosmic-microwave-background/cmb-shows-early-universe-expanded-faster-than-light.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Shows Universe is Almost Perfectly Flat","slug":"cmb-shows-universe-is-almost-perfectly-flat","url":"/categories/astronomy/cosmic-microwave-background/cmb-shows-universe-is-almost-perfectly-flat.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Spectrum Is the Most Perfect Blackbody Ever","slug":"cmb-spectrum-is-the-most-perfect-blackbody-ever","url":"/categories/astronomy/cosmic-microwave-background/cmb-spectrum-is-the-most-perfect-blackbody-ever.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"CMB Tiny Ripples Are Quantum Fingerprints","slug":"cmb-tiny-ripples-are-quantum-fingerprints","url":"/categories/astronomy/cosmic-microwave-background/cmb-tiny-ripples-are-quantum-fingerprints.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Modern Technology Relies on CMB Measurements","slug":"modern-technology-relies-on-cmb-measurements","url":"/categories/astronomy/cosmic-microwave-background/modern-technology-relies-on-cmb-measurements.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Polarization Reveals Cosmic Twist","slug":"polarization-reveals-cosmic-twist","url":"/categories/astronomy/cosmic-microwave-background/polarization-reveals-cosmic-twist.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Scientists Almost Missed It Because of a Theory","slug":"scientists-almost-missed-it-because-of-a-theory","url":"/categories/astronomy/cosmic-microwave-background/scientists-almost-missed-it-because-of-a-theory.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The CMB Confirms the Universe’s Age","slug":"the-cmb-confirms-the-universes-age","url":"/categories/astronomy/cosmic-microwave-background/the-cmb-confirms-the-universes-age.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The CMB Was Once Visible Light","slug":"the-cmb-was-once-visible-light","url":"/categories/astronomy/cosmic-microwave-background/the-cmb-was-once-visible-light.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The CMB Was Predicted 16 Years Before Discovery","slug":"the-cmb-was-predicted-16-years-before-discovery","url":"/categories/astronomy/cosmic-microwave-background/the-cmb-was-predicted-16-years-before-discovery.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Day Static Revealed the Big Bang","slug":"the-day-static-revealed-the-big-bang","url":"/categories/astronomy/cosmic-microwave-background/the-day-static-revealed-the-big-bang.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First CMB Map Looked Like Static Snow","slug":"the-first-cmb-map-looked-like-static-snow","url":"/categories/astronomy/cosmic-microwave-background/the-first-cmb-map-looked-like-static-snow.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Oldest Light We Can Ever See","slug":"the-oldest-light-we-can-ever-see","url":"/categories/astronomy/cosmic-microwave-background/the-oldest-light-we-can-ever-see.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Universe Glows at -454°F Everywhere","slug":"the-universe-glows-at-454f-everywhere","url":"/categories/astronomy/cosmic-microwave-background/the-universe-glows-at-454f-everywhere.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Tiny Fluctuations Encode Cosmic Ingredients","slug":"tiny-fluctuations-encode-cosmic-ingredients","url":"/categories/astronomy/cosmic-microwave-background/tiny-fluctuations-encode-cosmic-ingredients.html","color":"#3f51b5","category":"astronomy","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
