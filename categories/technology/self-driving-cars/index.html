@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Self Driving Cars</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Self Driving Cars</h1>
+  <p>Explore all facts in "Self Driving Cars".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Self Driving Cars</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"AI Drivers Can Develop “Habits” That Surprise Engineers","slug":"ai-drivers-can-develop-habits-that-surprise-engineers","url":"/categories/technology/self-driving-cars/ai-drivers-can-develop-habits-that-surprise-engineers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars Can Be Hacked Remotely","slug":"autonomous-cars-can-be-hacked-remotely","url":"/categories/technology/self-driving-cars/autonomous-cars-can-be-hacked-remotely.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars Can Confuse Traffic Laws","slug":"autonomous-cars-can-confuse-traffic-laws","url":"/categories/technology/self-driving-cars/autonomous-cars-can-confuse-traffic-laws.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars Changed Urban Planning","slug":"autonomous-cars-changed-urban-planning","url":"/categories/technology/self-driving-cars/autonomous-cars-changed-urban-planning.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars Evolved From Lanes to Cities","slug":"autonomous-cars-evolved-from-lanes-to-cities","url":"/categories/technology/self-driving-cars/autonomous-cars-evolved-from-lanes-to-cities.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars in Extreme Weather Sometimes Refuse to Drive","slug":"autonomous-cars-in-extreme-weather-sometimes-refuse-to-drive","url":"/categories/technology/self-driving-cars/autonomous-cars-in-extreme-weather-sometimes-refuse-to-drive.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars Learn From Near-Misses","slug":"autonomous-cars-learn-from-near-misses","url":"/categories/technology/self-driving-cars/autonomous-cars-learn-from-near-misses.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Cars Spur Public Ethical Debates","slug":"autonomous-cars-spur-public-ethical-debates","url":"/categories/technology/self-driving-cars/autonomous-cars-spur-public-ethical-debates.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Delivery Changed Local Economies","slug":"autonomous-delivery-changed-local-economies","url":"/categories/technology/self-driving-cars/autonomous-delivery-changed-local-economies.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Delivery Vehicles Evolved from Labs to Sidewalks","slug":"autonomous-delivery-vehicles-evolved-from-labs-to-sidewalks","url":"/categories/technology/self-driving-cars/autonomous-delivery-vehicles-evolved-from-labs-to-sidewalks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Vehicles Can Drive in Silence","slug":"autonomous-vehicles-can-drive-in-silence","url":"/categories/technology/self-driving-cars/autonomous-vehicles-can-drive-in-silence.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomy Learned From Truck Platooning","slug":"autonomy-learned-from-truck-platooning","url":"/categories/technology/self-driving-cars/autonomy-learned-from-truck-platooning.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"CMU’s 1980s Autonomous Truck Drove the Future","slug":"cmus-1980s-autonomous-truck-drove-the-future","url":"/categories/technology/self-driving-cars/cmus-1980s-autonomous-truck-drove-the-future.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cultural Anxiety Around Losing Driving Skills","slug":"cultural-anxiety-around-losing-driving-skills","url":"/categories/technology/self-driving-cars/cultural-anxiety-around-losing-driving-skills.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DARPA’s 1980s Self-Driving Car Contest Sparked Modern AI","slug":"darpas-1980s-self-driving-car-contest-sparked-modern-ai","url":"/categories/technology/self-driving-cars/darpas-1980s-self-driving-car-contest-sparked-modern-ai.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Driverless Taxis Sparked Policy Debates","slug":"driverless-taxis-sparked-policy-debates","url":"/categories/technology/self-driving-cars/driverless-taxis-sparked-policy-debates.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Early 2000s Nevada Autonomous Car Testing Changed Laws","slug":"early-2000s-nevada-autonomous-car-testing-changed-laws","url":"/categories/technology/self-driving-cars/early-2000s-nevada-autonomous-car-testing-changed-laws.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Edge Computing Powers Real-Time Driving","slug":"edge-computing-powers-real-time-driving","url":"/categories/technology/self-driving-cars/edge-computing-powers-real-time-driving.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Evolution From Test Cities to Full Fleets","slug":"evolution-from-test-cities-to-full-fleets","url":"/categories/technology/self-driving-cars/evolution-from-test-cities-to-full-fleets.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"First Google Self-Driving Car Prototype in 2009","slug":"first-google-self-driving-car-prototype-in-2009","url":"/categories/technology/self-driving-cars/first-google-self-driving-car-prototype-in-2009.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"From Sensors to Full Autonomy: LIDAR’s Rise","slug":"from-sensors-to-full-autonomy-lidars-rise","url":"/categories/technology/self-driving-cars/from-sensors-to-full-autonomy-lidars-rise.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"GM’s 1990s Cruise Control Evolution Laid Autonomy Ground","slug":"gms-1990s-cruise-control-evolution-laid-autonomy-ground","url":"/categories/technology/self-driving-cars/gms-1990s-cruise-control-evolution-laid-autonomy-ground.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Highest-Speed Autonomous Highway Test","slug":"highest-speed-autonomous-highway-test","url":"/categories/technology/self-driving-cars/highest-speed-autonomous-highway-test.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Historical Irony: Autonomous Cars and Traffic Fatalities","slug":"historical-irony-autonomous-cars-and-traffic-fatalities","url":"/categories/technology/self-driving-cars/historical-irony-autonomous-cars-and-traffic-fatalities.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Self-Driving Cars “See” the World","slug":"how-self-driving-cars-see-the-world","url":"/categories/technology/self-driving-cars/how-self-driving-cars-see-the-world.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Hybrid Human-AI Driving: The Evolution of Shared Control","slug":"hybrid-human-ai-driving-the-evolution-of-shared-control","url":"/categories/technology/self-driving-cars/hybrid-human-ai-driving-the-evolution-of-shared-control.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Japan’s 1977 Shinkansen Experiments Inspired Autonomy","slug":"japans-1977-shinkansen-experiments-inspired-autonomy","url":"/categories/technology/self-driving-cars/japans-1977-shinkansen-experiments-inspired-autonomy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Longest Autonomous Highway Drive by Google","slug":"longest-autonomous-highway-drive-by-google","url":"/categories/technology/self-driving-cars/longest-autonomous-highway-drive-by-google.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Mapping: The Invisible GPS Superhighway","slug":"mapping-the-invisible-gps-superhighway","url":"/categories/technology/self-driving-cars/mapping-the-invisible-gps-superhighway.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Mercedes’ 1995 Eureka Car Could Brake for Pedestrians","slug":"mercedes-1995-eureka-car-could-brake-for-pedestrians","url":"/categories/technology/self-driving-cars/mercedes-1995-eureka-car-could-brake-for-pedestrians.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Most Complex Intersection Navigated Autonomously","slug":"most-complex-intersection-navigated-autonomously","url":"/categories/technology/self-driving-cars/most-complex-intersection-navigated-autonomously.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Neural Networks Drive Decision-Making","slug":"neural-networks-drive-decision-making","url":"/categories/technology/self-driving-cars/neural-networks-drive-decision-making.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Political Lobbying Shaped Autonomous Car Legislation","slug":"political-lobbying-shaped-autonomous-car-legislation","url":"/categories/technology/self-driving-cars/political-lobbying-shaped-autonomous-car-legislation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Predictive Algorithms Anticipate Chaos","slug":"predictive-algorithms-anticipate-chaos","url":"/categories/technology/self-driving-cars/predictive-algorithms-anticipate-chaos.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Redundant Systems Keep Cars Alive","slug":"redundant-systems-keep-cars-alive","url":"/categories/technology/self-driving-cars/redundant-systems-keep-cars-alive.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Car Collision Avoidance Records","slug":"self-driving-car-collision-avoidance-records","url":"/categories/technology/self-driving-cars/self-driving-car-collision-avoidance-records.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Car Simulators Accelerated Evolution","slug":"self-driving-car-simulators-accelerated-evolution","url":"/categories/technology/self-driving-cars/self-driving-car-simulators-accelerated-evolution.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Cars Can Confuse Other Drivers","slug":"self-driving-cars-can-confuse-other-drivers","url":"/categories/technology/self-driving-cars/self-driving-cars-can-confuse-other-drivers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Cars Have Historic “Ethical Override” Modes","slug":"self-driving-cars-have-historic-ethical-override-modes","url":"/categories/technology/self-driving-cars/self-driving-cars-have-historic-ethical-override-modes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Cars Influence Insurance Models","slug":"self-driving-cars-influence-insurance-models","url":"/categories/technology/self-driving-cars/self-driving-cars-influence-insurance-models.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Cars Influenced Disability Mobility","slug":"self-driving-cars-influenced-disability-mobility","url":"/categories/technology/self-driving-cars/self-driving-cars-influenced-disability-mobility.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Cars Rarely Make “Heroic” Maneuvers","slug":"self-driving-cars-rarely-make-heroic-maneuvers","url":"/categories/technology/self-driving-cars/self-driving-cars-rarely-make-heroic-maneuvers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Self-Driving Cars Survived the Worst Traffic Jams","slug":"self-driving-cars-survived-the-worst-traffic-jams","url":"/categories/technology/self-driving-cars/self-driving-cars-survived-the-worst-traffic-jams.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Sensor Calibration: The Hidden Science of Accuracy","slug":"sensor-calibration-the-hidden-science-of-accuracy","url":"/categories/technology/self-driving-cars/sensor-calibration-the-hidden-science-of-accuracy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Stanford’s 1994 NavLab Pioneered Road Autonomy","slug":"stanfords-1994-navlab-pioneered-road-autonomy","url":"/categories/technology/self-driving-cars/stanfords-1994-navlab-pioneered-road-autonomy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Tesla’s Over-the-Air Updates Transformed Autonomy","slug":"teslas-over-the-air-updates-transformed-autonomy","url":"/categories/technology/self-driving-cars/teslas-over-the-air-updates-transformed-autonomy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The 1920s Robot Car That Predicted Tesla","slug":"the-1920s-robot-car-that-predicted-tesla","url":"/categories/technology/self-driving-cars/the-1920s-robot-car-that-predicted-tesla.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Brains Behind Autonomous Driving","slug":"the-brains-behind-autonomous-driving","url":"/categories/technology/self-driving-cars/the-brains-behind-autonomous-driving.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Coldest Self-Driving Car Test","slug":"the-coldest-self-driving-car-test","url":"/categories/technology/self-driving-cars/the-coldest-self-driving-car-test.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The World’s First Autonomous Cross-Country Trip","slug":"the-worlds-first-autonomous-cross-country-trip","url":"/categories/technology/self-driving-cars/the-worlds-first-autonomous-cross-country-trip.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Waymo’s Incremental Evolution From Google Labs","slug":"waymos-incremental-evolution-from-google-labs","url":"/categories/technology/self-driving-cars/waymos-incremental-evolution-from-google-labs.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blockchain Technology</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Blockchain Technology</h1>
+  <p>Explore all facts in "Blockchain Technology".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Blockchain Technology</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Blockchain and Banking: Friends or Foes?","slug":"blockchain-and-banking-friends-or-foes","url":"/categories/technology/blockchain-technology/blockchain-and-banking-friends-or-foes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain and Environmental Impact: Can Crypto Be Green?","slug":"blockchain-and-environmental-impact-can-crypto-be-green","url":"/categories/technology/blockchain-technology/blockchain-and-environmental-impact-can-crypto-be-green.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Before Bitcoin: Early Experiments in Digital Ledgers","slug":"blockchain-before-bitcoin-early-experiments-in-digital-ledgers","url":"/categories/technology/blockchain-technology/blockchain-before-bitcoin-early-experiments-in-digital-ledgers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Evolution: From Currency to Universal Ledger","slug":"blockchain-evolution-from-currency-to-universal-ledger","url":"/categories/technology/blockchain-technology/blockchain-evolution-from-currency-to-universal-ledger.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain for Digital Twins: Simulating Reality Securely","slug":"blockchain-for-digital-twins-simulating-reality-securely","url":"/categories/technology/blockchain-technology/blockchain-for-digital-twins-simulating-reality-securely.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Governance: Voting Without Politicians","slug":"blockchain-governance-voting-without-politicians","url":"/categories/technology/blockchain-technology/blockchain-governance-voting-without-politicians.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Art and Culture: Beyond CryptoKitties","slug":"blockchain-in-art-and-culture-beyond-cryptokitties","url":"/categories/technology/blockchain-technology/blockchain-in-art-and-culture-beyond-cryptokitties.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Climate Finance: Funding Sustainability","slug":"blockchain-in-climate-finance-funding-sustainability","url":"/categories/technology/blockchain-technology/blockchain-in-climate-finance-funding-sustainability.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Disaster Relief: Tracking Aid with Code","slug":"blockchain-in-disaster-relief-tracking-aid-with-code","url":"/categories/technology/blockchain-technology/blockchain-in-disaster-relief-tracking-aid-with-code.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Gaming: Play-to-Earn Economies","slug":"blockchain-in-gaming-play-to-earn-economies","url":"/categories/technology/blockchain-technology/blockchain-in-gaming-play-to-earn-economies.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in IoT: Machines Talking Securely","slug":"blockchain-in-iot-machines-talking-securely","url":"/categories/technology/blockchain-technology/blockchain-in-iot-machines-talking-securely.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Medicine: Securing Health Records","slug":"blockchain-in-medicine-securing-health-records","url":"/categories/technology/blockchain-technology/blockchain-in-medicine-securing-health-records.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Politics: From Election Security to Policy","slug":"blockchain-in-politics-from-election-security-to-policy","url":"/categories/technology/blockchain-technology/blockchain-in-politics-from-election-security-to-policy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Space Mining: Future Proofing Resources","slug":"blockchain-in-space-mining-future-proofing-resources","url":"/categories/technology/blockchain-technology/blockchain-in-space-mining-future-proofing-resources.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Space: Satellites and Smart Contracts","slug":"blockchain-in-space-satellites-and-smart-contracts","url":"/categories/technology/blockchain-technology/blockchain-in-space-satellites-and-smart-contracts.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain in Supply Chains: Tracking Diamonds and Coffee","slug":"blockchain-in-supply-chains-tracking-diamonds-and-coffee","url":"/categories/technology/blockchain-technology/blockchain-in-supply-chains-tracking-diamonds-and-coffee.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Interoperability: When Chains Shake Hands","slug":"blockchain-interoperability-when-chains-shake-hands","url":"/categories/technology/blockchain-technology/blockchain-interoperability-when-chains-shake-hands.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Memes and Subcultures: The Digital Folklore","slug":"blockchain-memes-and-subcultures-the-digital-folklore","url":"/categories/technology/blockchain-technology/blockchain-memes-and-subcultures-the-digital-folklore.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Mining: How Computers Race for Digital Gold","slug":"blockchain-mining-how-computers-race-for-digital-gold","url":"/categories/technology/blockchain-technology/blockchain-mining-how-computers-race-for-digital-gold.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Scaling: The Layered Revolution","slug":"blockchain-scaling-the-layered-revolution","url":"/categories/technology/blockchain-technology/blockchain-scaling-the-layered-revolution.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Security: How the Chain Fights Tampering","slug":"blockchain-security-how-the-chain-fights-tampering","url":"/categories/technology/blockchain-technology/blockchain-security-how-the-chain-fights-tampering.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Sidechains: Parallel Universes of Data","slug":"blockchain-sidechains-parallel-universes-of-data","url":"/categories/technology/blockchain-technology/blockchain-sidechains-parallel-universes-of-data.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Statistical Outliers: Bitcoin’s Extreme Volatility","slug":"blockchain-statistical-outliers-bitcoins-extreme-volatility","url":"/categories/technology/blockchain-technology/blockchain-statistical-outliers-bitcoins-extreme-volatility.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain Voting Experiments: Democracy on the Chain","slug":"blockchain-voting-experiments-democracy-on-the-chain","url":"/categories/technology/blockchain-technology/blockchain-voting-experiments-democracy-on-the-chain.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain’s Fastest Transactions: Lightning Speed on the Network","slug":"blockchains-fastest-transactions-lightning-speed-on-the-network","url":"/categories/technology/blockchain-technology/blockchains-fastest-transactions-lightning-speed-on-the-network.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain’s First Real-World Adoption: Beyond Experimentation","slug":"blockchains-first-real-world-adoption-beyond-experimentation","url":"/categories/technology/blockchain-technology/blockchains-first-real-world-adoption-beyond-experimentation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Blockchain’s Mysterious Creator: Who Really Is Satoshi Nakamoto?","slug":"blockchains-mysterious-creator-who-really-is-satoshi-nakamoto","url":"/categories/technology/blockchain-technology/blockchains-mysterious-creator-who-really-is-satoshi-nakamoto.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cross-Border Remittances: Blockchain vs. Banks","slug":"cross-border-remittances-blockchain-vs-banks","url":"/categories/technology/blockchain-technology/cross-border-remittances-blockchain-vs-banks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Decentralization Before Democracy: Blockchain’s Radical Concept","slug":"decentralization-before-democracy-blockchains-radical-concept","url":"/categories/technology/blockchain-technology/decentralization-before-democracy-blockchains-radical-concept.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Decentralized Identity: You Control Your Digital Self","slug":"decentralized-identity-you-control-your-digital-self","url":"/categories/technology/blockchain-technology/decentralized-identity-you-control-your-digital-self.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Genesis of Blockchain: How a Digital Ledger Was Born","slug":"genesis-of-blockchain-how-a-digital-ledger-was-born","url":"/categories/technology/blockchain-technology/genesis-of-blockchain-how-a-digital-ledger-was-born.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Hard Forks: When Blockchains Fight Themselves","slug":"hard-forks-when-blockchains-fight-themselves","url":"/categories/technology/blockchain-technology/hard-forks-when-blockchains-fight-themselves.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Layered Privacy: Keeping Transactions Secret on a Public Ledger","slug":"layered-privacy-keeping-transactions-secret-on-a-public-ledger","url":"/categories/technology/blockchain-technology/layered-privacy-keeping-transactions-secret-on-a-public-ledger.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Most Expensive Crypto Heist: How Blockchain Theft Shocked the World","slug":"most-expensive-crypto-heist-how-blockchain-theft-shocked-the-world","url":"/categories/technology/blockchain-technology/most-expensive-crypto-heist-how-blockchain-theft-shocked-the-world.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Obscure Blockchain Lawsuits: Courts Meet Code","slug":"obscure-blockchain-lawsuits-courts-meet-code","url":"/categories/technology/blockchain-technology/obscure-blockchain-lawsuits-courts-meet-code.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Obsolete Blockchain Projects: The Forgotten Chains","slug":"obsolete-blockchain-projects-the-forgotten-chains","url":"/categories/technology/blockchain-technology/obsolete-blockchain-projects-the-forgotten-chains.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Proof-of-Stake: Energy-Saving Blockchain Mechanics","slug":"proof-of-stake-energy-saving-blockchain-mechanics","url":"/categories/technology/blockchain-technology/proof-of-stake-energy-saving-blockchain-mechanics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Smart Cities and Blockchain: The Future of Urban Life","slug":"smart-cities-and-blockchain-the-future-of-urban-life","url":"/categories/technology/blockchain-technology/smart-cities-and-blockchain-the-future-of-urban-life.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First Smart Contracts: Code That Obliges Without Lawyers","slug":"the-first-smart-contracts-code-that-obliges-without-lawyers","url":"/categories/technology/blockchain-technology/the-first-smart-contracts-code-that-obliges-without-lawyers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First Transaction: Pizza Worth $100 Million in Blockchain History","slug":"the-first-transaction-pizza-worth-100-million-in-blockchain-history","url":"/categories/technology/blockchain-technology/the-first-transaction-pizza-worth-100-million-in-blockchain-history.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Hidden Mathematical Genius Behind Blockchain","slug":"the-hidden-mathematical-genius-behind-blockchain","url":"/categories/technology/blockchain-technology/the-hidden-mathematical-genius-behind-blockchain.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Largest Bitcoin Wallets: Giants You’ve Never Seen","slug":"the-largest-bitcoin-wallets-giants-youve-never-seen","url":"/categories/technology/blockchain-technology/the-largest-bitcoin-wallets-giants-youve-never-seen.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Largest NFT on Blockchain: Art Worth Millions Digitally","slug":"the-largest-nft-on-blockchain-art-worth-millions-digitally","url":"/categories/technology/blockchain-technology/the-largest-nft-on-blockchain-art-worth-millions-digitally.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Long Road to Consensus: How Blockchain Agreed to Agree","slug":"the-long-road-to-consensus-how-blockchain-agreed-to-agree","url":"/categories/technology/blockchain-technology/the-long-road-to-consensus-how-blockchain-agreed-to-agree.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Rarest Blockchain Event: 51% Attacks","slug":"the-rarest-blockchain-event-51-attacks","url":"/categories/technology/blockchain-technology/the-rarest-blockchain-event-51-attacks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Tokenization of Everything: Assets Go Digital","slug":"tokenization-of-everything-assets-go-digital","url":"/categories/technology/blockchain-technology/tokenization-of-everything-assets-go-digital.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

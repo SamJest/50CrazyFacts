@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victorian Etiquette</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Victorian Etiquette</h1>
+  <p>Explore all facts in "Victorian Etiquette".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Etiquette</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Adaptation for Colonial Contexts","slug":"adaptation-for-colonial-contexts","url":"/categories/the-victorians/victorian-etiquette/adaptation-for-colonial-contexts.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Dining Etiquette Shifts with Cuisine","slug":"dining-etiquette-shifts-with-cuisine","url":"/categories/the-victorians/victorian-etiquette/dining-etiquette-shifts-with-cuisine.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Dress Codes as Regulatory Systems","slug":"dress-codes-as-regulatory-systems","url":"/categories/the-victorians/victorian-etiquette/dress-codes-as-regulatory-systems.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette Adapts to Rail Travel","slug":"etiquette-adapts-to-rail-travel","url":"/categories/the-victorians/victorian-etiquette/etiquette-adapts-to-rail-travel.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette and Gender Politics","slug":"etiquette-and-gender-politics","url":"/categories/the-victorians/victorian-etiquette/etiquette-and-gender-politics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette and the British Empire","slug":"etiquette-and-the-british-empire","url":"/categories/the-victorians/victorian-etiquette/etiquette-and-the-british-empire.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette and the Women’s Rights Movement","slug":"etiquette-and-the-womens-rights-movement","url":"/categories/the-victorians/victorian-etiquette/etiquette-and-the-womens-rights-movement.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette for Mourning Pets","slug":"etiquette-for-mourning-pets","url":"/categories/the-victorians/victorian-etiquette/etiquette-for-mourning-pets.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette for Toilet Use","slug":"etiquette-for-toilet-use","url":"/categories/the-victorians/victorian-etiquette/etiquette-for-toilet-use.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette in Leisure Activities","slug":"etiquette-in-leisure-activities","url":"/categories/the-victorians/victorian-etiquette/etiquette-in-leisure-activities.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette Manuals Target the Middle Class","slug":"etiquette-manuals-target-the-middle-class","url":"/categories/the-victorians/victorian-etiquette/etiquette-manuals-target-the-middle-class.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette Origins of Victorian Society","slug":"etiquette-origins-of-victorian-society","url":"/categories/the-victorians/victorian-etiquette/etiquette-origins-of-victorian-society.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Etiquette Shapes Public Health Policy","slug":"etiquette-shapes-public-health-policy","url":"/categories/the-victorians/victorian-etiquette/etiquette-shapes-public-health-policy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Handshakes as Social Algorithms","slug":"handshakes-as-social-algorithms","url":"/categories/the-victorians/victorian-etiquette/handshakes-as-social-algorithms.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hygiene as Etiquette","slug":"hygiene-as-etiquette","url":"/categories/the-victorians/victorian-etiquette/hygiene-as-etiquette.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Influence on Industrial Workplace","slug":"influence-on-industrial-workplace","url":"/categories/the-victorians/victorian-etiquette/influence-on-industrial-workplace.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Influence on Literature and Theatre","slug":"influence-on-literature-and-theatre","url":"/categories/the-victorians/victorian-etiquette/influence-on-literature-and-theatre.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Influence on Modern Corporate Protocol","slug":"influence-on-modern-corporate-protocol","url":"/categories/the-victorians/victorian-etiquette/influence-on-modern-corporate-protocol.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Letter Writing as a Behavioral System","slug":"letter-writing-as-a-behavioral-system","url":"/categories/the-victorians/victorian-etiquette/letter-writing-as-a-behavioral-system.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Victorian Bow Recorded","slug":"longest-victorian-bow-recorded","url":"/categories/the-victorians/victorian-etiquette/longest-victorian-bow-recorded.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Victorian Dance","slug":"longest-victorian-dance","url":"/categories/the-victorians/victorian-etiquette/longest-victorian-dance.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Mirror Usage Etiquette","slug":"mirror-usage-etiquette","url":"/categories/the-victorians/victorian-etiquette/mirror-usage-etiquette.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Elaborate Visiting Card Exchange","slug":"most-elaborate-visiting-card-exchange","url":"/categories/the-victorians/victorian-etiquette/most-elaborate-visiting-card-exchange.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Protocol for Passing Gas","slug":"protocol-for-passing-gas","url":"/categories/the-victorians/victorian-etiquette/protocol-for-passing-gas.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Rarest Public Etiquette Breach","slug":"rarest-public-etiquette-breach","url":"/categories/the-victorians/victorian-etiquette/rarest-public-etiquette-breach.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Revival of Victorian Dining Etiquette","slug":"revival-of-victorian-dining-etiquette","url":"/categories/the-victorians/victorian-etiquette/revival-of-victorian-dining-etiquette.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Rules for Sneezing in Public","slug":"rules-for-sneezing-in-public","url":"/categories/the-victorians/victorian-etiquette/rules-for-sneezing-in-public.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Seating Arrangements as Social Physics","slug":"seating-arrangements-as-social-physics","url":"/categories/the-victorians/victorian-etiquette/seating-arrangements-as-social-physics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Table Manners and Moral Judgment","slug":"table-manners-and-moral-judgment","url":"/categories/the-victorians/victorian-etiquette/table-manners-and-moral-judgment.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Telephone Etiquette Emerges","slug":"telephone-etiquette-emerges","url":"/categories/the-victorians/victorian-etiquette/telephone-etiquette-emerges.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Evolution of Courtship Manners","slug":"the-evolution-of-courtship-manners","url":"/categories/the-victorians/victorian-etiquette/the-evolution-of-courtship-manners.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The First Etiquette Manuals","slug":"the-first-etiquette-manuals","url":"/categories/the-victorians/victorian-etiquette/the-first-etiquette-manuals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Gendered Rules of Victorian Manners","slug":"the-gendered-rules-of-victorian-manners","url":"/categories/the-victorians/victorian-etiquette/the-gendered-rules-of-victorian-manners.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Logic Behind Victorian Conversation Rules","slug":"the-logic-behind-victorian-conversation-rules","url":"/categories/the-victorians/victorian-etiquette/the-logic-behind-victorian-conversation-rules.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Longest Victorian Letter","slug":"the-longest-victorian-letter","url":"/categories/the-victorians/victorian-etiquette/the-longest-victorian-letter.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Most Complicated Table Setting","slug":"the-most-complicated-table-setting","url":"/categories/the-victorians/victorian-etiquette/the-most-complicated-table-setting.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Role of Posture in Social Standing","slug":"the-role-of-posture-in-social-standing","url":"/categories/the-victorians/victorian-etiquette/the-role-of-posture-in-social-standing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Science of Bowing and Curtseying","slug":"the-science-of-bowing-and-curtseying","url":"/categories/the-victorians/victorian-etiquette/the-science-of-bowing-and-curtseying.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Unspoken Rules of Breathing","slug":"unspoken-rules-of-breathing","url":"/categories/the-victorians/victorian-etiquette/unspoken-rules-of-breathing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Etiquette and Industrialization","slug":"victorian-etiquette-and-industrialization","url":"/categories/the-victorians/victorian-etiquette/victorian-etiquette-and-industrialization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Etiquette in Modern Networking","slug":"victorian-etiquette-in-modern-networking","url":"/categories/the-victorians/victorian-etiquette/victorian-etiquette-in-modern-networking.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Politeness in AI Design","slug":"victorian-politeness-in-ai-design","url":"/categories/the-victorians/victorian-etiquette/victorian-politeness-in-ai-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Walking and Gait as Social Systems","slug":"walking-and-gait-as-social-systems","url":"/categories/the-victorians/victorian-etiquette/walking-and-gait-as-social-systems.html","color":"#f44336","category":"the-victorians","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

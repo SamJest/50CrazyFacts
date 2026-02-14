@@ -34,7 +34,7 @@ body{font-family:Arial,sans-serif;margin:0;background:#f7f7f7;line-height:1.7;}
 header{background:#9c27b0;color:#fff;padding:60px 20px;text-align:center}
 header h1{margin:0;font-size:2.4em}
 nav.top-nav{padding:12px 20px;background:#fff;display:flex;gap:14px;position:sticky;top:0;z-index:999;box-shadow:0 2px 5px rgba(0,0,0,.05);}
-nav.top-nav a{color:#9c27b0;font-weight:bold;text-decoration:none;text-transform:lowercase;}
+nav.top-nav a{color:#9c27b0;font-weight:bold;text-decoration:none;text-transform:none;}
 .breadcrumbs{margin:14px 20px;font-size:.9em;text-transform:capitalize;}
 .breadcrumbs a{text-transform:capitalize;}
 .content{padding:30px 20px;max-width:900px;margin:auto;background:#fff;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.06);}
@@ -54,6 +54,8 @@ details p{padding:0 16px 14px 16px;margin:0;}
 .badge{display:inline-block;background:#9c27b033;color:#9c27b0;padding:4px 10px;border-radius:20px;font-size:.75em;margin-right:6px;margin-top:8px;}
 .badge-toast{position:fixed;top:20px;right:20px;padding:12px 20px;background:#9c27b0;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;z-index:2000;}
 .ad-slot{margin:40px auto;padding:20px;background:#f0f0f0;text-align:center;border:2px dashed #ccc;border-radius:12px;color:#888;font-weight:bold;max-width:100%;width:100%;box-sizing:border-box;}
+textarea{resize:none;}
+.comment-banned{color:red;font-size:.9em;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -102,6 +104,19 @@ Mammoths’ Survival Against Odds
 <div class="copy-link" onclick="copyLink()">Copy Link</div>
 </div>
 
+<!-- New Comments Section -->
+<details id="commentsBox">
+<summary>💬 Quick Comments</summary>
+<div id="commentsContainer">
+  <form id="commentForm">
+    <textarea id="commentInput" placeholder="Write a comment..." rows="3" style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;margin-bottom:8px;"></textarea>
+    <button type="submit" style="padding:10px 16px;background:#9c27b0;color:#fff;border:none;border-radius:6px;cursor:pointer;">Post Comment</button>
+    <div class="comment-banned" id="commentBanned" style="display:none;">Comment blocked: contains spam or bad words.</div>
+  </form>
+  <div id="commentList" style="margin-top:16px;"></div>
+</div>
+</details>
+
 <div class="ad-slot">Ad Slot 1</div>
 <div class="ad-slot">Ad Slot 2</div>
 
@@ -117,10 +132,7 @@ Mammoths’ Survival Against Odds
 <script>
 // Progress Bar
 const bar=document.getElementById('progressBar');
-window.addEventListener('scroll',()=>{
-  const h=document.body.scrollHeight-window.innerHeight;
-  bar.style.width=(window.scrollY/h)*100+'%';
-});
+window.addEventListener('scroll',()=>{const h=document.body.scrollHeight-window.innerHeight; bar.style.width=(window.scrollY/h)*100+'%';});
 
 // Expansion Confetti
 function fireConfetti(){ confetti({particleCount:60,spread:70,origin:{y:.6}}); }
@@ -135,6 +147,58 @@ function copyLink(){
   t.style.opacity=1;
   setTimeout(()=>t.style.opacity=0,2000);
 }
+
+// New comment system with spam & bad words filter
+const commentForm = document.getElementById('commentForm');
+const commentInput = document.getElementById('commentInput');
+const commentList = document.getElementById('commentList');
+const commentBanned = document.getElementById('commentBanned');
+const storageKey = 'comments_' + window.location.pathname;
+
+// Define bad words and spam patterns
+const badWords = ['badword1','badword2','badword3','foo','bar']; // extend as needed
+const spamPatterns = [/(https?:\/\/[^\s]+)/gi, /www\.[^\s]+/gi]; // blocks links
+
+let comments = JSON.parse(localStorage.getItem(storageKey)) || [];
+renderComments();
+
+function renderComments(){
+  commentList.innerHTML = '';
+  if(comments.length === 0){
+    commentList.innerHTML = '<p style="color:#555;">No comments yet. Be the first!</p>';
+    return;
+  }
+  comments.forEach(c=>{
+    const div = document.createElement('div');
+    div.style.padding='10px';
+    div.style.marginBottom='8px';
+    div.style.background='#f4f4f4';
+    div.style.borderRadius='6px';
+    div.textContent = c;
+    commentList.appendChild(div);
+  });
+}
+
+commentForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const text = commentInput.value.trim();
+  if(!text) return;
+
+  // Check for bad words
+  const containsBadWord = badWords.some(word => text.toLowerCase().includes(word.toLowerCase()));
+  const containsSpam = spamPatterns.some(pattern => pattern.test(text));
+
+  if(containsBadWord || containsSpam){
+    commentBanned.style.display = 'block';
+    setTimeout(()=>{commentBanned.style.display='none';}, 3000);
+    return;
+  }
+
+  comments.push(text);
+  localStorage.setItem(storageKey, JSON.stringify(comments));
+  commentInput.value = '';
+  renderComments();
+});
 </script>
 </body>
 </html>

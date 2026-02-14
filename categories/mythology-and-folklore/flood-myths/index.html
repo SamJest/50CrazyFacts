@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flood Myths</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Flood Myths</h1>
+  <p>Explore all facts in "Flood Myths".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Flood Myths</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"A Greek Flood Started With Cannibalism","slug":"a-greek-flood-started-with-cannibalism","url":"/categories/mythology-and-folklore/flood-myths/a-greek-flood-started-with-cannibalism.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"A Hindu Flood Story Predicted Evolution","slug":"a-hindu-flood-story-predicted-evolution","url":"/categories/mythology-and-folklore/flood-myths/a-hindu-flood-story-predicted-evolution.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Animals Weren’t Always on the Ark","slug":"animals-werent-always-on-the-ark","url":"/categories/mythology-and-folklore/flood-myths/animals-werent-always-on-the-ark.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Ark Designs Inspire Modern Engineering","slug":"ark-designs-inspire-modern-engineering","url":"/categories/mythology-and-folklore/flood-myths/ark-designs-inspire-modern-engineering.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Australia’s Aboriginal Flood Stories Are 7,000 Years Old","slug":"australias-aboriginal-flood-stories-are-7000-years-old","url":"/categories/mythology-and-folklore/flood-myths/australias-aboriginal-flood-stories-are-7000-years-old.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"China’s Great Flood Wasn’t About Boats","slug":"chinas-great-flood-wasnt-about-boats","url":"/categories/mythology-and-folklore/flood-myths/chinas-great-flood-wasnt-about-boats.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Duration Kept Expanding Over Time","slug":"flood-duration-kept-expanding-over-time","url":"/categories/mythology-and-folklore/flood-myths/flood-duration-kept-expanding-over-time.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Are Cross-Cultural Connectors","slug":"flood-myths-are-cross-cultural-connectors","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-are-cross-cultural-connectors.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Borrowed From Astronomy","slug":"flood-myths-borrowed-from-astronomy","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-borrowed-from-astronomy.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Evolved From Regret to Morality","slug":"flood-myths-evolved-from-regret-to-morality","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-evolved-from-regret-to-morality.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Existed 1,000 Years Before Noah","slug":"flood-myths-existed-1000-years-before-noah","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-existed-1000-years-before-noah.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Predict Climate Change","slug":"flood-myths-predict-climate-change","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-predict-climate-change.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Reflect Psychological Archetypes","slug":"flood-myths-reflect-psychological-archetypes","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-reflect-psychological-archetypes.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Myths Warn About Overpopulation","slug":"flood-myths-warn-about-overpopulation","url":"/categories/mythology-and-folklore/flood-myths/flood-myths-warn-about-overpopulation.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Narratives Encourage Ecological Awareness","slug":"flood-narratives-encourage-ecological-awareness","url":"/categories/mythology-and-folklore/flood-myths/flood-narratives-encourage-ecological-awareness.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Narratives May Predict Future Events","slug":"flood-narratives-may-predict-future-events","url":"/categories/mythology-and-folklore/flood-myths/flood-narratives-may-predict-future-events.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Stories Influenced Legal Codes","slug":"flood-stories-influenced-legal-codes","url":"/categories/mythology-and-folklore/flood-myths/flood-stories-influenced-legal-codes.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Stories Inspire Survival Psychology","slug":"flood-stories-inspire-survival-psychology","url":"/categories/mythology-and-folklore/flood-myths/flood-stories-inspire-survival-psychology.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Flood Survivors Multiplied From One to Eight","slug":"flood-survivors-multiplied-from-one-to-eight","url":"/categories/mythology-and-folklore/flood-myths/flood-survivors-multiplied-from-one-to-eight.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Floods Have a Secret Scientific Basis","slug":"floods-have-a-secret-scientific-basis","url":"/categories/mythology-and-folklore/flood-myths/floods-have-a-secret-scientific-basis.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Floods Inspired Early Urban Planning","slug":"floods-inspired-early-urban-planning","url":"/categories/mythology-and-folklore/flood-myths/floods-inspired-early-urban-planning.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Floods Shaped Religious Rituals","slug":"floods-shaped-religious-rituals","url":"/categories/mythology-and-folklore/flood-myths/floods-shaped-religious-rituals.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Modern Technology Uses Flood Archetypes","slug":"modern-technology-uses-flood-archetypes","url":"/categories/mythology-and-folklore/flood-myths/modern-technology-uses-flood-archetypes.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Noah’s Ark Influenced Maritime Culture","slug":"noahs-ark-influenced-maritime-culture","url":"/categories/mythology-and-folklore/flood-myths/noahs-ark-influenced-maritime-culture.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Noah’s Story Shapes Popular Culture","slug":"noahs-story-shapes-popular-culture","url":"/categories/mythology-and-folklore/flood-myths/noahs-story-shapes-popular-culture.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"Obscure Flood Myths Feature Giants","slug":"obscure-flood-myths-feature-giants","url":"/categories/mythology-and-folklore/flood-myths/obscure-flood-myths-feature-giants.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The Americas Had Pre-Columbian Flood Myths","slug":"the-americas-had-pre-columbian-flood-myths","url":"/categories/mythology-and-folklore/flood-myths/the-americas-had-pre-columbian-flood-myths.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The Ark’s Shape Changed Over Time","slug":"the-arks-shape-changed-over-time","url":"/categories/mythology-and-folklore/flood-myths/the-arks-shape-changed-over-time.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The Aztec Flood Ended a Previous Sun","slug":"the-aztec-flood-ended-a-previous-sun","url":"/categories/mythology-and-folklore/flood-myths/the-aztec-flood-ended-a-previous-sun.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The First Flood Hero Was Immortal","slug":"the-first-flood-hero-was-immortal","url":"/categories/mythology-and-folklore/flood-myths/the-first-flood-hero-was-immortal.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The Flood Shifted From Local to Global","slug":"the-flood-shifted-from-local-to-global","url":"/categories/mythology-and-folklore/flood-myths/the-flood-shifted-from-local-to-global.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The Hero’s Warning Changed Sources","slug":"the-heros-warning-changed-sources","url":"/categories/mythology-and-folklore/flood-myths/the-heros-warning-changed-sources.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1},{"title":"The Rainbow Promise Was a Later Addition","slug":"the-rainbow-promise-was-a-later-addition","url":"/categories/mythology-and-folklore/flood-myths/the-rainbow-promise-was-a-later-addition.html","color":"#607d8b","category":"mythology-and-folklore","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

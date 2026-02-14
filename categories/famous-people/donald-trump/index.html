@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Donald Trump</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Donald Trump</h1>
+  <p>Explore all facts in "Donald Trump".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Donald Trump</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Donald Trump Once Considered a Presidential Run in 2000","slug":"donald-trump-once-considered-a-presidential-run-in-2000","url":"/categories/famous-people/donald-trump/donald-trump-once-considered-a-presidential-run-in-2000.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Donald Trump Received a Star on the Hollywood Walk of Fame","slug":"donald-trump-received-a-star-on-the-hollywood-walk-of-fame","url":"/categories/famous-people/donald-trump/donald-trump-received-a-star-on-the-hollywood-walk-of-fame.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Donald Trump Was Born Into a Federal Housing Empire","slug":"donald-trump-was-born-into-a-federal-housing-empire","url":"/categories/famous-people/donald-trump/donald-trump-was-born-into-a-federal-housing-empire.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Donald Trump’s First Book Was a Bestseller Before Politics","slug":"donald-trumps-first-book-was-a-bestseller-before-politics","url":"/categories/famous-people/donald-trump/donald-trumps-first-book-was-a-bestseller-before-politics.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"How Donald Trump’s Hair Became Engineering Legend","slug":"how-donald-trumps-hair-became-engineering-legend","url":"/categories/famous-people/donald-trump/how-donald-trumps-hair-became-engineering-legend.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"The Apprentice Revived Trump’s Finances and Fame","slug":"the-apprentice-revived-trumps-finances-and-fame","url":"/categories/famous-people/donald-trump/the-apprentice-revived-trumps-finances-and-fame.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"The Military Academy That Shaped Trump’s Persona","slug":"the-military-academy-that-shaped-trumps-persona","url":"/categories/famous-people/donald-trump/the-military-academy-that-shaped-trumps-persona.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"The Only President to Visit North Korea’s DMZ and Step Across","slug":"the-only-president-to-visit-north-koreas-dmz-and-step-across","url":"/categories/famous-people/donald-trump/the-only-president-to-visit-north-koreas-dmz-and-step-across.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump Kept a Red “Nuclear Button” on His Desk","slug":"trump-kept-a-red-nuclear-button-on-his-desk","url":"/categories/famous-people/donald-trump/trump-kept-a-red-nuclear-button-on-his-desk.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump Once Had a Board Game Sold Nationally","slug":"trump-once-had-a-board-game-sold-nationally","url":"/categories/famous-people/donald-trump/trump-once-had-a-board-game-sold-nationally.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump Once Supported Universal Healthcare","slug":"trump-once-supported-universal-healthcare","url":"/categories/famous-people/donald-trump/trump-once-supported-universal-healthcare.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump Switched Party Affiliations Five Times","slug":"trump-switched-party-affiliations-five-times","url":"/categories/famous-people/donald-trump/trump-switched-party-affiliations-five-times.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump Tower Was Built With a Public Atrium Deal","slug":"trump-tower-was-built-with-a-public-atrium-deal","url":"/categories/famous-people/donald-trump/trump-tower-was-built-with-a-public-atrium-deal.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump Was the First President Without Prior Public Office or Military Service","slug":"trump-was-the-first-president-without-prior-public-office-or-military-service","url":"/categories/famous-people/donald-trump/trump-was-the-first-president-without-prior-public-office-or-military-service.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s 2016 Victory Defied Polling Models","slug":"trumps-2016-victory-defied-polling-models","url":"/categories/famous-people/donald-trump/trumps-2016-victory-defied-polling-models.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s 2020 Loss Was the Most Litigated Election in Modern History","slug":"trumps-2020-loss-was-the-most-litigated-election-in-modern-history","url":"/categories/famous-people/donald-trump/trumps-2020-loss-was-the-most-litigated-election-in-modern-history.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s 2024 Campaign Broke Primary Turnout Records","slug":"trumps-2024-campaign-broke-primary-turnout-records","url":"/categories/famous-people/donald-trump/trumps-2024-campaign-broke-primary-turnout-records.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Brand Once Included an Airline","slug":"trumps-brand-once-included-an-airline","url":"/categories/famous-people/donald-trump/trumps-brand-once-included-an-airline.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Business Empire Faced Civil Fraud Penalties","slug":"trumps-business-empire-faced-civil-fraud-penalties","url":"/categories/famous-people/donald-trump/trumps-business-empire-faced-civil-fraud-penalties.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Campaign Slogans Became Global Catchphrases","slug":"trumps-campaign-slogans-became-global-catchphrases","url":"/categories/famous-people/donald-trump/trumps-campaign-slogans-became-global-catchphrases.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Comeback Victory Was Historically Rare","slug":"trumps-comeback-victory-was-historically-rare","url":"/categories/famous-people/donald-trump/trumps-comeback-victory-was-historically-rare.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Diet Became a Presidential Curiosity","slug":"trumps-diet-became-a-presidential-curiosity","url":"/categories/famous-people/donald-trump/trumps-diet-became-a-presidential-curiosity.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Father Was Arrested at a 1927 Klan Event","slug":"trumps-father-was-arrested-at-a-1927-klan-event","url":"/categories/famous-people/donald-trump/trumps-father-was-arrested-at-a-1927-klan-event.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s German Ancestry Was Once Hidden","slug":"trumps-german-ancestry-was-once-hidden","url":"/categories/famous-people/donald-trump/trumps-german-ancestry-was-once-hidden.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Impeachments Were Historically Unprecedented","slug":"trumps-impeachments-were-historically-unprecedented","url":"/categories/famous-people/donald-trump/trumps-impeachments-were-historically-unprecedented.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Inauguration Crowd Size Sparked a Statistical Firestorm","slug":"trumps-inauguration-crowd-size-sparked-a-statistical-firestorm","url":"/categories/famous-people/donald-trump/trumps-inauguration-crowd-size-sparked-a-statistical-firestorm.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Indictments Broke Historical Precedent","slug":"trumps-indictments-broke-historical-precedent","url":"/categories/famous-people/donald-trump/trumps-indictments-broke-historical-precedent.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Legal Defense Fundraising Set Records","slug":"trumps-legal-defense-fundraising-set-records","url":"/categories/famous-people/donald-trump/trumps-legal-defense-fundraising-set-records.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Mugshot Became a Campaign Fundraising Tool","slug":"trumps-mugshot-became-a-campaign-fundraising-tool","url":"/categories/famous-people/donald-trump/trumps-mugshot-became-a-campaign-fundraising-tool.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Name Became a Verb in Political Discourse","slug":"trumps-name-became-a-verb-in-political-discourse","url":"/categories/famous-people/donald-trump/trumps-name-became-a-verb-in-political-discourse.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Name Was Once a Casino Brand Empire","slug":"trumps-name-was-once-a-casino-brand-empire","url":"/categories/famous-people/donald-trump/trumps-name-was-once-a-casino-brand-empire.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Name Was Removed from Multiple Buildings","slug":"trumps-name-was-removed-from-multiple-buildings","url":"/categories/famous-people/donald-trump/trumps-name-was-removed-from-multiple-buildings.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Net Worth Swung Billions During Presidency","slug":"trumps-net-worth-swung-billions-during-presidency","url":"/categories/famous-people/donald-trump/trumps-net-worth-swung-billions-during-presidency.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Presidency Coincided with Record Judicial Appointments","slug":"trumps-presidency-coincided-with-record-judicial-appointments","url":"/categories/famous-people/donald-trump/trumps-presidency-coincided-with-record-judicial-appointments.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Presidency Rewrote the Rules on Presidential Norms","slug":"trumps-presidency-rewrote-the-rules-on-presidential-norms","url":"/categories/famous-people/donald-trump/trumps-presidency-rewrote-the-rules-on-presidential-norms.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Presidency Shifted NATO Spending Debates","slug":"trumps-presidency-shifted-nato-spending-debates","url":"/categories/famous-people/donald-trump/trumps-presidency-shifted-nato-spending-debates.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Rallies Became Economic Micro-Events","slug":"trumps-rallies-became-economic-micro-events","url":"/categories/famous-people/donald-trump/trumps-rallies-became-economic-micro-events.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Security Detail Became One of the Largest in History","slug":"trumps-security-detail-became-one-of-the-largest-in-history","url":"/categories/famous-people/donald-trump/trumps-security-detail-became-one-of-the-largest-in-history.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Supreme Court Appointments Reshaped the Judiciary","slug":"trumps-supreme-court-appointments-reshaped-the-judiciary","url":"/categories/famous-people/donald-trump/trumps-supreme-court-appointments-reshaped-the-judiciary.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Taxes Were Audited for Decades","slug":"trumps-taxes-were-audited-for-decades","url":"/categories/famous-people/donald-trump/trumps-taxes-were-audited-for-decades.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Truth Social Platform Entered Public Markets","slug":"trumps-truth-social-platform-entered-public-markets","url":"/categories/famous-people/donald-trump/trumps-truth-social-platform-entered-public-markets.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Twitter Habit Changed Presidential Communication","slug":"trumps-twitter-habit-changed-presidential-communication","url":"/categories/famous-people/donald-trump/trumps-twitter-habit-changed-presidential-communication.html","color":"#ff9800","category":"famous-people","factCount":1},{"title":"Trump’s Voice Was Once a Rap Lyric","slug":"trumps-voice-was-once-a-rap-lyric","url":"/categories/famous-people/donald-trump/trumps-voice-was-once-a-rap-lyric.html","color":"#ff9800","category":"famous-people","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

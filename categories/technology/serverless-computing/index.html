@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,37 +66,95 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Serverless Computing</h1>
   <p>Explore all facts in "Serverless Computing".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Serverless Computing</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +162,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"“Serverless” Doesn’t Mean No Servers","slug":"serverless-doesnt-mean-no-servers","url":"/categories/technology/serverless-computing/serverless-doesnt-mean-no-servers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cold Starts: The Serverless Surprise","slug":"cold-starts-the-serverless-surprise","url":"/categories/technology/serverless-computing/cold-starts-the-serverless-surprise.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Concurrency Limits Keep the Chaos in Check","slug":"concurrency-limits-keep-the-chaos-in-check","url":"/categories/technology/serverless-computing/concurrency-limits-keep-the-chaos-in-check.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Edge Computing Extended Serverless","slug":"edge-computing-extended-serverless","url":"/categories/technology/serverless-computing/edge-computing-extended-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Event-Driven Computing Predates the Cloud","slug":"event-driven-computing-predates-the-cloud","url":"/categories/technology/serverless-computing/event-driven-computing-predates-the-cloud.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Functions Are Often Containers in Disguise","slug":"functions-are-often-containers-in-disguise","url":"/categories/technology/serverless-computing/functions-are-often-containers-in-disguise.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Google Quietly Pioneered the Idea First","slug":"google-quietly-pioneered-the-idea-first","url":"/categories/technology/serverless-computing/google-quietly-pioneered-the-idea-first.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Enables Mass Personalization","slug":"how-serverless-computing-enables-mass-personalization","url":"/categories/technology/serverless-computing/how-serverless-computing-enables-mass-personalization.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Enables Massive Email Campaigns","slug":"how-serverless-computing-enables-massive-email-campaigns","url":"/categories/technology/serverless-computing/how-serverless-computing-enables-massive-email-campaigns.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Enables Massive Parallelism","slug":"how-serverless-computing-enables-massive-parallelism","url":"/categories/technology/serverless-computing/how-serverless-computing-enables-massive-parallelism.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Enables Real-Time Translation Apps","slug":"how-serverless-computing-enables-real-time-translation-apps","url":"/categories/technology/serverless-computing/how-serverless-computing-enables-real-time-translation-apps.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Handles Millions of Cron Jobs","slug":"how-serverless-computing-handles-millions-of-cron-jobs","url":"/categories/technology/serverless-computing/how-serverless-computing-handles-millions-of-cron-jobs.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Handles Sudden Viral Events","slug":"how-serverless-computing-handles-sudden-viral-events","url":"/categories/technology/serverless-computing/how-serverless-computing-handles-sudden-viral-events.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Powers Real-Time Data Analytics","slug":"how-serverless-computing-powers-real-time-data-analytics","url":"/categories/technology/serverless-computing/how-serverless-computing-powers-real-time-data-analytics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Simplifies Compliance Audits","slug":"how-serverless-computing-simplifies-compliance-audits","url":"/categories/technology/serverless-computing/how-serverless-computing-simplifies-compliance-audits.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Serverless Computing Supports Continuous Deployment","slug":"how-serverless-computing-supports-continuous-deployment","url":"/categories/technology/serverless-computing/how-serverless-computing-supports-continuous-deployment.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"IBM Predicted Serverless in the 1990s","slug":"ibm-predicted-serverless-in-the-1990s","url":"/categories/technology/serverless-computing/ibm-predicted-serverless-in-the-1990s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Latency Can Increase with Distance","slug":"latency-can-increase-with-distance","url":"/categories/technology/serverless-computing/latency-can-increase-with-distance.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Monitoring Serverless Is Harder","slug":"monitoring-serverless-is-harder","url":"/categories/technology/serverless-computing/monitoring-serverless-is-harder.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Netflix Helped Popularize Event-Driven Architectures","slug":"netflix-helped-popularize-event-driven-architectures","url":"/categories/technology/serverless-computing/netflix-helped-popularize-event-driven-architectures.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Arrived During the DevOps Boom","slug":"serverless-arrived-during-the-devops-boom","url":"/categories/technology/serverless-computing/serverless-arrived-during-the-devops-boom.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Computing Was Born in 2014","slug":"serverless-computing-was-born-in-2014","url":"/categories/technology/serverless-computing/serverless-computing-was-born-in-2014.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Pricing Changed Cloud Economics","slug":"serverless-pricing-changed-cloud-economics","url":"/categories/technology/serverless-computing/serverless-pricing-changed-cloud-economics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Pricing Changed Cloud Economics","slug":"serverless-pricing-changed-cloud-economics","url":"/categories/technology/serverless-computing/serverless-pricing-changed-cloud-economics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Scales to Zero","slug":"serverless-scales-to-zero","url":"/categories/technology/serverless-computing/serverless-scales-to-zero.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Was Initially Mocked","slug":"serverless-was-initially-mocked","url":"/categories/technology/serverless-computing/serverless-was-initially-mocked.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Was Inspired by Google’s Borg","slug":"serverless-was-inspired-by-googles-borg","url":"/categories/technology/serverless-computing/serverless-was-inspired-by-googles-borg.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Startups Adopted Serverless First","slug":"startups-adopted-serverless-first","url":"/categories/technology/serverless-computing/startups-adopted-serverless-first.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Stateless by Design, Not by Accident","slug":"stateless-by-design-not-by-accident","url":"/categories/technology/serverless-computing/stateless-by-design-not-by-accident.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Birth of Serverless Computing","slug":"the-birth-of-serverless-computing","url":"/categories/technology/serverless-computing/the-birth-of-serverless-computing.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First “Serverless” App Was a Photo Filter","slug":"the-first-serverless-app-was-a-photo-filter","url":"/categories/technology/serverless-computing/the-first-serverless-app-was-a-photo-filter.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First Serverless Apps Were Tiny","slug":"the-first-serverless-apps-were-tiny","url":"/categories/technology/serverless-computing/the-first-serverless-apps-were-tiny.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Invisible Containers Behind Serverless Computing","slug":"the-invisible-containers-behind-serverless-computing","url":"/categories/technology/serverless-computing/the-invisible-containers-behind-serverless-computing.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Role of Serverless in Modern Authentication Systems","slug":"the-role-of-serverless-in-modern-authentication-systems","url":"/categories/technology/serverless-computing/the-role-of-serverless-in-modern-authentication-systems.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Surprising Limits on Serverless File Sizes","slug":"the-surprising-limits-on-serverless-file-sizes","url":"/categories/technology/serverless-computing/the-surprising-limits-on-serverless-file-sizes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Term “FaaS” Predates Serverless","slug":"the-term-faas-predates-serverless","url":"/categories/technology/serverless-computing/the-term-faas-predates-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Term “Serverless” Was Marketing Genius","slug":"the-term-serverless-was-marketing-genius","url":"/categories/technology/serverless-computing/the-term-serverless-was-marketing-genius.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Unexpected Role of Serverless in Gaming Backends","slug":"the-unexpected-role-of-serverless-in-gaming-backends","url":"/categories/technology/serverless-computing/the-unexpected-role-of-serverless-in-gaming-backends.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Timeouts Prevent Runaway Code","slug":"timeouts-prevent-runaway-code","url":"/categories/technology/serverless-computing/timeouts-prevent-runaway-code.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Vendor Lock-In Became a Concern","slug":"vendor-lock-in-became-a-concern","url":"/categories/technology/serverless-computing/vendor-lock-in-became-a-concern.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Changes Cost Forecasting","slug":"why-serverless-computing-changes-cost-forecasting","url":"/categories/technology/serverless-computing/why-serverless-computing-changes-cost-forecasting.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Changes Disaster Recovery Planning","slug":"why-serverless-computing-changes-disaster-recovery-planning","url":"/categories/technology/serverless-computing/why-serverless-computing-changes-disaster-recovery-planning.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Changes System Monitoring","slug":"why-serverless-computing-changes-system-monitoring","url":"/categories/technology/serverless-computing/why-serverless-computing-changes-system-monitoring.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Encourages Event-First Design","slug":"why-serverless-computing-encourages-event-first-design","url":"/categories/technology/serverless-computing/why-serverless-computing-encourages-event-first-design.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Is Ideal for Webhooks","slug":"why-serverless-computing-is-ideal-for-webhooks","url":"/categories/technology/serverless-computing/why-serverless-computing-is-ideal-for-webhooks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Is Reshaping Backend Careers","slug":"why-serverless-computing-is-reshaping-backend-careers","url":"/categories/technology/serverless-computing/why-serverless-computing-is-reshaping-backend-careers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Is Resilient to Sudden Failures","slug":"why-serverless-computing-is-resilient-to-sudden-failures","url":"/categories/technology/serverless-computing/why-serverless-computing-is-resilient-to-sudden-failures.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Is Still Evolving Rapidly","slug":"why-serverless-computing-is-still-evolving-rapidly","url":"/categories/technology/serverless-computing/why-serverless-computing-is-still-evolving-rapidly.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Reduces Vendor Lock-In Concerns","slug":"why-serverless-computing-reduces-vendor-lock-in-concerns","url":"/categories/technology/serverless-computing/why-serverless-computing-reduces-vendor-lock-in-concerns.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Serverless Computing Simplifies A/B Testing","slug":"why-serverless-computing-simplifies-ab-testing","url":"/categories/technology/serverless-computing/why-serverless-computing-simplifies-ab-testing.html","color":"#3f51b5","category":"technology","factCount":1}];
+const ITEMS = [{"title":"“Serverless” Doesn’t Mean No Servers","slug":"serverless-doesnt-mean-no-servers","url":"/categories/technology/serverless-computing/serverless-doesnt-mean-no-servers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AI Workloads Embraced Serverless","slug":"ai-workloads-embraced-serverless","url":"/categories/technology/serverless-computing/ai-workloads-embraced-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cold Starts Can Add Invisible Latency","slug":"cold-starts-can-add-invisible-latency","url":"/categories/technology/serverless-computing/cold-starts-can-add-invisible-latency.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cold Starts: The Serverless Surprise","slug":"cold-starts-the-serverless-surprise","url":"/categories/technology/serverless-computing/cold-starts-the-serverless-surprise.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Compliance Became Shared Responsibility","slug":"compliance-became-shared-responsibility","url":"/categories/technology/serverless-computing/compliance-became-shared-responsibility.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Concurrency Limits Keep the Chaos in Check","slug":"concurrency-limits-keep-the-chaos-in-check","url":"/categories/technology/serverless-computing/concurrency-limits-keep-the-chaos-in-check.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Disaster Recovery Simplified","slug":"disaster-recovery-simplified","url":"/categories/technology/serverless-computing/disaster-recovery-simplified.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Edge Computing Extended Serverless","slug":"edge-computing-extended-serverless","url":"/categories/technology/serverless-computing/edge-computing-extended-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Edge Computing Supercharged Serverless","slug":"edge-computing-supercharged-serverless","url":"/categories/technology/serverless-computing/edge-computing-supercharged-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Event-Driven Architecture Took Over","slug":"event-driven-architecture-took-over","url":"/categories/technology/serverless-computing/event-driven-architecture-took-over.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Event-Driven Computing Predates the Cloud","slug":"event-driven-computing-predates-the-cloud","url":"/categories/technology/serverless-computing/event-driven-computing-predates-the-cloud.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Function Chaining Builds Complex Workflows","slug":"function-chaining-builds-complex-workflows","url":"/categories/technology/serverless-computing/function-chaining-builds-complex-workflows.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Functions Are Often Containers in Disguise","slug":"functions-are-often-containers-in-disguise","url":"/categories/technology/serverless-computing/functions-are-often-containers-in-disguise.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Google Quietly Pioneered the Idea First","slug":"google-quietly-pioneered-the-idea-first","url":"/categories/technology/serverless-computing/google-quietly-pioneered-the-idea-first.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Hybrid Cloud Embraced Serverless","slug":"hybrid-cloud-embraced-serverless","url":"/categories/technology/serverless-computing/hybrid-cloud-embraced-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"IBM Predicted Serverless in the 1990s","slug":"ibm-predicted-serverless-in-the-1990s","url":"/categories/technology/serverless-computing/ibm-predicted-serverless-in-the-1990s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Infrastructure Teams Shrunk","slug":"infrastructure-teams-shrunk","url":"/categories/technology/serverless-computing/infrastructure-teams-shrunk.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Latency Can Increase with Distance","slug":"latency-can-increase-with-distance","url":"/categories/technology/serverless-computing/latency-can-increase-with-distance.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Microservices Found Their Perfect Partner","slug":"microservices-found-their-perfect-partner","url":"/categories/technology/serverless-computing/microservices-found-their-perfect-partner.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Monitoring Serverless Is Harder","slug":"monitoring-serverless-is-harder","url":"/categories/technology/serverless-computing/monitoring-serverless-is-harder.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Netflix Helped Popularize Event-Driven Architectures","slug":"netflix-helped-popularize-event-driven-architectures","url":"/categories/technology/serverless-computing/netflix-helped-popularize-event-driven-architectures.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Observability Grew More Complex","slug":"observability-grew-more-complex","url":"/categories/technology/serverless-computing/observability-grew-more-complex.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Security Shifts to Identity","slug":"security-shifts-to-identity","url":"/categories/technology/serverless-computing/security-shifts-to-identity.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Arrived During the DevOps Boom","slug":"serverless-arrived-during-the-devops-boom","url":"/categories/technology/serverless-computing/serverless-arrived-during-the-devops-boom.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Changed Cloud Pricing Forever","slug":"serverless-changed-cloud-pricing-forever","url":"/categories/technology/serverless-computing/serverless-changed-cloud-pricing-forever.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Computing Was Born in 2014","slug":"serverless-computing-was-born-in-2014","url":"/categories/technology/serverless-computing/serverless-computing-was-born-in-2014.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Inspired New Programming Models","slug":"serverless-inspired-new-programming-models","url":"/categories/technology/serverless-computing/serverless-inspired-new-programming-models.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Is Still Evolving","slug":"serverless-is-still-evolving","url":"/categories/technology/serverless-computing/serverless-is-still-evolving.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Isn’t Always Cheaper","slug":"serverless-isnt-always-cheaper","url":"/categories/technology/serverless-computing/serverless-isnt-always-cheaper.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Pricing Changed Cloud Economics","slug":"serverless-pricing-changed-cloud-economics","url":"/categories/technology/serverless-computing/serverless-pricing-changed-cloud-economics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Pricing Changed Cloud Economics","slug":"serverless-pricing-changed-cloud-economics","url":"/categories/technology/serverless-computing/serverless-pricing-changed-cloud-economics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Scales to Zero","slug":"serverless-scales-to-zero","url":"/categories/technology/serverless-computing/serverless-scales-to-zero.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Was Initially Mocked","slug":"serverless-was-initially-mocked","url":"/categories/technology/serverless-computing/serverless-was-initially-mocked.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Serverless Was Inspired by Google’s Borg","slug":"serverless-was-inspired-by-googles-borg","url":"/categories/technology/serverless-computing/serverless-was-inspired-by-googles-borg.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Startup Adoption Accelerated","slug":"startup-adoption-accelerated","url":"/categories/technology/serverless-computing/startup-adoption-accelerated.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Startups Adopted Serverless First","slug":"startups-adopted-serverless-first","url":"/categories/technology/serverless-computing/startups-adopted-serverless-first.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"State Became the New Challenge","slug":"state-became-the-new-challenge","url":"/categories/technology/serverless-computing/state-became-the-new-challenge.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Stateless by Design, Not by Accident","slug":"stateless-by-design-not-by-accident","url":"/categories/technology/serverless-computing/stateless-by-design-not-by-accident.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Testing Became Trickier","slug":"testing-became-trickier","url":"/categories/technology/serverless-computing/testing-became-trickier.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Birth of Serverless Computing","slug":"the-birth-of-serverless-computing","url":"/categories/technology/serverless-computing/the-birth-of-serverless-computing.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First “Serverless” App Was a Photo Filter","slug":"the-first-serverless-app-was-a-photo-filter","url":"/categories/technology/serverless-computing/the-first-serverless-app-was-a-photo-filter.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First Serverless Apps Were Tiny","slug":"the-first-serverless-apps-were-tiny","url":"/categories/technology/serverless-computing/the-first-serverless-apps-were-tiny.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Term “FaaS” Predates Serverless","slug":"the-term-faas-predates-serverless","url":"/categories/technology/serverless-computing/the-term-faas-predates-serverless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Term “Serverless” Was Marketing Genius","slug":"the-term-serverless-was-marketing-genius","url":"/categories/technology/serverless-computing/the-term-serverless-was-marketing-genius.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Timeouts Prevent Runaway Code","slug":"timeouts-prevent-runaway-code","url":"/categories/technology/serverless-computing/timeouts-prevent-runaway-code.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Vendor Lock-In Became a Concern","slug":"vendor-lock-in-became-a-concern","url":"/categories/technology/serverless-computing/vendor-lock-in-became-a-concern.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Vendor Lock-In Became a Debate","slug":"vendor-lock-in-became-a-debate","url":"/categories/technology/serverless-computing/vendor-lock-in-became-a-debate.html","color":"#3f51b5","category":"technology","factCount":1}];
 
 /**************************************************
  UTILITIES
@@ -105,14 +189,18 @@ function createCard(item){
   const div = document.createElement('div');
   div.className='card';
   div.dataset.slug = item.slug;
-  div.dataset.title = item.title.toLowerCase();
+  div.dataset.title = (item.title||'').toLowerCase();
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
+    <div class="fact-preview">${previewText}</div>
   `;
   return div;
 }
@@ -128,6 +216,11 @@ function populateGrid(items){
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
 }
 
 /**************************************************
@@ -137,9 +230,27 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
 
 /**************************************************
  INIT

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anteaters</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Anteaters</h1>
+  <p>Explore all facts in "Anteaters".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Anteaters</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Ancient Anteater Origins Revealed","slug":"ancient-anteater-origins-revealed","url":"/categories/animals/anteaters/ancient-anteater-origins-revealed.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Ancient Climate Shaped Anteater Adaptations","slug":"ancient-climate-shaped-anteater-adaptations","url":"/categories/animals/anteaters/ancient-climate-shaped-anteater-adaptations.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Conservation and Political History","slug":"anteater-conservation-and-political-history","url":"/categories/animals/anteaters/anteater-conservation-and-political-history.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Cultural Symbolism in Modern Media","slug":"anteater-cultural-symbolism-in-modern-media","url":"/categories/animals/anteaters/anteater-cultural-symbolism-in-modern-media.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Defensive Strategies Observed Historically","slug":"anteater-defensive-strategies-observed-historically","url":"/categories/animals/anteaters/anteater-defensive-strategies-observed-historically.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Ecological Impact on Insects","slug":"anteater-ecological-impact-on-insects","url":"/categories/animals/anteaters/anteater-ecological-impact-on-insects.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Evolutionary Split From Sloths","slug":"anteater-evolutionary-split-from-sloths","url":"/categories/animals/anteaters/anteater-evolutionary-split-from-sloths.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Fossils Discovered in Unexpected Climates","slug":"anteater-fossils-discovered-in-unexpected-climates","url":"/categories/animals/anteaters/anteater-fossils-discovered-in-unexpected-climates.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Genetic Research Reveals Surprises","slug":"anteater-genetic-research-reveals-surprises","url":"/categories/animals/anteaters/anteater-genetic-research-reveals-surprises.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Myth vs Reality in Folklore","slug":"anteater-myth-vs-reality-in-folklore","url":"/categories/animals/anteaters/anteater-myth-vs-reality-in-folklore.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteater Predation on Rare Insect Species","slug":"anteater-predation-on-rare-insect-species","url":"/categories/animals/anteaters/anteater-predation-on-rare-insect-species.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters in Early Colonial Reports","slug":"anteaters-in-early-colonial-reports","url":"/categories/animals/anteaters/anteaters-in-early-colonial-reports.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters in Indigenous Symbolism","slug":"anteaters-in-indigenous-symbolism","url":"/categories/animals/anteaters/anteaters-in-indigenous-symbolism.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters in Pre-Columbian Lore","slug":"anteaters-in-pre-columbian-lore","url":"/categories/animals/anteaters/anteaters-in-pre-columbian-lore.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Claws: Nature’s Swiss Army Knife","slug":"anteaters-claws-natures-swiss-army-knife","url":"/categories/animals/anteaters/anteaters-claws-natures-swiss-army-knife.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Diet Shift Over Millennia","slug":"anteaters-diet-shift-over-millennia","url":"/categories/animals/anteaters/anteaters-diet-shift-over-millennia.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Digestive System Surprises Scientists","slug":"anteaters-digestive-system-surprises-scientists","url":"/categories/animals/anteaters/anteaters-digestive-system-surprises-scientists.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Extreme Digging Records","slug":"anteaters-extreme-digging-records","url":"/categories/animals/anteaters/anteaters-extreme-digging-records.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Geographic Spread Surprises Scientists","slug":"anteaters-geographic-spread-surprises-scientists","url":"/categories/animals/anteaters/anteaters-geographic-spread-surprises-scientists.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Limb Evolution Reveals Secret Strength","slug":"anteaters-limb-evolution-reveals-secret-strength","url":"/categories/animals/anteaters/anteaters-limb-evolution-reveals-secret-strength.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Mysterious Nighttime Habits","slug":"anteaters-mysterious-nighttime-habits","url":"/categories/animals/anteaters/anteaters-mysterious-nighttime-habits.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Predatory Defenses Are Unexpected","slug":"anteaters-predatory-defenses-are-unexpected","url":"/categories/animals/anteaters/anteaters-predatory-defenses-are-unexpected.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Rare Arboreal Skills","slug":"anteaters-rare-arboreal-skills","url":"/categories/animals/anteaters/anteaters-rare-arboreal-skills.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Role in Modern Pest Control","slug":"anteaters-role-in-modern-pest-control","url":"/categories/animals/anteaters/anteaters-role-in-modern-pest-control.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Sensory Superpowers","slug":"anteaters-sensory-superpowers","url":"/categories/animals/anteaters/anteaters-sensory-superpowers.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Tongue Muscles Evolved in Layers","slug":"anteaters-tongue-muscles-evolved-in-layers","url":"/categories/animals/anteaters/anteaters-tongue-muscles-evolved-in-layers.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Tongues Are Evolutionary Wonders","slug":"anteaters-tongues-are-evolutionary-wonders","url":"/categories/animals/anteaters/anteaters-tongues-are-evolutionary-wonders.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Anteaters’ Unexpected Role in Ecotourism","slug":"anteaters-unexpected-role-in-ecotourism","url":"/categories/animals/anteaters/anteaters-unexpected-role-in-ecotourism.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Bio-Inspired Robotics From Anteater Tongues","slug":"bio-inspired-robotics-from-anteater-tongues","url":"/categories/animals/anteaters/bio-inspired-robotics-from-anteater-tongues.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Climate Change Threatens Anteater Habitats","slug":"climate-change-threatens-anteater-habitats","url":"/categories/animals/anteaters/climate-change-threatens-anteater-habitats.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Evolution of Anteater Sleep Patterns","slug":"evolution-of-anteater-sleep-patterns","url":"/categories/animals/anteaters/evolution-of-anteater-sleep-patterns.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Extreme Anteater Tail Lengths","slug":"extreme-anteater-tail-lengths","url":"/categories/animals/anteaters/extreme-anteater-tail-lengths.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Future Bioengineering Potential of Anteaters","slug":"future-bioengineering-potential-of-anteaters","url":"/categories/animals/anteaters/future-bioengineering-potential-of-anteaters.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Giant Anteater Size vs Diet Myth","slug":"giant-anteater-size-vs-diet-myth","url":"/categories/animals/anteaters/giant-anteater-size-vs-diet-myth.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Heaviest Recorded Anteater Weight","slug":"heaviest-recorded-anteater-weight","url":"/categories/animals/anteaters/heaviest-recorded-anteater-weight.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Longest Anteater Fossil Claw Found","slug":"longest-anteater-fossil-claw-found","url":"/categories/animals/anteaters/longest-anteater-fossil-claw-found.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Longest Anteater Lifespans Recorded","slug":"longest-anteater-lifespans-recorded","url":"/categories/animals/anteaters/longest-anteater-lifespans-recorded.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Rare White-Faced Anteater Anomalies","slug":"rare-white-faced-anteater-anomalies","url":"/categories/animals/anteaters/rare-white-faced-anteater-anomalies.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Urban Anteaters: Adaptation to Cities","slug":"urban-anteaters-adaptation-to-cities","url":"/categories/animals/anteaters/urban-anteaters-adaptation-to-cities.html","color":"#ff5722","category":"animals","factCount":1},{"title":"World-Record Anteater Tongue Speed","slug":"world-record-anteater-tongue-speed","url":"/categories/animals/anteaters/world-record-anteater-tongue-speed.html","color":"#ff5722","category":"animals","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

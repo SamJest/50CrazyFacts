@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wearable Technology</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Wearable Technology</h1>
+  <p>Explore all facts in "Wearable Technology".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Wearable Technology</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Bio-luminescent Wearables","slug":"bio-luminescent-wearables","url":"/categories/technology/wearable-technology/bio-luminescent-wearables.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Biofeedback Wearables Read Stress","slug":"biofeedback-wearables-read-stress","url":"/categories/technology/wearable-technology/biofeedback-wearables-read-stress.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Deep-Sea Wearable Sensors","slug":"deep-sea-wearable-sensors","url":"/categories/technology/wearable-technology/deep-sea-wearable-sensors.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"EMG Sensors Measure Muscle Power","slug":"emg-sensors-measure-muscle-power","url":"/categories/technology/wearable-technology/emg-sensors-measure-muscle-power.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Fastest Heart Rate Response Monitor","slug":"fastest-heart-rate-response-monitor","url":"/categories/technology/wearable-technology/fastest-heart-rate-response-monitor.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"First Smartwatch Predates Computers?","slug":"first-smartwatch-predates-computers","url":"/categories/technology/wearable-technology/first-smartwatch-predates-computers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Fitness Trackers Go Mainstream","slug":"fitness-trackers-go-mainstream","url":"/categories/technology/wearable-technology/fitness-trackers-go-mainstream.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Fitness Wearables Change Social Norms","slug":"fitness-wearables-change-social-norms","url":"/categories/technology/wearable-technology/fitness-wearables-change-social-norms.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Forgotten Wearable Video Glasses","slug":"forgotten-wearable-video-glasses","url":"/categories/technology/wearable-technology/forgotten-wearable-video-glasses.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"From Calculator Watches to Apps","slug":"from-calculator-watches-to-apps","url":"/categories/technology/wearable-technology/from-calculator-watches-to-apps.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Glasses That Preceded Google Glass","slug":"glasses-that-preceded-google-glass","url":"/categories/technology/wearable-technology/glasses-that-preceded-google-glass.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Gloves That Compute?","slug":"gloves-that-compute","url":"/categories/technology/wearable-technology/gloves-that-compute.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Gloves That Track Performance","slug":"gloves-that-track-performance","url":"/categories/technology/wearable-technology/gloves-that-track-performance.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"GPS on Your Wrist","slug":"gps-on-your-wrist","url":"/categories/technology/wearable-technology/gps-on-your-wrist.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"GPS Watches Transform Navigation","slug":"gps-watches-transform-navigation","url":"/categories/technology/wearable-technology/gps-watches-transform-navigation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Hearing Aids as Wearable Computers?","slug":"hearing-aids-as-wearable-computers","url":"/categories/technology/wearable-technology/hearing-aids-as-wearable-computers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Heart Monitors in the Field?","slug":"heart-monitors-in-the-field","url":"/categories/technology/wearable-technology/heart-monitors-in-the-field.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Highest Altitude Wearable Tested","slug":"highest-altitude-wearable-tested","url":"/categories/technology/wearable-technology/highest-altitude-wearable-tested.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Sleep Trackers Analyze You","slug":"how-sleep-trackers-analyze-you","url":"/categories/technology/wearable-technology/how-sleep-trackers-analyze-you.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Wearables Measure Your Heart","slug":"how-wearables-measure-your-heart","url":"/categories/technology/wearable-technology/how-wearables-measure-your-heart.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Lightest Wearable Tech Ever","slug":"lightest-wearable-tech-ever","url":"/categories/technology/wearable-technology/lightest-wearable-tech-ever.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Longest Wearable Battery Ever","slug":"longest-wearable-battery-ever","url":"/categories/technology/wearable-technology/longest-wearable-battery-ever.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Medical Wearables Go Wireless","slug":"medical-wearables-go-wireless","url":"/categories/technology/wearable-technology/medical-wearables-go-wireless.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Military Wearables Transform Strategy","slug":"military-wearables-transform-strategy","url":"/categories/technology/wearable-technology/military-wearables-transform-strategy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Oldest Continuous Wearable Tech User","slug":"oldest-continuous-wearable-tech-user","url":"/categories/technology/wearable-technology/oldest-continuous-wearable-tech-user.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Sleep Trackers Enter the Bedroom","slug":"sleep-trackers-enter-the-bedroom","url":"/categories/technology/wearable-technology/sleep-trackers-enter-the-bedroom.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Smart Fabrics Sense Your Body","slug":"smart-fabrics-sense-your-body","url":"/categories/technology/wearable-technology/smart-fabrics-sense-your-body.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Smart Glasses Get Smarter","slug":"smart-glasses-get-smarter","url":"/categories/technology/wearable-technology/smart-glasses-get-smarter.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Smartwatches in Politics","slug":"smartwatches-in-politics","url":"/categories/technology/wearable-technology/smartwatches-in-politics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Step Counters Use Tiny Physics","slug":"step-counters-use-tiny-physics","url":"/categories/technology/wearable-technology/step-counters-use-tiny-physics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Temperature Sensors on Your Skin","slug":"temperature-sensors-on-your-skin","url":"/categories/technology/wearable-technology/temperature-sensors-on-your-skin.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Textiles That Count Steps?","slug":"textiles-that-count-steps","url":"/categories/technology/wearable-technology/textiles-that-count-steps.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The “Forget-Me-Not” Wearable","slug":"the-forget-me-not-wearable","url":"/categories/technology/wearable-technology/the-forget-me-not-wearable.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Evolution of Smart Jewelry","slug":"the-evolution-of-smart-jewelry","url":"/categories/technology/wearable-technology/the-evolution-of-smart-jewelry.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Pacemaker That Wore a Watch","slug":"the-pacemaker-that-wore-a-watch","url":"/categories/technology/wearable-technology/the-pacemaker-that-wore-a-watch.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Smart Ring That Predates Bluetooth","slug":"the-smart-ring-that-predates-bluetooth","url":"/categories/technology/wearable-technology/the-smart-ring-that-predates-bluetooth.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Wrist Computer That Failed Spectacularly","slug":"the-wrist-computer-that-failed-spectacularly","url":"/categories/technology/wearable-technology/the-wrist-computer-that-failed-spectacularly.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Wristwatch That Predicted the Weather","slug":"the-wristwatch-that-predicted-the-weather","url":"/categories/technology/wearable-technology/the-wristwatch-that-predicted-the-weather.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Tiny Sensors in Shoes?","slug":"tiny-sensors-in-shoes","url":"/categories/technology/wearable-technology/tiny-sensors-in-shoes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearable Mood Rings Evolved Scientifically","slug":"wearable-mood-rings-evolved-scientifically","url":"/categories/technology/wearable-technology/wearable-mood-rings-evolved-scientifically.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables Adapt for Extreme Sports","slug":"wearables-adapt-for-extreme-sports","url":"/categories/technology/wearable-technology/wearables-adapt-for-extreme-sports.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables and Fashion Statements","slug":"wearables-and-fashion-statements","url":"/categories/technology/wearable-technology/wearables-and-fashion-statements.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables in Education","slug":"wearables-in-education","url":"/categories/technology/wearable-technology/wearables-in-education.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables in Microgravity","slug":"wearables-in-microgravity","url":"/categories/technology/wearable-technology/wearables-in-microgravity.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables in the Workplace","slug":"wearables-in-the-workplace","url":"/categories/technology/wearable-technology/wearables-in-the-workplace.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables Influence Sports Culture","slug":"wearables-influence-sports-culture","url":"/categories/technology/wearable-technology/wearables-influence-sports-culture.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables That Sense Emotion via Sweat","slug":"wearables-that-sense-emotion-via-sweat","url":"/categories/technology/wearable-technology/wearables-that-sense-emotion-via-sweat.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wearables That Translate Language","slug":"wearables-that-translate-language","url":"/categories/technology/wearable-technology/wearables-that-translate-language.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

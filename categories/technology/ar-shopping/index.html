@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ar Shopping</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Ar Shopping</h1>
+  <p>Explore all facts in "Ar Shopping".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ar Shopping</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Amazon’s Hidden AR Patent from 2014","slug":"amazons-hidden-ar-patent-from-2014","url":"/categories/technology/ar-shopping/amazons-hidden-ar-patent-from-2014.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Object Recognition Learns From Your Room","slug":"ar-object-recognition-learns-from-your-room","url":"/categories/technology/ar-shopping/ar-object-recognition-learns-from-your-room.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Combines Computer Vision and AI","slug":"ar-shopping-combines-computer-vision-and-ai","url":"/categories/technology/ar-shopping/ar-shopping-combines-computer-vision-and-ai.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Contributed to “Try-Before-You-Buy” Culture","slug":"ar-shopping-contributed-to-try-before-you-buy-culture","url":"/categories/technology/ar-shopping/ar-shopping-contributed-to-try-before-you-buy-culture.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Could Transform Supply Chains","slug":"ar-shopping-could-transform-supply-chains","url":"/categories/technology/ar-shopping/ar-shopping-could-transform-supply-chains.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Enabled Quirky Virtual Experiments","slug":"ar-shopping-enabled-quirky-virtual-experiments","url":"/categories/technology/ar-shopping/ar-shopping-enabled-quirky-virtual-experiments.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Enables Remote Collaboration","slug":"ar-shopping-enables-remote-collaboration","url":"/categories/technology/ar-shopping/ar-shopping-enables-remote-collaboration.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Handles Occluded Surfaces with AI","slug":"ar-shopping-handles-occluded-surfaces-with-ai","url":"/categories/technology/ar-shopping/ar-shopping-handles-occluded-surfaces-with-ai.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Influenced Interior Design Trends","slug":"ar-shopping-influenced-interior-design-trends","url":"/categories/technology/ar-shopping/ar-shopping-influenced-interior-design-trends.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Influenced Retail Layouts","slug":"ar-shopping-influenced-retail-layouts","url":"/categories/technology/ar-shopping/ar-shopping-influenced-retail-layouts.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Integrates with AR Wearables","slug":"ar-shopping-integrates-with-ar-wearables","url":"/categories/technology/ar-shopping/ar-shopping-integrates-with-ar-wearables.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Measures Human Interaction Space","slug":"ar-shopping-measures-human-interaction-space","url":"/categories/technology/ar-shopping/ar-shopping-measures-human-interaction-space.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Predicts Future Furniture Trends","slug":"ar-shopping-predicts-future-furniture-trends","url":"/categories/technology/ar-shopping/ar-shopping-predicts-future-furniture-trends.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Systems Optimize for Latency","slug":"ar-shopping-systems-optimize-for-latency","url":"/categories/technology/ar-shopping/ar-shopping-systems-optimize-for-latency.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Tracks Behavioral Analytics","slug":"ar-shopping-tracks-behavioral-analytics","url":"/categories/technology/ar-shopping/ar-shopping-tracks-behavioral-analytics.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping Uses Real-Time Depth Mapping","slug":"ar-shopping-uses-real-time-depth-mapping","url":"/categories/technology/ar-shopping/ar-shopping-uses-real-time-depth-mapping.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping’s First Celebrity Endorsement","slug":"ar-shoppings-first-celebrity-endorsement","url":"/categories/technology/ar-shopping/ar-shoppings-first-celebrity-endorsement.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping’s Forgotten Failures Reveal Early Limits","slug":"ar-shoppings-forgotten-failures-reveal-early-limits","url":"/categories/technology/ar-shopping/ar-shoppings-forgotten-failures-reveal-early-limits.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping’s Largest Single Item","slug":"ar-shoppings-largest-single-item","url":"/categories/technology/ar-shopping/ar-shoppings-largest-single-item.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"AR Shopping’s Surprising First Market","slug":"ar-shoppings-surprising-first-market","url":"/categories/technology/ar-shopping/ar-shoppings-surprising-first-market.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Early AR Shopping’s Biggest Skeptic","slug":"early-ar-shoppings-biggest-skeptic","url":"/categories/technology/ar-shopping/early-ar-shoppings-biggest-skeptic.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Fastest AR Try-On Conversion Rate","slug":"fastest-ar-try-on-conversion-rate","url":"/categories/technology/ar-shopping/fastest-ar-try-on-conversion-rate.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Fastest Product Switch in AR Shopping","slug":"fastest-product-switch-in-ar-shopping","url":"/categories/technology/ar-shopping/fastest-product-switch-in-ar-shopping.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"First AR Furniture App That Actually Worked","slug":"first-ar-furniture-app-that-actually-worked","url":"/categories/technology/ar-shopping/first-ar-furniture-app-that-actually-worked.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"From Pokemon to Retail: AR’s Consumer Leap","slug":"from-pokemon-to-retail-ars-consumer-leap","url":"/categories/technology/ar-shopping/from-pokemon-to-retail-ars-consumer-leap.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Heaviest Virtual Furniture in AR","slug":"heaviest-virtual-furniture-in-ar","url":"/categories/technology/ar-shopping/heaviest-virtual-furniture-in-ar.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Ikea’s Early AR Experiment That Failed Spectacularly","slug":"ikeas-early-ar-experiment-that-failed-spectacularly","url":"/categories/technology/ar-shopping/ikeas-early-ar-experiment-that-failed-spectacularly.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Largest Single AR Shopping Experience","slug":"largest-single-ar-shopping-experience","url":"/categories/technology/ar-shopping/largest-single-ar-shopping-experience.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Lighting & Shadow Simulations Trick the Eye","slug":"lighting-shadow-simulations-trick-the-eye","url":"/categories/technology/ar-shopping/lighting-shadow-simulations-trick-the-eye.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Longest AR Shopping Session","slug":"longest-ar-shopping-session","url":"/categories/technology/ar-shopping/longest-ar-shopping-session.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Most Expensive AR Shopping Setup","slug":"most-expensive-ar-shopping-setup","url":"/categories/technology/ar-shopping/most-expensive-ar-shopping-setup.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Occlusion Algorithms Create True Realism","slug":"occlusion-algorithms-create-true-realism","url":"/categories/technology/ar-shopping/occlusion-algorithms-create-true-realism.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Physics Engines Make Virtual Furniture Behave","slug":"physics-engines-make-virtual-furniture-behave","url":"/categories/technology/ar-shopping/physics-engines-make-virtual-furniture-behave.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Rarest AR Shopping Failure: Invisible Items","slug":"rarest-ar-shopping-failure-invisible-items","url":"/categories/technology/ar-shopping/rarest-ar-shopping-failure-invisible-items.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Accidental Birth of AR Shopping","slug":"the-accidental-birth-of-ar-shopping","url":"/categories/technology/ar-shopping/the-accidental-birth-of-ar-shopping.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Largest AR Shopping Catalog Ever Created","slug":"the-largest-ar-shopping-catalog-ever-created","url":"/categories/technology/ar-shopping/the-largest-ar-shopping-catalog-ever-created.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Virtual Fitting Rooms Preceded Smartphones","slug":"virtual-fitting-rooms-preceded-smartphones","url":"/categories/technology/ar-shopping/virtual-fitting-rooms-preceded-smartphones.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

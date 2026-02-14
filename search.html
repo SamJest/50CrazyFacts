@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search 50 Crazy Facts</title>
+<meta name="description" content="Search through the internet’s most addictive collection of crazy, weird, and unbelievable facts.">
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#222;overflow-x:hidden}
+.site-bar{background:#111;color:#fff;padding:14px 20px;font-size:1.4em;font-weight:bold;position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center}
+.site-bar a{color:#e91e63;text-decoration:none;font-weight:bold;font-size:.95em}
+.nav-strip{display:flex;gap:18px;background:#222;padding:10px 20px}
+.nav-strip a{color:#fff;text-decoration:none;font-size:.9em;font-weight:bold;opacity:.9}
+.nav-strip a:hover{opacity:1}
+.section{max-width:1200px;margin:40px auto;padding:0 20px}
+input[type="text"]{width:80%;max-width:400px;padding:10px;border-radius:20px;border:1px solid #ccc}
+#searchResults div{background:#fff;margin:6px 0;padding:10px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+#searchResults a{color:#e91e63;font-weight:bold;text-decoration:none}
+#searchResults small{display:block;color:#555;font-size:.85em;margin-top:2px}
+.load-more-btn{margin:20px auto;display:block;background:#e91e63;color:#fff;border:none;padding:12px 20px;border-radius:30px;cursor:pointer;transition:transform .2s}
+.load-more-btn:hover{transform:scale(1.05)}
+html{scroll-behavior:smooth}
+</style>
+</head>
+<body>
+
+<div class="site-bar">
+  <a href="/index.html">50CrazyFacts</a>
+  <a href="/categories/index.html">Browse All Categories</a>
+</div>
+
+<div class="nav-strip">
+  <a href="/index.html#featured">Featured</a>
+  <a href="/index.html#latest">Latest</a>
+  <a href="/index.html#random">Random</a>
+</div>
+
+<div class="section" style="text-align:center;">
+  <h2>🔍 Search Facts</h2>
+  <input type="text" id="searchInput" placeholder="Type a keyword or subject...">
+  <div id="searchResults" style="margin-top:20px;"></div>
+</div>
+
+<!-- Optional future ad slots -->
+<div class="section" style="text-align:center;">
+  <div id="ad-slot-1" style="background:#eee;height:100px;margin:20px 0;border:2px dashed #ccc;border-radius:12px;">Ad Slot 1</div>
+  <div id="ad-slot-2" style="background:#eee;height:100px;margin:20px 0;border:2px dashed #ccc;border-radius:12px;">Ad Slot 2</div>
+</div>
+
+<footer style="padding:20px;text-align:center;background:#222;color:#fff;">
+  <p>© 2026 50 Crazy Facts</p>
+  <p>
+    <a href="/categories/astronomy/index.html" style="color:#e91e63;">Astronomy</a> • 
+    <a href="/categories/history/index.html" style="color:#e91e63;">History</a> • 
+    <a href="/categories/science/index.html" style="color:#e91e63;">Science</a>
+  </p>
+</footer>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const allFacts = ${SEARCH_JSON};
+
+  // Live search functionality
+  const input = document.getElementById('searchInput');
+  const resultsDiv = document.getElementById('searchResults');
+
+  input.addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    if(!q){ resultsDiv.innerHTML=''; return; }
+
+    const results = allFacts.filter(f =>
+      (f.SEO_TITLE||'').toLowerCase().includes(q) ||
+      (f.FACT_HOOK||'').toLowerCase().includes(q) ||
+      (f.category||'').toLowerCase().includes(q) ||
+      (f.subject||'').toLowerCase().includes(q)
+    ).slice(0,10); // show top 10 matches
+
+    resultsDiv.innerHTML = results.map(f => {
+      const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
+      const highlight = (text) => text.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+      return `<div>
+        <a href="${url}">${highlight(f.SEO_TITLE || 'Untitled Fact')}</a>
+        <small>${highlight(f.FACT_HOOK || '')}</small>
+      </div>`;
+    }).join('');
+  });
+});
+</script>
+
+</body>
+</html>

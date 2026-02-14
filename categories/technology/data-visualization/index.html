@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Visualization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Data Visualization</h1>
+  <p>Explore all facts in "Data Visualization".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Data Visualization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"AI-Generated Visualizations: Machines as Designers","slug":"ai-generated-visualizations-machines-as-designers","url":"/categories/technology/data-visualization/ai-generated-visualizations-machines-as-designers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Ancient Chinese Data Diagrams: A Lost Legacy","slug":"ancient-chinese-data-diagrams-a-lost-legacy","url":"/categories/technology/data-visualization/ancient-chinese-data-diagrams-a-lost-legacy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Animation in Data Visualization: Time Becomes Visible","slug":"animation-in-data-visualization-time-becomes-visible","url":"/categories/technology/data-visualization/animation-in-data-visualization-time-becomes-visible.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Astrology Meets Early Charts: Data Visualization in the 2nd Century","slug":"astrology-meets-early-charts-data-visualization-in-the-2nd-century","url":"/categories/technology/data-visualization/astrology-meets-early-charts-data-visualization-in-the-2nd-century.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Augmented Reality Visualizations: Data in Your Space","slug":"augmented-reality-visualizations-data-in-your-space","url":"/categories/technology/data-visualization/augmented-reality-visualizations-data-in-your-space.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cartograms: Distorting Maps to Reveal Truths","slug":"cartograms-distorting-maps-to-reveal-truths","url":"/categories/technology/data-visualization/cartograms-distorting-maps-to-reveal-truths.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Early Cartograms: Distorting Maps for Clarity","slug":"early-cartograms-distorting-maps-for-clarity","url":"/categories/technology/data-visualization/early-cartograms-distorting-maps-for-clarity.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Early Infographics in Advertising: Selling With Data","slug":"early-infographics-in-advertising-selling-with-data","url":"/categories/technology/data-visualization/early-infographics-in-advertising-selling-with-data.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Earth’s Energy Flows: Visualizing Planetary Extremes","slug":"earths-energy-flows-visualizing-planetary-extremes","url":"/categories/technology/data-visualization/earths-energy-flows-visualizing-planetary-extremes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Election Maps: Visualizing Democracy","slug":"election-maps-visualizing-democracy","url":"/categories/technology/data-visualization/election-maps-visualizing-democracy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Evolution of Color Coding in Charts","slug":"evolution-of-color-coding-in-charts","url":"/categories/technology/data-visualization/evolution-of-color-coding-in-charts.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Evolution of Scientific Plots: From Lab Notebook to Journal","slug":"evolution-of-scientific-plots-from-lab-notebook-to-journal","url":"/categories/technology/data-visualization/evolution-of-scientific-plots-from-lab-notebook-to-journal.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"First Graphs Ever: How Humans Mapped Data in 1786","slug":"first-graphs-ever-how-humans-mapped-data-in-1786","url":"/categories/technology/data-visualization/first-graphs-ever-how-humans-mapped-data-in-1786.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Florence Nightingale’s Diagram That Saved Lives","slug":"florence-nightingales-diagram-that-saved-lives","url":"/categories/technology/data-visualization/florence-nightingales-diagram-that-saved-lives.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"From Ink to Print: The 19th-Century Graph Boom","slug":"from-ink-to-print-the-19th-century-graph-boom","url":"/categories/technology/data-visualization/from-ink-to-print-the-19th-century-graph-boom.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Heat Maps: Turning Numbers Into Color Gradients","slug":"heat-maps-turning-numbers-into-color-gradients","url":"/categories/technology/data-visualization/heat-maps-turning-numbers-into-color-gradients.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Historical Disease Maps: How Cholera Shaped Cities","slug":"historical-disease-maps-how-cholera-shaped-cities","url":"/categories/technology/data-visualization/historical-disease-maps-how-cholera-shaped-cities.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How the Brain Sees Patterns: The Science Behind Visualization","slug":"how-the-brain-sees-patterns-the-science-behind-visualization","url":"/categories/technology/data-visualization/how-the-brain-sees-patterns-the-science-behind-visualization.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Infographics in Social Movements: Visualizing Protest","slug":"infographics-in-social-movements-visualizing-protest","url":"/categories/technology/data-visualization/infographics-in-social-movements-visualizing-protest.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Interactive Dashboards: Humans in the Loop","slug":"interactive-dashboards-humans-in-the-loop","url":"/categories/technology/data-visualization/interactive-dashboards-humans-in-the-loop.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Interactive Storytelling: Data as Narrative","slug":"interactive-storytelling-data-as-narrative","url":"/categories/technology/data-visualization/interactive-storytelling-data-as-narrative.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Mapping Epidemics Before Modern Medicine","slug":"mapping-epidemics-before-modern-medicine","url":"/categories/technology/data-visualization/mapping-epidemics-before-modern-medicine.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Mapping Extreme Weather Events Across Time","slug":"mapping-extreme-weather-events-across-time","url":"/categories/technology/data-visualization/mapping-extreme-weather-events-across-time.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Medieval Manuscripts: Graphs Hiding in Plain Sight","slug":"medieval-manuscripts-graphs-hiding-in-plain-sight","url":"/categories/technology/data-visualization/medieval-manuscripts-graphs-hiding-in-plain-sight.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Music and Charts: Visualizing Sound as Social Commentary","slug":"music-and-charts-visualizing-sound-as-social-commentary","url":"/categories/technology/data-visualization/music-and-charts-visualizing-sound-as-social-commentary.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Napoleon’s Charts: Data as a Weapon of War","slug":"napoleons-charts-data-as-a-weapon-of-war","url":"/categories/technology/data-visualization/napoleons-charts-data-as-a-weapon-of-war.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Network Graphs: Visualizing Connections You Didn’t Know Existed","slug":"network-graphs-visualizing-connections-you-didnt-know-existed","url":"/categories/technology/data-visualization/network-graphs-visualizing-connections-you-didnt-know-existed.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Origins of Heat Maps: From Weather to Insight","slug":"origins-of-heat-maps-from-weather-to-insight","url":"/categories/technology/data-visualization/origins-of-heat-maps-from-weather-to-insight.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Parallel Coordinates: Seeing Many Dimensions at Once","slug":"parallel-coordinates-seeing-many-dimensions-at-once","url":"/categories/technology/data-visualization/parallel-coordinates-seeing-many-dimensions-at-once.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Predictive Dashboards in Finance: Seeing the Future","slug":"predictive-dashboards-in-finance-seeing-the-future","url":"/categories/technology/data-visualization/predictive-dashboards-in-finance-seeing-the-future.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Real-Time COVID Dashboards: Visualization Saving Lives","slug":"real-time-covid-dashboards-visualization-saving-lives","url":"/categories/technology/data-visualization/real-time-covid-dashboards-visualization-saving-lives.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Rise of Statistical Atlases: Mapping the World in Data","slug":"rise-of-statistical-atlases-mapping-the-world-in-data","url":"/categories/technology/data-visualization/rise-of-statistical-atlases-mapping-the-world-in-data.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Sports Analytics Visualizations: Winning with Insight","slug":"sports-analytics-visualizations-winning-with-insight","url":"/categories/technology/data-visualization/sports-analytics-visualizations-winning-with-insight.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Sustainability Dashboards: Tracking Planetary Health","slug":"sustainability-dashboards-tracking-planetary-health","url":"/categories/technology/data-visualization/sustainability-dashboards-tracking-planetary-health.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Birth of Economic Dashboards","slug":"the-birth-of-economic-dashboards","url":"/categories/technology/data-visualization/the-birth-of-economic-dashboards.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Birth of Statistical Graphs in Newspapers","slug":"the-birth-of-statistical-graphs-in-newspapers","url":"/categories/technology/data-visualization/the-birth-of-statistical-graphs-in-newspapers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Counterintuitive Clarity of Jitter Plots","slug":"the-counterintuitive-clarity-of-jitter-plots","url":"/categories/technology/data-visualization/the-counterintuitive-clarity-of-jitter-plots.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First Infographic: Napoleon’s March in Color","slug":"the-first-infographic-napoleons-march-in-color","url":"/categories/technology/data-visualization/the-first-infographic-napoleons-march-in-color.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Forgotten “Graphoscope” of the 19th Century","slug":"the-forgotten-graphoscope-of-the-19th-century","url":"/categories/technology/data-visualization/the-forgotten-graphoscope-of-the-19th-century.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Infamous “Death by Data” Chart","slug":"the-infamous-death-by-data-chart","url":"/categories/technology/data-visualization/the-infamous-death-by-data-chart.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Influence of the 1930s Depression on Charts","slug":"the-influence-of-the-1930s-depression-on-charts","url":"/categories/technology/data-visualization/the-influence-of-the-1930s-depression-on-charts.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Magic of Multivariate Plots","slug":"the-magic-of-multivariate-plots","url":"/categories/technology/data-visualization/the-magic-of-multivariate-plots.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Map That Predicted Traffic Jams","slug":"the-map-that-predicted-traffic-jams","url":"/categories/technology/data-visualization/the-map-that-predicted-traffic-jams.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Pie Chart Paradox: Misleading by Design","slug":"the-pie-chart-paradox-misleading-by-design","url":"/categories/technology/data-visualization/the-pie-chart-paradox-misleading-by-design.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Tallest Data Tower: Visualizing Financial Transactions","slug":"the-tallest-data-tower-visualizing-financial-transactions","url":"/categories/technology/data-visualization/the-tallest-data-tower-visualizing-financial-transactions.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Telegraph Sparks Real-Time Charts","slug":"the-telegraph-sparks-real-time-charts","url":"/categories/technology/data-visualization/the-telegraph-sparks-real-time-charts.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Weird World of “Emotion Graphs”","slug":"the-weird-world-of-emotion-graphs","url":"/categories/technology/data-visualization/the-weird-world-of-emotion-graphs.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Tracking the Fastest Spread of a Virus Visually","slug":"tracking-the-fastest-spread-of-a-virus-visually","url":"/categories/technology/data-visualization/tracking-the-fastest-spread-of-a-virus-visually.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Visualizing the Invisible: Air Quality as Art","slug":"visualizing-the-invisible-air-quality-as-art","url":"/categories/technology/data-visualization/visualizing-the-invisible-air-quality-as-art.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Visualizing the Largest Genomic Datasets","slug":"visualizing-the-largest-genomic-datasets","url":"/categories/technology/data-visualization/visualizing-the-largest-genomic-datasets.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"World’s Largest Data Visualization: Tracking Billions of Flights","slug":"worlds-largest-data-visualization-tracking-billions-of-flights","url":"/categories/technology/data-visualization/worlds-largest-data-visualization-tracking-billions-of-flights.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

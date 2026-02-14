@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basilisk Lizards</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Basilisk Lizards</h1>
+  <p>Explore all facts in "Basilisk Lizards".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Basilisk Lizards</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Ancient Indigenous Knowledge of Basilisk Lizards","slug":"ancient-indigenous-knowledge-of-basilisk-lizards","url":"/categories/animals/basilisk-lizards/ancient-indigenous-knowledge-of-basilisk-lizards.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Adaptations Begin to Diversify (Start of Evolutionary Facts)","slug":"basilisk-adaptations-begin-to-diversify-start-of-evolutionary-facts","url":"/categories/animals/basilisk-lizards/basilisk-adaptations-begin-to-diversify-start-of-evolutionary-facts.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Behavior in Climate Change Studies","slug":"basilisk-behavior-in-climate-change-studies","url":"/categories/animals/basilisk-lizards/basilisk-behavior-in-climate-change-studies.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Crest Evolution: From Ornament to Survival Tool","slug":"basilisk-crest-evolution-from-ornament-to-survival-tool","url":"/categories/animals/basilisk-lizards/basilisk-crest-evolution-from-ornament-to-survival-tool.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Crests: Symbolism in Colonial Natural History","slug":"basilisk-crests-symbolism-in-colonial-natural-history","url":"/categories/animals/basilisk-lizards/basilisk-crests-symbolism-in-colonial-natural-history.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Diet: Opportunistic Omnivores with Surprising Preferences","slug":"basilisk-diet-opportunistic-omnivores-with-surprising-preferences","url":"/categories/animals/basilisk-lizards/basilisk-diet-opportunistic-omnivores-with-surprising-preferences.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Footprints in Mud: Clues to Ancient Water-Running Behavior","slug":"basilisk-footprints-in-mud-clues-to-ancient-water-running-behavior","url":"/categories/animals/basilisk-lizards/basilisk-footprints-in-mud-clues-to-ancient-water-running-behavior.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Fossil Ancestors Hint at Water-Running Legacy","slug":"basilisk-fossil-ancestors-hint-at-water-running-legacy","url":"/categories/animals/basilisk-lizards/basilisk-fossil-ancestors-hint-at-water-running-legacy.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Limb Muscle Coordination: Synchronized Power for Survival","slug":"basilisk-limb-muscle-coordination-synchronized-power-for-survival","url":"/categories/animals/basilisk-lizards/basilisk-limb-muscle-coordination-synchronized-power-for-survival.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Lizards Walk on Water? The Original Jesus Reptile?","slug":"basilisk-lizards-walk-on-water-the-original-jesus-reptile","url":"/categories/animals/basilisk-lizards/basilisk-lizards-walk-on-water-the-original-jesus-reptile.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Lizards’ Name Roots: Mythology Meets Reality","slug":"basilisk-lizards-name-roots-mythology-meets-reality","url":"/categories/animals/basilisk-lizards/basilisk-lizards-name-roots-mythology-meets-reality.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Lizards’ Toe Fringes: Nature’s Miniature Water Shoes","slug":"basilisk-lizards-toe-fringes-natures-miniature-water-shoes","url":"/categories/animals/basilisk-lizards/basilisk-lizards-toe-fringes-natures-miniature-water-shoes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Longevity in Captivity vs Wild","slug":"basilisk-longevity-in-captivity-vs-wild","url":"/categories/animals/basilisk-lizards/basilisk-longevity-in-captivity-vs-wild.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Lore in Indigenous Folklore","slug":"basilisk-lore-in-indigenous-folklore","url":"/categories/animals/basilisk-lizards/basilisk-lore-in-indigenous-folklore.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Microhabitat Specialization: Extreme Niche Adaptation","slug":"basilisk-microhabitat-specialization-extreme-niche-adaptation","url":"/categories/animals/basilisk-lizards/basilisk-microhabitat-specialization-extreme-niche-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Neural Reflexes: Lightning-Fast Instincts in Action","slug":"basilisk-neural-reflexes-lightning-fast-instincts-in-action","url":"/categories/animals/basilisk-lizards/basilisk-neural-reflexes-lightning-fast-instincts-in-action.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Predator Mimicry: Bluffing to Survive","slug":"basilisk-predator-mimicry-bluffing-to-survive","url":"/categories/animals/basilisk-lizards/basilisk-predator-mimicry-bluffing-to-survive.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Respiration During High-Speed Escapes","slug":"basilisk-respiration-during-high-speed-escapes","url":"/categories/animals/basilisk-lizards/basilisk-respiration-during-high-speed-escapes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Skin Microstructure: Friction Meets Function","slug":"basilisk-skin-microstructure-friction-meets-function","url":"/categories/animals/basilisk-lizards/basilisk-skin-microstructure-friction-meets-function.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Tail Autotomy: Survival Against All Odds","slug":"basilisk-tail-autotomy-survival-against-all-odds","url":"/categories/animals/basilisk-lizards/basilisk-tail-autotomy-survival-against-all-odds.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Tail: The Unsung Balancing Act","slug":"basilisk-tail-the-unsung-balancing-act","url":"/categories/animals/basilisk-lizards/basilisk-tail-the-unsung-balancing-act.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Vision: Predator Avoidance in High-Speed Detail","slug":"basilisk-vision-predator-avoidance-in-high-speed-detail","url":"/categories/animals/basilisk-lizards/basilisk-vision-predator-avoidance-in-high-speed-detail.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk Water-Running Myths in Modern Media","slug":"basilisk-water-running-myths-in-modern-media","url":"/categories/animals/basilisk-lizards/basilisk-water-running-myths-in-modern-media.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk-inspired Architecture and Ornamentation","slug":"basilisk-inspired-architecture-and-ornamentation","url":"/categories/animals/basilisk-lizards/basilisk-inspired-architecture-and-ornamentation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisk-Inspired Athletic Training Techniques","slug":"basilisk-inspired-athletic-training-techniques","url":"/categories/animals/basilisk-lizards/basilisk-inspired-athletic-training-techniques.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisks and Early Scientific Illustration: Accuracy vs Fantasy","slug":"basilisks-and-early-scientific-illustration-accuracy-vs-fantasy","url":"/categories/animals/basilisk-lizards/basilisks-and-early-scientific-illustration-accuracy-vs-fantasy.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Basilisks in Colonial Art: Exotic Symbols of Wonder","slug":"basilisks-in-colonial-art-exotic-symbols-of-wonder","url":"/categories/animals/basilisk-lizards/basilisks-in-colonial-art-exotic-symbols-of-wonder.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Colonial Misreports: Basilsiks in 17th Century Bestiaries","slug":"colonial-misreports-basilsiks-in-17th-century-bestiaries","url":"/categories/animals/basilisk-lizards/colonial-misreports-basilsiks-in-17th-century-bestiaries.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Counterintuitive Energy Conservation: Pausing Mid-Sprint","slug":"counterintuitive-energy-conservation-pausing-mid-sprint","url":"/categories/animals/basilisk-lizards/counterintuitive-energy-conservation-pausing-mid-sprint.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Counterintuitive Juvenile Strategy: Run First, Learn Later","slug":"counterintuitive-juvenile-strategy-run-first-learn-later","url":"/categories/animals/basilisk-lizards/counterintuitive-juvenile-strategy-run-first-learn-later.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Discovery of Juvenile Basilisk Behavior: Tiny Hydrodynamic Geniuses","slug":"discovery-of-juvenile-basilisk-behavior-tiny-hydrodynamic-geniuses","url":"/categories/animals/basilisk-lizards/discovery-of-juvenile-basilisk-behavior-tiny-hydrodynamic-geniuses.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Extreme Predation Escapes: Basilisk vs Snakes","slug":"extreme-predation-escapes-basilisk-vs-snakes","url":"/categories/animals/basilisk-lizards/extreme-predation-escapes-basilisk-vs-snakes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Extreme Sprint Records: Basilisk Lizard’s Olympic Feat","slug":"extreme-sprint-records-basilisk-lizards-olympic-feat","url":"/categories/animals/basilisk-lizards/extreme-sprint-records-basilisk-lizards-olympic-feat.html","color":"#ff5722","category":"animals","factCount":1},{"title":"First European Description of Basilisk Lizards: Myth Meets Science","slug":"first-european-description-of-basilisk-lizards-myth-meets-science","url":"/categories/animals/basilisk-lizards/first-european-description-of-basilisk-lizards-myth-meets-science.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Forgotten Basilisk Species: Lost to Science","slug":"forgotten-basilisk-species-lost-to-science","url":"/categories/animals/basilisk-lizards/forgotten-basilisk-species-lost-to-science.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Future Genetic Studies: Unlocking Basilisk Locomotion","slug":"future-genetic-studies-unlocking-basilisk-locomotion","url":"/categories/animals/basilisk-lizards/future-genetic-studies-unlocking-basilisk-locomotion.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Green vs Brown Basilisks: Camouflage by Color Adaptation","slug":"green-vs-brown-basilisks-camouflage-by-color-adaptation","url":"/categories/animals/basilisk-lizards/green-vs-brown-basilisks-camouflage-by-color-adaptation.html","color":"#ff5722","category":"animals","factCount":1},{"title":"High Jumping Basilisks: Not Just Water Specialists","slug":"high-jumping-basilisks-not-just-water-specialists","url":"/categories/animals/basilisk-lizards/high-jumping-basilisks-not-just-water-specialists.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Hydraulic Principles in Basilisk Foot Strikes","slug":"hydraulic-principles-in-basilisk-foot-strikes","url":"/categories/animals/basilisk-lizards/hydraulic-principles-in-basilisk-foot-strikes.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Hydrodynamics of Basilisk Locomotion: The Physics Behind the Run","slug":"hydrodynamics-of-basilisk-locomotion-the-physics-behind-the-run","url":"/categories/animals/basilisk-lizards/hydrodynamics-of-basilisk-locomotion-the-physics-behind-the-run.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Limb Proportions Dictate Basilisk Speed on Water","slug":"limb-proportions-dictate-basilisk-speed-on-water","url":"/categories/animals/basilisk-lizards/limb-proportions-dictate-basilisk-speed-on-water.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Longest Water Sprint: The Basilisk’s Record-Breaking Feat","slug":"longest-water-sprint-the-basilisks-record-breaking-feat","url":"/categories/animals/basilisk-lizards/longest-water-sprint-the-basilisks-record-breaking-feat.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Modern Biomimetic Robotics Inspired by Basilisks","slug":"modern-biomimetic-robotics-inspired-by-basilisks","url":"/categories/animals/basilisk-lizards/modern-biomimetic-robotics-inspired-by-basilisks.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Nocturnal Activity in Basilisks: When Legends Sleep","slug":"nocturnal-activity-in-basilisks-when-legends-sleep","url":"/categories/animals/basilisk-lizards/nocturnal-activity-in-basilisks-when-legends-sleep.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Political Symbolism of Basilisks in Indigenous Diplomacy","slug":"political-symbolism-of-basilisks-in-indigenous-diplomacy","url":"/categories/animals/basilisk-lizards/political-symbolism-of-basilisks-in-indigenous-diplomacy.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Rare Albino Basilisk Sightings: Nature’s Ghosts","slug":"rare-albino-basilisk-sightings-natures-ghosts","url":"/categories/animals/basilisk-lizards/rare-albino-basilisk-sightings-natures-ghosts.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Rare Aquatic Hunting Behavior in Basilisks","slug":"rare-aquatic-hunting-behavior-in-basilisks","url":"/categories/animals/basilisk-lizards/rare-aquatic-hunting-behavior-in-basilisks.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Record-Breaking Tail Flicks: Stability in Action","slug":"record-breaking-tail-flicks-stability-in-action","url":"/categories/animals/basilisk-lizards/record-breaking-tail-flicks-stability-in-action.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Unusual Social Interactions: Basilisk Group Dynamics","slug":"unusual-social-interactions-basilisk-group-dynamics","url":"/categories/animals/basilisk-lizards/unusual-social-interactions-basilisk-group-dynamics.html","color":"#ff5722","category":"animals","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

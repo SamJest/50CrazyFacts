@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victorian Domestic Life</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Victorian Domestic Life</h1>
+  <p>Explore all facts in "Victorian Domestic Life".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Domestic Life</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Counterintuitive Victorian Domestic Technology","slug":"counterintuitive-victorian-domestic-technology","url":"/categories/the-victorians/victorian-domestic-life/counterintuitive-victorian-domestic-technology.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Early Victorian Child Chores as Education","slug":"early-victorian-child-chores-as-education","url":"/categories/the-victorians/victorian-domestic-life/early-victorian-child-chores-as-education.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Early Victorian House Libraries","slug":"early-victorian-house-libraries","url":"/categories/the-victorians/victorian-domestic-life/early-victorian-house-libraries.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Evolution of Servant Registers and Hierarchy","slug":"evolution-of-servant-registers-and-hierarchy","url":"/categories/the-victorians/victorian-domestic-life/evolution-of-servant-registers-and-hierarchy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Evolution of Victorian Dining Rituals","slug":"evolution-of-victorian-dining-rituals","url":"/categories/the-victorians/victorian-domestic-life/evolution-of-victorian-dining-rituals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Extraordinary Bathing Rituals","slug":"extraordinary-bathing-rituals","url":"/categories/the-victorians/victorian-domestic-life/extraordinary-bathing-rituals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Extreme Household Lighting Systems","slug":"extreme-household-lighting-systems","url":"/categories/the-victorians/victorian-domestic-life/extreme-household-lighting-systems.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Extreme Servant Registers","slug":"extreme-servant-registers","url":"/categories/the-victorians/victorian-domestic-life/extreme-servant-registers.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"From Hearth to Kitchen Innovation","slug":"from-hearth-to-kitchen-innovation","url":"/categories/the-victorians/victorian-domestic-life/from-hearth-to-kitchen-innovation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hidden Passageways for Household Management","slug":"hidden-passageways-for-household-management","url":"/categories/the-victorians/victorian-domestic-life/hidden-passageways-for-household-management.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Introduction of Domestic Ice Boxes","slug":"introduction-of-domestic-ice-boxes","url":"/categories/the-victorians/victorian-domestic-life/introduction-of-domestic-ice-boxes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Obscure Victorian Pet Rooms","slug":"obscure-victorian-pet-rooms","url":"/categories/the-victorians/victorian-domestic-life/obscure-victorian-pet-rooms.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Obscure Victorian Toilet Practices","slug":"obscure-victorian-toilet-practices","url":"/categories/the-victorians/victorian-domestic-life/obscure-victorian-toilet-practices.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Parlours Shape Middle-Class Morality","slug":"parlours-shape-middle-class-morality","url":"/categories/the-victorians/victorian-domestic-life/parlours-shape-middle-class-morality.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Record-Breaking Servant Houses","slug":"record-breaking-servant-houses","url":"/categories/the-victorians/victorian-domestic-life/record-breaking-servant-houses.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Record-Setting Victorian Kitchens","slug":"record-setting-victorian-kitchens","url":"/categories/the-victorians/victorian-domestic-life/record-setting-victorian-kitchens.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Servants’ Invisible Labor in Early Homes","slug":"servants-invisible-labor-in-early-homes","url":"/categories/the-victorians/victorian-domestic-life/servants-invisible-labor-in-early-homes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Servants’ Roles Expand and Stratify","slug":"servants-roles-expand-and-stratify","url":"/categories/the-victorians/victorian-domestic-life/servants-roles-expand-and-stratify.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Servants’ Social Power Within Homes","slug":"servants-social-power-within-homes","url":"/categories/the-victorians/victorian-domestic-life/servants-social-power-within-homes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Birth of Domestic Servant Registers","slug":"the-birth-of-domestic-servant-registers","url":"/categories/the-victorians/victorian-domestic-life/the-birth-of-domestic-servant-registers.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Birth of the Victorian Parlour","slug":"the-birth-of-the-victorian-parlour","url":"/categories/the-victorians/victorian-domestic-life/the-birth-of-the-victorian-parlour.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The First Victorian Bathrooms","slug":"the-first-victorian-bathrooms","url":"/categories/the-victorians/victorian-domestic-life/the-first-victorian-bathrooms.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The First Victorian Kitchen Revolution","slug":"the-first-victorian-kitchen-revolution","url":"/categories/the-victorians/victorian-domestic-life/the-first-victorian-kitchen-revolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Largest Victorian Household Libraries","slug":"the-largest-victorian-household-libraries","url":"/categories/the-victorians/victorian-domestic-life/the-largest-victorian-household-libraries.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Domestic Education Rooms","slug":"the-rise-of-domestic-education-rooms","url":"/categories/the-victorians/victorian-domestic-life/the-rise-of-domestic-education-rooms.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Middle-Class Morning Rituals","slug":"the-rise-of-middle-class-morning-rituals","url":"/categories/the-victorians/victorian-domestic-life/the-rise-of-middle-class-morning-rituals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Science Behind Victorian Kitchens","slug":"the-science-behind-victorian-kitchens","url":"/categories/the-victorians/victorian-domestic-life/the-science-behind-victorian-kitchens.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Bathroom Standards Rise","slug":"victorian-bathroom-standards-rise","url":"/categories/the-victorians/victorian-domestic-life/victorian-bathroom-standards-rise.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Bathrooms as Moral Signals","slug":"victorian-bathrooms-as-moral-signals","url":"/categories/the-victorians/victorian-domestic-life/victorian-bathrooms-as-moral-signals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Chore Systems: Precision at Home","slug":"victorian-chore-systems-precision-at-home","url":"/categories/the-victorians/victorian-domestic-life/victorian-chore-systems-precision-at-home.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Domestic Gardens Become Status Symbols","slug":"victorian-domestic-gardens-become-status-symbols","url":"/categories/the-victorians/victorian-domestic-life/victorian-domestic-gardens-become-status-symbols.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Domestic Life Inspires Modern Home Automation","slug":"victorian-domestic-life-inspires-modern-home-automation","url":"/categories/the-victorians/victorian-domestic-life/victorian-domestic-life-inspires-modern-home-automation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Gardens as Extreme Displays","slug":"victorian-gardens-as-extreme-displays","url":"/categories/the-victorians/victorian-domestic-life/victorian-gardens-as-extreme-displays.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Gardens Foreshadow Modern Landscape Design","slug":"victorian-gardens-foreshadow-modern-landscape-design","url":"/categories/the-victorians/victorian-domestic-life/victorian-gardens-foreshadow-modern-landscape-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Gas and Candle Systems Inform Smart Lighting","slug":"victorian-gas-and-candle-systems-inform-smart-lighting","url":"/categories/the-victorians/victorian-domestic-life/victorian-gas-and-candle-systems-inform-smart-lighting.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Household Registers Inspire Modern HR Systems","slug":"victorian-household-registers-inspire-modern-hr-systems","url":"/categories/the-victorians/victorian-domestic-life/victorian-household-registers-inspire-modern-hr-systems.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Hygiene Rituals Shape Modern Health Standards","slug":"victorian-hygiene-rituals-shape-modern-health-standards","url":"/categories/the-victorians/victorian-domestic-life/victorian-hygiene-rituals-shape-modern-health-standards.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Ice Use in Homes","slug":"victorian-ice-use-in-homes","url":"/categories/the-victorians/victorian-domestic-life/victorian-ice-use-in-homes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Kitchens Foreshadow Modern Culinary Science","slug":"victorian-kitchens-foreshadow-modern-culinary-science","url":"/categories/the-victorians/victorian-domestic-life/victorian-kitchens-foreshadow-modern-culinary-science.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Kitchens Influence Diet and Society","slug":"victorian-kitchens-influence-diet-and-society","url":"/categories/the-victorians/victorian-domestic-life/victorian-kitchens-influence-diet-and-society.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Lighting Innovations","slug":"victorian-lighting-innovations","url":"/categories/the-victorians/victorian-domestic-life/victorian-lighting-innovations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Lighting Moves Indoors","slug":"victorian-lighting-moves-indoors","url":"/categories/the-victorians/victorian-domestic-life/victorian-lighting-moves-indoors.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Lighting Shapes Leisure and Learning","slug":"victorian-lighting-shapes-leisure-and-learning","url":"/categories/the-victorians/victorian-domestic-life/victorian-lighting-shapes-leisure-and-learning.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Nap Rooms for Servants","slug":"victorian-nap-rooms-for-servants","url":"/categories/the-victorians/victorian-domestic-life/victorian-nap-rooms-for-servants.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Parlours Evolve into Social Showcases","slug":"victorian-parlours-evolve-into-social-showcases","url":"/categories/the-victorians/victorian-domestic-life/victorian-parlours-evolve-into-social-showcases.html","color":"#f44336","category":"the-victorians","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

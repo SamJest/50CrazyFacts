@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victorian Architecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Victorian Architecture</h1>
+  <p>Explore all facts in "Victorian Architecture".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Architecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Adaptive Reuse of Victorian Factories","slug":"adaptive-reuse-of-victorian-factories","url":"/categories/the-victorians/victorian-architecture/adaptive-reuse-of-victorian-factories.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Architecture as Moral Lesson","slug":"architecture-as-moral-lesson","url":"/categories/the-victorians/victorian-architecture/architecture-as-moral-lesson.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Corrugated Iron Curiosities","slug":"corrugated-iron-curiosities","url":"/categories/the-victorians/victorian-architecture/corrugated-iron-curiosities.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Digital Modeling of Victorian Masterpieces","slug":"digital-modeling-of-victorian-masterpieces","url":"/categories/the-victorians/victorian-architecture/digital-modeling-of-victorian-masterpieces.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Early Victorian Urban Planning","slug":"early-victorian-urban-planning","url":"/categories/the-victorians/victorian-architecture/early-victorian-urban-planning.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Gothic Load-Bearing Secrets","slug":"gothic-load-bearing-secrets","url":"/categories/the-victorians/victorian-architecture/gothic-load-bearing-secrets.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Gothic Revival Origins in Victorian Homes","slug":"gothic-revival-origins-in-victorian-homes","url":"/categories/the-victorians/victorian-architecture/gothic-revival-origins-in-victorian-homes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Grand Terrace Evolution","slug":"grand-terrace-evolution","url":"/categories/the-victorians/victorian-architecture/grand-terrace-evolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Haunted Architectural Features","slug":"haunted-architectural-features","url":"/categories/the-victorians/victorian-architecture/haunted-architectural-features.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hidden Heating Systems","slug":"hidden-heating-systems","url":"/categories/the-victorians/victorian-architecture/hidden-heating-systems.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Industrial Ambition on Display","slug":"industrial-ambition-on-display","url":"/categories/the-victorians/victorian-architecture/industrial-ambition-on-display.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Industrial Materials in Domestic Evolution","slug":"industrial-materials-in-domestic-evolution","url":"/categories/the-victorians/victorian-architecture/industrial-materials-in-domestic-evolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Industrial Urban Palaces","slug":"industrial-urban-palaces","url":"/categories/the-victorians/victorian-architecture/industrial-urban-palaces.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Iron Frame Engineering","slug":"iron-frame-engineering","url":"/categories/the-victorians/victorian-architecture/iron-frame-engineering.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Italianate Excess in Britain","slug":"italianate-excess-in-britain","url":"/categories/the-victorians/victorian-architecture/italianate-excess-in-britain.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Largest Glass Façade","slug":"largest-glass-faade","url":"/categories/the-victorians/victorian-architecture/largest-glass-faade.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Elaborate Ironwork Staircases","slug":"most-elaborate-ironwork-staircases","url":"/categories/the-victorians/victorian-architecture/most-elaborate-ironwork-staircases.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Ornate Terracotta Facade","slug":"most-ornate-terracotta-facade","url":"/categories/the-victorians/victorian-architecture/most-ornate-terracotta-facade.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Unusual Victorian Dome","slug":"most-unusual-victorian-dome","url":"/categories/the-victorians/victorian-architecture/most-unusual-victorian-dome.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Painted Brick Illusions","slug":"painted-brick-illusions","url":"/categories/the-victorians/victorian-architecture/painted-brick-illusions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Philanthropy in Design","slug":"philanthropy-in-design","url":"/categories/the-victorians/victorian-architecture/philanthropy-in-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Political Pride in Stone","slug":"political-pride-in-stone","url":"/categories/the-victorians/victorian-architecture/political-pride-in-stone.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Polychrome Brick Fascination","slug":"polychrome-brick-fascination","url":"/categories/the-victorians/victorian-architecture/polychrome-brick-fascination.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Polychrome Pavement Madness","slug":"polychrome-pavement-madness","url":"/categories/the-victorians/victorian-architecture/polychrome-pavement-madness.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Queen Victoria’s Personal Influence","slug":"queen-victorias-personal-influence","url":"/categories/the-victorians/victorian-architecture/queen-victorias-personal-influence.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Record-Setting Clock Towers","slug":"record-setting-clock-towers","url":"/categories/the-victorians/victorian-architecture/record-setting-clock-towers.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Roof Truss Innovations","slug":"roof-truss-innovations","url":"/categories/the-victorians/victorian-architecture/roof-truss-innovations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Secret Rooftop Gardens","slug":"secret-rooftop-gardens","url":"/categories/the-victorians/victorian-architecture/secret-rooftop-gardens.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Secret Servants’ Passages","slug":"secret-servants-passages","url":"/categories/the-victorians/victorian-architecture/secret-servants-passages.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Social Status in Brick and Iron","slug":"social-status-in-brick-and-iron","url":"/categories/the-victorians/victorian-architecture/social-status-in-brick-and-iron.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Stick Style Origins","slug":"stick-style-origins","url":"/categories/the-victorians/victorian-architecture/stick-style-origins.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tallest Victorian Spire","slug":"tallest-victorian-spire","url":"/categories/the-victorians/victorian-architecture/tallest-victorian-spire.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Terrace Ventilation Mechanics","slug":"terrace-ventilation-mechanics","url":"/categories/the-victorians/victorian-architecture/terrace-ventilation-mechanics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Terracotta Weight Trick","slug":"terracotta-weight-trick","url":"/categories/the-victorians/victorian-architecture/terracotta-weight-trick.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Crystal Palace Shock","slug":"the-crystal-palace-shock","url":"/categories/the-victorians/victorian-architecture/the-crystal-palace-shock.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Queen Anne Misnomer","slug":"the-queen-anne-misnomer","url":"/categories/the-victorians/victorian-architecture/the-queen-anne-misnomer.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Queen Anne Suburban Villas","slug":"the-rise-of-queen-anne-suburban-villas","url":"/categories/the-victorians/victorian-architecture/the-rise-of-queen-anne-suburban-villas.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Terracotta Revolution","slug":"the-terracotta-revolution","url":"/categories/the-victorians/victorian-architecture/the-terracotta-revolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Towering Townhouse Transformation","slug":"the-towering-townhouse-transformation","url":"/categories/the-victorians/victorian-architecture/the-towering-townhouse-transformation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Upside-Down Gargoyles","slug":"upside-down-gargoyles","url":"/categories/the-victorians/victorian-architecture/upside-down-gargoyles.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Urban Gothic Adaptation","slug":"urban-gothic-adaptation","url":"/categories/the-victorians/victorian-architecture/urban-gothic-adaptation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Urban Identity Through Façade","slug":"urban-identity-through-faade","url":"/categories/the-victorians/victorian-architecture/urban-identity-through-faade.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Architecture Inspires Modern Green Design","slug":"victorian-architecture-inspires-modern-green-design","url":"/categories/the-victorians/victorian-architecture/victorian-architecture-inspires-modern-green-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Church Adaptations","slug":"victorian-church-adaptations","url":"/categories/the-victorians/victorian-architecture/victorian-church-adaptations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Design Principles Guide Future Construction","slug":"victorian-design-principles-guide-future-construction","url":"/categories/the-victorians/victorian-architecture/victorian-design-principles-guide-future-construction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Façade Techniques in Modern Marketing","slug":"victorian-faade-techniques-in-modern-marketing","url":"/categories/the-victorians/victorian-architecture/victorian-faade-techniques-in-modern-marketing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Ironwork Craze","slug":"victorian-ironwork-craze","url":"/categories/the-victorians/victorian-architecture/victorian-ironwork-craze.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Ironwork in Contemporary Architecture","slug":"victorian-ironwork-in-contemporary-architecture","url":"/categories/the-victorians/victorian-architecture/victorian-ironwork-in-contemporary-architecture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Schoolhouse Evolution","slug":"victorian-schoolhouse-evolution","url":"/categories/the-victorians/victorian-architecture/victorian-schoolhouse-evolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Streets Shape Modern Urban Planning","slug":"victorian-streets-shape-modern-urban-planning","url":"/categories/the-victorians/victorian-architecture/victorian-streets-shape-modern-urban-planning.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Widest Victorian Bridge","slug":"widest-victorian-bridge","url":"/categories/the-victorians/victorian-architecture/widest-victorian-bridge.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Window Glass Engineering","slug":"window-glass-engineering","url":"/categories/the-victorians/victorian-architecture/window-glass-engineering.html","color":"#f44336","category":"the-victorians","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

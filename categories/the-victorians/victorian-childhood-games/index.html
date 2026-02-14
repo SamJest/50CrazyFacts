@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,37 +66,95 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Victorian Childhood Games</h1>
   <p>Explore all facts in "Victorian Childhood Games".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Childhood Games</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +162,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"Blind Man’s Buff Taught Awareness and Tact","slug":"blind-mans-buff-taught-awareness-and-tact","url":"/categories/the-victorians/victorian-childhood-games/blind-mans-buff-taught-awareness-and-tact.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Blind Man’s Catch Turned Tag Into a Sensory Challenge","slug":"blind-mans-catch-turned-tag-into-a-sensory-challenge","url":"/categories/the-victorians/victorian-childhood-games/blind-mans-catch-turned-tag-into-a-sensory-challenge.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Blindfold Ball Toss Built Teamwork and Reflexes","slug":"blindfold-ball-toss-built-teamwork-and-reflexes","url":"/categories/the-victorians/victorian-childhood-games/blindfold-ball-toss-built-teamwork-and-reflexes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Blindfold Mazes Taught Spatial Awareness and Trust","slug":"blindfold-mazes-taught-spatial-awareness-and-trust","url":"/categories/the-victorians/victorian-childhood-games/blindfold-mazes-taught-spatial-awareness-and-trust.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Blindfolded Tag Taught Trust and Reflexes","slug":"blindfolded-tag-taught-trust-and-reflexes","url":"/categories/the-victorians/victorian-childhood-games/blindfolded-tag-taught-trust-and-reflexes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Button Football Combined Creativity and Competition","slug":"button-football-combined-creativity-and-competition","url":"/categories/the-victorians/victorian-childhood-games/button-football-combined-creativity-and-competition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Button Hole Toss Games Developed Precision and Competition","slug":"button-hole-toss-games-developed-precision-and-competition","url":"/categories/the-victorians/victorian-childhood-games/button-hole-toss-games-developed-precision-and-competition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Button, Button, Who’s Got the Button? Developed Memory and Sleuthing","slug":"button-button-whos-got-the-button-developed-memory-and-sleuthing","url":"/categories/the-victorians/victorian-childhood-games/button-button-whos-got-the-button-developed-memory-and-sleuthing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cardboard Boats and Water Races Fostered Engineering and Competition","slug":"cardboard-boats-and-water-races-fostered-engineering-and-competition","url":"/categories/the-victorians/victorian-childhood-games/cardboard-boats-and-water-races-fostered-engineering-and-competition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cat’s Cradle Story Chains Enhanced Memory and Creativity","slug":"cats-cradle-story-chains-enhanced-memory-and-creativity","url":"/categories/the-victorians/victorian-childhood-games/cats-cradle-story-chains-enhanced-memory-and-creativity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cat’s Cradle Taught Coordination and Storytelling","slug":"cats-cradle-taught-coordination-and-storytelling","url":"/categories/the-victorians/victorian-childhood-games/cats-cradle-taught-coordination-and-storytelling.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cup-and-Ball Challenges Enhanced Dexterity and Timing","slug":"cup-and-ball-challenges-enhanced-dexterity-and-timing","url":"/categories/the-victorians/victorian-childhood-games/cup-and-ball-challenges-enhanced-dexterity-and-timing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cup-and-Ball Games Built Dexterity and Concentration","slug":"cup-and-ball-games-built-dexterity-and-concentration","url":"/categories/the-victorians/victorian-childhood-games/cup-and-ball-games-built-dexterity-and-concentration.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hoop and Stick Racing Turned Streets Into Playgrounds","slug":"hoop-and-stick-racing-turned-streets-into-playgrounds","url":"/categories/the-victorians/victorian-childhood-games/hoop-and-stick-racing-turned-streets-into-playgrounds.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hoop Rolling Required Coordination and Racing Skill","slug":"hoop-rolling-required-coordination-and-racing-skill","url":"/categories/the-victorians/victorian-childhood-games/hoop-rolling-required-coordination-and-racing-skill.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hopscotch Art Turned Sidewalks Into Canvases","slug":"hopscotch-art-turned-sidewalks-into-canvases","url":"/categories/the-victorians/victorian-childhood-games/hopscotch-art-turned-sidewalks-into-canvases.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hopscotch Variations Taught Numbers, Balance, and Creativity","slug":"hopscotch-variations-taught-numbers-balance-and-creativity","url":"/categories/the-victorians/victorian-childhood-games/hopscotch-variations-taught-numbers-balance-and-creativity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hopscotch Was a Serious Competition in Victorian Schools","slug":"hopscotch-was-a-serious-competition-in-victorian-schools","url":"/categories/the-victorians/victorian-childhood-games/hopscotch-was-a-serious-competition-in-victorian-schools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hula Hoop Variations Enhanced Rhythm, Strength, and Competition","slug":"hula-hoop-variations-enhanced-rhythm-strength-and-competition","url":"/categories/the-victorians/victorian-childhood-games/hula-hoop-variations-enhanced-rhythm-strength-and-competition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Jack-in-the-Pulpit Games Fostered Alertness and Reflexes","slug":"jack-in-the-pulpit-games-fostered-alertness-and-reflexes","url":"/categories/the-victorians/victorian-childhood-games/jack-in-the-pulpit-games-fostered-alertness-and-reflexes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Jackstraws (Pick-Up Sticks) Honed Dexterity and Patience","slug":"jackstraws-pick-up-sticks-honed-dexterity-and-patience","url":"/categories/the-victorians/victorian-childhood-games/jackstraws-pick-up-sticks-honed-dexterity-and-patience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kick the Can Blended Exercise and Strategy","slug":"kick-the-can-blended-exercise-and-strategy","url":"/categories/the-victorians/victorian-childhood-games/kick-the-can-blended-exercise-and-strategy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marble Alley Tournaments Encouraged Strategy and Social Play","slug":"marble-alley-tournaments-encouraged-strategy-and-social-play","url":"/categories/the-victorians/victorian-childhood-games/marble-alley-tournaments-encouraged-strategy-and-social-play.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marble Runs Encouraged Engineering and Physics Understanding","slug":"marble-runs-encouraged-engineering-and-physics-understanding","url":"/categories/the-victorians/victorian-childhood-games/marble-runs-encouraged-engineering-and-physics-understanding.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marble Towers Fostered Engineering and Patience","slug":"marble-towers-fostered-engineering-and-patience","url":"/categories/the-victorians/victorian-childhood-games/marble-towers-fostered-engineering-and-patience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marbles and Alley Strategy Were Essential Skills","slug":"marbles-and-alley-strategy-were-essential-skills","url":"/categories/the-victorians/victorian-childhood-games/marbles-and-alley-strategy-were-essential-skills.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Nine Men’s Morris Introduced Strategic Thinking","slug":"nine-mens-morris-introduced-strategic-thinking","url":"/categories/the-victorians/victorian-childhood-games/nine-mens-morris-introduced-strategic-thinking.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Paper Boats and Water Races Sparked Urban Creativity","slug":"paper-boats-and-water-races-sparked-urban-creativity","url":"/categories/the-victorians/victorian-childhood-games/paper-boats-and-water-races-sparked-urban-creativity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Paper Dolls Taught Creativity and Social Role-Playing","slug":"paper-dolls-taught-creativity-and-social-role-playing","url":"/categories/the-victorians/victorian-childhood-games/paper-dolls-taught-creativity-and-social-role-playing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Paper Kites Were Racing Tools and Status Symbols","slug":"paper-kites-were-racing-tools-and-status-symbols","url":"/categories/the-victorians/victorian-childhood-games/paper-kites-were-racing-tools-and-status-symbols.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Parlour Board Games Introduced Strategy and Social Interaction","slug":"parlour-board-games-introduced-strategy-and-social-interaction","url":"/categories/the-victorians/victorian-childhood-games/parlour-board-games-introduced-strategy-and-social-interaction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Parlour Charades Encouraged Imagination and Acting","slug":"parlour-charades-encouraged-imagination-and-acting","url":"/categories/the-victorians/victorian-childhood-games/parlour-charades-encouraged-imagination-and-acting.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Parlour Hide-and-Seek Developed Strategy and Spatial Awareness","slug":"parlour-hide-and-seek-developed-strategy-and-spatial-awareness","url":"/categories/the-victorians/victorian-childhood-games/parlour-hide-and-seek-developed-strategy-and-spatial-awareness.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Penny-in-the-Hole Games Taught Precision and Patience","slug":"penny-in-the-hole-games-taught-precision-and-patience","url":"/categories/the-victorians/victorian-childhood-games/penny-in-the-hole-games-taught-precision-and-patience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Puppet Shows Developed Storytelling and Crafting Skills","slug":"puppet-shows-developed-storytelling-and-crafting-skills","url":"/categories/the-victorians/victorian-childhood-games/puppet-shows-developed-storytelling-and-crafting-skills.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Quoits on Doorsteps Blended Social Interaction and Accuracy","slug":"quoits-on-doorsteps-blended-social-interaction-and-accuracy","url":"/categories/the-victorians/victorian-childhood-games/quoits-on-doorsteps-blended-social-interaction-and-accuracy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Quoits Prepared Children for Precision and Team Strategy","slug":"quoits-prepared-children-for-precision-and-team-strategy","url":"/categories/the-victorians/victorian-childhood-games/quoits-prepared-children-for-precision-and-team-strategy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Rock Balancing and Pile Games Improved Focus and Patience","slug":"rock-balancing-and-pile-games-improved-focus-and-patience","url":"/categories/the-victorians/victorian-childhood-games/rock-balancing-and-pile-games-improved-focus-and-patience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skipping Rhymes Turned Exercise Into Storytelling","slug":"skipping-rhymes-turned-exercise-into-storytelling","url":"/categories/the-victorians/victorian-childhood-games/skipping-rhymes-turned-exercise-into-storytelling.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skipping Rope Choirs Combined Music and Physical Skill","slug":"skipping-rope-choirs-combined-music-and-physical-skill","url":"/categories/the-victorians/victorian-childhood-games/skipping-rope-choirs-combined-music-and-physical-skill.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skipping Rope Developed Strength and Rhythm","slug":"skipping-rope-developed-strength-and-rhythm","url":"/categories/the-victorians/victorian-childhood-games/skipping-rope-developed-strength-and-rhythm.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skittles (Early Bowling) Developed Precision and Competition","slug":"skittles-early-bowling-developed-precision-and-competition","url":"/categories/the-victorians/victorian-childhood-games/skittles-early-bowling-developed-precision-and-competition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Stick Fighting Was a Training Ground for Coordination and Strategy","slug":"stick-fighting-was-a-training-ground-for-coordination-and-strategy","url":"/categories/the-victorians/victorian-childhood-games/stick-fighting-was-a-training-ground-for-coordination-and-strategy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Stilt Walking Built Balance and Showmanship","slug":"stilt-walking-built-balance-and-showmanship","url":"/categories/the-victorians/victorian-childhood-games/stilt-walking-built-balance-and-showmanship.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Stone Maze Challenges Trained Observation and Patience","slug":"stone-maze-challenges-trained-observation-and-patience","url":"/categories/the-victorians/victorian-childhood-games/stone-maze-challenges-trained-observation-and-patience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Stone Skimming Competitions Encouraged Physics Understanding and Play","slug":"stone-skimming-competitions-encouraged-physics-understanding-and-play","url":"/categories/the-victorians/victorian-childhood-games/stone-skimming-competitions-encouraged-physics-understanding-and-play.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Stone Skipping Over Streams Developed Aim and Playful Competition","slug":"stone-skipping-over-streams-developed-aim-and-playful-competition","url":"/categories/the-victorians/victorian-childhood-games/stone-skipping-over-streams-developed-aim-and-playful-competition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"String Figure Competitions Blended Dexterity and Storytelling","slug":"string-figure-competitions-blended-dexterity-and-storytelling","url":"/categories/the-victorians/victorian-childhood-games/string-figure-competitions-blended-dexterity-and-storytelling.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Secret World of Victorian Hide-and-Seek","slug":"the-secret-world-of-victorian-hide-and-seek","url":"/categories/the-victorians/victorian-childhood-games/the-secret-world-of-victorian-hide-and-seek.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Top-Spinning Challenges Built Strength and Coordination","slug":"top-spinning-challenges-built-strength-and-coordination","url":"/categories/the-victorians/victorian-childhood-games/top-spinning-challenges-built-strength-and-coordination.html","color":"#f44336","category":"the-victorians","factCount":1}];
+const ITEMS = [{"title":"Animal Roleplay Games","slug":"animal-roleplay-games","url":"/categories/the-victorians/victorian-childhood-games/animal-roleplay-games.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Blind Man’s Bluff: Sensory Training and Spatial Logic","slug":"blind-mans-bluff-sensory-training-and-spatial-logic","url":"/categories/the-victorians/victorian-childhood-games/blind-mans-bluff-sensory-training-and-spatial-logic.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Blind Man’s Bluff: Victorian Origins of a Timeless Chase","slug":"blind-mans-bluff-victorian-origins-of-a-timeless-chase","url":"/categories/the-victorians/victorian-childhood-games/blind-mans-bluff-victorian-origins-of-a-timeless-chase.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cat’s Cradle Shapes STEM Learning Tools","slug":"cats-cradle-shapes-stem-learning-tools","url":"/categories/the-victorians/victorian-childhood-games/cats-cradle-shapes-stem-learning-tools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Cat’s Cradle: Strings That Taught Dexterity and Patience","slug":"cats-cradle-strings-that-taught-dexterity-and-patience","url":"/categories/the-victorians/victorian-childhood-games/cats-cradle-strings-that-taught-dexterity-and-patience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Dangerous Play: Glass Marbles and Public Risk","slug":"dangerous-play-glass-marbles-and-public-risk","url":"/categories/the-victorians/victorian-childhood-games/dangerous-play-glass-marbles-and-public-risk.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Extreme Fashion in Paper Doll Play","slug":"extreme-fashion-in-paper-doll-play","url":"/categories/the-victorians/victorian-childhood-games/extreme-fashion-in-paper-doll-play.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"From Parlor to Playground: Evolving Hide-and-Seek","slug":"from-parlor-to-playground-evolving-hide-and-seek","url":"/categories/the-victorians/victorian-childhood-games/from-parlor-to-playground-evolving-hide-and-seek.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Games and Gender Roles","slug":"games-and-gender-roles","url":"/categories/the-victorians/victorian-childhood-games/games-and-gender-roles.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Games That Taught Taxation (Seriously)","slug":"games-that-taught-taxation-seriously","url":"/categories/the-victorians/victorian-childhood-games/games-that-taught-taxation-seriously.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Ghostly Parlor Games and Spiritual Play","slug":"ghostly-parlor-games-and-spiritual-play","url":"/categories/the-victorians/victorian-childhood-games/ghostly-parlor-games-and-spiritual-play.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hoops and Sticks: Control, Speed, and Precision","slug":"hoops-and-sticks-control-speed-and-precision","url":"/categories/the-victorians/victorian-childhood-games/hoops-and-sticks-control-speed-and-precision.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hoops and Sticks: Miniature Sports for Miniature Players","slug":"hoops-and-sticks-miniature-sports-for-miniature-players","url":"/categories/the-victorians/victorian-childhood-games/hoops-and-sticks-miniature-sports-for-miniature-players.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hopscotch Began as an Exercise and a Drill","slug":"hopscotch-began-as-an-exercise-and-a-drill","url":"/categories/the-victorians/victorian-childhood-games/hopscotch-began-as-an-exercise-and-a-drill.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hopscotch Turns Mathematical","slug":"hopscotch-turns-mathematical","url":"/categories/the-victorians/victorian-childhood-games/hopscotch-turns-mathematical.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Influence on Adult Leisure Patterns","slug":"influence-on-adult-leisure-patterns","url":"/categories/the-victorians/victorian-childhood-games/influence-on-adult-leisure-patterns.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kite Altitude Records Over the Thames","slug":"kite-altitude-records-over-the-thames","url":"/categories/the-victorians/victorian-childhood-games/kite-altitude-records-over-the-thames.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kite Design Innovates with Victorian Engineering","slug":"kite-design-innovates-with-victorian-engineering","url":"/categories/the-victorians/victorian-childhood-games/kite-design-innovates-with-victorian-engineering.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kite Flying Informs Modern Aerodynamics Studies","slug":"kite-flying-informs-modern-aerodynamics-studies","url":"/categories/the-victorians/victorian-childhood-games/kite-flying-informs-modern-aerodynamics-studies.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kites Above the Thames: Early Aerodynamics","slug":"kites-above-the-thames-early-aerodynamics","url":"/categories/the-victorians/victorian-childhood-games/kites-above-the-thames-early-aerodynamics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kites and Early Aerodynamics","slug":"kites-and-early-aerodynamics","url":"/categories/the-victorians/victorian-childhood-games/kites-and-early-aerodynamics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Largest Blind Man’s Bluff Games","slug":"largest-blind-mans-bluff-games","url":"/categories/the-victorians/victorian-childhood-games/largest-blind-mans-bluff-games.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Continuous Hoop and Stick Run","slug":"longest-continuous-hoop-and-stick-run","url":"/categories/the-victorians/victorian-childhood-games/longest-continuous-hoop-and-stick-run.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Continuous Rope Skipping","slug":"longest-continuous-rope-skipping","url":"/categories/the-victorians/victorian-childhood-games/longest-continuous-rope-skipping.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Hopscotch Jump Recorded in Victorian London","slug":"longest-hopscotch-jump-recorded-in-victorian-london","url":"/categories/the-victorians/victorian-childhood-games/longest-hopscotch-jump-recorded-in-victorian-london.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marble Collections Worth a Small Fortune","slug":"marble-collections-worth-a-small-fortune","url":"/categories/the-victorians/victorian-childhood-games/marble-collections-worth-a-small-fortune.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marble Geometry: Calculating Trajectories and Angles","slug":"marble-geometry-calculating-trajectories-and-angles","url":"/categories/the-victorians/victorian-childhood-games/marble-geometry-calculating-trajectories-and-angles.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marbles and Moral Lessons: Clay, Steel, and Strategy","slug":"marbles-and-moral-lessons-clay-steel-and-strategy","url":"/categories/the-victorians/victorian-childhood-games/marbles-and-moral-lessons-clay-steel-and-strategy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marbles Go Competitive: Schoolyard Championships","slug":"marbles-go-competitive-schoolyard-championships","url":"/categories/the-victorians/victorian-childhood-games/marbles-go-competitive-schoolyard-championships.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Marbles Influence Modern Game Design","slug":"marbles-influence-modern-game-design","url":"/categories/the-victorians/victorian-childhood-games/marbles-influence-modern-game-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Complex Cat’s Cradle Patterns Achieved","slug":"most-complex-cats-cradle-patterns-achieved","url":"/categories/the-victorians/victorian-childhood-games/most-complex-cats-cradle-patterns-achieved.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Elaborate Paper Doll Wardrobes","slug":"most-elaborate-paper-doll-wardrobes","url":"/categories/the-victorians/victorian-childhood-games/most-elaborate-paper-doll-wardrobes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Neighborhood Rivalries and Identity","slug":"neighborhood-rivalries-and-identity","url":"/categories/the-victorians/victorian-childhood-games/neighborhood-rivalries-and-identity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Paper Dolls and Systematic Creativity","slug":"paper-dolls-and-systematic-creativity","url":"/categories/the-victorians/victorian-childhood-games/paper-dolls-and-systematic-creativity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Paper Dolls Reflect Changing Fashion Trends","slug":"paper-dolls-reflect-changing-fashion-trends","url":"/categories/the-victorians/victorian-childhood-games/paper-dolls-reflect-changing-fashion-trends.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Paper Dolls: Cutting and Folding as Early Design","slug":"paper-dolls-cutting-and-folding-as-early-design","url":"/categories/the-victorians/victorian-childhood-games/paper-dolls-cutting-and-folding-as-early-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Playgrounds as Moral Training Grounds","slug":"playgrounds-as-moral-training-grounds","url":"/categories/the-victorians/victorian-childhood-games/playgrounds-as-moral-training-grounds.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Secret Codes in Parlor Games","slug":"secret-codes-in-parlor-games","url":"/categories/the-victorians/victorian-childhood-games/secret-codes-in-parlor-games.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Shadow Games and Optical Illusions","slug":"shadow-games-and-optical-illusions","url":"/categories/the-victorians/victorian-childhood-games/shadow-games-and-optical-illusions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skipping Rope Inspires Fitness Programs","slug":"skipping-rope-inspires-fitness-programs","url":"/categories/the-victorians/victorian-childhood-games/skipping-rope-inspires-fitness-programs.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skipping Rope Mechanics: Rhythm, Balance, and Force","slug":"skipping-rope-mechanics-rhythm-balance-and-force","url":"/categories/the-victorians/victorian-childhood-games/skipping-rope-mechanics-rhythm-balance-and-force.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skipping Ropes Shifted from Exercise to Fashion Statement","slug":"skipping-ropes-shifted-from-exercise-to-fashion-statement","url":"/categories/the-victorians/victorian-childhood-games/skipping-ropes-shifted-from-exercise-to-fashion-statement.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Social Class Differences in Play","slug":"social-class-differences-in-play","url":"/categories/the-victorians/victorian-childhood-games/social-class-differences-in-play.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Street Games Reflect Urbanization","slug":"street-games-reflect-urbanization","url":"/categories/the-victorians/victorian-childhood-games/street-games-reflect-urbanization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"String Figures Teach Patterns and Memory","slug":"string-figures-teach-patterns-and-memory","url":"/categories/the-victorians/victorian-childhood-games/string-figures-teach-patterns-and-memory.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"String Games Become International Curiosity","slug":"string-games-become-international-curiosity","url":"/categories/the-victorians/victorian-childhood-games/string-games-become-international-curiosity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tops and Whirls: The Physics Playground","slug":"tops-and-whirls-the-physics-playground","url":"/categories/the-victorians/victorian-childhood-games/tops-and-whirls-the-physics-playground.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Games in Literature and Illustration","slug":"victorian-games-in-literature-and-illustration","url":"/categories/the-victorians/victorian-childhood-games/victorian-games-in-literature-and-illustration.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Games Inspire Modern Cognitive Therapy","slug":"victorian-games-inspire-modern-cognitive-therapy","url":"/categories/the-victorians/victorian-childhood-games/victorian-games-inspire-modern-cognitive-therapy.html","color":"#f44336","category":"the-victorians","factCount":1}];
 
 /**************************************************
  UTILITIES
@@ -105,14 +189,18 @@ function createCard(item){
   const div = document.createElement('div');
   div.className='card';
   div.dataset.slug = item.slug;
-  div.dataset.title = item.title.toLowerCase();
+  div.dataset.title = (item.title||'').toLowerCase();
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
+    <div class="fact-preview">${previewText}</div>
   `;
   return div;
 }
@@ -128,6 +216,11 @@ function populateGrid(items){
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
 }
 
 /**************************************************
@@ -137,9 +230,27 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
 
 /**************************************************
  INIT

@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,37 +66,95 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Victorian Fashion</h1>
   <p>Explore all facts in "Victorian Fashion".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Fashion</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +162,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"Bustle Dresses Exaggerated the Back","slug":"bustle-dresses-exaggerated-the-back","url":"/categories/the-victorians/victorian-fashion/bustle-dresses-exaggerated-the-back.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Bustle Pads and Crinoline Hoops Were Customizable","slug":"bustle-pads-and-crinoline-hoops-were-customizable","url":"/categories/the-victorians/victorian-fashion/bustle-pads-and-crinoline-hoops-were-customizable.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Children’s Fashion Mirrored Adults","slug":"childrens-fashion-mirrored-adults","url":"/categories/the-victorians/victorian-fashion/childrens-fashion-mirrored-adults.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Corset Stays Could Be Made of Steel or Whalebone","slug":"corset-stays-could-be-made-of-steel-or-whalebone","url":"/categories/the-victorians/victorian-fashion/corset-stays-could-be-made-of-steel-or-whalebone.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Corsets Were Everyday Armor for Victorian Women","slug":"corsets-were-everyday-armor-for-victorian-women","url":"/categories/the-victorians/victorian-fashion/corsets-were-everyday-armor-for-victorian-women.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Crinolines Could Be Deadly","slug":"crinolines-could-be-deadly","url":"/categories/the-victorians/victorian-fashion/crinolines-could-be-deadly.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Fan Accessories Were Essential","slug":"fan-accessories-were-essential","url":"/categories/the-victorians/victorian-fashion/fan-accessories-were-essential.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"High Collars and Neckwear Showed Status","slug":"high-collars-and-neckwear-showed-status","url":"/categories/the-victorians/victorian-fashion/high-collars-and-neckwear-showed-status.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Men’s Cravats Signaled Refinement","slug":"mens-cravats-signaled-refinement","url":"/categories/the-victorians/victorian-fashion/mens-cravats-signaled-refinement.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Men’s Top Hats Symbolized Social Status","slug":"mens-top-hats-symbolized-social-status","url":"/categories/the-victorians/victorian-fashion/mens-top-hats-symbolized-social-status.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Men’s Victorian Overcoats Indicated Authority","slug":"mens-victorian-overcoats-indicated-authority","url":"/categories/the-victorians/victorian-fashion/mens-victorian-overcoats-indicated-authority.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Men’s Victorian Waistcoats Were Highly Decorative","slug":"mens-victorian-waistcoats-were-highly-decorative","url":"/categories/the-victorians/victorian-fashion/mens-victorian-waistcoats-were-highly-decorative.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Boots Were Tall and Ornate","slug":"victorian-boots-were-tall-and-ornate","url":"/categories/the-victorians/victorian-fashion/victorian-boots-were-tall-and-ornate.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Bustles Were Seasonally Modified","slug":"victorian-bustles-were-seasonally-modified","url":"/categories/the-victorians/victorian-fashion/victorian-bustles-were-seasonally-modified.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Children Wore Corsets Too","slug":"victorian-children-wore-corsets-too","url":"/categories/the-victorians/victorian-fashion/victorian-children-wore-corsets-too.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Corset Etiquette Dictated Tightness","slug":"victorian-corset-etiquette-dictated-tightness","url":"/categories/the-victorians/victorian-fashion/victorian-corset-etiquette-dictated-tightness.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Corset Lacing Could Cause Health Issues","slug":"victorian-corset-lacing-could-cause-health-issues","url":"/categories/the-victorians/victorian-fashion/victorian-corset-lacing-could-cause-health-issues.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Corset Modifications Followed Fashion Trends","slug":"victorian-corset-modifications-followed-fashion-trends","url":"/categories/the-victorians/victorian-fashion/victorian-corset-modifications-followed-fashion-trends.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Corset Patterns Could Be Custom-Fitted","slug":"victorian-corset-patterns-could-be-custom-fitted","url":"/categories/the-victorians/victorian-fashion/victorian-corset-patterns-could-be-custom-fitted.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Corsets Had Steel Busks","slug":"victorian-corsets-had-steel-busks","url":"/categories/the-victorians/victorian-fashion/victorian-corsets-had-steel-busks.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Evening Gowns Used Layers of Fabric","slug":"victorian-evening-gowns-used-layers-of-fabric","url":"/categories/the-victorians/victorian-fashion/victorian-evening-gowns-used-layers-of-fabric.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fans and Jewelry Were Often Coordinated","slug":"victorian-fans-and-jewelry-were-often-coordinated","url":"/categories/the-victorians/victorian-fashion/victorian-fans-and-jewelry-were-often-coordinated.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fans Concealed Secret Messages","slug":"victorian-fans-concealed-secret-messages","url":"/categories/the-victorians/victorian-fashion/victorian-fans-concealed-secret-messages.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fans Could Serve as Cooling and Courtship Tools","slug":"victorian-fans-could-serve-as-cooling-and-courtship-tools","url":"/categories/the-victorians/victorian-fashion/victorian-fans-could-serve-as-cooling-and-courtship-tools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fans Were Sometimes Painted with Political Messages","slug":"victorian-fans-were-sometimes-painted-with-political-messages","url":"/categories/the-victorians/victorian-fashion/victorian-fans-were-sometimes-painted-with-political-messages.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fans Were Used to Signal Courtship","slug":"victorian-fans-were-used-to-signal-courtship","url":"/categories/the-victorians/victorian-fashion/victorian-fans-were-used-to-signal-courtship.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Emphasized Tiny Feet","slug":"victorian-fashion-emphasized-tiny-feet","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-emphasized-tiny-feet.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Included Elaborate Evening Gloves","slug":"victorian-fashion-included-elaborate-evening-gloves","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-included-elaborate-evening-gloves.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Included Elaborate Gloves for Ballrooms","slug":"victorian-fashion-included-elaborate-gloves-for-ballrooms","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-included-elaborate-gloves-for-ballrooms.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Included Hair Jewelry","slug":"victorian-fashion-included-hair-jewelry","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-included-hair-jewelry.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Included Mourning Veils","slug":"victorian-fashion-included-mourning-veils","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-included-mourning-veils.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Magazines Dictated Trends","slug":"victorian-fashion-magazines-dictated-trends","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-magazines-dictated-trends.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Magazines Published Sewing Patterns","slug":"victorian-fashion-magazines-published-sewing-patterns","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-magazines-published-sewing-patterns.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Fashion Showcased Seasonal Changes","slug":"victorian-fashion-showcased-seasonal-changes","url":"/categories/the-victorians/victorian-fashion/victorian-fashion-showcased-seasonal-changes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Footwear Included Buttoned Boots","slug":"victorian-footwear-included-buttoned-boots","url":"/categories/the-victorians/victorian-fashion/victorian-footwear-included-buttoned-boots.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Gloves Could Be Perfumed","slug":"victorian-gloves-could-be-perfumed","url":"/categories/the-victorians/victorian-fashion/victorian-gloves-could-be-perfumed.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Gloves Were a Sign of Respect","slug":"victorian-gloves-were-a-sign-of-respect","url":"/categories/the-victorians/victorian-fashion/victorian-gloves-were-a-sign-of-respect.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Hair Accessories Were Elaborate","slug":"victorian-hair-accessories-were-elaborate","url":"/categories/the-victorians/victorian-fashion/victorian-hair-accessories-were-elaborate.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Hairpins Could Be Ornate and Dangerous","slug":"victorian-hairpins-could-be-ornate-and-dangerous","url":"/categories/the-victorians/victorian-fashion/victorian-hairpins-could-be-ornate-and-dangerous.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Hats Could Indicate Political Views","slug":"victorian-hats-could-indicate-political-views","url":"/categories/the-victorians/victorian-fashion/victorian-hats-could-indicate-political-views.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Hats Featured Artificial Feathers and Birds","slug":"victorian-hats-featured-artificial-feathers-and-birds","url":"/categories/the-victorians/victorian-fashion/victorian-hats-featured-artificial-feathers-and-birds.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Hats Required Pins and Strings for Stability","slug":"victorian-hats-required-pins-and-strings-for-stability","url":"/categories/the-victorians/victorian-fashion/victorian-hats-required-pins-and-strings-for-stability.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Jewelry Could Contain Ashes or Hair","slug":"victorian-jewelry-could-contain-ashes-or-hair","url":"/categories/the-victorians/victorian-fashion/victorian-jewelry-could-contain-ashes-or-hair.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Jewelry Symbolized Wealth and Sentiment","slug":"victorian-jewelry-symbolized-wealth-and-sentiment","url":"/categories/the-victorians/victorian-fashion/victorian-jewelry-symbolized-wealth-and-sentiment.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Men Wore Pocket Watches as Fashion","slug":"victorian-men-wore-pocket-watches-as-fashion","url":"/categories/the-victorians/victorian-fashion/victorian-men-wore-pocket-watches-as-fashion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Mourning Dress Followed Strict Rules","slug":"victorian-mourning-dress-followed-strict-rules","url":"/categories/the-victorians/victorian-fashion/victorian-mourning-dress-followed-strict-rules.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Mourning Jewelry Followed Strict Color Codes","slug":"victorian-mourning-jewelry-followed-strict-color-codes","url":"/categories/the-victorians/victorian-fashion/victorian-mourning-jewelry-followed-strict-color-codes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Parasols Protected Skin and Status","slug":"victorian-parasols-protected-skin-and-status","url":"/categories/the-victorians/victorian-fashion/victorian-parasols-protected-skin-and-status.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Shoe Heels Varied for Style and Status","slug":"victorian-shoe-heels-varied-for-style-and-status","url":"/categories/the-victorians/victorian-fashion/victorian-shoe-heels-varied-for-style-and-status.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Women Used Whalebone in Fashion","slug":"women-used-whalebone-in-fashion","url":"/categories/the-victorians/victorian-fashion/women-used-whalebone-in-fashion.html","color":"#f44336","category":"the-victorians","factCount":1}];
+const ITEMS = [{"title":"Artificial Hairpieces Were Early Beauty Tech","slug":"artificial-hairpieces-were-early-beauty-tech","url":"/categories/the-victorians/victorian-fashion/artificial-hairpieces-were-early-beauty-tech.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Bustle Geometry Shaped Public Space","slug":"bustle-geometry-shaped-public-space","url":"/categories/the-victorians/victorian-fashion/bustle-geometry-shaped-public-space.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Bustle Mechanics Made Sitting an Olympic Sport","slug":"bustle-mechanics-made-sitting-an-olympic-sport","url":"/categories/the-victorians/victorian-fashion/bustle-mechanics-made-sitting-an-olympic-sport.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Bustle Skirts Were Victorian Furniture Extenders","slug":"bustle-skirts-were-victorian-furniture-extenders","url":"/categories/the-victorians/victorian-fashion/bustle-skirts-were-victorian-furniture-extenders.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Collars Became Status Neck Armor","slug":"collars-became-status-neck-armor","url":"/categories/the-victorians/victorian-fashion/collars-became-status-neck-armor.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Colonial Influence Shaped Fabrics and Patterns","slug":"colonial-influence-shaped-fabrics-and-patterns","url":"/categories/the-victorians/victorian-fashion/colonial-influence-shaped-fabrics-and-patterns.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Corset Science Was Victorian Biohacking","slug":"corset-science-was-victorian-biohacking","url":"/categories/the-victorians/victorian-fashion/corset-science-was-victorian-biohacking.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Corsets and Political Debate: Fashion as Control","slug":"corsets-and-political-debate-fashion-as-control","url":"/categories/the-victorians/victorian-fashion/corsets-and-political-debate-fashion-as-control.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Corsets Were Designed to Crush, Not Just Shape","slug":"corsets-were-designed-to-crush-not-just-shape","url":"/categories/the-victorians/victorian-fashion/corsets-were-designed-to-crush-not-just-shape.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Crinolines Changed Public Infrastructure","slug":"crinolines-changed-public-infrastructure","url":"/categories/the-victorians/victorian-fashion/crinolines-changed-public-infrastructure.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Crinolines Could Flatten Horse-Drawn Carriages","slug":"crinolines-could-flatten-horse-drawn-carriages","url":"/categories/the-victorians/victorian-fashion/crinolines-could-flatten-horse-drawn-carriages.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Crinolines Reshape Modern Runway Silhouettes","slug":"crinolines-reshape-modern-runway-silhouettes","url":"/categories/the-victorians/victorian-fashion/crinolines-reshape-modern-runway-silhouettes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Dye Chemistry Revolutionized Wardrobe Drama","slug":"dye-chemistry-revolutionized-wardrobe-drama","url":"/categories/the-victorians/victorian-fashion/dye-chemistry-revolutionized-wardrobe-drama.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Extreme Lace: 100-Yard Hand-Knitted Collars","slug":"extreme-lace-100-yard-hand-knitted-collars","url":"/categories/the-victorians/victorian-fashion/extreme-lace-100-yard-hand-knitted-collars.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Fashion Fueled Industrial Growth","slug":"fashion-fueled-industrial-growth","url":"/categories/the-victorians/victorian-fashion/fashion-fueled-industrial-growth.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Fashion Police: Victorian Magazines Dictated Morality","slug":"fashion-police-victorian-magazines-dictated-morality","url":"/categories/the-victorians/victorian-fashion/fashion-police-victorian-magazines-dictated-morality.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"From Day Dress to Evening Gown—A Social Transformation","slug":"from-day-dress-to-evening-gowna-social-transformation","url":"/categories/the-victorians/victorian-fashion/from-day-dress-to-evening-gowna-social-transformation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Gloves Spoke Louder Than Words","slug":"gloves-spoke-louder-than-words","url":"/categories/the-victorians/victorian-fashion/gloves-spoke-louder-than-words.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hair Pillows in Hats: Preventing Collapse","slug":"hair-pillows-in-hats-preventing-collapse","url":"/categories/the-victorians/victorian-fashion/hair-pillows-in-hats-preventing-collapse.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hats Shifted Shape With Every Decade","slug":"hats-shifted-shape-with-every-decade","url":"/categories/the-victorians/victorian-fashion/hats-shifted-shape-with-every-decade.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Heaviest Evening Gown: 15 Pounds of Fabric and Embellishment","slug":"heaviest-evening-gown-15-pounds-of-fabric-and-embellishment","url":"/categories/the-victorians/victorian-fashion/heaviest-evening-gown-15-pounds-of-fabric-and-embellishment.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hidden Pockets Inspire Stealth Fashion","slug":"hidden-pockets-inspire-stealth-fashion","url":"/categories/the-victorians/victorian-fashion/hidden-pockets-inspire-stealth-fashion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Hidden Pockets: Secret Life of Victorian Dress","slug":"hidden-pockets-secret-life-of-victorian-dress","url":"/categories/the-victorians/victorian-fashion/hidden-pockets-secret-life-of-victorian-dress.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Historical Silhouettes Inform 3D Fashion Printing","slug":"historical-silhouettes-inform-3d-fashion-printing","url":"/categories/the-victorians/victorian-fashion/historical-silhouettes-inform-3d-fashion-printing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Jet Jewelry Absorbed Grief—Chemistry Meets Mourning","slug":"jet-jewelry-absorbed-griefchemistry-meets-mourning","url":"/categories/the-victorians/victorian-fashion/jet-jewelry-absorbed-griefchemistry-meets-mourning.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Jet Jewelry Techniques Inspire Ethical Innovation","slug":"jet-jewelry-techniques-inspire-ethical-innovation","url":"/categories/the-victorians/victorian-fashion/jet-jewelry-techniques-inspire-ethical-innovation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Mourning Period: Decades of Black","slug":"longest-mourning-period-decades-of-black","url":"/categories/the-victorians/victorian-fashion/longest-mourning-period-decades-of-black.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Mourning Attire Reinforced Class Hierarchy","slug":"mourning-attire-reinforced-class-hierarchy","url":"/categories/the-victorians/victorian-fashion/mourning-attire-reinforced-class-hierarchy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Mourning Dresses Had Secret Codes","slug":"mourning-dresses-had-secret-codes","url":"/categories/the-victorians/victorian-fashion/mourning-dresses-had-secret-codes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Mourning Jewelry Sparks Modern Minimalism","slug":"mourning-jewelry-sparks-modern-minimalism","url":"/categories/the-victorians/victorian-fashion/mourning-jewelry-sparks-modern-minimalism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Parasols Were Mini Sun-Fences","slug":"parasols-were-mini-sun-fences","url":"/categories/the-victorians/victorian-fashion/parasols-were-mini-sun-fences.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Political Satire Through Clothing","slug":"political-satire-through-clothing","url":"/categories/the-victorians/victorian-fashion/political-satire-through-clothing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Shoes Went From Functional to Sculpture","slug":"shoes-went-from-functional-to-sculpture","url":"/categories/the-victorians/victorian-fashion/shoes-went-from-functional-to-sculpture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Skirts That Could Block Fire Escapes","slug":"skirts-that-could-block-fire-escapes","url":"/categories/the-victorians/victorian-fashion/skirts-that-could-block-fire-escapes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Sleeve Styles Went From Modest to Excessive","slug":"sleeve-styles-went-from-modest-to-excessive","url":"/categories/the-victorians/victorian-fashion/sleeve-styles-went-from-modest-to-excessive.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tallest Bustle Ever Worn: Over Two Feet","slug":"tallest-bustle-ever-worn-over-two-feet","url":"/categories/the-victorians/victorian-fashion/tallest-bustle-ever-worn-over-two-feet.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tallest Hat Recorded: Nearly 2 Feet High","slug":"tallest-hat-recorded-nearly-2-feet-high","url":"/categories/the-victorians/victorian-fashion/tallest-hat-recorded-nearly-2-feet-high.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tea Gowns Influence Modern Loungewear","slug":"tea-gowns-influence-modern-loungewear","url":"/categories/the-victorians/victorian-fashion/tea-gowns-influence-modern-loungewear.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tea Gowns: Fashion Rebellion at Home","slug":"tea-gowns-fashion-rebellion-at-home","url":"/categories/the-victorians/victorian-fashion/tea-gowns-fashion-rebellion-at-home.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Textile Innovation Allowed Extreme Decoration","slug":"textile-innovation-allowed-extreme-decoration","url":"/categories/the-victorians/victorian-fashion/textile-innovation-allowed-extreme-decoration.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Corset Diet: Eating Was Optional","slug":"the-corset-diet-eating-was-optional","url":"/categories/the-victorians/victorian-fashion/the-corset-diet-eating-was-optional.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Crinoline Shrunk Then Swelled—Fashion Was Literal Whiplash","slug":"the-crinoline-shrunk-then-swelledfashion-was-literal-whiplash","url":"/categories/the-victorians/victorian-fashion/the-crinoline-shrunk-then-swelledfashion-was-literal-whiplash.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Hoop Skirt Was a Physics Lesson","slug":"the-hoop-skirt-was-a-physics-lesson","url":"/categories/the-victorians/victorian-fashion/the-hoop-skirt-was-a-physics-lesson.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Science Behind Veils and Privacy","slug":"the-science-behind-veils-and-privacy","url":"/categories/the-victorians/victorian-fashion/the-science-behind-veils-and-privacy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Widest Crinoline Ever Measured Six Feet","slug":"the-widest-crinoline-ever-measured-six-feet","url":"/categories/the-victorians/victorian-fashion/the-widest-crinoline-ever-measured-six-feet.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Tiniest Waist Ever Documented Was 13 Inches","slug":"tiniest-waist-ever-documented-was-13-inches","url":"/categories/the-victorians/victorian-fashion/tiniest-waist-ever-documented-was-13-inches.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Top Hats Were Mini Time Machines","slug":"top-hats-were-mini-time-machines","url":"/categories/the-victorians/victorian-fashion/top-hats-were-mini-time-machines.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Veils as Secret Communication","slug":"veils-as-secret-communication","url":"/categories/the-victorians/victorian-fashion/veils-as-secret-communication.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Corsets Inspire Modern Wearable Tech","slug":"victorian-corsets-inspire-modern-wearable-tech","url":"/categories/the-victorians/victorian-fashion/victorian-corsets-inspire-modern-wearable-tech.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Whale Bone Scarcity Sparked Panic","slug":"whale-bone-scarcity-sparked-panic","url":"/categories/the-victorians/victorian-fashion/whale-bone-scarcity-sparked-panic.html","color":"#f44336","category":"the-victorians","factCount":1}];
 
 /**************************************************
  UTILITIES
@@ -105,14 +189,18 @@ function createCard(item){
   const div = document.createElement('div');
   div.className='card';
   div.dataset.slug = item.slug;
-  div.dataset.title = item.title.toLowerCase();
+  div.dataset.title = (item.title||'').toLowerCase();
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
+    <div class="fact-preview">${previewText}</div>
   `;
   return div;
 }
@@ -128,6 +216,11 @@ function populateGrid(items){
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
 }
 
 /**************************************************
@@ -137,9 +230,27 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
 
 /**************************************************
  INIT

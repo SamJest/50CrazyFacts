@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victorian Servants And Households</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Victorian Servants And Households</h1>
+  <p>Explore all facts in "Victorian Servants And Households".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Servants And Households</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Coal Chutes and Childhood Apprenticeships","slug":"coal-chutes-and-childhood-apprenticeships","url":"/categories/the-victorians/victorian-servants-and-households/coal-chutes-and-childhood-apprenticeships.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Domestic Uniforms: More Than Fashion","slug":"domestic-uniforms-more-than-fashion","url":"/categories/the-victorians/victorian-servants-and-households/domestic-uniforms-more-than-fashion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"First Kitchen Hierarchies","slug":"first-kitchen-hierarchies","url":"/categories/the-victorians/victorian-servants-and-households/first-kitchen-hierarchies.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"From Footmen to Fashion Icons","slug":"from-footmen-to-fashion-icons","url":"/categories/the-victorians/victorian-servants-and-households/from-footmen-to-fashion-icons.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Ghost Kitchens and Hidden Labor Echo Victorian Service","slug":"ghost-kitchens-and-hidden-labor-echo-victorian-service","url":"/categories/the-victorians/victorian-servants-and-households/ghost-kitchens-and-hidden-labor-echo-victorian-service.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Ghosts of the Servants’ Quarters","slug":"ghosts-of-the-servants-quarters","url":"/categories/the-victorians/victorian-servants-and-households/ghosts-of-the-servants-quarters.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Kitchen Acoustics and Whisper Networks","slug":"kitchen-acoustics-and-whisper-networks","url":"/categories/the-victorians/victorian-servants-and-households/kitchen-acoustics-and-whisper-networks.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Longest Serving Servants","slug":"longest-serving-servants","url":"/categories/the-victorians/victorian-servants-and-households/longest-serving-servants.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Modern Lessons from Victorian Kitchens","slug":"modern-lessons-from-victorian-kitchens","url":"/categories/the-victorians/victorian-servants-and-households/modern-lessons-from-victorian-kitchens.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Parlour Maids Gain Prestige","slug":"parlour-maids-gain-prestige","url":"/categories/the-victorians/victorian-servants-and-households/parlour-maids-gain-prestige.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Secret Beginnings of Victorian Servants","slug":"secret-beginnings-of-victorian-servants","url":"/categories/the-victorians/victorian-servants-and-households/secret-beginnings-of-victorian-servants.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Servant Hierarchies Codified","slug":"servant-hierarchies-codified","url":"/categories/the-victorians/victorian-servants-and-households/servant-hierarchies-codified.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Servant-Inspired Ergonomics","slug":"servant-inspired-ergonomics","url":"/categories/the-victorians/victorian-servants-and-households/servant-inspired-ergonomics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Servants Adapt to Urbanization","slug":"servants-adapt-to-urbanization","url":"/categories/the-victorians/victorian-servants-and-households/servants-adapt-to-urbanization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Specialized Roles Multiply","slug":"specialized-roles-multiply","url":"/categories/the-victorians/victorian-servants-and-households/specialized-roles-multiply.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Bell Pull Network: Invisible Choreography","slug":"the-bell-pull-network-invisible-choreography","url":"/categories/the-victorians/victorian-servants-and-households/the-bell-pull-network-invisible-choreography.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Butler Who Managed 200 Staff","slug":"the-butler-who-managed-200-staff","url":"/categories/the-victorians/victorian-servants-and-households/the-butler-who-managed-200-staff.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Butler’s Expanding Influence","slug":"the-butlers-expanding-influence","url":"/categories/the-victorians/victorian-servants-and-households/the-butlers-expanding-influence.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Butler’s Quiet Revolution","slug":"the-butlers-quiet-revolution","url":"/categories/the-victorians/victorian-servants-and-households/the-butlers-quiet-revolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Evolution of Secret Codes","slug":"the-evolution-of-secret-codes","url":"/categories/the-victorians/victorian-servants-and-households/the-evolution-of-secret-codes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The First Lady’s Maid: Hidden Power","slug":"the-first-ladys-maid-hidden-power","url":"/categories/the-victorians/victorian-servants-and-households/the-first-ladys-maid-hidden-power.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The First Scullery Maids: Unsung Heroes","slug":"the-first-scullery-maids-unsung-heroes","url":"/categories/the-victorians/victorian-servants-and-households/the-first-scullery-maids-unsung-heroes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Footman Olympics","slug":"the-footman-olympics","url":"/categories/the-victorians/victorian-servants-and-households/the-footman-olympics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Footman Who Could Carry 12 Trays","slug":"the-footman-who-could-carry-12-trays","url":"/categories/the-victorians/victorian-servants-and-households/the-footman-who-could-carry-12-trays.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Footman Who Refused Powder","slug":"the-footman-who-refused-powder","url":"/categories/the-victorians/victorian-servants-and-households/the-footman-who-refused-powder.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Future of Invisible Labor","slug":"the-future-of-invisible-labor","url":"/categories/the-victorians/victorian-servants-and-households/the-future-of-invisible-labor.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Hidden Thermometer: Mastering Wine and Spirits","slug":"the-hidden-thermometer-mastering-wine-and-spirits","url":"/categories/the-victorians/victorian-servants-and-households/the-hidden-thermometer-mastering-wine-and-spirits.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Household Ledger: Secret Accountings","slug":"the-household-ledger-secret-accountings","url":"/categories/the-victorians/victorian-servants-and-households/the-household-ledger-secret-accountings.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Household That Hired 50 Cooks","slug":"the-household-that-hired-50-cooks","url":"/categories/the-victorians/victorian-servants-and-households/the-household-that-hired-50-cooks.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Household With 100 Servants","slug":"the-household-with-100-servants","url":"/categories/the-victorians/victorian-servants-and-households/the-household-with-100-servants.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Invention of the Bell Pull","slug":"the-invention-of-the-bell-pull","url":"/categories/the-victorians/victorian-servants-and-households/the-invention-of-the-bell-pull.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Invisible Managers","slug":"the-invisible-managers","url":"/categories/the-victorians/victorian-servants-and-households/the-invisible-managers.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Invisible Science of Table Service","slug":"the-invisible-science-of-table-service","url":"/categories/the-victorians/victorian-servants-and-households/the-invisible-science-of-table-service.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Maid Who Memorized 1,000 Tasks","slug":"the-maid-who-memorized-1000-tasks","url":"/categories/the-victorians/victorian-servants-and-households/the-maid-who-memorized-1000-tasks.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Maid Who Ran a Mini-Estate","slug":"the-maid-who-ran-a-mini-estate","url":"/categories/the-victorians/victorian-servants-and-households/the-maid-who-ran-a-mini-estate.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Maid Who Wrote Her Own Rules","slug":"the-maid-who-wrote-her-own-rules","url":"/categories/the-victorians/victorian-servants-and-households/the-maid-who-wrote-her-own-rules.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Mechanics of Laundry","slug":"the-mechanics-of-laundry","url":"/categories/the-victorians/victorian-servants-and-households/the-mechanics-of-laundry.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Domestic Etiquette Schools","slug":"the-rise-of-domestic-etiquette-schools","url":"/categories/the-victorians/victorian-servants-and-households/the-rise-of-domestic-etiquette-schools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Domestic Robotics Inspired by Servants","slug":"the-rise-of-domestic-robotics-inspired-by-servants","url":"/categories/the-victorians/victorian-servants-and-households/the-rise-of-domestic-robotics-inspired-by-servants.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of the House Steward","slug":"the-rise-of-the-house-steward","url":"/categories/the-victorians/victorian-servants-and-households/the-rise-of-the-house-steward.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Science of Silver Polishing","slug":"the-science-of-silver-polishing","url":"/categories/the-victorians/victorian-servants-and-households/the-science-of-silver-polishing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Secret Language of Napkins","slug":"the-secret-language-of-napkins","url":"/categories/the-victorians/victorian-servants-and-households/the-secret-language-of-napkins.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Servant Who Dined Alone With Royalty","slug":"the-servant-who-dined-alone-with-royalty","url":"/categories/the-victorians/victorian-servants-and-households/the-servant-who-dined-alone-with-royalty.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Steam Age Transforms Kitchens","slug":"the-steam-age-transforms-kitchens","url":"/categories/the-victorians/victorian-servants-and-households/the-steam-age-transforms-kitchens.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Thermodynamics of Heat and Coal","slug":"the-thermodynamics-of-heat-and-coal","url":"/categories/the-victorians/victorian-servants-and-households/the-thermodynamics-of-heat-and-coal.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Timing Baths and Water Pressure","slug":"timing-baths-and-water-pressure","url":"/categories/the-victorians/victorian-servants-and-households/timing-baths-and-water-pressure.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Timing is Everything: The Victorian Schedule","slug":"timing-is-everything-the-victorian-schedule","url":"/categories/the-victorians/victorian-servants-and-households/timing-is-everything-the-victorian-schedule.html","color":"#f44336","category":"the-victorians","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

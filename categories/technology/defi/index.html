@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Defi</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Defi</h1>
+  <p>Explore all facts in "Defi".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Defi</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Counterintuitive Yield: Losing Money While Earning Returns","slug":"counterintuitive-yield-losing-money-while-earning-returns","url":"/categories/technology/defi/counterintuitive-yield-losing-money-while-earning-returns.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Cross-Chain Bridges and DeFi Evolution","slug":"cross-chain-bridges-and-defi-evolution","url":"/categories/technology/defi/cross-chain-bridges-and-defi-evolution.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi and the Rise of Financial Anarchism","slug":"defi-and-the-rise-of-financial-anarchism","url":"/categories/technology/defi/defi-and-the-rise-of-financial-anarchism.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Collateralization and Liquidation Explained","slug":"defi-collateralization-and-liquidation-explained","url":"/categories/technology/defi/defi-collateralization-and-liquidation-explained.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Enables Programmable Philanthropy","slug":"defi-enables-programmable-philanthropy","url":"/categories/technology/defi/defi-enables-programmable-philanthropy.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Governance Influencing Regulation","slug":"defi-governance-influencing-regulation","url":"/categories/technology/defi/defi-governance-influencing-regulation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi in Countries with Bank Restrictions","slug":"defi-in-countries-with-bank-restrictions","url":"/categories/technology/defi/defi-in-countries-with-bank-restrictions.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi in Cross-Border Remittances","slug":"defi-in-cross-border-remittances","url":"/categories/technology/defi/defi-in-cross-border-remittances.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi in Insurance Innovation","slug":"defi-in-insurance-innovation","url":"/categories/technology/defi/defi-in-insurance-innovation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Integrates With Traditional Finance","slug":"defi-integrates-with-traditional-finance","url":"/categories/technology/defi/defi-integrates-with-traditional-finance.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Protocols Funded Entirely by Memes","slug":"defi-protocols-funded-entirely-by-memes","url":"/categories/technology/defi/defi-protocols-funded-entirely-by-memes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Risk Parameters and Smart Contract Safety","slug":"defi-risk-parameters-and-smart-contract-safety","url":"/categories/technology/defi/defi-risk-parameters-and-smart-contract-safety.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Smart Contracts: Code That Replaces Banks","slug":"defi-smart-contracts-code-that-replaces-banks","url":"/categories/technology/defi/defi-smart-contracts-code-that-replaces-banks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi Yield Farms and Political Statements","slug":"defi-yield-farms-and-political-statements","url":"/categories/technology/defi/defi-yield-farms-and-political-statements.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Expansion Beyond Crypto-Natives","slug":"defis-expansion-beyond-crypto-natives","url":"/categories/technology/defi/defis-expansion-beyond-crypto-natives.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Forgotten First Flash Loan","slug":"defis-forgotten-first-flash-loan","url":"/categories/technology/defi/defis-forgotten-first-flash-loan.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Migration to Layer 2","slug":"defis-migration-to-layer-2","url":"/categories/technology/defi/defis-migration-to-layer-2.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Potential in the Metaverse","slug":"defis-potential-in-the-metaverse","url":"/categories/technology/defi/defis-potential-in-the-metaverse.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Role in Central Bank Digital Currencies","slug":"defis-role-in-central-bank-digital-currencies","url":"/categories/technology/defi/defis-role-in-central-bank-digital-currencies.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Role in Crypto Social Movements","slug":"defis-role-in-crypto-social-movements","url":"/categories/technology/defi/defis-role-in-crypto-social-movements.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"DeFi’s Strange Stablecoin Experiments","slug":"defis-strange-stablecoin-experiments","url":"/categories/technology/defi/defis-strange-stablecoin-experiments.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Ethereum’s Genesis and the Birth of DeFi","slug":"ethereums-genesis-and-the-birth-of-defi","url":"/categories/technology/defi/ethereums-genesis-and-the-birth-of-defi.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Extreme Gas Fees and DeFi Microtransactions","slug":"extreme-gas-fees-and-defi-microtransactions","url":"/categories/technology/defi/extreme-gas-fees-and-defi-microtransactions.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flash Loans: Evolution of Instant Credit","slug":"flash-loans-evolution-of-instant-credit","url":"/categories/technology/defi/flash-loans-evolution-of-instant-credit.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Governance Token Proliferation","slug":"governance-token-proliferation","url":"/categories/technology/defi/governance-token-proliferation.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Bitcoin Inspired the First DeFi Experiments","slug":"how-bitcoin-inspired-the-first-defi-experiments","url":"/categories/technology/defi/how-bitcoin-inspired-the-first-defi-experiments.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How DeFi Borrowing Exploded in 2019","slug":"how-defi-borrowing-exploded-in-2019","url":"/categories/technology/defi/how-defi-borrowing-exploded-in-2019.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"How Yield Farming Really Works","slug":"how-yield-farming-really-works","url":"/categories/technology/defi/how-yield-farming-really-works.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Impermanent Loss: DeFi’s Counterintuitive Risk","slug":"impermanent-loss-defis-counterintuitive-risk","url":"/categories/technology/defi/impermanent-loss-defis-counterintuitive-risk.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Liquidity Mining: DeFi’s Growth Engine","slug":"liquidity-mining-defis-growth-engine","url":"/categories/technology/defi/liquidity-mining-defis-growth-engine.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"MakerDAO: The First Self-Stable Coin Revolution","slug":"makerdao-the-first-self-stable-coin-revolution","url":"/categories/technology/defi/makerdao-the-first-self-stable-coin-revolution.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Record DeFi TVL Peaks","slug":"record-defi-tvl-peaks","url":"/categories/technology/defi/record-defi-tvl-peaks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Satoshi’s Whitepaper Foreshadowed DeFi","slug":"satoshis-whitepaper-foreshadowed-defi","url":"/categories/technology/defi/satoshis-whitepaper-foreshadowed-defi.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Absurdity of Early DeFi Governance Experiments","slug":"the-absurdity-of-early-defi-governance-experiments","url":"/categories/technology/defi/the-absurdity-of-early-defi-governance-experiments.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Advent of Algorithmic Stablecoins","slug":"the-advent-of-algorithmic-stablecoins","url":"/categories/technology/defi/the-advent-of-algorithmic-stablecoins.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Fastest Liquidation Ever Recorded","slug":"the-fastest-liquidation-ever-recorded","url":"/categories/technology/defi/the-fastest-liquidation-ever-recorded.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Global Political Implications of DeFi","slug":"the-global-political-implications-of-defi","url":"/categories/technology/defi/the-global-political-implications-of-defi.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Hidden Role of Crypto Hackathons in Early DeFi","slug":"the-hidden-role-of-crypto-hackathons-in-early-defi","url":"/categories/technology/defi/the-hidden-role-of-crypto-hackathons-in-early-defi.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Highest Yield Ever Achieved","slug":"the-highest-yield-ever-achieved","url":"/categories/technology/defi/the-highest-yield-ever-achieved.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Largest DeFi Hack in History","slug":"the-largest-defi-hack-in-history","url":"/categories/technology/defi/the-largest-defi-hack-in-history.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Logic Behind Flash Loan Attacks","slug":"the-logic-behind-flash-loan-attacks","url":"/categories/technology/defi/the-logic-behind-flash-loan-attacks.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Mechanics of Automated Market Makers (AMMs)","slug":"the-mechanics-of-automated-market-makers-amms","url":"/categories/technology/defi/the-mechanics-of-automated-market-makers-amms.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Meme-Driven Culture of DeFi","slug":"the-meme-driven-culture-of-defi","url":"/categories/technology/defi/the-meme-driven-culture-of-defi.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Most Bizarre DeFi Exploit: Invisible Tokens","slug":"the-most-bizarre-defi-exploit-invisible-tokens","url":"/categories/technology/defi/the-most-bizarre-defi-exploit-invisible-tokens.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Most Exotic DeFi Asset Combinations","slug":"the-most-exotic-defi-asset-combinations","url":"/categories/technology/defi/the-most-exotic-defi-asset-combinations.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Most Surreal Arbitrage Opportunity","slug":"the-most-surreal-arbitrage-opportunity","url":"/categories/technology/defi/the-most-surreal-arbitrage-opportunity.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Most Unusual Collateral Ever Used","slug":"the-most-unusual-collateral-ever-used","url":"/categories/technology/defi/the-most-unusual-collateral-ever-used.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Odd Case of DeFi Governance Hijacking","slug":"the-odd-case-of-defi-governance-hijacking","url":"/categories/technology/defi/the-odd-case-of-defi-governance-hijacking.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Rise of Synthetic Assets","slug":"the-rise-of-synthetic-assets","url":"/categories/technology/defi/the-rise-of-synthetic-assets.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Science of DeFi Oracles","slug":"the-science-of-defi-oracles","url":"/categories/technology/defi/the-science-of-defi-oracles.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Surprising Origin of DeFi in a College Dorm","slug":"the-surprising-origin-of-defi-in-a-college-dorm","url":"/categories/technology/defi/the-surprising-origin-of-defi-in-a-college-dorm.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Tokenization of Real-World Assets","slug":"tokenization-of-real-world-assets","url":"/categories/technology/defi/tokenization-of-real-world-assets.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Uniswap’s Secret Origins as a Research Paper","slug":"uniswaps-secret-origins-as-a-research-paper","url":"/categories/technology/defi/uniswaps-secret-origins-as-a-research-paper.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

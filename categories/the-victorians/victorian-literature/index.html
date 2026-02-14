@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,37 +66,95 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Victorian Literature</h1>
   <p>Explore all facts in "Victorian Literature".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Victorian Literature</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +162,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"Arthur Conan Doyle Invented the Modern Detective","slug":"arthur-conan-doyle-invented-the-modern-detective","url":"/categories/the-victorians/victorian-literature/arthur-conan-doyle-invented-the-modern-detective.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Charles Dickens Popularized Social Commentary","slug":"charles-dickens-popularized-social-commentary","url":"/categories/the-victorians/victorian-literature/charles-dickens-popularized-social-commentary.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Lewis Carroll Mixed Mathematics and Fantasy","slug":"lewis-carroll-mixed-mathematics-and-fantasy","url":"/categories/the-victorians/victorian-literature/lewis-carroll-mixed-mathematics-and-fantasy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Lewis Carroll’s Wordplay Influenced Literature","slug":"lewis-carrolls-wordplay-influenced-literature","url":"/categories/the-victorians/victorian-literature/lewis-carrolls-wordplay-influenced-literature.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Mastered Epigrams","slug":"oscar-wilde-mastered-epigrams","url":"/categories/the-victorians/victorian-literature/oscar-wilde-mastered-epigrams.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Brontë Sisters Revolutionized Female Voices","slug":"the-bront-sisters-revolutionized-female-voices","url":"/categories/the-victorians/victorian-literature/the-bront-sisters-revolutionized-female-voices.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Thomas Hardy Wrote Tragic Realism","slug":"thomas-hardy-wrote-tragic-realism","url":"/categories/the-victorians/victorian-literature/thomas-hardy-wrote-tragic-realism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Adventure Novels Sparked Exploration","slug":"victorian-adventure-novels-sparked-exploration","url":"/categories/the-victorians/victorian-literature/victorian-adventure-novels-sparked-exploration.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Ghost Stories Shaped Horror","slug":"victorian-ghost-stories-shaped-horror","url":"/categories/the-victorians/victorian-literature/victorian-ghost-stories-shaped-horror.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Child Labor Awareness","slug":"victorian-literature-and-child-labor-awareness","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-child-labor-awareness.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Drug Culture","slug":"victorian-literature-and-drug-culture","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-drug-culture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Early Science Fiction","slug":"victorian-literature-and-early-science-fiction","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-early-science-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Fairy Tales","slug":"victorian-literature-and-fairy-tales","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-fairy-tales.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Moral Didacticism","slug":"victorian-literature-and-moral-didacticism","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-moral-didacticism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Nautical Adventures","slug":"victorian-literature-and-nautical-adventures","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-nautical-adventures.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Opium Use","slug":"victorian-literature-and-opium-use","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-opium-use.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Opulent Descriptions","slug":"victorian-literature-and-opulent-descriptions","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-opulent-descriptions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Phrenology","slug":"victorian-literature-and-phrenology","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-phrenology.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Scientific Curiosity","slug":"victorian-literature-and-scientific-curiosity","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-scientific-curiosity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Secret Societies","slug":"victorian-literature-and-secret-societies","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-secret-societies.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Sensational Trials","slug":"victorian-literature-and-sensational-trials","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-sensational-trials.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Serial Cliffhangers","slug":"victorian-literature-and-serial-cliffhangers","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-serial-cliffhangers.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Social Reform","slug":"victorian-literature-and-social-reform","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-social-reform.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Spiritual Doubt","slug":"victorian-literature-and-spiritual-doubt","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-spiritual-doubt.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Supernatural Romance","slug":"victorian-literature-and-supernatural-romance","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-supernatural-romance.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and the New Woman","slug":"victorian-literature-and-the-new-woman","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-the-new-woman.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and the Occult","slug":"victorian-literature-and-the-occult","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-the-occult.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and Travel Writing","slug":"victorian-literature-and-travel-writing","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-travel-writing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Blended Humor and Critique","slug":"victorian-literature-blended-humor-and-critique","url":"/categories/the-victorians/victorian-literature/victorian-literature-blended-humor-and-critique.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Embraced Gothic Horror","slug":"victorian-literature-embraced-gothic-horror","url":"/categories/the-victorians/victorian-literature/victorian-literature-embraced-gothic-horror.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Embraced Urban Horror","slug":"victorian-literature-embraced-urban-horror","url":"/categories/the-victorians/victorian-literature/victorian-literature-embraced-urban-horror.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Explored Class Conflict","slug":"victorian-literature-explored-class-conflict","url":"/categories/the-victorians/victorian-literature/victorian-literature-explored-class-conflict.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Explored Colonization","slug":"victorian-literature-explored-colonization","url":"/categories/the-victorians/victorian-literature/victorian-literature-explored-colonization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Explored Female Sexuality","slug":"victorian-literature-explored-female-sexuality","url":"/categories/the-victorians/victorian-literature/victorian-literature-explored-female-sexuality.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Explored Forbidden Love","slug":"victorian-literature-explored-forbidden-love","url":"/categories/the-victorians/victorian-literature/victorian-literature-explored-forbidden-love.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Explored Spiritualism","slug":"victorian-literature-explored-spiritualism","url":"/categories/the-victorians/victorian-literature/victorian-literature-explored-spiritualism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Featured Anti-Heroes","slug":"victorian-literature-featured-anti-heroes","url":"/categories/the-victorians/victorian-literature/victorian-literature-featured-anti-heroes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Fueled by Penny Dreadfuls","slug":"victorian-literature-fueled-by-penny-dreadfuls","url":"/categories/the-victorians/victorian-literature/victorian-literature-fueled-by-penny-dreadfuls.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Highlighted Urban Poverty","slug":"victorian-literature-highlighted-urban-poverty","url":"/categories/the-victorians/victorian-literature/victorian-literature-highlighted-urban-poverty.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Influenced by Darwinism","slug":"victorian-literature-influenced-by-darwinism","url":"/categories/the-victorians/victorian-literature/victorian-literature-influenced-by-darwinism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Influenced by Industrialization","slug":"victorian-literature-influenced-by-industrialization","url":"/categories/the-victorians/victorian-literature/victorian-literature-influenced-by-industrialization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Inspired by Mental Asylums","slug":"victorian-literature-inspired-by-mental-asylums","url":"/categories/the-victorians/victorian-literature/victorian-literature-inspired-by-mental-asylums.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Inspired by Photography","slug":"victorian-literature-inspired-by-photography","url":"/categories/the-victorians/victorian-literature/victorian-literature-inspired-by-photography.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Obsessed with Sensation","slug":"victorian-literature-obsessed-with-sensation","url":"/categories/the-victorians/victorian-literature/victorian-literature-obsessed-with-sensation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Popularized Detective Archetypes","slug":"victorian-literature-popularized-detective-archetypes","url":"/categories/the-victorians/victorian-literature/victorian-literature-popularized-detective-archetypes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Popularized Sensational Journalism","slug":"victorian-literature-popularized-sensational-journalism","url":"/categories/the-victorians/victorian-literature/victorian-literature-popularized-sensational-journalism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Popularized Serialized Gothic Horror","slug":"victorian-literature-popularized-serialized-gothic-horror","url":"/categories/the-victorians/victorian-literature/victorian-literature-popularized-serialized-gothic-horror.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Used Elaborate Gothic Architecture","slug":"victorian-literature-used-elaborate-gothic-architecture","url":"/categories/the-victorians/victorian-literature/victorian-literature-used-elaborate-gothic-architecture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Poetry Explored Social Issues","slug":"victorian-poetry-explored-social-issues","url":"/categories/the-victorians/victorian-literature/victorian-poetry-explored-social-issues.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Serialization Created Cultural Phenomena","slug":"victorian-serialization-created-cultural-phenomena","url":"/categories/the-victorians/victorian-literature/victorian-serialization-created-cultural-phenomena.html","color":"#f44336","category":"the-victorians","factCount":1}];
+const ITEMS = [{"title":"Climate and Industrial Themes in Modern Fiction","slug":"climate-and-industrial-themes-in-modern-fiction","url":"/categories/the-victorians/victorian-literature/climate-and-industrial-themes-in-modern-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Digital Humanities Revive Victorian Texts","slug":"digital-humanities-revive-victorian-texts","url":"/categories/the-victorians/victorian-literature/digital-humanities-revive-victorian-texts.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Early Victorian Novels Secretly Critiqued Industrialization","slug":"early-victorian-novels-secretly-critiqued-industrialization","url":"/categories/the-victorians/victorian-literature/early-victorian-novels-secretly-critiqued-industrialization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Early Reviews Shaped Victorian Literary Fame","slug":"how-early-reviews-shaped-victorian-literary-fame","url":"/categories/the-victorians/victorian-literature/how-early-reviews-shaped-victorian-literary-fame.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Gothic Literature Adapted to Victorian Morality","slug":"how-gothic-literature-adapted-to-victorian-morality","url":"/categories/the-victorians/victorian-literature/how-gothic-literature-adapted-to-victorian-morality.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Novels Influenced Political Thought","slug":"how-novels-influenced-political-thought","url":"/categories/the-victorians/victorian-literature/how-novels-influenced-political-thought.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Serialization Changed the Way Victorians Read","slug":"how-serialization-changed-the-way-victorians-read","url":"/categories/the-victorians/victorian-literature/how-serialization-changed-the-way-victorians-read.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Victorian Novels Began as Penny Dreadfuls","slug":"how-victorian-novels-began-as-penny-dreadfuls","url":"/categories/the-victorians/victorian-literature/how-victorian-novels-began-as-penny-dreadfuls.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Victorian Novels Engineered Empathy","slug":"how-victorian-novels-engineered-empathy","url":"/categories/the-victorians/victorian-literature/how-victorian-novels-engineered-empathy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Influence on Victorian Morality and Ethics","slug":"influence-on-victorian-morality-and-ethics","url":"/categories/the-victorians/victorian-literature/influence-on-victorian-morality-and-ethics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Literature’s Role in Shaping Education and Literacy","slug":"literatures-role-in-shaping-education-and-literacy","url":"/categories/the-victorians/victorian-literature/literatures-role-in-shaping-education-and-literacy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Most Extreme Victorian Character Transformations","slug":"most-extreme-victorian-character-transformations","url":"/categories/the-victorians/victorian-literature/most-extreme-victorian-character-transformations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Obscure Influence of Foreign Literature","slug":"obscure-influence-of-foreign-literature","url":"/categories/the-victorians/victorian-literature/obscure-influence-of-foreign-literature.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Obscure Satire in Victorian Fiction","slug":"obscure-satire-in-victorian-fiction","url":"/categories/the-victorians/victorian-literature/obscure-satire-in-victorian-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Obscure Science in Victorian Fiction","slug":"obscure-science-in-victorian-fiction","url":"/categories/the-victorians/victorian-literature/obscure-science-in-victorian-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Poetry Shifts from Romantic Idealism to Social Realism","slug":"poetry-shifts-from-romantic-idealism-to-social-realism","url":"/categories/the-victorians/victorian-literature/poetry-shifts-from-romantic-idealism-to-social-realism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Serialization Led to Complex Multi-Volume Novels","slug":"serialization-led-to-complex-multi-volume-novels","url":"/categories/the-victorians/victorian-literature/serialization-led-to-complex-multi-volume-novels.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Shaping Gender Roles Through Narrative","slug":"shaping-gender-roles-through-narrative","url":"/categories/the-victorians/victorian-literature/shaping-gender-roles-through-narrative.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Birth of Detective Fiction in Victorian London","slug":"the-birth-of-detective-fiction-in-victorian-london","url":"/categories/the-victorians/victorian-literature/the-birth-of-detective-fiction-in-victorian-london.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Calculated Use of Dramatic Irony","slug":"the-calculated-use-of-dramatic-irony","url":"/categories/the-victorians/victorian-literature/the-calculated-use-of-dramatic-irony.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Complex Mechanics of Victorian Multi-Plot Narratives","slug":"the-complex-mechanics-of-victorian-multi-plot-narratives","url":"/categories/the-victorians/victorian-literature/the-complex-mechanics-of-victorian-multi-plot-narratives.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Evolution of Detective Fiction in the Victorian Era","slug":"the-evolution-of-detective-fiction-in-the-victorian-era","url":"/categories/the-victorians/victorian-literature/the-evolution-of-detective-fiction-in-the-victorian-era.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The First Gothic Revival Hit Victorian Shelves","slug":"the-first-gothic-revival-hit-victorian-shelves","url":"/categories/the-victorians/victorian-literature/the-first-gothic-revival-hit-victorian-shelves.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Forgotten Role of Illustrations","slug":"the-forgotten-role-of-illustrations","url":"/categories/the-victorians/victorian-literature/the-forgotten-role-of-illustrations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Hidden Influence of Women Writers in Early Victorian Fiction","slug":"the-hidden-influence-of-women-writers-in-early-victorian-fiction","url":"/categories/the-victorians/victorian-literature/the-hidden-influence-of-women-writers-in-early-victorian-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Largest Serialized Novel Audience","slug":"the-largest-serialized-novel-audience","url":"/categories/the-victorians/victorian-literature/the-largest-serialized-novel-audience.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Longest Victorian Novel Ever Written","slug":"the-longest-victorian-novel-ever-written","url":"/categories/the-victorians/victorian-literature/the-longest-victorian-novel-ever-written.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Longest Wait for a Plot Resolution","slug":"the-longest-wait-for-a-plot-resolution","url":"/categories/the-victorians/victorian-literature/the-longest-wait-for-a-plot-resolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Mechanics Behind Character Archetypes","slug":"the-mechanics-behind-character-archetypes","url":"/categories/the-victorians/victorian-literature/the-mechanics-behind-character-archetypes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Most Controversial Victorian Novel","slug":"the-most-controversial-victorian-novel","url":"/categories/the-victorians/victorian-literature/the-most-controversial-victorian-novel.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Odd Popularity of “Moralizing” Novels","slug":"the-odd-popularity-of-moralizing-novels","url":"/categories/the-victorians/victorian-literature/the-odd-popularity-of-moralizing-novels.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rarest First Editions Collectors Crave","slug":"the-rarest-first-editions-collectors-crave","url":"/categories/the-victorians/victorian-literature/the-rarest-first-editions-collectors-crave.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Sensation Fiction Shook Society","slug":"the-rise-of-sensation-fiction-shook-society","url":"/categories/the-victorians/victorian-literature/the-rise-of-sensation-fiction-shook-society.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of the Bildungsroman in Victorian Fiction","slug":"the-rise-of-the-bildungsroman-in-victorian-fiction","url":"/categories/the-victorians/victorian-literature/the-rise-of-the-bildungsroman-in-victorian-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Science of Victorian Gothic Atmosphere","slug":"the-science-of-victorian-gothic-atmosphere","url":"/categories/the-victorians/victorian-literature/the-science-of-victorian-gothic-atmosphere.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Secret Formula Behind Victorian Serialization","slug":"the-secret-formula-behind-victorian-serialization","url":"/categories/the-victorians/victorian-literature/the-secret-formula-behind-victorian-serialization.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Secret Influence of Periodicals on Victorian Fiction","slug":"the-secret-influence-of-periodicals-on-victorian-fiction","url":"/categories/the-victorians/victorian-literature/the-secret-influence-of-periodicals-on-victorian-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Startling Popularity of Illustrated Novels","slug":"the-startling-popularity-of-illustrated-novels","url":"/categories/the-victorians/victorian-literature/the-startling-popularity-of-illustrated-novels.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Strangest Victorian Narrative Experiments","slug":"the-strangest-victorian-narrative-experiments","url":"/categories/the-victorians/victorian-literature/the-strangest-victorian-narrative-experiments.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and AI Narrative Analysis","slug":"victorian-literature-and-ai-narrative-analysis","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-ai-narrative-analysis.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and National Identity","slug":"victorian-literature-and-national-identity","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-national-identity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature and the Legal Imagination","slug":"victorian-literature-and-the-legal-imagination","url":"/categories/the-victorians/victorian-literature/victorian-literature-and-the-legal-imagination.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature in Film and TV Adaptations","slug":"victorian-literature-in-film-and-tv-adaptations","url":"/categories/the-victorians/victorian-literature/victorian-literature-in-film-and-tv-adaptations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Inspires Interactive Storytelling","slug":"victorian-literature-inspires-interactive-storytelling","url":"/categories/the-victorians/victorian-literature/victorian-literature-inspires-interactive-storytelling.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Literature Shaped Social Reform","slug":"victorian-literature-shaped-social-reform","url":"/categories/the-victorians/victorian-literature/victorian-literature-shaped-social-reform.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Morality Still Influences Modern Ethics","slug":"victorian-morality-still-influences-modern-ethics","url":"/categories/the-victorians/victorian-literature/victorian-morality-still-influences-modern-ethics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Novels Evolved with Industrial Expansion","slug":"victorian-novels-evolved-with-industrial-expansion","url":"/categories/the-victorians/victorian-literature/victorian-novels-evolved-with-industrial-expansion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Novels Inspire Modern Crime Fiction","slug":"victorian-novels-inspire-modern-crime-fiction","url":"/categories/the-victorians/victorian-literature/victorian-novels-inspire-modern-crime-fiction.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Victorian Novels Were Surprisingly Experimental","slug":"victorian-novels-were-surprisingly-experimental","url":"/categories/the-victorians/victorian-literature/victorian-novels-were-surprisingly-experimental.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Why Foreshadowing Was a Science in Victorian Novels","slug":"why-foreshadowing-was-a-science-in-victorian-novels","url":"/categories/the-victorians/victorian-literature/why-foreshadowing-was-a-science-in-victorian-novels.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Why Victorian Poetry Often Felt Like a Moral Lecture","slug":"why-victorian-poetry-often-felt-like-a-moral-lecture","url":"/categories/the-victorians/victorian-literature/why-victorian-poetry-often-felt-like-a-moral-lecture.html","color":"#f44336","category":"the-victorians","factCount":1}];
 
 /**************************************************
  UTILITIES
@@ -105,14 +189,18 @@ function createCard(item){
   const div = document.createElement('div');
   div.className='card';
   div.dataset.slug = item.slug;
-  div.dataset.title = item.title.toLowerCase();
+  div.dataset.title = (item.title||'').toLowerCase();
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
+    <div class="fact-preview">${previewText}</div>
   `;
   return div;
 }
@@ -128,6 +216,11 @@ function populateGrid(items){
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
 }
 
 /**************************************************
@@ -137,9 +230,27 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
 
 /**************************************************
  INIT

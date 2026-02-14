@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alpacas</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Alpacas</h1>
+  <p>Explore all facts in "Alpacas".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Alpacas</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Alpaca Digestion Produces Less Methane Than Other Livestock","slug":"alpaca-digestion-produces-less-methane-than-other-livestock","url":"/categories/animals/alpacas/alpaca-digestion-produces-less-methane-than-other-livestock.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Ears Evolved as Heat Regulators and Communication Tools","slug":"alpaca-ears-evolved-as-heat-regulators-and-communication-tools","url":"/categories/animals/alpacas/alpaca-ears-evolved-as-heat-regulators-and-communication-tools.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Feet Evolved Cushioned Pads for Rugged Terrain","slug":"alpaca-feet-evolved-cushioned-pads-for-rugged-terrain","url":"/categories/animals/alpacas/alpaca-feet-evolved-cushioned-pads-for-rugged-terrain.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Fiber Colors Evolved for Camouflage","slug":"alpaca-fiber-colors-evolved-for-camouflage","url":"/categories/animals/alpacas/alpaca-fiber-colors-evolved-for-camouflage.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Fiber Trade Impacted European Fashion","slug":"alpaca-fiber-trade-impacted-european-fashion","url":"/categories/animals/alpacas/alpaca-fiber-trade-impacted-european-fashion.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Fleece Can Survive Harsh Snowstorms Unchanged","slug":"alpaca-fleece-can-survive-harsh-snowstorms-unchanged","url":"/categories/animals/alpacas/alpaca-fleece-can-survive-harsh-snowstorms-unchanged.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Fur Is Naturally Flame Resistant","slug":"alpaca-fur-is-naturally-flame-resistant","url":"/categories/animals/alpacas/alpaca-fur-is-naturally-flame-resistant.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Herding Created Unique Andean Labor Systems","slug":"alpaca-herding-created-unique-andean-labor-systems","url":"/categories/animals/alpacas/alpaca-herding-created-unique-andean-labor-systems.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Herding Shaped Ancient Settlement Patterns","slug":"alpaca-herding-shaped-ancient-settlement-patterns","url":"/categories/animals/alpacas/alpaca-herding-shaped-ancient-settlement-patterns.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Wool Fiber Diameter Determines Warmth and Softness","slug":"alpaca-wool-fiber-diameter-determines-warmth-and-softness","url":"/categories/animals/alpacas/alpaca-wool-fiber-diameter-determines-warmth-and-softness.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Wool Insulates Better Than Sheep Wool","slug":"alpaca-wool-insulates-better-than-sheep-wool","url":"/categories/animals/alpacas/alpaca-wool-insulates-better-than-sheep-wool.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Wool Shaped Andean Economies for Centuries","slug":"alpaca-wool-shaped-andean-economies-for-centuries","url":"/categories/animals/alpacas/alpaca-wool-shaped-andean-economies-for-centuries.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Wool Was a Luxury Reserved for Nobility","slug":"alpaca-wool-was-a-luxury-reserved-for-nobility","url":"/categories/animals/alpacas/alpaca-wool-was-a-luxury-reserved-for-nobility.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpaca Wool’s Water Resistance Comes From Hollow Fiber Structure","slug":"alpaca-wools-water-resistance-comes-from-hollow-fiber-structure","url":"/categories/animals/alpacas/alpaca-wools-water-resistance-comes-from-hollow-fiber-structure.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can “Communicate” Emotion Through Ear Position","slug":"alpacas-can-communicate-emotion-through-ear-position","url":"/categories/animals/alpacas/alpacas-can-communicate-emotion-through-ear-position.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Crossbreed With Llamas but Produce Sterile Hybrids","slug":"alpacas-can-crossbreed-with-llamas-but-produce-sterile-hybrids","url":"/categories/animals/alpacas/alpacas-can-crossbreed-with-llamas-but-produce-sterile-hybrids.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Detect Predators From Hundreds of Yards Away","slug":"alpacas-can-detect-predators-from-hundreds-of-yards-away","url":"/categories/animals/alpacas/alpacas-can-detect-predators-from-hundreds-of-yards-away.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Exhibit “Herd Panic” From Minimal Disturbance","slug":"alpacas-can-exhibit-herd-panic-from-minimal-disturbance","url":"/categories/animals/alpacas/alpacas-can-exhibit-herd-panic-from-minimal-disturbance.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Experience “Stress-Induced Hyperthermia”","slug":"alpacas-can-experience-stress-induced-hyperthermia","url":"/categories/animals/alpacas/alpacas-can-experience-stress-induced-hyperthermia.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Live Over 20 Years in the Wild","slug":"alpacas-can-live-over-20-years-in-the-wild","url":"/categories/animals/alpacas/alpacas-can-live-over-20-years-in-the-wild.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Recognize Human Faces","slug":"alpacas-can-recognize-human-faces","url":"/categories/animals/alpacas/alpacas-can-recognize-human-faces.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Survive Severe Frost That Would Kill Other Livestock","slug":"alpacas-can-survive-severe-frost-that-would-kill-other-livestock","url":"/categories/animals/alpacas/alpacas-can-survive-severe-frost-that-would-kill-other-livestock.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Can Survive Without Water Longer Than Expected","slug":"alpacas-can-survive-without-water-longer-than-expected","url":"/categories/animals/alpacas/alpacas-can-survive-without-water-longer-than-expected.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Descended from Wild Vicuñas, Not Llamas","slug":"alpacas-descended-from-wild-vicuas-not-llamas","url":"/categories/animals/alpacas/alpacas-descended-from-wild-vicuas-not-llamas.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Developed Keen Peripheral Vision for Predator Awareness","slug":"alpacas-developed-keen-peripheral-vision-for-predator-awareness","url":"/categories/animals/alpacas/alpacas-developed-keen-peripheral-vision-for-predator-awareness.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Developed Specialized Stomachs for High-Altitude Grazing","slug":"alpacas-developed-specialized-stomachs-for-high-altitude-grazing","url":"/categories/animals/alpacas/alpacas-developed-specialized-stomachs-for-high-altitude-grazing.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Evolved to Communicate With a Whistle","slug":"alpacas-evolved-to-communicate-with-a-whistle","url":"/categories/animals/alpacas/alpacas-evolved-to-communicate-with-a-whistle.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Have a Unique Cardiovascular System for High Altitude","slug":"alpacas-have-a-unique-cardiovascular-system-for-high-altitude","url":"/categories/animals/alpacas/alpacas-have-a-unique-cardiovascular-system-for-high-altitude.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Have Been Cloned Successfully","slug":"alpacas-have-been-cloned-successfully","url":"/categories/animals/alpacas/alpacas-have-been-cloned-successfully.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Have Set Record Distances for Mountain Grazing","slug":"alpacas-have-set-record-distances-for-mountain-grazing","url":"/categories/animals/alpacas/alpacas-have-set-record-distances-for-mountain-grazing.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Influenced Andean Clothing and Status Symbols","slug":"alpacas-influenced-andean-clothing-and-status-symbols","url":"/categories/animals/alpacas/alpacas-influenced-andean-clothing-and-status-symbols.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Influenced Andean Settlement Patterns","slug":"alpacas-influenced-andean-settlement-patterns","url":"/categories/animals/alpacas/alpacas-influenced-andean-settlement-patterns.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Inspired Ancient Textile Innovations","slug":"alpacas-inspired-ancient-textile-innovations","url":"/categories/animals/alpacas/alpacas-inspired-ancient-textile-innovations.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Sometimes Reject Their Own Offspring","slug":"alpacas-sometimes-reject-their-own-offspring","url":"/categories/animals/alpacas/alpacas-sometimes-reject-their-own-offspring.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Survived Ice Age Highland Conditions","slug":"alpacas-survived-ice-age-highland-conditions","url":"/categories/animals/alpacas/alpacas-survived-ice-age-highland-conditions.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Use Spitting as a Social and Defensive Mechanism","slug":"alpacas-use-spitting-as-a-social-and-defensive-mechanism","url":"/categories/animals/alpacas/alpacas-use-spitting-as-a-social-and-defensive-mechanism.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Were Documented in Early Spanish Chronicles","slug":"alpacas-were-documented-in-early-spanish-chronicles","url":"/categories/animals/alpacas/alpacas-were-documented-in-early-spanish-chronicles.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Were Domesticated Before Llamas","slug":"alpacas-were-domesticated-before-llamas","url":"/categories/animals/alpacas/alpacas-were-domesticated-before-llamas.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Were Sacred in the Inca Empire","slug":"alpacas-were-sacred-in-the-inca-empire","url":"/categories/animals/alpacas/alpacas-were-sacred-in-the-inca-empire.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Were Used as Andean Currency","slug":"alpacas-were-used-as-andean-currency","url":"/categories/animals/alpacas/alpacas-were-used-as-andean-currency.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Were Used as Early Biological Currency","slug":"alpacas-were-used-as-early-biological-currency","url":"/categories/animals/alpacas/alpacas-were-used-as-early-biological-currency.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas Were Worshipped by Ancient Civilizations","slug":"alpacas-were-worshipped-by-ancient-civilizations","url":"/categories/animals/alpacas/alpacas-were-worshipped-by-ancient-civilizations.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas’ Coat Density Increased Over Millennia for Cold Protection","slug":"alpacas-coat-density-increased-over-millennia-for-cold-protection","url":"/categories/animals/alpacas/alpacas-coat-density-increased-over-millennia-for-cold-protection.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas’ Color Genetics Can Produce Over 22 Natural Shades","slug":"alpacas-color-genetics-can-produce-over-22-natural-shades","url":"/categories/animals/alpacas/alpacas-color-genetics-can-produce-over-22-natural-shades.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas’ Lymphatic System Supports Wool Quality","slug":"alpacas-lymphatic-system-supports-wool-quality","url":"/categories/animals/alpacas/alpacas-lymphatic-system-supports-wool-quality.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas’ Role in Andean Religious Rituals Was Central","slug":"alpacas-role-in-andean-religious-rituals-was-central","url":"/categories/animals/alpacas/alpacas-role-in-andean-religious-rituals-was-central.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas’ Social Hierarchy Evolved to Reduce Conflict","slug":"alpacas-social-hierarchy-evolved-to-reduce-conflict","url":"/categories/animals/alpacas/alpacas-social-hierarchy-evolved-to-reduce-conflict.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Alpacas’ Teeth Adapted for Selective Grazing","slug":"alpacas-teeth-adapted-for-selective-grazing","url":"/categories/animals/alpacas/alpacas-teeth-adapted-for-selective-grazing.html","color":"#ff5722","category":"animals","factCount":1},{"title":"Rare Albino Alpacas Exist, Sparking Genetic Curiosity","slug":"rare-albino-alpacas-exist-sparking-genetic-curiosity","url":"/categories/animals/alpacas/rare-albino-alpacas-exist-sparking-genetic-curiosity.html","color":"#ff5722","category":"animals","factCount":1},{"title":"The Longest Alpaca Fiber Measured Nearly 25 Inches","slug":"the-longest-alpaca-fiber-measured-nearly-25-inches","url":"/categories/animals/alpacas/the-longest-alpaca-fiber-measured-nearly-25-inches.html","color":"#ff5722","category":"animals","factCount":1},{"title":"World’s Largest Alpaca Herd Was Over 10,000 Strong","slug":"worlds-largest-alpaca-herd-was-over-10000-strong","url":"/categories/animals/alpacas/worlds-largest-alpaca-herd-was-over-10000-strong.html","color":"#ff5722","category":"animals","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

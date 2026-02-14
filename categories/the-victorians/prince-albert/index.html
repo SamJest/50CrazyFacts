@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,37 +66,95 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Prince Albert</h1>
   <p>Explore all facts in "Prince Albert".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Prince Albert</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +162,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"Prince Albert and the Advancement of Art Education","slug":"prince-albert-and-the-advancement-of-art-education","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-advancement-of-art-education.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Birth of the Victoria and Albert Museum","slug":"prince-albert-and-the-birth-of-the-victoria-and-albert-museum","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-birth-of-the-victoria-and-albert-museum.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Birth of Victoria’s Christmas Tradition","slug":"prince-albert-and-the-birth-of-victorias-christmas-tradition","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-birth-of-victorias-christmas-tradition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Crystal Palace Expansion","slug":"prince-albert-and-the-crystal-palace-expansion","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-crystal-palace-expansion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Establishment of Science Schools","slug":"prince-albert-and-the-establishment-of-science-schools","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-establishment-of-science-schools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Introduction of Christmas Trees to Britain","slug":"prince-albert-and-the-introduction-of-christmas-trees-to-britain","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-introduction-of-christmas-trees-to-britain.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Introduction of Photography in Royal Documentation","slug":"prince-albert-and-the-introduction-of-photography-in-royal-documentation","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-introduction-of-photography-in-royal-documentation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Modernization of Royal Household Management","slug":"prince-albert-and-the-modernization-of-royal-household-management","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-modernization-of-royal-household-management.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Popularization of Scientific Journals","slug":"prince-albert-and-the-popularization-of-scientific-journals","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-popularization-of-scientific-journals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Promotion of the Arts in Public Schools","slug":"prince-albert-and-the-promotion-of-the-arts-in-public-schools","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-promotion-of-the-arts-in-public-schools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and the Reform of the British Court Protocol","slug":"prince-albert-and-the-reform-of-the-british-court-protocol","url":"/categories/the-victorians/prince-albert/prince-albert-and-the-reform-of-the-british-court-protocol.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert and Victorian Fashion Reform","slug":"prince-albert-and-victorian-fashion-reform","url":"/categories/the-victorians/prince-albert/prince-albert-and-victorian-fashion-reform.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert as Patron of Science and Innovation","slug":"prince-albert-as-patron-of-science-and-innovation","url":"/categories/the-victorians/prince-albert/prince-albert-as-patron-of-science-and-innovation.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert Introduced the Idea of Royal Patronage of Music","slug":"prince-albert-introduced-the-idea-of-royal-patronage-of-music","url":"/categories/the-victorians/prince-albert/prince-albert-introduced-the-idea-of-royal-patronage-of-music.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert Revolutionized Royal Fashion","slug":"prince-albert-revolutionized-royal-fashion","url":"/categories/the-victorians/prince-albert/prince-albert-revolutionized-royal-fashion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Advocacy for Industrial Design","slug":"prince-alberts-advocacy-for-industrial-design","url":"/categories/the-victorians/prince-albert/prince-alberts-advocacy-for-industrial-design.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Advocacy for Scientific Societies","slug":"prince-alberts-advocacy-for-scientific-societies","url":"/categories/the-victorians/prince-albert/prince-alberts-advocacy-for-scientific-societies.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Architectural Legacy in Britain","slug":"prince-alberts-architectural-legacy-in-britain","url":"/categories/the-victorians/prince-albert/prince-alberts-architectural-legacy-in-britain.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Commitment to Education Reform","slug":"prince-alberts-commitment-to-education-reform","url":"/categories/the-victorians/prince-albert/prince-alberts-commitment-to-education-reform.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Contribution to the Great Exhibition of 1851","slug":"prince-alberts-contribution-to-the-great-exhibition-of-1851","url":"/categories/the-victorians/prince-albert/prince-alberts-contribution-to-the-great-exhibition-of-1851.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Creation of the Albert Medal","slug":"prince-alberts-creation-of-the-albert-medal","url":"/categories/the-victorians/prince-albert/prince-alberts-creation-of-the-albert-medal.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Dedication to Environmental Awareness","slug":"prince-alberts-dedication-to-environmental-awareness","url":"/categories/the-victorians/prince-albert/prince-alberts-dedication-to-environmental-awareness.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Efforts to Modernize British Agriculture","slug":"prince-alberts-efforts-to-modernize-british-agriculture","url":"/categories/the-victorians/prince-albert/prince-alberts-efforts-to-modernize-british-agriculture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Environmental Conservation Efforts","slug":"prince-alberts-environmental-conservation-efforts","url":"/categories/the-victorians/prince-albert/prince-alberts-environmental-conservation-efforts.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Environmental Interests","slug":"prince-alberts-environmental-interests","url":"/categories/the-victorians/prince-albert/prince-alberts-environmental-interests.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Influence on Court Music and Arts","slug":"prince-alberts-influence-on-court-music-and-arts","url":"/categories/the-victorians/prince-albert/prince-alberts-influence-on-court-music-and-arts.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Influence on Royal Philanthropy","slug":"prince-alberts-influence-on-royal-philanthropy","url":"/categories/the-victorians/prince-albert/prince-alberts-influence-on-royal-philanthropy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Influence on Royal Weddings","slug":"prince-alberts-influence-on-royal-weddings","url":"/categories/the-victorians/prince-albert/prince-alberts-influence-on-royal-weddings.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Influence on the Great Exhibition","slug":"prince-alberts-influence-on-the-great-exhibition","url":"/categories/the-victorians/prince-albert/prince-alberts-influence-on-the-great-exhibition.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Influence on the Victoria and Albert Museum","slug":"prince-alberts-influence-on-the-victoria-and-albert-museum","url":"/categories/the-victorians/prince-albert/prince-alberts-influence-on-the-victoria-and-albert-museum.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Influence on Victorian Fashion","slug":"prince-alberts-influence-on-victorian-fashion","url":"/categories/the-victorians/prince-albert/prince-alberts-influence-on-victorian-fashion.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Interest in International Diplomacy","slug":"prince-alberts-interest-in-international-diplomacy","url":"/categories/the-victorians/prince-albert/prince-alberts-interest-in-international-diplomacy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Interest in International Exhibitions","slug":"prince-alberts-interest-in-international-exhibitions","url":"/categories/the-victorians/prince-albert/prince-alberts-interest-in-international-exhibitions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Introduction of Mechanical Innovations to the Palace","slug":"prince-alberts-introduction-of-mechanical-innovations-to-the-palace","url":"/categories/the-victorians/prince-albert/prince-alberts-introduction-of-mechanical-innovations-to-the-palace.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Introduction of Public Parks and Green Spaces","slug":"prince-alberts-introduction-of-public-parks-and-green-spaces","url":"/categories/the-victorians/prince-albert/prince-alberts-introduction-of-public-parks-and-green-spaces.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Involvement in Photography as Art","slug":"prince-alberts-involvement-in-photography-as-art","url":"/categories/the-victorians/prince-albert/prince-alberts-involvement-in-photography-as-art.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Legacy in Royal Ceremonial Architecture","slug":"prince-alberts-legacy-in-royal-ceremonial-architecture","url":"/categories/the-victorians/prince-albert/prince-alberts-legacy-in-royal-ceremonial-architecture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Love of Photography","slug":"prince-alberts-love-of-photography","url":"/categories/the-victorians/prince-albert/prince-alberts-love-of-photography.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Passion for Cultural Exchange","slug":"prince-alberts-passion-for-cultural-exchange","url":"/categories/the-victorians/prince-albert/prince-alberts-passion-for-cultural-exchange.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Passion for Science Education","slug":"prince-alberts-passion-for-science-education","url":"/categories/the-victorians/prince-albert/prince-alberts-passion-for-science-education.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Promotion of Engineering Education","slug":"prince-alberts-promotion-of-engineering-education","url":"/categories/the-victorians/prince-albert/prince-alberts-promotion-of-engineering-education.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Role in International Diplomacy","slug":"prince-alberts-role-in-international-diplomacy","url":"/categories/the-victorians/prince-albert/prince-alberts-role-in-international-diplomacy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Role in Modernizing the Monarchy","slug":"prince-alberts-role-in-modernizing-the-monarchy","url":"/categories/the-victorians/prince-albert/prince-alberts-role-in-modernizing-the-monarchy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Role in Promoting British Art Abroad","slug":"prince-alberts-role-in-promoting-british-art-abroad","url":"/categories/the-victorians/prince-albert/prince-alberts-role-in-promoting-british-art-abroad.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Role in Standardizing British Weights and Measures","slug":"prince-alberts-role-in-standardizing-british-weights-and-measures","url":"/categories/the-victorians/prince-albert/prince-alberts-role-in-standardizing-british-weights-and-measures.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Role in the Development of the Royal Albert Hall","slug":"prince-alberts-role-in-the-development-of-the-royal-albert-hall","url":"/categories/the-victorians/prince-albert/prince-alberts-role-in-the-development-of-the-royal-albert-hall.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Role in the Great Exhibition of 1851","slug":"prince-alberts-role-in-the-great-exhibition-of-1851","url":"/categories/the-victorians/prince-albert/prince-alberts-role-in-the-great-exhibition-of-1851.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Support for Nursing and Healthcare Reform","slug":"prince-alberts-support-for-nursing-and-healthcare-reform","url":"/categories/the-victorians/prince-albert/prince-alberts-support-for-nursing-and-healthcare-reform.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Support for the Mechanics’ Institutes","slug":"prince-alberts-support-for-the-mechanics-institutes","url":"/categories/the-victorians/prince-albert/prince-alberts-support-for-the-mechanics-institutes.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert’s Support for Women in Arts","slug":"prince-alberts-support-for-women-in-arts","url":"/categories/the-victorians/prince-albert/prince-alberts-support-for-women-in-arts.html","color":"#f44336","category":"the-victorians","factCount":1}];
+const ITEMS = [{"title":"Albert Achieved Extreme Workload for a Consort","slug":"albert-achieved-extreme-workload-for-a-consort","url":"/categories/the-victorians/prince-albert/albert-achieved-extreme-workload-for-a-consort.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Adapted German Innovation to Britain","slug":"albert-adapted-german-innovation-to-britain","url":"/categories/the-victorians/prince-albert/albert-adapted-german-innovation-to-britain.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert and Rare Diplomatic Interventions","slug":"albert-and-rare-diplomatic-interventions","url":"/categories/the-victorians/prince-albert/albert-and-rare-diplomatic-interventions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Codified Industrial Knowledge for Public Use","slug":"albert-codified-industrial-knowledge-for-public-use","url":"/categories/the-victorians/prince-albert/albert-codified-industrial-knowledge-for-public-use.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Collected Rare Musical Instruments","slug":"albert-collected-rare-musical-instruments","url":"/categories/the-victorians/prince-albert/albert-collected-rare-musical-instruments.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Evolved British Industrial Exhibitions","slug":"albert-evolved-british-industrial-exhibitions","url":"/categories/the-victorians/prince-albert/albert-evolved-british-industrial-exhibitions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Evolved Public Perception of Monarchy","slug":"albert-evolved-public-perception-of-monarchy","url":"/categories/the-victorians/prince-albert/albert-evolved-public-perception-of-monarchy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Evolved the Role of Royal Consort in Governance","slug":"albert-evolved-the-role-of-royal-consort-in-governance","url":"/categories/the-victorians/prince-albert/albert-evolved-the-role-of-royal-consort-in-governance.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Fostered Cross-Cultural Scientific Exchange","slug":"albert-fostered-cross-cultural-scientific-exchange","url":"/categories/the-victorians/prince-albert/albert-fostered-cross-cultural-scientific-exchange.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Held Records in Public Speaking and Patronage","slug":"albert-held-records-in-public-speaking-and-patronage","url":"/categories/the-victorians/prince-albert/albert-held-records-in-public-speaking-and-patronage.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Influenced Political Alliances Indirectly","slug":"albert-influenced-political-alliances-indirectly","url":"/categories/the-victorians/prince-albert/albert-influenced-political-alliances-indirectly.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Introduced Systematic Royal Gardening","slug":"albert-introduced-systematic-royal-gardening","url":"/categories/the-victorians/prince-albert/albert-introduced-systematic-royal-gardening.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Maintained Records of Industrial Progress","slug":"albert-maintained-records-of-industrial-progress","url":"/categories/the-victorians/prince-albert/albert-maintained-records-of-industrial-progress.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Modernized Royal Ceremonies Over Decades","slug":"albert-modernized-royal-ceremonies-over-decades","url":"/categories/the-victorians/prince-albert/albert-modernized-royal-ceremonies-over-decades.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Presided Over Rare Cultural Milestones","slug":"albert-presided-over-rare-cultural-milestones","url":"/categories/the-victorians/prince-albert/albert-presided-over-rare-cultural-milestones.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Reformed Royal Education Over Time","slug":"albert-reformed-royal-education-over-time","url":"/categories/the-victorians/prince-albert/albert-reformed-royal-education-over-time.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Set Records in Royal Correspondence","slug":"albert-set-records-in-royal-correspondence","url":"/categories/the-victorians/prince-albert/albert-set-records-in-royal-correspondence.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Shaped Public Festivities and National Rituals","slug":"albert-shaped-public-festivities-and-national-rituals","url":"/categories/the-victorians/prince-albert/albert-shaped-public-festivities-and-national-rituals.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Shaped Victorian Morality Through Culture","slug":"albert-shaped-victorian-morality-through-culture","url":"/categories/the-victorians/prince-albert/albert-shaped-victorian-morality-through-culture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Standardized Royal Art Patronage","slug":"albert-standardized-royal-art-patronage","url":"/categories/the-victorians/prince-albert/albert-standardized-royal-art-patronage.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Turned Royal Philanthropy into a System","slug":"albert-turned-royal-philanthropy-into-a-system","url":"/categories/the-victorians/prince-albert/albert-turned-royal-philanthropy-into-a-system.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert Turned Windsor into a Cultural Hub","slug":"albert-turned-windsor-into-a-cultural-hub","url":"/categories/the-victorians/prince-albert/albert-turned-windsor-into-a-cultural-hub.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Advocacy for Technical Education Grew Stronger","slug":"alberts-advocacy-for-technical-education-grew-stronger","url":"/categories/the-victorians/prince-albert/alberts-advocacy-for-technical-education-grew-stronger.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Counterintuitive Influence on Military Logistics","slug":"alberts-counterintuitive-influence-on-military-logistics","url":"/categories/the-victorians/prince-albert/alberts-counterintuitive-influence-on-military-logistics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Counterintuitive Role in Public Health","slug":"alberts-counterintuitive-role-in-public-health","url":"/categories/the-victorians/prince-albert/alberts-counterintuitive-role-in-public-health.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Engineering Insights Influenced Railways","slug":"alberts-engineering-insights-influenced-railways","url":"/categories/the-victorians/prince-albert/alberts-engineering-insights-influenced-railways.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Forgotten Influence on Early Photography Techniques","slug":"alberts-forgotten-influence-on-early-photography-techniques","url":"/categories/the-victorians/prince-albert/alberts-forgotten-influence-on-early-photography-techniques.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Forgotten Influence on Photography","slug":"alberts-forgotten-influence-on-photography","url":"/categories/the-victorians/prince-albert/alberts-forgotten-influence-on-photography.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Influence on Exhibition Architecture Evolved Over Time","slug":"alberts-influence-on-exhibition-architecture-evolved-over-time","url":"/categories/the-victorians/prince-albert/alberts-influence-on-exhibition-architecture-evolved-over-time.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Influence on Fashion Was Surprisingly Political","slug":"alberts-influence-on-fashion-was-surprisingly-political","url":"/categories/the-victorians/prince-albert/alberts-influence-on-fashion-was-surprisingly-political.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Influence on Philanthropic Systems Was Subtle but Powerful","slug":"alberts-influence-on-philanthropic-systems-was-subtle-but-powerful","url":"/categories/the-victorians/prince-albert/alberts-influence-on-philanthropic-systems-was-subtle-but-powerful.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Influence on Rare Scientific Societies","slug":"alberts-influence-on-rare-scientific-societies","url":"/categories/the-victorians/prince-albert/alberts-influence-on-rare-scientific-societies.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Influence on Victorian Architecture Evolved Over Time","slug":"alberts-influence-on-victorian-architecture-evolved-over-time","url":"/categories/the-victorians/prince-albert/alberts-influence-on-victorian-architecture-evolved-over-time.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Involvement in Rare Industrial Innovations","slug":"alberts-involvement-in-rare-industrial-innovations","url":"/categories/the-victorians/prince-albert/alberts-involvement-in-rare-industrial-innovations.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Love for Photography Preserved Royal History","slug":"alberts-love-for-photography-preserved-royal-history","url":"/categories/the-victorians/prince-albert/alberts-love-for-photography-preserved-royal-history.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Obscure Hobby: Microscopy","slug":"alberts-obscure-hobby-microscopy","url":"/categories/the-victorians/prince-albert/alberts-obscure-hobby-microscopy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Obsession With Crinolines Sparked a Fashion Revolution","slug":"alberts-obsession-with-crinolines-sparked-a-fashion-revolution","url":"/categories/the-victorians/prince-albert/alberts-obsession-with-crinolines-sparked-a-fashion-revolution.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Obsession With Education Rewrote Britain’s Schools","slug":"alberts-obsession-with-education-rewrote-britains-schools","url":"/categories/the-victorians/prince-albert/alberts-obsession-with-education-rewrote-britains-schools.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Personal Collections Set Records","slug":"alberts-personal-collections-set-records","url":"/categories/the-victorians/prince-albert/alberts-personal-collections-set-records.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Rare Botanical Hybrids","slug":"alberts-rare-botanical-hybrids","url":"/categories/the-victorians/prince-albert/alberts-rare-botanical-hybrids.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Role in Preserving Industrial Knowledge","slug":"alberts-role-in-preserving-industrial-knowledge","url":"/categories/the-victorians/prince-albert/alberts-role-in-preserving-industrial-knowledge.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Role in Standardizing Science Exhibits","slug":"alberts-role-in-standardizing-science-exhibits","url":"/categories/the-victorians/prince-albert/alberts-role-in-standardizing-science-exhibits.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Role in the Evolving British Monarchy","slug":"alberts-role-in-the-evolving-british-monarchy","url":"/categories/the-victorians/prince-albert/alberts-role-in-the-evolving-british-monarchy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Scientific Curiosity Drove Industrial Progress","slug":"alberts-scientific-curiosity-drove-industrial-progress","url":"/categories/the-victorians/prince-albert/alberts-scientific-curiosity-drove-industrial-progress.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Scientific Experiments Revealed Royal Curiosity","slug":"alberts-scientific-experiments-revealed-royal-curiosity","url":"/categories/the-victorians/prince-albert/alberts-scientific-experiments-revealed-royal-curiosity.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Support of Scientific Societies Evolved Research","slug":"alberts-support-of-scientific-societies-evolved-research","url":"/categories/the-victorians/prince-albert/alberts-support-of-scientific-societies-evolved-research.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Uncommon Architectural Experiments","slug":"alberts-uncommon-architectural-experiments","url":"/categories/the-victorians/prince-albert/alberts-uncommon-architectural-experiments.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Albert’s Unusual Passion for Mechanical Toys","slug":"alberts-unusual-passion-for-mechanical-toys","url":"/categories/the-victorians/prince-albert/alberts-unusual-passion-for-mechanical-toys.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Prince Albert's German Roots Shaped Britain","slug":"prince-alberts-german-roots-shaped-britain","url":"/categories/the-victorians/prince-albert/prince-alberts-german-roots-shaped-britain.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The 19-Year-Old Matchmaker of Europe","slug":"the-19-year-old-matchmaker-of-europe","url":"/categories/the-victorians/prince-albert/the-19-year-old-matchmaker-of-europe.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Prince Who Brought Christmas Trees to Britain","slug":"the-prince-who-brought-christmas-trees-to-britain","url":"/categories/the-victorians/prince-albert/the-prince-who-brought-christmas-trees-to-britain.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Prince Who Invented Royal Protocols","slug":"the-prince-who-invented-royal-protocols","url":"/categories/the-victorians/prince-albert/the-prince-who-invented-royal-protocols.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Prince Who Revolutionized Public Exhibitions","slug":"the-prince-who-revolutionized-public-exhibitions","url":"/categories/the-victorians/prince-albert/the-prince-who-revolutionized-public-exhibitions.html","color":"#f44336","category":"the-victorians","factCount":1}];
 
 /**************************************************
  UTILITIES
@@ -105,14 +189,18 @@ function createCard(item){
   const div = document.createElement('div');
   div.className='card';
   div.dataset.slug = item.slug;
-  div.dataset.title = item.title.toLowerCase();
+  div.dataset.title = (item.title||'').toLowerCase();
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
+    <div class="fact-preview">${previewText}</div>
   `;
   return div;
 }
@@ -128,6 +216,11 @@ function populateGrid(items){
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
 }
 
 /**************************************************
@@ -137,9 +230,27 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
 
 /**************************************************
  INIT

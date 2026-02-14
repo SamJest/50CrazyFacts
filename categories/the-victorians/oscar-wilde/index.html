@@ -28,9 +28,33 @@ body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; co
 a { text-decoration:none; color:inherit; }
 
 /* HEADER */
-header { text-align:center; padding:60px 20px 30px; background:linear-gradient(135deg,#222,#333); color:white; }
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 header h1 { font-size:2.8em; margin:0 0 10px; }
 header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
 
 /* GRID & CARDS */
 .grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
@@ -42,37 +66,95 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition:transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
   cursor:pointer;
   opacity:0;
 }
 .card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
 .card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
 .card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
 .card:hover a { color: var(--category-color,#ff5722); }
 
-.badge { display:inline-block; padding:4px 8px; margin:2px; border-radius:6px; font-size:.8em; background:#eee; transition:all 0.2s; }
-.card:hover .badge { background: var(--category-color,#ff5722); color:white; }
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
 
 .meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
 
 /* SEARCH BAR */
 #search-container { text-align:center; margin:20px; }
 #search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
 #search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
 
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
 /* RESPONSIVE */
-@media(max-width:600px){ .grid{flex-direction:column;align-items:center;} .card{flex:1 1 100%;} }
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>Oscar Wilde</h1>
   <p>Explore all facts in "Oscar Wilde".</p>
 </header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Oscar Wilde</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
 
 <section id="search-container">
   <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
@@ -80,11 +162,13 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 
 <section id="items-grid" class="grid"></section>
 
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
 <script>
 /**************************************************
  DATA FROM GENERATOR
 **************************************************/
-const ITEMS = [{"title":"Oscar Wilde Collected Jewelry for Writing Inspiration","slug":"oscar-wilde-collected-jewelry-for-writing-inspiration","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-collected-jewelry-for-writing-inspiration.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Collected Rare Shells","slug":"oscar-wilde-collected-rare-shells","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-collected-rare-shells.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Designed His Own Tomb","slug":"oscar-wilde-designed-his-own-tomb","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-designed-his-own-tomb.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Had a “Cigarette Philosophy”","slug":"oscar-wilde-had-a-cigarette-philosophy","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-had-a-cigarette-philosophy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Invented the Dandy Persona","slug":"oscar-wilde-invented-the-dandy-persona","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-invented-the-dandy-persona.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Liked Bathing in Perfume","slug":"oscar-wilde-liked-bathing-in-perfume","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-liked-bathing-in-perfume.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Liked the Company of Sailors","slug":"oscar-wilde-liked-the-company-of-sailors","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-liked-the-company-of-sailors.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Classical Music for Writing Inspiration","slug":"oscar-wilde-loved-classical-music-for-writing-inspiration","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-classical-music-for-writing-inspiration.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Elaborate Walking Sticks","slug":"oscar-wilde-loved-elaborate-walking-sticks","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-elaborate-walking-sticks.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Epigrams","slug":"oscar-wilde-loved-epigrams","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-epigrams.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Exotic Fruits","slug":"oscar-wilde-loved-exotic-fruits","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-exotic-fruits.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Exotic Pets","slug":"oscar-wilde-loved-exotic-pets","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-exotic-pets.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Greek Mythology","slug":"oscar-wilde-loved-greek-mythology","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-greek-mythology.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Japanese Art","slug":"oscar-wilde-loved-japanese-art","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-japanese-art.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Opium Culture","slug":"oscar-wilde-loved-opium-culture","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-opium-culture.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Loved Sunbathing for Aesthetics","slug":"oscar-wilde-loved-sunbathing-for-aesthetics","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-loved-sunbathing-for-aesthetics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Carried a Hand Mirror to Parties","slug":"oscar-wilde-once-carried-a-hand-mirror-to-parties","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-carried-a-hand-mirror-to-parties.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Criticized Queen Victoria","slug":"oscar-wilde-once-criticized-queen-victoria","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-criticized-queen-victoria.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Delivered a Lecture on Aesthetic Fencing","slug":"oscar-wilde-once-delivered-a-lecture-on-aesthetic-fencing","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-delivered-a-lecture-on-aesthetic-fencing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Dressed as a Peacock","slug":"oscar-wilde-once-dressed-as-a-peacock","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-dressed-as-a-peacock.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Escaped a Prank with Humor","slug":"oscar-wilde-once-escaped-a-prank-with-humor","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-escaped-a-prank-with-humor.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Flirted with a Dolphin","slug":"oscar-wilde-once-flirted-with-a-dolphin","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-flirted-with-a-dolphin.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Gave a Lecture Dressed as a Poetical Phantom","slug":"oscar-wilde-once-gave-a-lecture-dressed-as-a-poetical-phantom","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-gave-a-lecture-dressed-as-a-poetical-phantom.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Had a Duel of Wits","slug":"oscar-wilde-once-had-a-duel-of-wits","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-had-a-duel-of-wits.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Hosted a Masked Dinner Party","slug":"oscar-wilde-once-hosted-a-masked-dinner-party","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-hosted-a-masked-dinner-party.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Painted a Self-Portrait in Costume","slug":"oscar-wilde-once-painted-a-self-portrait-in-costume","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-painted-a-self-portrait-in-costume.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Taught a Cat Etiquette","slug":"oscar-wilde-once-taught-a-cat-etiquette","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-taught-a-cat-etiquette.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Tried to Raise Funds with Lectures","slug":"oscar-wilde-once-tried-to-raise-funds-with-lectures","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-tried-to-raise-funds-with-lectures.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Used a Peacock Fan in Court","slug":"oscar-wilde-once-used-a-peacock-fan-in-court","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-used-a-peacock-fan-in-court.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Once Wrote a Play in a Garden","slug":"oscar-wilde-once-wrote-a-play-in-a-garden","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-once-wrote-a-play-in-a-garden.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Practiced Fencing","slug":"oscar-wilde-practiced-fencing","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-practiced-fencing.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Practiced Mirror Duels with Friends","slug":"oscar-wilde-practiced-mirror-duels-with-friends","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-practiced-mirror-duels-with-friends.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Practiced Mirror Reading","slug":"oscar-wilde-practiced-mirror-reading","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-practiced-mirror-reading.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Practiced Table Manners as Art","slug":"oscar-wilde-practiced-table-manners-as-art","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-practiced-table-manners-as-art.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Was a Media Celebrity Before Modern Media","slug":"oscar-wilde-was-a-media-celebrity-before-modern-media","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-was-a-media-celebrity-before-modern-media.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Was a Travel Enthusiast","slug":"oscar-wilde-was-a-travel-enthusiast","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-was-a-travel-enthusiast.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Was Obsessed with Beauty","slug":"oscar-wilde-was-obsessed-with-beauty","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-was-obsessed-with-beauty.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Was Obsessed with Green Ink","slug":"oscar-wilde-was-obsessed-with-green-ink","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-was-obsessed-with-green-ink.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wore Velvet as a Statement","slug":"oscar-wilde-wore-velvet-as-a-statement","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wore-velvet-as-a-statement.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote a Letter in Morse Code","slug":"oscar-wilde-wrote-a-letter-in-morse-code","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-a-letter-in-morse-code.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote a Play in Prison","slug":"oscar-wilde-wrote-a-play-in-prison","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-a-play-in-prison.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote a Play With a Cat","slug":"oscar-wilde-wrote-a-play-with-a-cat","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-a-play-with-a-cat.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote Aphorisms on Mirrors","slug":"oscar-wilde-wrote-aphorisms-on-mirrors","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-aphorisms-on-mirrors.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote Erotic Poetry in Secret","slug":"oscar-wilde-wrote-erotic-poetry-in-secret","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-erotic-poetry-in-secret.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote Fairy Tales for Adults","slug":"oscar-wilde-wrote-fairy-tales-for-adults","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-fairy-tales-for-adults.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote in Bed","slug":"oscar-wilde-wrote-in-bed","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-in-bed.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote Letters in Code","slug":"oscar-wilde-wrote-letters-in-code","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-letters-in-code.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde Wrote Under Pseudonyms","slug":"oscar-wilde-wrote-under-pseudonyms","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-wrote-under-pseudonyms.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde’s Trial Shocked Society","slug":"oscar-wildes-trial-shocked-society","url":"/categories/the-victorians/oscar-wilde/oscar-wildes-trial-shocked-society.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde’s Wit Got Him Sued","slug":"oscar-wildes-wit-got-him-sued","url":"/categories/the-victorians/oscar-wilde/oscar-wildes-wit-got-him-sued.html","color":"#f44336","category":"the-victorians","factCount":1}];
+const ITEMS = [{"title":"First London Debut: Wilde’s Dublin Eccentricity Shines","slug":"first-london-debut-wildes-dublin-eccentricity-shines","url":"/categories/the-victorians/oscar-wilde/first-london-debut-wildes-dublin-eccentricity-shines.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"How Wilde’s Wit Functioned Like Social Surgery","slug":"how-wildes-wit-functioned-like-social-surgery","url":"/categories/the-victorians/oscar-wilde/how-wildes-wit-functioned-like-social-surgery.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Oscar Wilde and the French Influence at Oxford","slug":"oscar-wilde-and-the-french-influence-at-oxford","url":"/categories/the-victorians/oscar-wilde/oscar-wilde-and-the-french-influence-at-oxford.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Anomaly of Wilde’s Public Support Despite Imprisonment","slug":"the-anomaly-of-wildes-public-support-despite-imprisonment","url":"/categories/the-victorians/oscar-wilde/the-anomaly-of-wildes-public-support-despite-imprisonment.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Counterintuitive Legacy of Wilde’s Exile","slug":"the-counterintuitive-legacy-of-wildes-exile","url":"/categories/the-victorians/oscar-wilde/the-counterintuitive-legacy-of-wildes-exile.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Evolution of Wilde’s Epigrams Shaped Social Satire","slug":"the-evolution-of-wildes-epigrams-shaped-social-satire","url":"/categories/the-victorians/oscar-wilde/the-evolution-of-wildes-epigrams-shaped-social-satire.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Forgotten Philosophical Influence of Wilde on Ethics","slug":"the-forgotten-philosophical-influence-of-wilde-on-ethics","url":"/categories/the-victorians/oscar-wilde/the-forgotten-philosophical-influence-of-wilde-on-ethics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Hidden Mechanics of Wilde’s Public Persona","slug":"the-hidden-mechanics-of-wildes-public-persona","url":"/categories/the-victorians/oscar-wilde/the-hidden-mechanics-of-wildes-public-persona.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Number of Wilde’s Public Scandals Was Unprecedented","slug":"the-number-of-wildes-public-scandals-was-unprecedented","url":"/categories/the-victorians/oscar-wilde/the-number-of-wildes-public-scandals-was-unprecedented.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rarity of Wilde’s Play Premieres Abroad","slug":"the-rarity-of-wildes-play-premieres-abroad","url":"/categories/the-victorians/oscar-wilde/the-rarity-of-wildes-play-premieres-abroad.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Record Length of Wilde’s Imprisonment Changed Literary Perception","slug":"the-record-length-of-wildes-imprisonment-changed-literary-perception","url":"/categories/the-victorians/oscar-wilde/the-record-length-of-wildes-imprisonment-changed-literary-perception.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Rise of Wilde’s Salon Influence","slug":"the-rise-of-wildes-salon-influence","url":"/categories/the-victorians/oscar-wilde/the-rise-of-wildes-salon-influence.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Role of Conversation as Wilde’s Laboratory","slug":"the-role-of-conversation-as-wildes-laboratory","url":"/categories/the-victorians/oscar-wilde/the-role-of-conversation-as-wildes-laboratory.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Science Behind Wilde’s Epigrams","slug":"the-science-behind-wildes-epigrams","url":"/categories/the-victorians/oscar-wilde/the-science-behind-wildes-epigrams.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Social Controversies Sparked by Wilde’s Persona","slug":"the-social-controversies-sparked-by-wildes-persona","url":"/categories/the-victorians/oscar-wilde/the-social-controversies-sparked-by-wildes-persona.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"The Statistical Rarity of Wilde’s Artistic Versatility","slug":"the-statistical-rarity-of-wildes-artistic-versatility","url":"/categories/the-victorians/oscar-wilde/the-statistical-rarity-of-wildes-artistic-versatility.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s “De Profundis” Emerged as a Rare Prison Manuscript","slug":"wildes-de-profundis-emerged-as-a-rare-prison-manuscript","url":"/categories/the-victorians/oscar-wilde/wildes-de-profundis-emerged-as-a-rare-prison-manuscript.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s “Decorative Art” Essays Influenced Victorian Interiors","slug":"wildes-decorative-art-essays-influenced-victorian-interiors","url":"/categories/the-victorians/oscar-wilde/wildes-decorative-art-essays-influenced-victorian-interiors.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s “Importance of Being Earnest” Holds Records for Enduring Humor","slug":"wildes-importance-of-being-earnest-holds-records-for-enduring-humor","url":"/categories/the-victorians/oscar-wilde/wildes-importance-of-being-earnest-holds-records-for-enduring-humor.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s American Lecture Tour Spread Aestheticism Abroad","slug":"wildes-american-lecture-tour-spread-aestheticism-abroad","url":"/categories/the-victorians/oscar-wilde/wildes-american-lecture-tour-spread-aestheticism-abroad.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde's Childhood in Dublin Shaped a Literary Rebel","slug":"wildes-childhood-in-dublin-shaped-a-literary-rebel","url":"/categories/the-victorians/oscar-wilde/wildes-childhood-in-dublin-shaped-a-literary-rebel.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Counterintuitive Views on Marriage","slug":"wildes-counterintuitive-views-on-marriage","url":"/categories/the-victorians/oscar-wilde/wildes-counterintuitive-views-on-marriage.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Duality: Humor and Darkness","slug":"wildes-duality-humor-and-darkness","url":"/categories/the-victorians/oscar-wilde/wildes-duality-humor-and-darkness.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Early Essays on Dress Shocked Victorian Morality","slug":"wildes-early-essays-on-dress-shocked-victorian-morality","url":"/categories/the-victorians/oscar-wilde/wildes-early-essays-on-dress-shocked-victorian-morality.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Early Fame at Trinity College","slug":"wildes-early-fame-at-trinity-college","url":"/categories/the-victorians/oscar-wilde/wildes-early-fame-at-trinity-college.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Early Love for the Macabre Influenced Later Work","slug":"wildes-early-love-for-the-macabre-influenced-later-work","url":"/categories/the-victorians/oscar-wilde/wildes-early-love-for-the-macabre-influenced-later-work.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Early Plays Began as Private Experiments","slug":"wildes-early-plays-began-as-private-experiments","url":"/categories/the-victorians/oscar-wilde/wildes-early-plays-began-as-private-experiments.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Early Theatrical Experiments in Dublin","slug":"wildes-early-theatrical-experiments-in-dublin","url":"/categories/the-victorians/oscar-wilde/wildes-early-theatrical-experiments-in-dublin.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Experimentation with Literary Form","slug":"wildes-experimentation-with-literary-form","url":"/categories/the-victorians/oscar-wilde/wildes-experimentation-with-literary-form.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s First Aesthetic Essay Shocked British Critics","slug":"wildes-first-aesthetic-essay-shocked-british-critics","url":"/categories/the-victorians/oscar-wilde/wildes-first-aesthetic-essay-shocked-british-critics.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s First Lecture Tour Revealed His Performance Genius","slug":"wildes-first-lecture-tour-revealed-his-performance-genius","url":"/categories/the-victorians/oscar-wilde/wildes-first-lecture-tour-revealed-his-performance-genius.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s First Published Poem Caused a Stir","slug":"wildes-first-published-poem-caused-a-stir","url":"/categories/the-victorians/oscar-wilde/wildes-first-published-poem-caused-a-stir.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Forgotten Influence on Art Criticism","slug":"wildes-forgotten-influence-on-art-criticism","url":"/categories/the-victorians/oscar-wilde/wildes-forgotten-influence-on-art-criticism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Forgotten Influence on Victorian Fashion Trends","slug":"wildes-forgotten-influence-on-victorian-fashion-trends","url":"/categories/the-victorians/oscar-wilde/wildes-forgotten-influence-on-victorian-fashion-trends.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Friendship with John Gray Sparked Debate","slug":"wildes-friendship-with-john-gray-sparked-debate","url":"/categories/the-victorians/oscar-wilde/wildes-friendship-with-john-gray-sparked-debate.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Impact on Victorian Theater Conventions","slug":"wildes-impact-on-victorian-theater-conventions","url":"/categories/the-victorians/oscar-wilde/wildes-impact-on-victorian-theater-conventions.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Influence on the Aesthetic Movement","slug":"wildes-influence-on-the-aesthetic-movement","url":"/categories/the-victorians/oscar-wilde/wildes-influence-on-the-aesthetic-movement.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Influence on Victorian Social Etiquette","slug":"wildes-influence-on-victorian-social-etiquette","url":"/categories/the-victorians/oscar-wilde/wildes-influence-on-victorian-social-etiquette.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Literary Allusions Functioned as Social Code","slug":"wildes-literary-allusions-functioned-as-social-code","url":"/categories/the-victorians/oscar-wilde/wildes-literary-allusions-functioned-as-social-code.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Move to London Revolutionized Victorian Society","slug":"wildes-move-to-london-revolutionized-victorian-society","url":"/categories/the-victorians/oscar-wilde/wildes-move-to-london-revolutionized-victorian-society.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Obscure Influence on Queer Visibility","slug":"wildes-obscure-influence-on-queer-visibility","url":"/categories/the-victorians/oscar-wilde/wildes-obscure-influence-on-queer-visibility.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Play “Salome” Broke Records in Controversy","slug":"wildes-play-salome-broke-records-in-controversy","url":"/categories/the-victorians/oscar-wilde/wildes-play-salome-broke-records-in-controversy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Portrait by Napoleon Sarony Captured a Cultural Moment","slug":"wildes-portrait-by-napoleon-sarony-captured-a-cultural-moment","url":"/categories/the-victorians/oscar-wilde/wildes-portrait-by-napoleon-sarony-captured-a-cultural-moment.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Role in Shaping Victorian Literary Criticism","slug":"wildes-role-in-shaping-victorian-literary-criticism","url":"/categories/the-victorians/oscar-wilde/wildes-role-in-shaping-victorian-literary-criticism.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Secret Role in Victorian Occult Circles","slug":"wildes-secret-role-in-victorian-occult-circles","url":"/categories/the-victorians/oscar-wilde/wildes-secret-role-in-victorian-occult-circles.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Subtle Political Commentary Through Comedy","slug":"wildes-subtle-political-commentary-through-comedy","url":"/categories/the-victorians/oscar-wilde/wildes-subtle-political-commentary-through-comedy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Unusual Role in Victorian Philanthropy","slug":"wildes-unusual-role-in-victorian-philanthropy","url":"/categories/the-victorians/oscar-wilde/wildes-unusual-role-in-victorian-philanthropy.html","color":"#f44336","category":"the-victorians","factCount":1},{"title":"Wilde’s Use of Symbolism in Everyday Life","slug":"wildes-use-of-symbolism-in-everyday-life","url":"/categories/the-victorians/oscar-wilde/wildes-use-of-symbolism-in-everyday-life.html","color":"#f44336","category":"the-victorians","factCount":1}];
 
 /**************************************************
  UTILITIES
@@ -105,14 +189,18 @@ function createCard(item){
   const div = document.createElement('div');
   div.className='card';
   div.dataset.slug = item.slug;
-  div.dataset.title = item.title.toLowerCase();
+  div.dataset.title = (item.title||'').toLowerCase();
   div.style.setProperty('--category-color', item.color || '#ff5722');
 
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
   div.innerHTML = `
     <a href="${item.url}">${prettyName(item.title)}</a>
     <div class="meta">
       <span class="badge">Facts: ${item.factCount || 1}</span>
     </div>
+    <div class="fact-preview">${previewText}</div>
   `;
   return div;
 }
@@ -128,6 +216,11 @@ function populateGrid(items){
     container.appendChild(card);
     setTimeout(()=>card.classList.add('loaded'), i*50);
   });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
 }
 
 /**************************************************
@@ -137,9 +230,27 @@ function filterCards(){
   const query = document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     const title = card.dataset.title;
-    card.style.display = title.includes(query)? 'block':'none';
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
   });
 }
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
 
 /**************************************************
  INIT

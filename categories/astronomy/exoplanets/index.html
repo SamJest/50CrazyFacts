@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exoplanets</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Exoplanets</h1>
+  <p>Explore all facts in "Exoplanets".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Exoplanets</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"51 Pegasi b Changed Astronomy Forever","slug":"51-pegasi-b-changed-astronomy-forever","url":"/categories/astronomy/exoplanets/51-pegasi-b-changed-astronomy-forever.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Atmospheric Escape Can Shrink Planets Over Time","slug":"atmospheric-escape-can-shrink-planets-over-time","url":"/categories/astronomy/exoplanets/atmospheric-escape-can-shrink-planets-over-time.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Brown Dwarfs Blurred the Line Between Stars and Planets","slug":"brown-dwarfs-blurred-the-line-between-stars-and-planets","url":"/categories/astronomy/exoplanets/brown-dwarfs-blurred-the-line-between-stars-and-planets.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Compact Planetary Systems Are Surprisingly Common","slug":"compact-planetary-systems-are-surprisingly-common","url":"/categories/astronomy/exoplanets/compact-planetary-systems-are-surprisingly-common.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanet Atmospheres Can Be Detected From Light Years Away","slug":"exoplanet-atmospheres-can-be-detected-from-light-years-away","url":"/categories/astronomy/exoplanets/exoplanet-atmospheres-can-be-detected-from-light-years-away.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanet Confirmation Once Required Years of Debate","slug":"exoplanet-confirmation-once-required-years-of-debate","url":"/categories/astronomy/exoplanets/exoplanet-confirmation-once-required-years-of-debate.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanet Discoveries Shaped Policy and Funding","slug":"exoplanet-discoveries-shaped-policy-and-funding","url":"/categories/astronomy/exoplanets/exoplanet-discoveries-shaped-policy-and-funding.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanets Sparked Global Hobbyist Participation","slug":"exoplanets-sparked-global-hobbyist-participation","url":"/categories/astronomy/exoplanets/exoplanets-sparked-global-hobbyist-participation.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Exoplanets Were Predicted Centuries Before Discovery","slug":"exoplanets-were-predicted-centuries-before-discovery","url":"/categories/astronomy/exoplanets/exoplanets-were-predicted-centuries-before-discovery.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"HD 189733b Rains Glass Sideways","slug":"hd-189733b-rains-glass-sideways","url":"/categories/astronomy/exoplanets/hd-189733b-rains-glass-sideways.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"HD 209458b “Rains Glass”","slug":"hd-209458b-rains-glass","url":"/categories/astronomy/exoplanets/hd-209458b-rains-glass.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kepler-10b May Be a Lava World","slug":"kepler-10b-may-be-a-lava-world","url":"/categories/astronomy/exoplanets/kepler-10b-may-be-a-lava-world.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kepler-16b: Real-Life Tatooine","slug":"kepler-16b-real-life-tatooine","url":"/categories/astronomy/exoplanets/kepler-16b-real-life-tatooine.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kepler-22b Challenges Habitability Notions","slug":"kepler-22b-challenges-habitability-notions","url":"/categories/astronomy/exoplanets/kepler-22b-challenges-habitability-notions.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kepler-36’s Planets Defy Density Expectations","slug":"kepler-36s-planets-defy-density-expectations","url":"/categories/astronomy/exoplanets/kepler-36s-planets-defy-density-expectations.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kepler-444 System: Ancient Planetary Neighborhood","slug":"kepler-444-system-ancient-planetary-neighborhood","url":"/categories/astronomy/exoplanets/kepler-444-system-ancient-planetary-neighborhood.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Kepler-452b Is an “Older Cousin” of Earth","slug":"kepler-452b-is-an-older-cousin-of-earth","url":"/categories/astronomy/exoplanets/kepler-452b-is-an-older-cousin-of-earth.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Metallicity Determines Planet Formation Likelihood","slug":"metallicity-determines-planet-formation-likelihood","url":"/categories/astronomy/exoplanets/metallicity-determines-planet-formation-likelihood.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Planetary Migration Reshaped Entire Solar Systems","slug":"planetary-migration-reshaped-entire-solar-systems","url":"/categories/astronomy/exoplanets/planetary-migration-reshaped-entire-solar-systems.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Proxima Centauri b Could Be Habitable","slug":"proxima-centauri-b-could-be-habitable","url":"/categories/astronomy/exoplanets/proxima-centauri-b-could-be-habitable.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Radial Velocity Detection Required Measuring Walking Speed","slug":"radial-velocity-detection-required-measuring-walking-speed","url":"/categories/astronomy/exoplanets/radial-velocity-detection-required-measuring-walking-speed.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Exoplanets Orbit Binary Stars","slug":"some-exoplanets-orbit-binary-stars","url":"/categories/astronomy/exoplanets/some-exoplanets-orbit-binary-stars.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Some Exoplanets Orbit in Resonance","slug":"some-exoplanets-orbit-in-resonance","url":"/categories/astronomy/exoplanets/some-exoplanets-orbit-in-resonance.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Super-Earths Don’t Exist in Our Solar System","slug":"super-earths-dont-exist-in-our-solar-system","url":"/categories/astronomy/exoplanets/super-earths-dont-exist-in-our-solar-system.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Tau Boötis b: A Hot Jupiter With Magnetic Mysteries","slug":"tau-botis-b-a-hot-jupiter-with-magnetic-mysteries","url":"/categories/astronomy/exoplanets/tau-botis-b-a-hot-jupiter-with-magnetic-mysteries.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The “Galactic Habitable Zone” Concept Emerged","slug":"the-galactic-habitable-zone-concept-emerged","url":"/categories/astronomy/exoplanets/the-galactic-habitable-zone-concept-emerged.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The “Tatooine Effect” Influenced Pop Culture","slug":"the-tatooine-effect-influenced-pop-culture","url":"/categories/astronomy/exoplanets/the-tatooine-effect-influenced-pop-culture.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First “Super-Earth” Defied Size Expectations","slug":"the-first-super-earth-defied-size-expectations","url":"/categories/astronomy/exoplanets/the-first-super-earth-defied-size-expectations.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First Claimed Exoplanet Was a Mistake","slug":"the-first-claimed-exoplanet-was-a-mistake","url":"/categories/astronomy/exoplanets/the-first-claimed-exoplanet-was-a-mistake.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First Exoplanets Around Sun-Like Stars Were Hot Jupiters","slug":"the-first-exoplanets-around-sun-like-stars-were-hot-jupiters","url":"/categories/astronomy/exoplanets/the-first-exoplanets-around-sun-like-stars-were-hot-jupiters.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The First Exoplanets Were Found Around a Dead Star","slug":"the-first-exoplanets-were-found-around-a-dead-star","url":"/categories/astronomy/exoplanets/the-first-exoplanets-were-found-around-a-dead-star.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Kepler Mission Stared at One Patch of Sky","slug":"the-kepler-mission-stared-at-one-patch-of-sky","url":"/categories/astronomy/exoplanets/the-kepler-mission-stared-at-one-patch-of-sky.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"The Transit Method Was First Proposed in 1952","slug":"the-transit-method-was-first-proposed-in-1952","url":"/categories/astronomy/exoplanets/the-transit-method-was-first-proposed-in-1952.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Tidally Locked Planets Have Eternal Days and Nights","slug":"tidally-locked-planets-have-eternal-days-and-nights","url":"/categories/astronomy/exoplanets/tidally-locked-planets-have-eternal-days-and-nights.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"TrES-2b Is the Darkest Exoplanet Known","slug":"tres-2b-is-the-darkest-exoplanet-known","url":"/categories/astronomy/exoplanets/tres-2b-is-the-darkest-exoplanet-known.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"Ultra-Short Period Planets Complete Orbits in Hours","slug":"ultra-short-period-planets-complete-orbits-in-hours","url":"/categories/astronomy/exoplanets/ultra-short-period-planets-complete-orbits-in-hours.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"WASP-121b’s Atmosphere Leaks Into Space","slug":"wasp-121bs-atmosphere-leaks-into-space","url":"/categories/astronomy/exoplanets/wasp-121bs-atmosphere-leaks-into-space.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"WASP-12b Is Being Eaten by Its Star","slug":"wasp-12b-is-being-eaten-by-its-star","url":"/categories/astronomy/exoplanets/wasp-12b-is-being-eaten-by-its-star.html","color":"#3f51b5","category":"astronomy","factCount":1},{"title":"WASP-12b Is Slowly Being Devoured by Its Star","slug":"wasp-12b-is-slowly-being-devoured-by-its-star","url":"/categories/astronomy/exoplanets/wasp-12b-is-slowly-being-devoured-by-its-star.html","color":"#3f51b5","category":"astronomy","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

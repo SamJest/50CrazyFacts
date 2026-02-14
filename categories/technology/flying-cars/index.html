@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flying Cars</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body { font-family: 'Inter', Arial, sans-serif; background:#f7f7f7; margin:0; color:#222; scroll-behavior:smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; text-decoration:none; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump { text-align:center; margin:10px 0 20px; font-size:0.9em; }
+.quick-jump a { color:#007acc; margin:0 5px; text-decoration:none; transition: all 0.2s; }
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); }
+
+/* GRID & CARDS */
+.grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin:30px 20px; }
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a { display:block; font-weight:700; color:#222; margin-bottom:10px; font-size:1.15em; transition:color 0.2s; }
+.card:hover { transform:translateY(-6px); box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12); }
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge { background: var(--category-color,#ff5722); color:white; transform: scale(1.05); }
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+}
+.card:hover .fact-preview { display:block; }
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input { padding:10px 16px; font-size:1em; border-radius:12px; border:1px solid #ccc; width:280px; max-width:90%; transition: all 0.2s; }
+#search-input:focus { border-color: var(--category-color,#ff5722); outline:none; box-shadow:0 0 6px rgba(255,87,34,0.3); }
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){ 
+  .grid{flex-direction:column;align-items:center;} 
+  .card{flex:1 1 100%;} 
+}
+</style>
+</head>
+
+<body id="top">
+
+<header>
+  <h1>Flying Cars</h1>
+  <p>Explore all facts in "Flying Cars".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Flying Cars</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Air Traffic AI Networks Will Enable Mass Adoption","slug":"air-traffic-ai-networks-will-enable-mass-adoption","url":"/categories/technology/flying-cars/air-traffic-ai-networks-will-enable-mass-adoption.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Altitude Records Were Surprisingly Low","slug":"altitude-records-were-surprisingly-low","url":"/categories/technology/flying-cars/altitude-records-were-surprisingly-low.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Flight Systems Began Testing in the 2010s","slug":"autonomous-flight-systems-began-testing-in-the-2010s","url":"/categories/technology/flying-cars/autonomous-flight-systems-began-testing-in-the-2010s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Autonomous Flying Cars Could Reduce Traffic Accidents","slug":"autonomous-flying-cars-could-reduce-traffic-accidents","url":"/categories/technology/flying-cars/autonomous-flying-cars-could-reduce-traffic-accidents.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Comic Books Shaped Flying Car Designs","slug":"comic-books-shaped-flying-car-designs","url":"/categories/technology/flying-cars/comic-books-shaped-flying-car-designs.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Early Flying Car Patents Were Ridiculously Specific","slug":"early-flying-car-patents-were-ridiculously-specific","url":"/categories/technology/flying-cars/early-flying-car-patents-were-ridiculously-specific.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Early Flying Cars Often Needed Pilots, Not Drivers","slug":"early-flying-cars-often-needed-pilots-not-drivers","url":"/categories/technology/flying-cars/early-flying-cars-often-needed-pilots-not-drivers.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Energy Efficiency Drove Evolution Toward Electric Motors","slug":"energy-efficiency-drove-evolution-toward-electric-motors","url":"/categories/technology/flying-cars/energy-efficiency-drove-evolution-toward-electric-motors.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Car Competitions Highlighted Engineering Extremes","slug":"flying-car-competitions-highlighted-engineering-extremes","url":"/categories/technology/flying-cars/flying-car-competitions-highlighted-engineering-extremes.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Car Engines Often Needed Redundant Systems","slug":"flying-car-engines-often-needed-redundant-systems","url":"/categories/technology/flying-cars/flying-car-engines-often-needed-redundant-systems.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Car Fairs Attracted Massive Crowds in the 1950s","slug":"flying-car-fairs-attracted-massive-crowds-in-the-1950s","url":"/categories/technology/flying-cars/flying-car-fairs-attracted-massive-crowds-in-the-1950s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Appeared in Futuristic Urban Plans","slug":"flying-cars-appeared-in-futuristic-urban-plans","url":"/categories/technology/flying-cars/flying-cars-appeared-in-futuristic-urban-plans.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Are Now Used for Air Taxi Pilots","slug":"flying-cars-are-now-used-for-air-taxi-pilots","url":"/categories/technology/flying-cars/flying-cars-are-now-used-for-air-taxi-pilots.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Could Become Delivery Drones at Scale","slug":"flying-cars-could-become-delivery-drones-at-scale","url":"/categories/technology/flying-cars/flying-cars-could-become-delivery-drones-at-scale.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Could Revolution Emergency Services","slug":"flying-cars-could-revolution-emergency-services","url":"/categories/technology/flying-cars/flying-cars-could-revolution-emergency-services.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Inspired Comic Books Before Reality","slug":"flying-cars-inspired-comic-books-before-reality","url":"/categories/technology/flying-cars/flying-cars-inspired-comic-books-before-reality.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Once Appeared in Cold War Espionage","slug":"flying-cars-once-appeared-in-cold-war-espionage","url":"/categories/technology/flying-cars/flying-cars-once-appeared-in-cold-war-espionage.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Once Attempted Jet-Assisted Takeoff","slug":"flying-cars-once-attempted-jet-assisted-takeoff","url":"/categories/technology/flying-cars/flying-cars-once-attempted-jet-assisted-takeoff.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Transitioned From Gasoline to Hybrid Engines","slug":"flying-cars-transitioned-from-gasoline-to-hybrid-engines","url":"/categories/technology/flying-cars/flying-cars-transitioned-from-gasoline-to-hybrid-engines.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Were Political Symbols in the 1960s","slug":"flying-cars-were-political-symbols-in-the-1960s","url":"/categories/technology/flying-cars/flying-cars-were-political-symbols-in-the-1960s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Flying Cars Were Tested as Emergency Medical Vehicles","slug":"flying-cars-were-tested-as-emergency-medical-vehicles","url":"/categories/technology/flying-cars/flying-cars-were-tested-as-emergency-medical-vehicles.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Future Flying Cars May Use Hydrogen Fuel Cells","slug":"future-flying-cars-may-use-hydrogen-fuel-cells","url":"/categories/technology/flying-cars/future-flying-cars-may-use-hydrogen-fuel-cells.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Hovercraft-Inspired Flying Cars Existed in the 1950s","slug":"hovercraft-inspired-flying-cars-existed-in-the-1950s","url":"/categories/technology/flying-cars/hovercraft-inspired-flying-cars-existed-in-the-1950s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Hybrid Air-Road Traffic Systems Emerged","slug":"hybrid-air-road-traffic-systems-emerged","url":"/categories/technology/flying-cars/hybrid-air-road-traffic-systems-emerged.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Integration With Renewable Energy Is Expanding","slug":"integration-with-renewable-energy-is-expanding","url":"/categories/technology/flying-cars/integration-with-renewable-energy-is-expanding.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Leonardo da Vinci Sketched a Flying Car Concept","slug":"leonardo-da-vinci-sketched-a-flying-car-concept","url":"/categories/technology/flying-cars/leonardo-da-vinci-sketched-a-flying-car-concept.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Lightweight Materials Shaped Flying Car Evolution","slug":"lightweight-materials-shaped-flying-car-evolution","url":"/categories/technology/flying-cars/lightweight-materials-shaped-flying-car-evolution.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Modern Flying Cars Are Part of Smart City Planning","slug":"modern-flying-cars-are-part-of-smart-city-planning","url":"/categories/technology/flying-cars/modern-flying-cars-are-part-of-smart-city-planning.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Modular Flying Car Concepts Arose in the 2000s","slug":"modular-flying-car-concepts-arose-in-the-2000s","url":"/categories/technology/flying-cars/modular-flying-car-concepts-arose-in-the-2000s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Noise Reduction Influenced Flying Car Designs","slug":"noise-reduction-influenced-flying-car-designs","url":"/categories/technology/flying-cars/noise-reduction-influenced-flying-car-designs.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Obscure Patents Showed Flying Cars with Helicopter Blades Under Doors","slug":"obscure-patents-showed-flying-cars-with-helicopter-blades-under-doors","url":"/categories/technology/flying-cars/obscure-patents-showed-flying-cars-with-helicopter-blades-under-doors.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Some Flying Cars Could Land on Water","slug":"some-flying-cars-could-land-on-water","url":"/categories/technology/flying-cars/some-flying-cars-could-land-on-water.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Some Flying Cars Could Reach 200 mph","slug":"some-flying-cars-could-reach-200-mph","url":"/categories/technology/flying-cars/some-flying-cars-could-reach-200-mph.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Some Flying Cars Were Amphibious","slug":"some-flying-cars-were-amphibious","url":"/categories/technology/flying-cars/some-flying-cars-were-amphibious.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Some Flying Cars Were Designed to Fold Into Briefcases","slug":"some-flying-cars-were-designed-to-fold-into-briefcases","url":"/categories/technology/flying-cars/some-flying-cars-were-designed-to-fold-into-briefcases.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Some Modern Flying Cars Are Fully Electric","slug":"some-modern-flying-cars-are-fully-electric","url":"/categories/technology/flying-cars/some-modern-flying-cars-are-fully-electric.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The First Flying Car Was Built in 1917","slug":"the-first-flying-car-was-built-in-1917","url":"/categories/technology/flying-cars/the-first-flying-car-was-built-in-1917.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Heaviest Flying Car Weighed Over 3,000 Pounds","slug":"the-heaviest-flying-car-weighed-over-3000-pounds","url":"/categories/technology/flying-cars/the-heaviest-flying-car-weighed-over-3000-pounds.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Physics of Lift Dictates Flying Car Size","slug":"the-physics-of-lift-dictates-flying-car-size","url":"/categories/technology/flying-cars/the-physics-of-lift-dictates-flying-car-size.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Smallest Flying Car Seats Only One Person","slug":"the-smallest-flying-car-seats-only-one-person","url":"/categories/technology/flying-cars/the-smallest-flying-car-seats-only-one-person.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"The Soviet Union Tried Flying Cars in the 1970s","slug":"the-soviet-union-tried-flying-cars-in-the-1970s","url":"/categories/technology/flying-cars/the-soviet-union-tried-flying-cars-in-the-1970s.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"VTOL Designs Emerged to Overcome Runway Limits","slug":"vtol-designs-emerged-to-overcome-runway-limits","url":"/categories/technology/flying-cars/vtol-designs-emerged-to-overcome-runway-limits.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"VTOL Propeller Layouts Can Make or Break Stability","slug":"vtol-propeller-layouts-can-make-or-break-stability","url":"/categories/technology/flying-cars/vtol-propeller-layouts-can-make-or-break-stability.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Why Jet Engines Almost Powered 1960s Flying Cars","slug":"why-jet-engines-almost-powered-1960s-flying-cars","url":"/categories/technology/flying-cars/why-jet-engines-almost-powered-1960s-flying-cars.html","color":"#3f51b5","category":"technology","factCount":1},{"title":"Wing Folding Mechanisms Evolved for Urban Use","slug":"wing-folding-mechanisms-evolved-for-urban-use","url":"/categories/technology/flying-cars/wing-folding-mechanisms-evolved-for-urban-use.html","color":"#3f51b5","category":"technology","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  // Fact preview for hover
+  const previewText = item.factPreview || item.FACT_HOOK || '';
+  
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview">${previewText}</div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Generate Quick Jump based on first letters
+  const letters = [...new Set(items.map(it=> (it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#${l}">${l}</a>`).join(' | ');
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      // Highlight match
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
