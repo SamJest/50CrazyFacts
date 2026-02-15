@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marge Simpson</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Marge Simpson</h1>
+  <p>Explore all facts in "Marge Simpson".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Marge Simpson</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"How Marge Simpson’s Hair Was Born From a Rabbit","slug":"how-marge-simpsons-hair-was-born-from-a-rabbit","url":"/categories/the-simpsons/marge-simpson/how-marge-simpsons-hair-was-born-from-a-rabbit.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Ages—But Only Emotionally","slug":"marge-agesbut-only-emotionally","url":"/categories/the-simpsons/marge-simpson/marge-agesbut-only-emotionally.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Almost Had a Different Personality","slug":"marge-almost-had-a-different-personality","url":"/categories/the-simpsons/marge-simpson/marge-almost-had-a-different-personality.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Almost Smoked on the Show","slug":"marge-almost-smoked-on-the-show","url":"/categories/the-simpsons/marge-simpson/marge-almost-smoked-on-the-show.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Appears in More Episodes Than Any Other Female Character","slug":"marge-appears-in-more-episodes-than-any-other-female-character","url":"/categories/the-simpsons/marge-simpson/marge-appears-in-more-episodes-than-any-other-female-character.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Has a Secret IQ Hint in Her Eyes","slug":"marge-has-a-secret-iq-hint-in-her-eyes","url":"/categories/the-simpsons/marge-simpson/marge-has-a-secret-iq-hint-in-her-eyes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Has Inspired Real-Life Beekeeping Interest","slug":"marge-has-inspired-real-life-beekeeping-interest","url":"/categories/the-simpsons/marge-simpson/marge-has-inspired-real-life-beekeeping-interest.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Inspired Real-Life Charity Efforts Through Her Persona","slug":"marge-inspired-real-life-charity-efforts-through-her-persona","url":"/categories/the-simpsons/marge-simpson/marge-inspired-real-life-charity-efforts-through-her-persona.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Appeared in a Comic Book Exclusive Storyline","slug":"marge-once-appeared-in-a-comic-book-exclusive-storyline","url":"/categories/the-simpsons/marge-simpson/marge-once-appeared-in-a-comic-book-exclusive-storyline.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Held a Gun in an Episode—Comedic Trauma","slug":"marge-once-held-a-gun-in-an-episodecomedic-trauma","url":"/categories/the-simpsons/marge-simpson/marge-once-held-a-gun-in-an-episodecomedic-trauma.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Inspired a Legal Case Discussion","slug":"marge-once-inspired-a-legal-case-discussion","url":"/categories/the-simpsons/marge-simpson/marge-once-inspired-a-legal-case-discussion.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Invented a Gadget in an Episode","slug":"marge-once-invented-a-gadget-in-an-episode","url":"/categories/the-simpsons/marge-simpson/marge-once-invented-a-gadget-in-an-episode.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Modeled for a Real-World PSA","slug":"marge-once-modeled-for-a-real-world-psa","url":"/categories/the-simpsons/marge-simpson/marge-once-modeled-for-a-real-world-psa.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Ran for Mayor—Literally and Figuratively","slug":"marge-once-ran-for-mayorliterally-and-figuratively","url":"/categories/the-simpsons/marge-simpson/marge-once-ran-for-mayorliterally-and-figuratively.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Served as a Psychological Case Study","slug":"marge-once-served-as-a-psychological-case-study","url":"/categories/the-simpsons/marge-simpson/marge-once-served-as-a-psychological-case-study.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Once Won a Bowling Tournament in an Episode","slug":"marge-once-won-a-bowling-tournament-in-an-episode","url":"/categories/the-simpsons/marge-simpson/marge-once-won-a-bowling-tournament-in-an-episode.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Simpson Debuted in 1987—With a Different Voice","slug":"marge-simpson-debuted-in-1987with-a-different-voice","url":"/categories/the-simpsons/marge-simpson/marge-simpson-debuted-in-1987with-a-different-voice.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Simpson’s Voice Changed to Protect Julie Kavner’s Throat","slug":"marge-simpsons-voice-changed-to-protect-julie-kavners-throat","url":"/categories/the-simpsons/marge-simpson/marge-simpsons-voice-changed-to-protect-julie-kavners-throat.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Was Almost a Professional Musician","slug":"marge-was-almost-a-professional-musician","url":"/categories/the-simpsons/marge-simpson/marge-was-almost-a-professional-musician.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge Was Named After a Real Margaret","slug":"marge-was-named-after-a-real-margaret","url":"/categories/the-simpsons/marge-simpson/marge-was-named-after-a-real-margaret.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Beehive Hair Inspired Cosplay Communities","slug":"marges-beehive-hair-inspired-cosplay-communities","url":"/categories/the-simpsons/marge-simpson/marges-beehive-hair-inspired-cosplay-communities.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Blue Hair Became a Global Branding Tool","slug":"marges-blue-hair-became-a-global-branding-tool","url":"/categories/the-simpsons/marge-simpson/marges-blue-hair-became-a-global-branding-tool.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Career as a Police Officer Highlights Gender Role Satire","slug":"marges-career-as-a-police-officer-highlights-gender-role-satire","url":"/categories/the-simpsons/marge-simpson/marges-career-as-a-police-officer-highlights-gender-role-satire.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Character Adjusted to Changing Gender Norms","slug":"marges-character-adjusted-to-changing-gender-norms","url":"/categories/the-simpsons/marge-simpson/marges-character-adjusted-to-changing-gender-norms.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Cooking Skills Are Historically Inconsistent","slug":"marges-cooking-skills-are-historically-inconsistent","url":"/categories/the-simpsons/marge-simpson/marges-cooking-skills-are-historically-inconsistent.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Dental Work in Episodes Reflects Period-Accurate Dentistry","slug":"marges-dental-work-in-episodes-reflects-period-accurate-dentistry","url":"/categories/the-simpsons/marge-simpson/marges-dental-work-in-episodes-reflects-period-accurate-dentistry.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Design Was Simplified for Faster Animation","slug":"marges-design-was-simplified-for-faster-animation","url":"/categories/the-simpsons/marge-simpson/marges-design-was-simplified-for-faster-animation.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Early Concept Art Showed Her With Glasses","slug":"marges-early-concept-art-showed-her-with-glasses","url":"/categories/the-simpsons/marge-simpson/marges-early-concept-art-showed-her-with-glasses.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Environmental Advocacy Prefigured Modern Green Movements","slug":"marges-environmental-advocacy-prefigured-modern-green-movements","url":"/categories/the-simpsons/marge-simpson/marges-environmental-advocacy-prefigured-modern-green-movements.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Ethical Leadership in Springfield Church Episodes Shows Religious Satire","slug":"marges-ethical-leadership-in-springfield-church-episodes-shows-religious-satire","url":"/categories/the-simpsons/marge-simpson/marges-ethical-leadership-in-springfield-church-episodes-shows-religious-satire.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Eye Makeup Evolves to Signal Mood","slug":"marges-eye-makeup-evolves-to-signal-mood","url":"/categories/the-simpsons/marge-simpson/marges-eye-makeup-evolves-to-signal-mood.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Fashion Sense Evolved With Real-World Trends","slug":"marges-fashion-sense-evolved-with-real-world-trends","url":"/categories/the-simpsons/marge-simpson/marges-fashion-sense-evolved-with-real-world-trends.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Grocery Lists Reveal Hidden Humor","slug":"marges-grocery-lists-reveal-hidden-humor","url":"/categories/the-simpsons/marge-simpson/marges-grocery-lists-reveal-hidden-humor.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Hair Had a Secret Inspiration From Pop Art","slug":"marges-hair-had-a-secret-inspiration-from-pop-art","url":"/categories/the-simpsons/marge-simpson/marges-hair-had-a-secret-inspiration-from-pop-art.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Hair Height Shrinks in Certain Episodes","slug":"marges-hair-height-shrinks-in-certain-episodes","url":"/categories/the-simpsons/marge-simpson/marges-hair-height-shrinks-in-certain-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Hair Inspired a Real-Life Guinness Record Attempt","slug":"marges-hair-inspired-a-real-life-guinness-record-attempt","url":"/categories/the-simpsons/marge-simpson/marges-hair-inspired-a-real-life-guinness-record-attempt.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Hair Was Once Tested in a Motion Study for Physics Students","slug":"marges-hair-was-once-tested-in-a-motion-study-for-physics-students","url":"/categories/the-simpsons/marge-simpson/marges-hair-was-once-tested-in-a-motion-study-for-physics-students.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Hair Was Once Used to Teach Physics","slug":"marges-hair-was-once-used-to-teach-physics","url":"/categories/the-simpsons/marge-simpson/marges-hair-was-once-used-to-teach-physics.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Hobby Choices Reflect Real Historical Trends","slug":"marges-hobby-choices-reflect-real-historical-trends","url":"/categories/the-simpsons/marge-simpson/marges-hobby-choices-reflect-real-historical-trends.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Kitchen Has Been Modeled for Culinary Exhibits","slug":"marges-kitchen-has-been-modeled-for-culinary-exhibits","url":"/categories/the-simpsons/marge-simpson/marges-kitchen-has-been-modeled-for-culinary-exhibits.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Marriage Evolved Into TV’s Longest Running Satire","slug":"marges-marriage-evolved-into-tvs-longest-running-satire","url":"/categories/the-simpsons/marge-simpson/marges-marriage-evolved-into-tvs-longest-running-satire.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Moral Compass Inspired Fan Activism","slug":"marges-moral-compass-inspired-fan-activism","url":"/categories/the-simpsons/marge-simpson/marges-moral-compass-inspired-fan-activism.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Nail Polish Hints at Character Mood","slug":"marges-nail-polish-hints-at-character-mood","url":"/categories/the-simpsons/marge-simpson/marges-nail-polish-hints-at-character-mood.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Necklace Was a Censorship Fix","slug":"marges-necklace-was-a-censorship-fix","url":"/categories/the-simpsons/marge-simpson/marges-necklace-was-a-censorship-fix.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Parenting in Science Episodes Reflects Environmental Education","slug":"marges-parenting-in-science-episodes-reflects-environmental-education","url":"/categories/the-simpsons/marge-simpson/marges-parenting-in-science-episodes-reflects-environmental-education.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Parenting Style Mirrors Real Psychological Studies","slug":"marges-parenting-style-mirrors-real-psychological-studies","url":"/categories/the-simpsons/marge-simpson/marges-parenting-style-mirrors-real-psychological-studies.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Patience Became a Narrative Engine","slug":"marges-patience-became-a-narrative-engine","url":"/categories/the-simpsons/marge-simpson/marges-patience-became-a-narrative-engine.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Pearls Are a Subtle Visual Cue of Emotional State","slug":"marges-pearls-are-a-subtle-visual-cue-of-emotional-state","url":"/categories/the-simpsons/marge-simpson/marges-pearls-are-a-subtle-visual-cue-of-emotional-state.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Secret Lawnmower Obsession","slug":"marges-secret-lawnmower-obsession","url":"/categories/the-simpsons/marge-simpson/marges-secret-lawnmower-obsession.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Skin Tone Helped Launch a TV Revolution","slug":"marges-skin-tone-helped-launch-a-tv-revolution","url":"/categories/the-simpsons/marge-simpson/marges-skin-tone-helped-launch-a-tv-revolution.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Subtle Expressions Have Been Studied in Animation Psychology","slug":"marges-subtle-expressions-have-been-studied-in-animation-psychology","url":"/categories/the-simpsons/marge-simpson/marges-subtle-expressions-have-been-studied-in-animation-psychology.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Voice Actress Almost Lost the Role During Pilot Recording","slug":"marges-voice-actress-almost-lost-the-role-during-pilot-recording","url":"/categories/the-simpsons/marge-simpson/marges-voice-actress-almost-lost-the-role-during-pilot-recording.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Voice Inspired Real-Life Speech Therapy Stories","slug":"marges-voice-inspired-real-life-speech-therapy-stories","url":"/categories/the-simpsons/marge-simpson/marges-voice-inspired-real-life-speech-therapy-stories.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Marge’s Voice Timing Has Been Analyzed for Linguistic Rhythm","slug":"marges-voice-timing-has-been-analyzed-for-linguistic-rhythm","url":"/categories/the-simpsons/marge-simpson/marges-voice-timing-has-been-analyzed-for-linguistic-rhythm.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Beehive Was Inspired by 1960s Glam","slug":"the-beehive-was-inspired-by-1960s-glam","url":"/categories/the-simpsons/marge-simpson/the-beehive-was-inspired-by-1960s-glam.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Blue Hair Was an Animation Shortcut","slug":"the-blue-hair-was-an-animation-shortcut","url":"/categories/the-simpsons/marge-simpson/the-blue-hair-was-an-animation-shortcut.html","color":"#3f51b5","category":"the-simpsons","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

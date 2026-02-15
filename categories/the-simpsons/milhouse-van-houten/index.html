@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milhouse Van Houten</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Milhouse Van Houten</h1>
+  <p>Explore all facts in "Milhouse Van Houten".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Milhouse Van Houten</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Milhouse Achieved the Highest Number of On-Screen Failures Without Recovery","slug":"milhouse-achieved-the-highest-number-of-on-screen-failures-without-recovery","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-achieved-the-highest-number-of-on-screen-failures-without-recovery.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Became a Meme Before Memes Existed","slug":"milhouse-became-a-meme-before-memes-existed","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-became-a-meme-before-memes-existed.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Became a Symbol in Pop Psychology Studies","slug":"milhouse-became-a-symbol-in-pop-psychology-studies","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-became-a-symbol-in-pop-psychology-studies.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Became an Icon of the “Lovable Loser” Archetype","slug":"milhouse-became-an-icon-of-the-lovable-loser-archetype","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-became-an-icon-of-the-lovable-loser-archetype.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Has a Secret Streak of Bravery","slug":"milhouse-has-a-secret-streak-of-bravery","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-has-a-secret-streak-of-bravery.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Has the Weirdest Family Dynamic","slug":"milhouse-has-the-weirdest-family-dynamic","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-has-the-weirdest-family-dynamic.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Holds the Record for Most Awkward Lies","slug":"milhouse-holds-the-record-for-most-awkward-lies","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-holds-the-record-for-most-awkward-lies.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Holds the Record for Most Elaborate Prank Backfires","slug":"milhouse-holds-the-record-for-most-elaborate-prank-backfires","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-holds-the-record-for-most-elaborate-prank-backfires.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Holds the Record for Most Episodes With Public Humiliation","slug":"milhouse-holds-the-record-for-most-episodes-with-public-humiliation","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-holds-the-record-for-most-episodes-with-public-humiliation.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Holds the Record for Most Failed Crushes","slug":"milhouse-holds-the-record-for-most-failed-crushes","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-holds-the-record-for-most-failed-crushes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Influenced School Anti-Bullying Discussions","slug":"milhouse-influenced-school-anti-bullying-discussions","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-influenced-school-anti-bullying-discussions.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Inspired Real-Life Nerd Archetypes","slug":"milhouse-inspired-real-life-nerd-archetypes","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-inspired-real-life-nerd-archetypes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Is Surprisingly Politically Neutral","slug":"milhouse-is-surprisingly-politically-neutral","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-is-surprisingly-politically-neutral.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Once Survived a Nuclear Explosion—Barely","slug":"milhouse-once-survived-a-nuclear-explosionbarely","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-once-survived-a-nuclear-explosionbarely.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Quotes Entered Political Discourse","slug":"milhouse-quotes-entered-political-discourse","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-quotes-entered-political-discourse.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Survived the Most Explosive Mishaps in Springfield","slug":"milhouse-survived-the-most-explosive-mishaps-in-springfield","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-survived-the-most-explosive-mishaps-in-springfield.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Was Almost a Different Ethnicity","slug":"milhouse-was-almost-a-different-ethnicity","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-was-almost-a-different-ethnicity.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Was Almost Named “Gus”","slug":"milhouse-was-almost-named-gus","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-was-almost-named-gus.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Was Almost Recast in Early Seasons","slug":"milhouse-was-almost-recast-in-early-seasons","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-was-almost-recast-in-early-seasons.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Was Initially Meant to Be Bart’s Equal Rival","slug":"milhouse-was-initially-meant-to-be-barts-equal-rival","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-was-initially-meant-to-be-barts-equal-rival.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse Was Inspired by a Real Kid Groening Knew","slug":"milhouse-was-inspired-by-a-real-kid-groening-knew","url":"/categories/the-simpsons/milhouse-van-houten/milhouse-was-inspired-by-a-real-kid-groening-knew.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s 1989 Debut Was Purely Accidental","slug":"milhouses-1989-debut-was-purely-accidental","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-1989-debut-was-purely-accidental.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Birthday Is Unbelievably Specific","slug":"milhouses-birthday-is-unbelievably-specific","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-birthday-is-unbelievably-specific.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Clothing Signals Emotional Extremes","slug":"milhouses-clothing-signals-emotional-extremes","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-clothing-signals-emotional-extremes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Clumsiness Is Scientifically Calibrated","slug":"milhouses-clumsiness-is-scientifically-calibrated","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-clumsiness-is-scientifically-calibrated.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Crushes Follow Comedic Probability Theory","slug":"milhouses-crushes-follow-comedic-probability-theory","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-crushes-follow-comedic-probability-theory.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Divorce Storylines Reflected Changing Social Norms","slug":"milhouses-divorce-storylines-reflected-changing-social-norms","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-divorce-storylines-reflected-changing-social-norms.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Emotional Timing Is Mechanically Scripted","slug":"milhouses-emotional-timing-is-mechanically-scripted","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-emotional-timing-is-mechanically-scripted.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Eyewear Position Has the Most Dramatic Shifts","slug":"milhouses-eyewear-position-has-the-most-dramatic-shifts","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-eyewear-position-has-the-most-dramatic-shifts.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Family Background Expanded","slug":"milhouses-family-background-expanded","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-family-background-expanded.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Fandom Became a Marker of Subculture","slug":"milhouses-fandom-became-a-marker-of-subculture","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-fandom-became-a-marker-of-subculture.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Fear Responses Follow Patterned Trigger Systems","slug":"milhouses-fear-responses-follow-patterned-trigger-systems","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-fear-responses-follow-patterned-trigger-systems.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Friendship Dynamics Evolved Dramatically","slug":"milhouses-friendship-dynamics-evolved-dramatically","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-friendship-dynamics-evolved-dramatically.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Glasses Are Scientifically Wrong Yet Iconic","slug":"milhouses-glasses-are-scientifically-wrong-yet-iconic","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-glasses-are-scientifically-wrong-yet-iconic.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Glasses Evolved in Style Over Decades","slug":"milhouses-glasses-evolved-in-style-over-decades","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-glasses-evolved-in-style-over-decades.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Glasses Have Survived the Most Destructive Events","slug":"milhouses-glasses-have-survived-the-most-destructive-events","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-glasses-have-survived-the-most-destructive-events.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Glasses Magnify Expression Like a Comic Lens","slug":"milhouses-glasses-magnify-expression-like-a-comic-lens","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-glasses-magnify-expression-like-a-comic-lens.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Hair Color Changed for Visibility","slug":"milhouses-hair-color-changed-for-visibility","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-hair-color-changed-for-visibility.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Intelligence Level Was Tweaked Over Time","slug":"milhouses-intelligence-level-was-tweaked-over-time","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-intelligence-level-was-tweaked-over-time.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s IQ Is Oddly Ambiguous","slug":"milhouses-iq-is-oddly-ambiguous","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-iq-is-oddly-ambiguous.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Luck Defies Statistical Probability","slug":"milhouses-luck-defies-statistical-probability","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-luck-defies-statistical-probability.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Memory Glitches Create Comedic Chaos","slug":"milhouses-memory-glitches-create-comedic-chaos","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-memory-glitches-create-comedic-chaos.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Name Honors Nixon in Cartoon Irony","slug":"milhouses-name-honors-nixon-in-cartoon-irony","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-name-honors-nixon-in-cartoon-irony.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Panic Reactions Follow Psychological Patterns","slug":"milhouses-panic-reactions-follow-psychological-patterns","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-panic-reactions-follow-psychological-patterns.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Parents’ Divorce Mirrors Real Life","slug":"milhouses-parents-divorce-mirrors-real-life","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-parents-divorce-mirrors-real-life.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Physical Reactions Follow Cartoon Biomechanics","slug":"milhouses-physical-reactions-follow-cartoon-biomechanics","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-physical-reactions-follow-cartoon-biomechanics.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Reactions Defy Expected Social Hierarchies","slug":"milhouses-reactions-defy-expected-social-hierarchies","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-reactions-defy-expected-social-hierarchies.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Role Shifted From Background to Plot Driver","slug":"milhouses-role-shifted-from-background-to-plot-driver","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-role-shifted-from-background-to-plot-driver.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Social Embarrassment Became a Study in Cultural Humor","slug":"milhouses-social-embarrassment-became-a-study-in-cultural-humor","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-social-embarrassment-became-a-study-in-cultural-humor.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Social Failure Is Engineered Like a Game System","slug":"milhouses-social-failure-is-engineered-like-a-game-system","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-social-failure-is-engineered-like-a-game-system.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Social Status Shifted Across Seasons","slug":"milhouses-social-status-shifted-across-seasons","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-social-status-shifted-across-seasons.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Voice Almost Went to a Teen Actor","slug":"milhouses-voice-almost-went-to-a-teen-actor","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-voice-almost-went-to-a-teen-actor.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Voice Pitch Shifts With Stress","slug":"milhouses-voice-pitch-shifts-with-stress","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-voice-pitch-shifts-with-stress.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Voice Tone Shifted Over Time","slug":"milhouses-voice-tone-shifted-over-time","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-voice-tone-shifted-over-time.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Milhouse’s Wardrobe Adapted With Time","slug":"milhouses-wardrobe-adapted-with-time","url":"/categories/the-simpsons/milhouse-van-houten/milhouses-wardrobe-adapted-with-time.html","color":"#3f51b5","category":"the-simpsons","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

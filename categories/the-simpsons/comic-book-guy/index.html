@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comic Book Guy</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Comic Book Guy</h1>
+  <p>Explore all facts in "Comic Book Guy".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Comic Book Guy</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Catchphrases That Evolved Over Time","slug":"catchphrases-that-evolved-over-time","url":"/categories/the-simpsons/comic-book-guy/catchphrases-that-evolved-over-time.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Counterintuitive Popularity","slug":"counterintuitive-popularity","url":"/categories/the-simpsons/comic-book-guy/counterintuitive-popularity.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Early Scripts Reveal a Different Comic Book Guy","slug":"early-scripts-reveal-a-different-comic-book-guy","url":"/categories/the-simpsons/comic-book-guy/early-scripts-reveal-a-different-comic-book-guy.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Evolution of His Physical Appearance","slug":"evolution-of-his-physical-appearance","url":"/categories/the-simpsons/comic-book-guy/evolution-of-his-physical-appearance.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Forgotten Guest Appearances","slug":"forgotten-guest-appearances","url":"/categories/the-simpsons/comic-book-guy/forgotten-guest-appearances.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Forgotten Historical References","slug":"forgotten-historical-references","url":"/categories/the-simpsons/comic-book-guy/forgotten-historical-references.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"From Background Extra to Cult Icon","slug":"from-background-extra-to-cult-icon","url":"/categories/the-simpsons/comic-book-guy/from-background-extra-to-cult-icon.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"From Obscure Shopkeeper to Series Regular","slug":"from-obscure-shopkeeper-to-series-regular","url":"/categories/the-simpsons/comic-book-guy/from-obscure-shopkeeper-to-series-regular.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Gradual Softening of His Personality","slug":"gradual-softening-of-his-personality","url":"/categories/the-simpsons/comic-book-guy/gradual-softening-of-his-personality.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Highest Level of Elitism","slug":"highest-level-of-elitism","url":"/categories/the-simpsons/comic-book-guy/highest-level-of-elitism.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"His Memory System Is Astonishing","slug":"his-memory-system-is-astonishing","url":"/categories/the-simpsons/comic-book-guy/his-memory-system-is-astonishing.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"His Name Change Debate That Almost Happened","slug":"his-name-change-debate-that-almost-happened","url":"/categories/the-simpsons/comic-book-guy/his-name-change-debate-that-almost-happened.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"How The Name “Worst. Episode. Ever.” Was Born","slug":"how-the-name-worst-episode-ever-was-born","url":"/categories/the-simpsons/comic-book-guy/how-the-name-worst-episode-ever-was-born.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Influence on Real Comic Shops","slug":"influence-on-real-comic-shops","url":"/categories/the-simpsons/comic-book-guy/influence-on-real-comic-shops.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Integration of Real Pop Culture References","slug":"integration-of-real-pop-culture-references","url":"/categories/the-simpsons/comic-book-guy/integration-of-real-pop-culture-references.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Longest On-Screen Monologue","slug":"longest-on-screen-monologue","url":"/categories/the-simpsons/comic-book-guy/longest-on-screen-monologue.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Longest Running Critique of Homer","slug":"longest-running-critique-of-homer","url":"/categories/the-simpsons/comic-book-guy/longest-running-critique-of-homer.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Love Life Developments","slug":"love-life-developments","url":"/categories/the-simpsons/comic-book-guy/love-life-developments.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Mapping His Obsession Network","slug":"mapping-his-obsession-network","url":"/categories/the-simpsons/comic-book-guy/mapping-his-obsession-network.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Matt Groening’s Obsession That Shaped Him","slug":"matt-groenings-obsession-that-shaped-him","url":"/categories/the-simpsons/comic-book-guy/matt-groenings-obsession-that-shaped-him.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Modern Fan Convention Icon","slug":"modern-fan-convention-icon","url":"/categories/the-simpsons/comic-book-guy/modern-fan-convention-icon.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Most Elaborate Nerd Vendettas","slug":"most-elaborate-nerd-vendettas","url":"/categories/the-simpsons/comic-book-guy/most-elaborate-nerd-vendettas.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Most Iconic Negative Catchphrase","slug":"most-iconic-negative-catchphrase","url":"/categories/the-simpsons/comic-book-guy/most-iconic-negative-catchphrase.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Most Obsessive Convention Attendance","slug":"most-obsessive-convention-attendance","url":"/categories/the-simpsons/comic-book-guy/most-obsessive-convention-attendance.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Most Obsessively Cataloged Collection","slug":"most-obsessively-cataloged-collection","url":"/categories/the-simpsons/comic-book-guy/most-obsessively-cataloged-collection.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Most Precise Pop Culture References","slug":"most-precise-pop-culture-references","url":"/categories/the-simpsons/comic-book-guy/most-precise-pop-culture-references.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Obscure Cultural References Preserved","slug":"obscure-cultural-references-preserved","url":"/categories/the-simpsons/comic-book-guy/obscure-cultural-references-preserved.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Obsessive Knowledge Levels Up","slug":"obsessive-knowledge-levels-up","url":"/categories/the-simpsons/comic-book-guy/obsessive-knowledge-levels-up.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Rarely Seen Acts of Kindness","slug":"rarely-seen-acts-of-kindness","url":"/categories/the-simpsons/comic-book-guy/rarely-seen-acts-of-kindness.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Recurring Story Arcs Introduced","slug":"recurring-story-arcs-introduced","url":"/categories/the-simpsons/comic-book-guy/recurring-story-arcs-introduced.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Speculative Future Roles","slug":"speculative-future-roles","url":"/categories/the-simpsons/comic-book-guy/speculative-future-roles.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Symbol of Nerd Culture Gatekeeping","slug":"symbol-of-nerd-culture-gatekeeping","url":"/categories/the-simpsons/comic-book-guy/symbol-of-nerd-culture-gatekeeping.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The 1989 Debut That Changed Everything","slug":"the-1989-debut-that-changed-everything","url":"/categories/the-simpsons/comic-book-guy/the-1989-debut-that-changed-everything.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Android’s Dungeon Expansion","slug":"the-androids-dungeon-expansion","url":"/categories/the-simpsons/comic-book-guy/the-androids-dungeon-expansion.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Economics of Collecting","slug":"the-economics-of-collecting","url":"/categories/the-simpsons/comic-book-guy/the-economics-of-collecting.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Logic Behind His Obsessions","slug":"the-logic-behind-his-obsessions","url":"/categories/the-simpsons/comic-book-guy/the-logic-behind-his-obsessions.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Meme That Outlived the Show","slug":"the-meme-that-outlived-the-show","url":"/categories/the-simpsons/comic-book-guy/the-meme-that-outlived-the-show.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Physics of His Store Layout","slug":"the-physics-of-his-store-layout","url":"/categories/the-simpsons/comic-book-guy/the-physics-of-his-store-layout.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Rules of Fan Hierarchy","slug":"the-rules-of-fan-hierarchy","url":"/categories/the-simpsons/comic-book-guy/the-rules-of-fan-hierarchy.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Science of His Sarcasm","slug":"the-science-of-his-sarcasm","url":"/categories/the-simpsons/comic-book-guy/the-science-of-his-sarcasm.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Surprising Inspiration Behind Comic Book Guy","slug":"the-surprising-inspiration-behind-comic-book-guy","url":"/categories/the-simpsons/comic-book-guy/the-surprising-inspiration-behind-comic-book-guy.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The System of Insults","slug":"the-system-of-insults","url":"/categories/the-simpsons/comic-book-guy/the-system-of-insults.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Timing of His Outbursts","slug":"the-timing-of-his-outbursts","url":"/categories/the-simpsons/comic-book-guy/the-timing-of-his-outbursts.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Voice That Made Him Legendary","slug":"the-voice-that-made-him-legendary","url":"/categories/the-simpsons/comic-book-guy/the-voice-that-made-him-legendary.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Weird Scientific References","slug":"weird-scientific-references","url":"/categories/the-simpsons/comic-book-guy/weird-scientific-references.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Why His Real Name Remains a Mystery","slug":"why-his-real-name-remains-a-mystery","url":"/categories/the-simpsons/comic-book-guy/why-his-real-name-remains-a-mystery.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Why the Android's Dungeon Exists","slug":"why-the-androids-dungeon-exists","url":"/categories/the-simpsons/comic-book-guy/why-the-androids-dungeon-exists.html","color":"#3f51b5","category":"the-simpsons","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

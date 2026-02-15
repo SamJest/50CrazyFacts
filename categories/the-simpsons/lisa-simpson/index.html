@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lisa Simpson</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Lisa Simpson</h1>
+  <p>Explore all facts in "Lisa Simpson".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Lisa Simpson</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Lisa Briefly Adopted a Vegetarian Identity in the 90s","slug":"lisa-briefly-adopted-a-vegetarian-identity-in-the-90s","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-adopted-a-vegetarian-identity-in-the-90s.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Explored Artificial Intelligence Themes Episodes","slug":"lisa-briefly-explored-artificial-intelligence-themes-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-explored-artificial-intelligence-themes-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Explored Feminist Philosophy","slug":"lisa-briefly-explored-feminist-philosophy","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-explored-feminist-philosophy.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Explored Romantic Relationships in Later Canonical Episodes","slug":"lisa-briefly-explored-romantic-relationships-in-later-canonical-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-explored-romantic-relationships-in-later-canonical-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Explored Veganism vs. Vegetarianism","slug":"lisa-briefly-explored-veganism-vs-vegetarianism","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-explored-veganism-vs-vegetarianism.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Had a Crush on a Nobel Laureate Character","slug":"lisa-briefly-had-a-crush-on-a-nobel-laureate-character","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-had-a-crush-on-a-nobel-laureate-character.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Modeled a Career in Journalism","slug":"lisa-briefly-modeled-a-career-in-journalism","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-modeled-a-career-in-journalism.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Briefly Ran for School President","slug":"lisa-briefly-ran-for-school-president","url":"/categories/the-simpsons/lisa-simpson/lisa-briefly-ran-for-school-president.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Has a Rare Canonical Fear of Heights","slug":"lisa-has-a-rare-canonical-fear-of-heights","url":"/categories/the-simpsons/lisa-simpson/lisa-has-a-rare-canonical-fear-of-heights.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Influenced Real-World Political Awareness","slug":"lisa-influenced-real-world-political-awareness","url":"/categories/the-simpsons/lisa-simpson/lisa-influenced-real-world-political-awareness.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Invented a Fictional Jazz Festival","slug":"lisa-invented-a-fictional-jazz-festival","url":"/categories/the-simpsons/lisa-simpson/lisa-invented-a-fictional-jazz-festival.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Invented a Fictional Summer Camp","slug":"lisa-invented-a-fictional-summer-camp","url":"/categories/the-simpsons/lisa-simpson/lisa-invented-a-fictional-summer-camp.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Invented a Protest Anthem Episode","slug":"lisa-invented-a-protest-anthem-episode","url":"/categories/the-simpsons/lisa-simpson/lisa-invented-a-protest-anthem-episode.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Acted as a Substitute Teacher","slug":"lisa-once-acted-as-a-substitute-teacher","url":"/categories/the-simpsons/lisa-simpson/lisa-once-acted-as-a-substitute-teacher.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Attempted to Teach Peers Advanced Music Theory Episodes","slug":"lisa-once-attempted-to-teach-peers-advanced-music-theory-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-once-attempted-to-teach-peers-advanced-music-theory-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Created a Miniature Ethics Society Episodes","slug":"lisa-once-created-a-miniature-ethics-society-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-once-created-a-miniature-ethics-society-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Experienced Canonical Writer’s Block","slug":"lisa-once-experienced-canonical-writers-block","url":"/categories/the-simpsons/lisa-simpson/lisa-once-experienced-canonical-writers-block.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Explored the Ethics of Cloning Episodes","slug":"lisa-once-explored-the-ethics-of-cloning-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-once-explored-the-ethics-of-cloning-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Modeled a Miniature Government Simulation Episodes","slug":"lisa-once-modeled-a-miniature-government-simulation-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-once-modeled-a-miniature-government-simulation-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Once Witnessed a Nuclear Disaster in Her Canonical Universe","slug":"lisa-once-witnessed-a-nuclear-disaster-in-her-canonical-universe","url":"/categories/the-simpsons/lisa-simpson/lisa-once-witnessed-a-nuclear-disaster-in-her-canonical-universe.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Played Over 50 Different Instruments","slug":"lisa-played-over-50-different-instruments","url":"/categories/the-simpsons/lisa-simpson/lisa-played-over-50-different-instruments.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Practiced Buddhism Episodes","slug":"lisa-practiced-buddhism-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-practiced-buddhism-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Predates Prime-Time Animation Boom","slug":"lisa-predates-prime-time-animation-boom","url":"/categories/the-simpsons/lisa-simpson/lisa-predates-prime-time-animation-boom.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Simpson Was Born Before the Show","slug":"lisa-simpson-was-born-before-the-show","url":"/categories/the-simpsons/lisa-simpson/lisa-simpson-was-born-before-the-show.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Temporarily Dabbled in Environmental Activism Episodes","slug":"lisa-temporarily-dabbled-in-environmental-activism-episodes","url":"/categories/the-simpsons/lisa-simpson/lisa-temporarily-dabbled-in-environmental-activism-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Was Once a Secret Comic Book Collector","slug":"lisa-was-once-a-secret-comic-book-collector","url":"/categories/the-simpsons/lisa-simpson/lisa-was-once-a-secret-comic-book-collector.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Was Originally a Background Genius","slug":"lisa-was-originally-a-background-genius","url":"/categories/the-simpsons/lisa-simpson/lisa-was-originally-a-background-genius.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa Wrote a Novel in a Canonical Episode","slug":"lisa-wrote-a-novel-in-a-canonical-episode","url":"/categories/the-simpsons/lisa-simpson/lisa-wrote-a-novel-in-a-canonical-episode.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Age Is Permanently Frozen","slug":"lisas-age-is-permanently-frozen","url":"/categories/the-simpsons/lisa-simpson/lisas-age-is-permanently-frozen.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Canonical Advocacy for Civil Rights Episodes","slug":"lisas-canonical-advocacy-for-civil-rights-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-canonical-advocacy-for-civil-rights-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Canonical Environmental Advocacy Included Water Preservation Episodes","slug":"lisas-canonical-environmental-advocacy-included-water-preservation-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-canonical-environmental-advocacy-included-water-preservation-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Canonical Fear of Conformity","slug":"lisas-canonical-fear-of-conformity","url":"/categories/the-simpsons/lisa-simpson/lisas-canonical-fear-of-conformity.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Canonical Fear of Public Embarrassment Episodes","slug":"lisas-canonical-fear-of-public-embarrassment-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-canonical-fear-of-public-embarrassment-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Canonical Struggle With Self-Doubt Episodes","slug":"lisas-canonical-struggle-with-self-doubt-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-canonical-struggle-with-self-doubt-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Environmental Activism Predicted Youth Climate Movements","slug":"lisas-environmental-activism-predicted-youth-climate-movements","url":"/categories/the-simpsons/lisa-simpson/lisas-environmental-activism-predicted-youth-climate-movements.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Environmental Advocacy Predicted Real Policy","slug":"lisas-environmental-advocacy-predicted-real-policy","url":"/categories/the-simpsons/lisa-simpson/lisas-environmental-advocacy-predicted-real-policy.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Environmental Efforts Once Included a Nuclear Protest","slug":"lisas-environmental-efforts-once-included-a-nuclear-protest","url":"/categories/the-simpsons/lisa-simpson/lisas-environmental-efforts-once-included-a-nuclear-protest.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Fear of Disappointing Others Is Canonical","slug":"lisas-fear-of-disappointing-others-is-canonical","url":"/categories/the-simpsons/lisa-simpson/lisas-fear-of-disappointing-others-is-canonical.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Genius Sometimes Predicted Technological Trends Episodes","slug":"lisas-genius-sometimes-predicted-technological-trends-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-genius-sometimes-predicted-technological-trends-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Hidden Musical Talent Once Saved Springfield Episodes","slug":"lisas-hidden-musical-talent-once-saved-springfield-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-hidden-musical-talent-once-saved-springfield-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Intellectual Curiosity Led to Accidental Heroism Episodes","slug":"lisas-intellectual-curiosity-led-to-accidental-heroism-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-intellectual-curiosity-led-to-accidental-heroism-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s IQ Led to Social Isolation Episodes","slug":"lisas-iq-led-to-social-isolation-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-iq-led-to-social-isolation-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s IQ Was Revealed as 159","slug":"lisas-iq-was-revealed-as-159","url":"/categories/the-simpsons/lisa-simpson/lisas-iq-was-revealed-as-159.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Moral Compass Was a Late Decision","slug":"lisas-moral-compass-was-a-late-decision","url":"/categories/the-simpsons/lisa-simpson/lisas-moral-compass-was-a-late-decision.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Moral Reasoning Led to Canonical Policy Changes Episodes","slug":"lisas-moral-reasoning-led-to-canonical-policy-changes-episodes","url":"/categories/the-simpsons/lisa-simpson/lisas-moral-reasoning-led-to-canonical-policy-changes-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Name Honors a Real Sister","slug":"lisas-name-honors-a-real-sister","url":"/categories/the-simpsons/lisa-simpson/lisas-name-honors-a-real-sister.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Original Design Was Taller","slug":"lisas-original-design-was-taller","url":"/categories/the-simpsons/lisa-simpson/lisas-original-design-was-taller.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Sax Was a Creative Accident","slug":"lisas-sax-was-a-creative-accident","url":"/categories/the-simpsons/lisa-simpson/lisas-sax-was-a-creative-accident.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Saxophone Once Triggered a Townwide Jazz Obsession","slug":"lisas-saxophone-once-triggered-a-townwide-jazz-obsession","url":"/categories/the-simpsons/lisa-simpson/lisas-saxophone-once-triggered-a-townwide-jazz-obsession.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Lisa’s Voice Was Initially Higher-Pitched","slug":"lisas-voice-was-initially-higher-pitched","url":"/categories/the-simpsons/lisa-simpson/lisas-voice-was-initially-higher-pitched.html","color":"#3f51b5","category":"the-simpsons","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

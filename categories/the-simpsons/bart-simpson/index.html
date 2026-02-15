@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bart Simpson</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Bart Simpson</h1>
+  <p>Explore all facts in "Bart Simpson".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Bart Simpson</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"Bart Appears in Artificial Intelligence Research","slug":"bart-appears-in-artificial-intelligence-research","url":"/categories/the-simpsons/bart-simpson/bart-appears-in-artificial-intelligence-research.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Appears in Environmental Campaigns","slug":"bart-appears-in-environmental-campaigns","url":"/categories/the-simpsons/bart-simpson/bart-appears-in-environmental-campaigns.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Appears in NASA’s “Space Shuttle” Posters","slug":"bart-appears-in-nasas-space-shuttle-posters","url":"/categories/the-simpsons/bart-simpson/bart-appears-in-nasas-space-shuttle-posters.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Appears in Video Game Easter Eggs Across Platforms","slug":"bart-appears-in-video-game-easter-eggs-across-platforms","url":"/categories/the-simpsons/bart-simpson/bart-appears-in-video-game-easter-eggs-across-platforms.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Helped Launch Fox as a Network","slug":"bart-helped-launch-fox-as-a-network","url":"/categories/the-simpsons/bart-simpson/bart-helped-launch-fox-as-a-network.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Inspired a Real Anti-Bullying Campaign","slug":"bart-inspired-a-real-anti-bullying-campaign","url":"/categories/the-simpsons/bart-simpson/bart-inspired-a-real-anti-bullying-campaign.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Inspired Early Fan-Generated Coding Projects","slug":"bart-inspired-early-fan-generated-coding-projects","url":"/categories/the-simpsons/bart-simpson/bart-inspired-early-fan-generated-coding-projects.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Inspired Obscure Academic Courses","slug":"bart-inspired-obscure-academic-courses","url":"/categories/the-simpsons/bart-simpson/bart-inspired-obscure-academic-courses.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Inspires Cross-Disciplinary Academic Research","slug":"bart-inspires-cross-disciplinary-academic-research","url":"/categories/the-simpsons/bart-simpson/bart-inspires-cross-disciplinary-academic-research.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Inspires Futuristic AI Character Design","slug":"bart-inspires-futuristic-ai-character-design","url":"/categories/the-simpsons/bart-simpson/bart-inspires-futuristic-ai-character-design.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Once Had a Twin in an Alternate Universe","slug":"bart-once-had-a-twin-in-an-alternate-universe","url":"/categories/the-simpsons/bart-simpson/bart-once-had-a-twin-in-an-alternate-universe.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Shifted From Main Character to Ensemble Player","slug":"bart-shifted-from-main-character-to-ensemble-player","url":"/categories/the-simpsons/bart-simpson/bart-shifted-from-main-character-to-ensemble-player.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Appears in Space Simulations","slug":"bart-simpson-appears-in-space-simulations","url":"/categories/the-simpsons/bart-simpson/bart-simpson-appears-in-space-simulations.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Debuted on The Tracey Ullman Show","slug":"bart-simpson-debuted-on-the-tracey-ullman-show","url":"/categories/the-simpsons/bart-simpson/bart-simpson-debuted-on-the-tracey-ullman-show.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Features in Data Visualization Research","slug":"bart-simpson-features-in-data-visualization-research","url":"/categories/the-simpsons/bart-simpson/bart-simpson-features-in-data-visualization-research.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Has His Own Cryptocurrency Concept","slug":"bart-simpson-has-his-own-cryptocurrency-concept","url":"/categories/the-simpsons/bart-simpson/bart-simpson-has-his-own-cryptocurrency-concept.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Inspires Ethical Discussions in Philosophy Classes","slug":"bart-simpson-inspires-ethical-discussions-in-philosophy-classes","url":"/categories/the-simpsons/bart-simpson/bart-simpson-inspires-ethical-discussions-in-philosophy-classes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Is Used in International Anti-Smoking Campaigns","slug":"bart-simpson-is-used-in-international-anti-smoking-campaigns","url":"/categories/the-simpsons/bart-simpson/bart-simpson-is-used-in-international-anti-smoking-campaigns.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson Was Named After Matt Groening","slug":"bart-simpson-was-named-after-matt-groening","url":"/categories/the-simpsons/bart-simpson/bart-simpson-was-named-after-matt-groening.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson’s Catchphrases Are Used in Linguistics Studies","slug":"bart-simpsons-catchphrases-are-used-in-linguistics-studies","url":"/categories/the-simpsons/bart-simpson/bart-simpsons-catchphrases-are-used-in-linguistics-studies.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson’s Chalkboard Gags Are Hidden Easter Eggs","slug":"bart-simpsons-chalkboard-gags-are-hidden-easter-eggs","url":"/categories/the-simpsons/bart-simpson/bart-simpsons-chalkboard-gags-are-hidden-easter-eggs.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson’s Legacy Affects Modern Animation Styles","slug":"bart-simpsons-legacy-affects-modern-animation-styles","url":"/categories/the-simpsons/bart-simpson/bart-simpsons-legacy-affects-modern-animation-styles.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Simpson’s Name Has Been Used in Political Satire Globally","slug":"bart-simpsons-name-has-been-used-in-political-satire-globally","url":"/categories/the-simpsons/bart-simpson/bart-simpsons-name-has-been-used-in-political-satire-globally.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Was Almost a Punk Musician","slug":"bart-was-almost-a-punk-musician","url":"/categories/the-simpsons/bart-simpson/bart-was-almost-a-punk-musician.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Was Almost Left-Handed Like His Creator","slug":"bart-was-almost-left-handed-like-his-creator","url":"/categories/the-simpsons/bart-simpson/bart-was-almost-left-handed-like-his-creator.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart Was Used in Early Virtual Reality Experiments","slug":"bart-was-used-in-early-virtual-reality-experiments","url":"/categories/the-simpsons/bart-simpson/bart-was-used-in-early-virtual-reality-experiments.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Age Never Changes—But the World Does","slug":"barts-age-never-changesbut-the-world-does","url":"/categories/the-simpsons/bart-simpson/barts-age-never-changesbut-the-world-does.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Animation Became Smoother After Season 1","slug":"barts-animation-became-smoother-after-season-1","url":"/categories/the-simpsons/bart-simpson/barts-animation-became-smoother-after-season-1.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Board Shorts Became a Fashion Icon in Japan","slug":"barts-board-shorts-became-a-fashion-icon-in-japan","url":"/categories/the-simpsons/bart-simpson/barts-board-shorts-became-a-fashion-icon-in-japan.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Brand Extends to Theme Park Rides","slug":"barts-brand-extends-to-theme-park-rides","url":"/categories/the-simpsons/bart-simpson/barts-brand-extends-to-theme-park-rides.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Catchphrases Were Gradually Phased Out","slug":"barts-catchphrases-were-gradually-phased-out","url":"/categories/the-simpsons/bart-simpson/barts-catchphrases-were-gradually-phased-out.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Cultural Influence Predicts Trends in Youth Media Consumption","slug":"barts-cultural-influence-predicts-trends-in-youth-media-consumption","url":"/categories/the-simpsons/bart-simpson/barts-cultural-influence-predicts-trends-in-youth-media-consumption.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s DNA Inspired a Genetics Analogy","slug":"barts-dna-inspired-a-genetics-analogy","url":"/categories/the-simpsons/bart-simpson/barts-dna-inspired-a-genetics-analogy.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Face Is Used in Optical Illusions","slug":"barts-face-is-used-in-optical-illusions","url":"/categories/the-simpsons/bart-simpson/barts-face-is-used-in-optical-illusions.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Hair Was Designed for Instant Recognition","slug":"barts-hair-was-designed-for-instant-recognition","url":"/categories/the-simpsons/bart-simpson/barts-hair-was-designed-for-instant-recognition.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Image Has Been Used in Mental Health Campaigns","slug":"barts-image-has-been-used-in-mental-health-campaigns","url":"/categories/the-simpsons/bart-simpson/barts-image-has-been-used-in-mental-health-campaigns.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Legacy Inspires Real-World Lawsuits","slug":"barts-legacy-inspires-real-world-lawsuits","url":"/categories/the-simpsons/bart-simpson/barts-legacy-inspires-real-world-lawsuits.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Mischief Influenced Corporate Training Exercises","slug":"barts-mischief-influenced-corporate-training-exercises","url":"/categories/the-simpsons/bart-simpson/barts-mischief-influenced-corporate-training-exercises.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Mischief Is a Case Study in Risk-Taking Psychology","slug":"barts-mischief-is-a-case-study-in-risk-taking-psychology","url":"/categories/the-simpsons/bart-simpson/barts-mischief-is-a-case-study-in-risk-taking-psychology.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Prank Calls Evolved With Technology","slug":"barts-prank-calls-evolved-with-technology","url":"/categories/the-simpsons/bart-simpson/barts-prank-calls-evolved-with-technology.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Pranks Mirror Real Sociology","slug":"barts-pranks-mirror-real-sociology","url":"/categories/the-simpsons/bart-simpson/barts-pranks-mirror-real-sociology.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Pranks Predicted Internet Memes","slug":"barts-pranks-predicted-internet-memes","url":"/categories/the-simpsons/bart-simpson/barts-pranks-predicted-internet-memes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Rebellion Became Less Political After the 1990s","slug":"barts-rebellion-became-less-political-after-the-1990s","url":"/categories/the-simpsons/bart-simpson/barts-rebellion-became-less-political-after-the-1990s.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Relationship With Homer Softened Over Time","slug":"barts-relationship-with-homer-softened-over-time","url":"/categories/the-simpsons/bart-simpson/barts-relationship-with-homer-softened-over-time.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s School Punishments Became More Psychological","slug":"barts-school-punishments-became-more-psychological","url":"/categories/the-simpsons/bart-simpson/barts-school-punishments-became-more-psychological.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Silhouette Is Trademarked","slug":"barts-silhouette-is-trademarked","url":"/categories/the-simpsons/bart-simpson/barts-silhouette-is-trademarked.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Slingshot Became a Symbol of Nonviolent Rebellion","slug":"barts-slingshot-became-a-symbol-of-nonviolent-rebellion","url":"/categories/the-simpsons/bart-simpson/barts-slingshot-became-a-symbol-of-nonviolent-rebellion.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Spikes Inspired Graphic Designers Globally","slug":"barts-spikes-inspired-graphic-designers-globally","url":"/categories/the-simpsons/bart-simpson/barts-spikes-inspired-graphic-designers-globally.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Voice Actor Influenced Animation Education","slug":"barts-voice-actor-influenced-animation-education","url":"/categories/the-simpsons/bart-simpson/barts-voice-actor-influenced-animation-education.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bart’s Voice Took Months to Perfect","slug":"barts-voice-took-months-to-perfect","url":"/categories/the-simpsons/bart-simpson/barts-voice-took-months-to-perfect.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Bartmania Once Rivaled Beatlemania","slug":"bartmania-once-rivaled-beatlemania","url":"/categories/the-simpsons/bart-simpson/bartmania-once-rivaled-beatlemania.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Eat My Shorts Wasn’t Original to The Simpsons","slug":"eat-my-shorts-wasnt-original-to-the-simpsons","url":"/categories/the-simpsons/bart-simpson/eat-my-shorts-wasnt-original-to-the-simpsons.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Nancy Cartwright Auditioned for Lisa, Became Bart","slug":"nancy-cartwright-auditioned-for-lisa-became-bart","url":"/categories/the-simpsons/bart-simpson/nancy-cartwright-auditioned-for-lisa-became-bart.html","color":"#3f51b5","category":"the-simpsons","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>

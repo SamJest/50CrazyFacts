@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ralph Wiggum</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+/* RESET & BASE */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background:#f7f7f7;
+  margin:0;
+  color:#222;
+  scroll-behavior:smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* HEADER */
+header {
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position: sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2.8em; margin:0 0 10px; }
+header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+/* BREADCRUMB */
+.breadcrumb {
+  text-align:center;
+  font-size:0.9em;
+  margin: 10px 0 20px;
+  color:#555;
+}
+.breadcrumb a { color:#ff5722; transition: color 0.2s; }
+.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
+
+/* QUICK JUMP */
+.quick-jump {
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+  user-select:none;
+}
+.quick-jump a {
+  color:#007acc;
+  margin:0 5px;
+  text-decoration:none;
+  transition: all 0.2s;
+  font-weight:500;
+}
+.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
+
+/* GRID & CARDS */
+.grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+.card {
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  cursor:pointer;
+  opacity:0;
+}
+.card.loaded { opacity:1; }
+.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
+
+.card a {
+  display:block;
+  font-weight:700;
+  color:#222;
+  margin-bottom:10px;
+  font-size:1.15em;
+  transition:color 0.2s;
+}
+.card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+}
+.card:hover a { color: var(--category-color,#ff5722); }
+
+/* Alternating backgrounds */
+.grid .card:nth-child(odd) { background:#fff; }
+.grid .card:nth-child(even) { background:#fdfdfd; }
+
+.badge {
+  display:inline-block;
+  padding:4px 8px;
+  margin:2px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+  transition:all 0.2s, transform 0.2s;
+}
+.card:hover .badge {
+  background: var(--category-color,#ff5722);
+  color:white;
+  transform: scale(1.05);
+}
+
+.meta { font-size:0.85em; color:#555; margin-top:6px; }
+
+/* RANDOM FACT PREVIEW TOOLTIP */
+.card .fact-preview {
+  display:none;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  max-width:260px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  padding:12px;
+  font-size:0.85em;
+  color:#333;
+  z-index:200;
+  white-space:normal;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.card:hover .fact-preview {
+  display:block;
+  opacity:1;
+  transform:translateX(-50%) translateY(10px);
+}
+.card .fact-preview::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* SEARCH BAR */
+#search-container { text-align:center; margin:20px; }
+#search-input {
+  padding:10px 16px;
+  font-size:1em;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+  max-width:90%;
+  transition: all 0.2s;
+}
+#search-input:focus {
+  border-color: var(--category-color,#ff5722);
+  outline:none;
+  box-shadow:0 0 6px rgba(255,87,34,0.3);
+}
+
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff5722;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+  display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .grid{flex-direction:column;align-items:center;}
+  .card{flex:1 1 100%;}
+  .card .fact-preview{max-width:90vw;}
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Ralph Wiggum</h1>
+  <p>Explore all facts in "Ralph Wiggum".</p>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ralph Wiggum</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+/**************************************************
+ DATA FROM GENERATOR
+**************************************************/
+const ITEMS = [{"title":"How Ralph Wiggum Became a Central Character","slug":"how-ralph-wiggum-became-a-central-character","url":"/categories/the-simpsons/ralph-wiggum/how-ralph-wiggum-became-a-central-character.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"How Ralph Wiggum Became a Cultural Icon of Innocence","slug":"how-ralph-wiggum-became-a-cultural-icon-of-innocence","url":"/categories/the-simpsons/ralph-wiggum/how-ralph-wiggum-became-a-cultural-icon-of-innocence.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"How Ralph’s Physical Comedy Works Mechanically","slug":"how-ralphs-physical-comedy-works-mechanically","url":"/categories/the-simpsons/ralph-wiggum/how-ralphs-physical-comedy-works-mechanically.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"How Ralph’s Vocabulary Expanded Over Time","slug":"how-ralphs-vocabulary-expanded-over-time","url":"/categories/the-simpsons/ralph-wiggum/how-ralphs-vocabulary-expanded-over-time.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Holds the Record for Fastest Non-Sequitur Delivery","slug":"ralph-holds-the-record-for-fastest-non-sequitur-delivery","url":"/categories/the-simpsons/ralph-wiggum/ralph-holds-the-record-for-fastest-non-sequitur-delivery.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Inspires Educational Discussion on Child Psychology","slug":"ralph-inspires-educational-discussion-on-child-psychology","url":"/categories/the-simpsons/ralph-wiggum/ralph-inspires-educational-discussion-on-child-psychology.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Once Spoke in a Hidden Language for a Scene","slug":"ralph-once-spoke-in-a-hidden-language-for-a-scene","url":"/categories/the-simpsons/ralph-wiggum/ralph-once-spoke-in-a-hidden-language-for-a-scene.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum Almost Had a Pet That Changed His Role","slug":"ralph-wiggum-almost-had-a-pet-that-changed-his-role","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggum-almost-had-a-pet-that-changed-his-role.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum Holds the Record for Most Nonsensical Quotes in a Single Episode","slug":"ralph-wiggum-holds-the-record-for-most-nonsensical-quotes-in-a-single-episode","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggum-holds-the-record-for-most-nonsensical-quotes-in-a-single-episode.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum Quotes Used in Advertising Campaigns","slug":"ralph-wiggum-quotes-used-in-advertising-campaigns","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggum-quotes-used-in-advertising-campaigns.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum’s Evolution Reflected Social Satire","slug":"ralph-wiggums-evolution-reflected-social-satire","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggums-evolution-reflected-social-satire.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum’s First Line Was Nearly Cut","slug":"ralph-wiggums-first-line-was-nearly-cut","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggums-first-line-was-nearly-cut.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum’s Lines Have Surpassed Statistical Probability","slug":"ralph-wiggums-lines-have-surpassed-statistical-probability","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggums-lines-have-surpassed-statistical-probability.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum’s Lines Used in Political Satire","slug":"ralph-wiggums-lines-used-in-political-satire","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggums-lines-used-in-political-satire.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum’s Name Almost Didn’t Exist","slug":"ralph-wiggums-name-almost-didnt-exist","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggums-name-almost-didnt-exist.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph Wiggum’s Surprising Origins in The Simpsons Shorts","slug":"ralph-wiggums-surprising-origins-in-the-simpsons-shorts","url":"/categories/the-simpsons/ralph-wiggum/ralph-wiggums-surprising-origins-in-the-simpsons-shorts.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Absurdity Challenges Viewer Perception","slug":"ralphs-absurdity-challenges-viewer-perception","url":"/categories/the-simpsons/ralph-wiggum/ralphs-absurdity-challenges-viewer-perception.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Absurdity Shapes Social Commentary in Media","slug":"ralphs-absurdity-shapes-social-commentary-in-media","url":"/categories/the-simpsons/ralph-wiggum/ralphs-absurdity-shapes-social-commentary-in-media.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Character Was a Test of Audience Patience","slug":"ralphs-character-was-a-test-of-audience-patience","url":"/categories/the-simpsons/ralph-wiggum/ralphs-character-was-a-test-of-audience-patience.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Costume Changes Were Narrative Tools","slug":"ralphs-costume-changes-were-narrative-tools","url":"/categories/the-simpsons/ralph-wiggum/ralphs-costume-changes-were-narrative-tools.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Design Was Accidentally Inspired by a Neighbor","slug":"ralphs-design-was-accidentally-inspired-by-a-neighbor","url":"/categories/the-simpsons/ralph-wiggum/ralphs-design-was-accidentally-inspired-by-a-neighbor.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Evolution Influenced Voice Acting Techniques","slug":"ralphs-evolution-influenced-voice-acting-techniques","url":"/categories/the-simpsons/ralph-wiggum/ralphs-evolution-influenced-voice-acting-techniques.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Evolving Role in Holiday Episodes","slug":"ralphs-evolving-role-in-holiday-episodes","url":"/categories/the-simpsons/ralph-wiggum/ralphs-evolving-role-in-holiday-episodes.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Extreme Emotional Outburst Holds a Guinness-style Record","slug":"ralphs-extreme-emotional-outburst-holds-a-guinness-style-record","url":"/categories/the-simpsons/ralph-wiggum/ralphs-extreme-emotional-outburst-holds-a-guinness-style-record.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Facial Expressions Became Narrative Tools","slug":"ralphs-facial-expressions-became-narrative-tools","url":"/categories/the-simpsons/ralph-wiggum/ralphs-facial-expressions-became-narrative-tools.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Impact on Merchandise and Consumer Culture","slug":"ralphs-impact-on-merchandise-and-consumer-culture","url":"/categories/the-simpsons/ralph-wiggum/ralphs-impact-on-merchandise-and-consumer-culture.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Influence on Internet Meme Culture","slug":"ralphs-influence-on-internet-meme-culture","url":"/categories/the-simpsons/ralph-wiggum/ralphs-influence-on-internet-meme-culture.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Interactions with Other Characters Shifted Storylines","slug":"ralphs-interactions-with-other-characters-shifted-storylines","url":"/categories/the-simpsons/ralph-wiggum/ralphs-interactions-with-other-characters-shifted-storylines.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Lines Are Mini Cognitive Experiments","slug":"ralphs-lines-are-mini-cognitive-experiments","url":"/categories/the-simpsons/ralph-wiggum/ralphs-lines-are-mini-cognitive-experiments.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Lost Lines Rediscovered by Fans","slug":"ralphs-lost-lines-rediscovered-by-fans","url":"/categories/the-simpsons/ralph-wiggum/ralphs-lost-lines-rediscovered-by-fans.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Most Bizarre Mispronunciation Was Studied by Linguists","slug":"ralphs-most-bizarre-mispronunciation-was-studied-by-linguists","url":"/categories/the-simpsons/ralph-wiggum/ralphs-most-bizarre-mispronunciation-was-studied-by-linguists.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Most Counterintuitive Life Lessons","slug":"ralphs-most-counterintuitive-life-lessons","url":"/categories/the-simpsons/ralph-wiggum/ralphs-most-counterintuitive-life-lessons.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Most Extreme Misunderstanding of Reality","slug":"ralphs-most-extreme-misunderstanding-of-reality","url":"/categories/the-simpsons/ralph-wiggum/ralphs-most-extreme-misunderstanding-of-reality.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Obscure Guest Star Interactions","slug":"ralphs-obscure-guest-star-interactions","url":"/categories/the-simpsons/ralph-wiggum/ralphs-obscure-guest-star-interactions.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Predictable Unpredictability","slug":"ralphs-predictable-unpredictability","url":"/categories/the-simpsons/ralph-wiggum/ralphs-predictable-unpredictability.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Rare Cross-Episode Continuity Moments","slug":"ralphs-rare-cross-episode-continuity-moments","url":"/categories/the-simpsons/ralph-wiggum/ralphs-rare-cross-episode-continuity-moments.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Rarest Quote That Fans Still Share Today","slug":"ralphs-rarest-quote-that-fans-still-share-today","url":"/categories/the-simpsons/ralph-wiggum/ralphs-rarest-quote-that-fans-still-share-today.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Role as a Narrative Feedback Loop","slug":"ralphs-role-as-a-narrative-feedback-loop","url":"/categories/the-simpsons/ralph-wiggum/ralphs-role-as-a-narrative-feedback-loop.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Role in Fan Conventions and Pop Culture Events","slug":"ralphs-role-in-fan-conventions-and-pop-culture-events","url":"/categories/the-simpsons/ralph-wiggum/ralphs-role-in-fan-conventions-and-pop-culture-events.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Role in Shaping Springfield Elementary Dynamics","slug":"ralphs-role-in-shaping-springfield-elementary-dynamics","url":"/categories/the-simpsons/ralph-wiggum/ralphs-role-in-shaping-springfield-elementary-dynamics.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Social Commentary Extends to Education Policy Debate","slug":"ralphs-social-commentary-extends-to-education-policy-debate","url":"/categories/the-simpsons/ralph-wiggum/ralphs-social-commentary-extends-to-education-policy-debate.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"Ralph’s Thought Patterns Mirror Real-World Child Cognition","slug":"ralphs-thought-patterns-mirror-real-world-child-cognition","url":"/categories/the-simpsons/ralph-wiggum/ralphs-thought-patterns-mirror-real-world-child-cognition.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The “Absurd Logic Engine” Behind Ralph’s Thoughts","slug":"the-absurd-logic-engine-behind-ralphs-thoughts","url":"/categories/the-simpsons/ralph-wiggum/the-absurd-logic-engine-behind-ralphs-thoughts.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The “Ralph Logic” of Misinterpretation","slug":"the-ralph-logic-of-misinterpretation","url":"/categories/the-simpsons/ralph-wiggum/the-ralph-logic-of-misinterpretation.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The “Ralph Wiggum Effect” in Animation","slug":"the-ralph-wiggum-effect-in-animation","url":"/categories/the-simpsons/ralph-wiggum/the-ralph-wiggum-effect-in-animation.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Controversial “Ralph and Violence” Debate","slug":"the-controversial-ralph-and-violence-debate","url":"/categories/the-simpsons/ralph-wiggum/the-controversial-ralph-and-violence-debate.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Episode Where Ralph Breaks Physical Comedy Records","slug":"the-episode-where-ralph-breaks-physical-comedy-records","url":"/categories/the-simpsons/ralph-wiggum/the-episode-where-ralph-breaks-physical-comedy-records.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Evolution of Ralph’s Catchphrases","slug":"the-evolution-of-ralphs-catchphrases","url":"/categories/the-simpsons/ralph-wiggum/the-evolution-of-ralphs-catchphrases.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Forgotten Origins of Ralph’s Odd Gestures","slug":"the-forgotten-origins-of-ralphs-odd-gestures","url":"/categories/the-simpsons/ralph-wiggum/the-forgotten-origins-of-ralphs-odd-gestures.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Real-Life Inspiration Behind Ralph Wiggum’s Voice","slug":"the-real-life-inspiration-behind-ralph-wiggums-voice","url":"/categories/the-simpsons/ralph-wiggum/the-real-life-inspiration-behind-ralph-wiggums-voice.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Science of Ralph’s Timing and Pauses","slug":"the-science-of-ralphs-timing-and-pauses","url":"/categories/the-simpsons/ralph-wiggum/the-science-of-ralphs-timing-and-pauses.html","color":"#3f51b5","category":"the-simpsons","factCount":1},{"title":"The Surprising Psychology Behind Ralph Wiggum’s Humor","slug":"the-surprising-psychology-behind-ralph-wiggums-humor","url":"/categories/the-simpsons/ralph-wiggum/the-surprising-psychology-behind-ralph-wiggums-humor.html","color":"#3f51b5","category":"the-simpsons","factCount":1}];
+
+/**************************************************
+ UTILITIES
+**************************************************/
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+/**************************************************
+ CREATE CARD
+**************************************************/
+function createCard(item){
+  const div = document.createElement('div');
+  div.className='card';
+  div.dataset.slug = item.slug;
+  div.dataset.title = (item.title||'').toLowerCase();
+  div.dataset.category = item.category || '';
+  div.style.setProperty('--category-color', item.color || '#ff5722');
+
+  div.innerHTML = `
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="meta">
+      <span class="badge">Facts: ${item.factCount || 1}</span>
+    </div>
+    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+  `;
+  return div;
+}
+
+/**************************************************
+ POPULATE GRID & QUICK JUMP
+**************************************************/
+function populateGrid(items){
+  const container = document.getElementById('items-grid');
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const card = createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'), i*50);
+  });
+
+  // Quick Jump letters
+  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
+  const quickJump = document.getElementById('quickJump');
+  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const letter = a.dataset.letter.toLowerCase();
+      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+        // Highlight target briefly
+        target.style.transition='background 0.3s';
+        const original = target.style.background;
+        target.style.background='rgba(255,235,59,0.2)';
+        setTimeout(()=>target.style.background=original,600);
+      }
+    });
+  });
+}
+
+/**************************************************
+ SEARCH / FILTER
+**************************************************/
+function filterCards(){
+  const query = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    const title = card.dataset.title;
+    if(title.includes(query)){
+      card.classList.remove('hidden');
+      const a = card.querySelector('a');
+      a.innerHTML = a.textContent.replace(
+        new RegExp(query,'gi'),
+        match => `<mark>${match}</mark>`
+      );
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+/**************************************************
+ BACK TO TOP VISIBILITY
+**************************************************/
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', ()=> {
+  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
+});
+
+/**************************************************
+ RANDOM FACT ON HOVER
+**************************************************/
+document.addEventListener('DOMContentLoaded', () => {
+  if(!ITEMS || !ITEMS.length) return;
+
+  const cardCache = {};
+  document.querySelectorAll('.card').forEach(card => {
+    const category = card.dataset.category;
+    const slug = card.dataset.slug;
+    const previewDiv = card.querySelector('.fact-preview');
+
+    card.addEventListener('mouseenter', async () => {
+      if(previewDiv.dataset.loaded) return;
+      let url;
+      if(window.location.pathname.endsWith('/categories/index.html')){
+        url = `/categories/${slug}/`;
+      } else {
+        url = `/categories/${category}/${slug}/`;
+      }
+
+      if(cardCache[url]){
+        previewDiv.textContent = cardCache[url];
+        previewDiv.dataset.loaded = true;
+        return;
+      }
+
+      try {
+        const resp = await fetch(url+'facts.json');
+        if(!resp.ok) return;
+        const facts = await resp.json();
+        if(!facts.length) return;
+        const randomFact = facts[Math.floor(Math.random()*facts.length)];
+        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
+        previewDiv.textContent = factText;
+        previewDiv.dataset.loaded = true;
+        cardCache[url] = factText;
+      } catch(e){
+        console.warn('Failed to fetch fact preview', e);
+      }
+    });
+  });
+});
+
+/**************************************************
+ INIT
+**************************************************/
+if(typeof ITEMS!=='undefined'){
+  populateGrid(ITEMS);
+}
+</script>
+
+</body>
+</html>
