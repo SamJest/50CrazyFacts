@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Undocumented Ancient Laws</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Undocumented Ancient Laws</h1>
+  <p>Explore all facts in "Undocumented Ancient Laws".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Undocumented Ancient Laws</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"The Law That Punished You for Sneezing in Ancient Mesopotamia","slug":"the law that punished you for sneezing in ancient mesopotamia","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/the law that punished you for sneezing in ancient mesopotamia.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Imagine being fined for a sneeze!"},{"title":"Babylon’s Ban on Beards During Certain Festivals","slug":"babylon’s ban on beards during certain festivals","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/babylon’s ban on beards during certain festivals.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beard envy was illegal!"},{"title":"Egypt’s Peculiar Law Against Laughing at the Pharaoh","slug":"egypt’s peculiar law against laughing at the pharaoh","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/egypt’s peculiar law against laughing at the pharaoh.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Laughter could land you in jail!"},{"title":"Roman Law Required Public Apologies for Sneezing or Farting in Senate","slug":"roman law required public apologies for sneezing or farting in senate","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/roman law required public apologies for sneezing or farting in senate.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even bodily noises had legal consequences in Rome!"},{"title":"Spartan Law Mandated Drinking Wine Only in a Masked State","slug":"spartan law mandated drinking wine only in a masked state","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/spartan law mandated drinking wine only in a masked state.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Spartans took party anonymity seriously!"},{"title":"The Athenian Law Against Owning Too Many Pets","slug":"the athenian law against owning too many pets","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/the athenian law against owning too many pets.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Athenians once regulated fur babies!"},{"title":"Phoenician Law Against Wearing Shoes Indoors","slug":"phoenician law against wearing shoes indoors","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/phoenician law against wearing shoes indoors.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shoes off, or face punishment!"},{"title":"Hittite Rule Against Singing at Night","slug":"hittite rule against singing at night","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/hittite rule against singing at night.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nighttime melodies were illegal!"},{"title":"Assyrian Law Limiting the Number of Steps in a House","slug":"assyrian law limiting the number of steps in a house","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/assyrian law limiting the number of steps in a house.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Step too much and you could be punished!"},{"title":"Carthaginian Ban on Wearing Purple to Market","slug":"carthaginian ban on wearing purple to market","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/carthaginian ban on wearing purple to market.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Purple robes were outlawed—at least at the marketplace!"},{"title":"Sumerian Law Against Whistling at Dawn","slug":"sumerian law against whistling at dawn","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/sumerian law against whistling at dawn.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Whistling too early could land you in court!"},{"title":"Indus Valley Rule Against Eating Certain Fruits in Public","slug":"indus valley rule against eating certain fruits in public","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/indus valley rule against eating certain fruits in public.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mangoes and bananas could get you fined!"},{"title":"Minoan Law Against Wearing Gold Jewelry in Temples","slug":"minoan law against wearing gold jewelry in temples","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/minoan law against wearing gold jewelry in temples.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Gold is glamorous, but forbidden in sacred spaces!"},{"title":"Ancient Hittite Law Forbidding Tickling Strangers","slug":"ancient hittite law forbidding tickling strangers","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/ancient hittite law forbidding tickling strangers.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tickling could be a legal offense!"},{"title":"Phoenician Law Against Spitting on the Street","slug":"phoenician law against spitting on the street","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/phoenician law against spitting on the street.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Public spitting could land you in hot water!"},{"title":"Ancient Egyptian Law Against Walking Backwards in Public","slug":"ancient egyptian law against walking backwards in public","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/ancient egyptian law against walking backwards in public.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Taking a step back could cost you dearly!"},{"title":"Babylonian Rule Against Chewing Gum in Temples","slug":"babylonian rule against chewing gum in temples","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/babylonian rule against chewing gum in temples.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even ancient Babylonians couldn’t chew gum in sacred spaces!"},{"title":"Greek Law Forbidding Sneezing During Public Oratory","slug":"greek law forbidding sneezing during public oratory","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/greek law forbidding sneezing during public oratory.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A sneeze could derail democracy!"},{"title":"Roman Rule Against Blinking During Legal Testimony","slug":"roman rule against blinking during legal testimony","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/roman rule against blinking during legal testimony.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even your eyelids could be under scrutiny!"},{"title":"Cretan Law Forbidding Walking Backwards on Sacred Paths","slug":"cretan law forbidding walking backwards on sacred paths","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/cretan law forbidding walking backwards on sacred paths.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Retreating was a legal offense in Crete!"},{"title":"Mesopotamian Law Against Wearing Two Hats at Once","slug":"mesopotamian law against wearing two hats at once","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/mesopotamian law against wearing two hats at once.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Double-hatting could get you fined in ancient Mesopotamia!"},{"title":"Hittite Regulation Against Eating While Standing","slug":"hittite regulation against eating while standing","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/hittite regulation against eating while standing.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Standing while snacking was illegal!"},{"title":"Phoenician Ban on Singing While Fetching Water","slug":"phoenician ban on singing while fetching water","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/phoenician ban on singing while fetching water.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Musical hydration was prohibited!"},{"title":"Ancient Egyptian Law Against Whistling at Banquets","slug":"ancient egyptian law against whistling at banquets","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/ancient egyptian law against whistling at banquets.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Whistling could ruin more than your appetite!"},{"title":"Carthaginian Law Forbidding Talking During Sacrificial Ceremonies","slug":"carthaginian law forbidding talking during sacrificial ceremonies","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/carthaginian law forbidding talking during sacrificial ceremonies.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chatter could cost you dearly in Carthage!"},{"title":"Assyrian Ban on Wearing Shoes Indoors During Official Meetings","slug":"assyrian ban on wearing shoes indoors during official meetings","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/assyrian ban on wearing shoes indoors during official meetings.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Step inside wrong, and you could be fined!"},{"title":"Persian Law Against Laughing During Royal Audiences","slug":"persian law against laughing during royal audiences","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/persian law against laughing during royal audiences.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A giggle in the king’s court could cost you!"},{"title":"Minoan Law Against Humming in Sacred Groves","slug":"minoan law against humming in sacred groves","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/minoan law against humming in sacred groves.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even humming could offend the gods!"},{"title":"Babylonian Prohibition on Wearing Red During Religious Ceremonies","slug":"babylonian prohibition on wearing red during religious ceremonies","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/babylonian prohibition on wearing red during religious ceremonies.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Red was apparently too bold for worship!"},{"title":"Assyrian Ban on Touching Water Before Sunrise","slug":"assyrian ban on touching water before sunrise","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/assyrian ban on touching water before sunrise.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Early morning hydration was a legal risk!"},{"title":"Ancient Egyptian Law Against Smiling in Temples","slug":"ancient egyptian law against smiling in temples","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/ancient egyptian law against smiling in temples.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A smile could be considered sacrilege!"},{"title":"Babylonian Prohibition on Yawning During Council Meetings","slug":"babylonian prohibition on yawning during council meetings","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/babylonian prohibition on yawning during council meetings.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even your jaw could get you fined!"},{"title":"Greek Ban on Scratching During Philosophical Debates","slug":"greek ban on scratching during philosophical debates","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/greek ban on scratching during philosophical debates.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An itch could threaten democracy!"},{"title":"Roman Law Against Whistling at Public Forums","slug":"roman law against whistling at public forums","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/roman law against whistling at public forums.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Whistling could be a civic offense!"},{"title":"Carthaginian Ban on Laughing During Market Transactions","slug":"carthaginian ban on laughing during market transactions","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/carthaginian ban on laughing during market transactions.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A chuckle could cost you money!"},{"title":"Sumerian Law Against Stepping on Shadows","slug":"sumerian law against stepping on shadows","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/sumerian law against stepping on shadows.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Your shadow could get you fined!"},{"title":"Hittite Ban on Sniffing Flowers in Royal Gardens","slug":"hittite ban on sniffing flowers in royal gardens","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/hittite ban on sniffing flowers in royal gardens.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Smelling blossoms could break the law!"},{"title":"Phoenician Law Against Sighing During Sea Voyages","slug":"phoenician law against sighing during sea voyages","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/phoenician law against sighing during sea voyages.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even a sigh could be a maritime offense!"},{"title":"Greek Law Against Eating Garlic Before Theatrical Performances","slug":"greek law against eating garlic before theatrical performances","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/greek law against eating garlic before theatrical performances.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Garlic could get you banned from the stage!"},{"title":"Roman Ban on Scratching One’s Head in Senate","slug":"roman ban on scratching one’s head in senate","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/roman ban on scratching one’s head in senate.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An itch could disrupt Roman governance!"},{"title":"Egyptian Ban on Wearing Hats Indoors at Banquets","slug":"egyptian ban on wearing hats indoors at banquets","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/egyptian ban on wearing hats indoors at banquets.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A misplaced hat could cost you more than embarrassment!"},{"title":"Mesopotamian Prohibition on Chewing Gum During Temple Rituals","slug":"mesopotamian prohibition on chewing gum during temple rituals","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/mesopotamian prohibition on chewing gum during temple rituals.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chewing could be considered sacrilegious!"},{"title":"Persian Law Against Tapping Fingers During Court Proceedings","slug":"persian law against tapping fingers during court proceedings","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/persian law against tapping fingers during court proceedings.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even a rhythmic tap could be illegal!"},{"title":"Minoan Law Against Whistling in Palaces","slug":"minoan law against whistling in palaces","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/minoan law against whistling in palaces.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A whistle could be a crime!"},{"title":"Assyrian Ban on Staring at Officials Without Permission","slug":"assyrian ban on staring at officials without permission","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/assyrian ban on staring at officials without permission.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stare could land you in trouble!"},{"title":"Ancient Egyptian Ban on Sneezing Near Pharaoh Statues","slug":"ancient egyptian ban on sneezing near pharaoh statues","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/ancient egyptian ban on sneezing near pharaoh statues.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A sneeze could be sacrilegious!"},{"title":"Babylonian Ban on Talking to Strangers on Market Stairs","slug":"babylonian ban on talking to strangers on market stairs","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/babylonian ban on talking to strangers on market stairs.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A chat could cost you a fine!"},{"title":"Greek Law Against Scratching Ears During Olympic Games","slug":"greek law against scratching ears during olympic games","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/greek law against scratching ears during olympic games.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An itch could be illegal!"},{"title":"Roman Law Against Blinking Excessively During Senate Speeches","slug":"roman law against blinking excessively during senate speeches","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/roman law against blinking excessively during senate speeches.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Your eyelids could betray you legally!"},{"title":"Carthaginian Ban on Humming While Sailing","slug":"carthaginian ban on humming while sailing","url":"/categories/ancient-civilizations-secrets/undocumented-ancient-laws/carthaginian ban on humming while sailing.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A hum could anger the gods and the law!"}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
+
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

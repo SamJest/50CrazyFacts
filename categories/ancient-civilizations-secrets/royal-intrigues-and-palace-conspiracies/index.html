@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Royal Intrigues And Palace Conspiracies</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Royal Intrigues And Palace Conspiracies</h1>
+  <p>Explore all facts in "Royal Intrigues And Palace Conspiracies".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Royal Intrigues And Palace Conspiracies</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"The Pharaoh Who Invented Fake Doors for the Dead","slug":"the pharaoh who invented fake doors for the dead","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who invented fake doors for the dead.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Did an Egyptian king outsmart death with fake doors?"},{"title":"The Queen Who Poisoned Herself to Avoid Political Marriage","slug":"the queen who poisoned herself to avoid political marriage","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the queen who poisoned herself to avoid political marriage.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would a royal rather die than marry for power?"},{"title":"Emperor Who Hired Assassins to Test Palace Staff Loyalty","slug":"emperor who hired assassins to test palace staff loyalty","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/emperor who hired assassins to test palace staff loyalty.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"What if your boss secretly tests if you’d kill them?"},{"title":"The Sultan Who Hosted a Mock Execution to Identify Traitors","slug":"the sultan who hosted a mock execution to identify traitors","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who hosted a mock execution to identify traitors.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Imagine being tricked into thinking you’re about to die…by your own ruler!"},{"title":"The Emperor Who Wrote Secret Codes in His Meals","slug":"the emperor who wrote secret codes in his meals","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the emperor who wrote secret codes in his meals.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"What if your dinner menu contained encrypted political messages?"},{"title":"The King Who Spied Through Hollowed Statues","slug":"the king who spied through hollowed statues","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the king who spied through hollowed statues.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"What if your throne room statues were actually surveillance devices?"},{"title":"The Pharaoh Who Kept Secret Twins to Test Court Loyalty","slug":"the pharaoh who kept secret twins to test court loyalty","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who kept secret twins to test court loyalty.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could hidden royal twins be used as loyalty litmus tests?"},{"title":"The Emperor Who Scheduled Executions Based on Astrology","slug":"the emperor who scheduled executions based on astrology","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the emperor who scheduled executions based on astrology.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would an emperor really let the stars dictate life and death?"},{"title":"The King Who Used Whispering Walls for Court Secrets","slug":"the king who used whispering walls for court secrets","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the king who used whispering walls for court secrets.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Imagine your palace walls could repeat your secrets to the king!"},{"title":"The Pharaoh Who Kept a Secret Room for Rival Nobles","slug":"the pharaoh who kept a secret room for rival nobles","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who kept a secret room for rival nobles.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would you imprison your rivals behind hidden walls—without execution?"},{"title":"The Byzantine Emperor Who Used Illusions to Test Advisors","slug":"the byzantine emperor who used illusions to test advisors","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used illusions to test advisors.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would you trust an advisor who might be seeing fake fires in your palace?"},{"title":"The King Who Used Mirrors to Expose Court Spies","slug":"the king who used mirrors to expose court spies","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the king who used mirrors to expose court spies.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could reflective surfaces betray even the slyest courtiers?"},{"title":"The Pharaoh Who Employed Secret Twin Guards","slug":"the pharaoh who employed secret twin guards","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who employed secret twin guards.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Why have one loyal guard when you can double the deception?"},{"title":"The Byzantine Palace With a Secret Labyrinth of Passages","slug":"the byzantine palace with a secret labyrinth of passages","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine palace with a secret labyrinth of passages.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would a palace secretly become a maze of intrigue?"},{"title":"The Egyptian Pharaoh Who Hid Letters to Spy on Allies","slug":"the egyptian pharaoh who hid letters to spy on allies","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the egyptian pharaoh who hid letters to spy on allies.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could secret correspondence act as both diplomacy and surveillance?"},{"title":"The Assyrian King Who Tested Loyalty With Poisoned Wine","slug":"the assyrian king who tested loyalty with poisoned wine","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the assyrian king who tested loyalty with poisoned wine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would you drink wine that could reveal a traitor—or kill you?"},{"title":"The Pharaoh Who Turned a Festival Into a Loyalty Trap","slug":"the pharaoh who turned a festival into a loyalty trap","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who turned a festival into a loyalty trap.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could dancing at a festival decide your fate in court?"},{"title":"The Byzantine Emperor Who Used Hidden Gardens for Surveillance","slug":"the byzantine emperor who used hidden gardens for surveillance","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used hidden gardens for surveillance.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could strolling through a garden put you under secret observation?"},{"title":"The Sultan Who Tested Loyalty With Fake Treasures","slug":"the sultan who tested loyalty with fake treasures","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who tested loyalty with fake treasures.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would you risk everything for gold that isn’t real?"},{"title":"The Pharaoh Who Kept a Hidden Audience Chamber","slug":"the pharaoh who kept a hidden audience chamber","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who kept a hidden audience chamber.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"What if a room let you spy on courtiers while appearing empty?"},{"title":"The King Who Used Secret Passages to Stage Fake Coups","slug":"the king who used secret passages to stage fake coups","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the king who used secret passages to stage fake coups.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a palace be used to trick rebels into thinking a coup succeeded?"},{"title":"The Pharaoh Who Secretly Monitored Temple Donations","slug":"the pharaoh who secretly monitored temple donations","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who secretly monitored temple donations.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could generosity be a test of loyalty?"},{"title":"The Byzantine Emperor Who Used Fake Trials to Identify Traitors","slug":"the byzantine emperor who used fake trials to identify traitors","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used fake trials to identify traitors.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Would you reveal your secrets if accused of crimes that didn’t exist?"},{"title":"The Sultan Who Monitored Courtly Conversations Through Music","slug":"the sultan who monitored courtly conversations through music","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who monitored courtly conversations through music.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could melodies carry more than just entertainment?"},{"title":"The Pharaoh Who Tested Loyalty With Hidden Floors","slug":"the pharaoh who tested loyalty with hidden floors","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who tested loyalty with hidden floors.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could stepping on the wrong floor be a test of trust?"},{"title":"The Byzantine Emperor Who Tricked Courtiers With Phantom Fires","slug":"the byzantine emperor who tricked courtiers with phantom fires","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who tricked courtiers with phantom fires.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"What if your palace suddenly seemed ablaze just to test loyalty?"},{"title":"The Pharaoh Who Hid Secret Chambers Behind Statues","slug":"the pharaoh who hid secret chambers behind statues","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who hid secret chambers behind statues.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a godly statue hide a spying Pharaoh?"},{"title":"The Sultan Who Used Secret Tunnels to Listen to Advisers","slug":"the sultan who used secret tunnels to listen to advisers","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who used secret tunnels to listen to advisers.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a tunnel make every whisper dangerous?"},{"title":"The Pharaoh Who Tested Courtiers With Secret Floors","slug":"the pharaoh who tested courtiers with secret floors","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who tested courtiers with secret floors.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could stepping wrong change your career in the palace?"},{"title":"The Byzantine Emperor Who Tested Loyalty With Disguised Servants","slug":"the byzantine emperor who tested loyalty with disguised servants","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who tested loyalty with disguised servants.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could your servant secretly be the emperor’s spy?"},{"title":"The Pharaoh Who Used Hidden Mirrors to Observe Secretly","slug":"the pharaoh who used hidden mirrors to observe secretly","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who used hidden mirrors to observe secretly.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a reflection betray your loyalty?"},{"title":"The Sultan Who Tested Officials With Secret Courtyard Mazes","slug":"the sultan who tested officials with secret courtyard mazes","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who tested officials with secret courtyard mazes.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could getting lost determine your fate in court?"},{"title":"The Pharaoh Who Tested Courtiers With Hidden Door Mechanisms","slug":"the pharaoh who tested courtiers with hidden door mechanisms","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who tested courtiers with hidden door mechanisms.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could opening the wrong door end your career?"},{"title":"The Byzantine Emperor Who Used Staged Accidents to Test Loyalty","slug":"the byzantine emperor who used staged accidents to test loyalty","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used staged accidents to test loyalty.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a fake fall or accident reveal your true allegiance?"},{"title":"The Pharaoh Who Turned Secret Passageways Into Loyalty Tests","slug":"the pharaoh who turned secret passageways into loyalty tests","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who turned secret passageways into loyalty tests.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could navigating hidden corridors decide your career?"},{"title":"The Byzantine Emperor Who Used Music to Reveal Hidden Alliances","slug":"the byzantine emperor who used music to reveal hidden alliances","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used music to reveal hidden alliances.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a melody betray your secret loyalties?"},{"title":"The Pharaoh Who Used Mirrors and Shadows to Test Honesty","slug":"the pharaoh who used mirrors and shadows to test honesty","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who used mirrors and shadows to test honesty.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could your reflection judge your truthfulness?"},{"title":"The Sultan Who Used Hidden Windows to Observe Court Intrigue","slug":"the sultan who used hidden windows to observe court intrigue","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who used hidden windows to observe court intrigue.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a window make your whisper deadly?"},{"title":"The Pharaoh Who Installed Pressure Plates to Test Courtiers","slug":"the pharaoh who installed pressure plates to test courtiers","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who installed pressure plates to test courtiers.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could walking the wrong way cost you favor with the Pharaoh?"},{"title":"The Byzantine Emperor Who Used Disguised Pages to Monitor Loyalty","slug":"the byzantine emperor who used disguised pages to monitor loyalty","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used disguised pages to monitor loyalty.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could your page be secretly reporting on you?"},{"title":"The Pharaoh Who Used Secret Sound Tubes to Eavesdrop","slug":"the pharaoh who used secret sound tubes to eavesdrop","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who used secret sound tubes to eavesdrop.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a whisper travel through stone to the Pharaoh’s ears?"},{"title":"The Byzantine Emperor Who Tested Courtiers With Fake Documents","slug":"the byzantine emperor who tested courtiers with fake documents","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who tested courtiers with fake documents.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a forged decree expose your ambitions?"},{"title":"The Pharaoh Who Tested Loyalty With Hidden Sacrificial Altars","slug":"the pharaoh who tested loyalty with hidden sacrificial altars","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who tested loyalty with hidden sacrificial altars.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could unseen altars reveal your true intentions?"},{"title":"The Sultan Who Used Hidden Pools to Monitor Conversations","slug":"the sultan who used hidden pools to monitor conversations","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who used hidden pools to monitor conversations.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a decorative pool be your silent witness?"},{"title":"The Pharaoh Who Used Hidden Staircases to Observe Court Behavior","slug":"the pharaoh who used hidden staircases to observe court behavior","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who used hidden staircases to observe court behavior.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could climbing stairs reveal your secrets?"},{"title":"The Sultan Who Used Perfume Scents to Track Loyalty","slug":"the sultan who used perfume scents to track loyalty","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who used perfume scents to track loyalty.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a fragrance expose your secrets?"},{"title":"The Pharaoh Who Used Hidden Pools to Observe Ceremonial Behavior","slug":"the pharaoh who used hidden pools to observe ceremonial behavior","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who used hidden pools to observe ceremonial behavior.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could a reflection reveal your true devotion?"},{"title":"The Byzantine Emperor Who Used Hidden Gardens to Test Court Behavior","slug":"the byzantine emperor who used hidden gardens to test court behavior","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the byzantine emperor who used hidden gardens to test court behavior.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could strolling in a garden reveal your loyalty?"},{"title":"The Pharaoh Who Used Celestial Alignments to Monitor Courtiers","slug":"the pharaoh who used celestial alignments to monitor courtiers","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the pharaoh who used celestial alignments to monitor courtiers.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could the stars judge your loyalty?"},{"title":"The Sultan Who Used Secret Tunnels to Monitor Court Alliances","slug":"the sultan who used secret tunnels to monitor court alliances","url":"/categories/ancient-civilizations-secrets/royal-intrigues-and-palace-conspiracies/the sultan who used secret tunnels to monitor court alliances.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Could walking through a tunnel reveal your conspiracies?"}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
+
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

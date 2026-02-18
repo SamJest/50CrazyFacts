@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancient Medical Techniques</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Ancient Medical Techniques</h1>
+  <p>Explore all facts in "Ancient Medical Techniques".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ancient Medical Techniques</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Egyptian Brain Surgery: Real or Ritual?","slug":"ancient egyptian brain surgery: real or ritual?","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/ancient egyptian brain surgery: real or ritual?.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Did you know ancient Egyptians performed skull surgery over 4,000 years ago with survival rates that would impress modern ER doctors?"},{"title":"Roman Gladiators and the First Sports Medicine","slug":"roman gladiators and the first sports medicine","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman gladiators and the first sports medicine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Roman gladiators might have been the original athletes with personal physicians centuries before modern sports medicine existed."},{"title":"Chinese Acupuncture: Needle Science Before Modern Needles","slug":"chinese acupuncture: needle science before modern needles","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/chinese acupuncture: needle science before modern needles.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before hypodermic syringes, the Chinese were sticking people with precision needles for health, not torture."},{"title":"Mayan Herbal Surgery: Jungle Remedies That Worked","slug":"mayan herbal surgery: jungle remedies that worked","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mayan herbal surgery: jungle remedies that worked.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before antibiotics, Mayans used jungle plants to perform surgeries with surprisingly low infection rates."},{"title":"Mesopotamian Prosthetics: Wooden Toes and Bronze Fingers","slug":"mesopotamian prosthetics: wooden toes and bronze fingers","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mesopotamian prosthetics: wooden toes and bronze fingers.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Mesopotamians were fashioning functional prosthetics 3,000 years ago, proving early medicine met craftsmanship."},{"title":"Hippocratic Humor Theory: Ancient Doctors Prescribed Belly Laughs","slug":"hippocratic humor theory: ancient doctors prescribed belly laughs","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/hippocratic humor theory: ancient doctors prescribed belly laughs.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The ancient Greeks believed laughing too little could literally make you sick—prescribing humor as medicine."},{"title":"Indian Sushruta: The First Plastic Surgeon","slug":"indian sushruta: the first plastic surgeon","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/indian sushruta: the first plastic surgeon.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Over 2,500 years ago, Indian surgeons were performing rhinoplasties using cheek flaps—a technique still admired today."},{"title":"Incan Skull Deformation: Medical or Status Statement?","slug":"incan skull deformation: medical or status statement?","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/incan skull deformation: medical or status statement?.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Incas were shaping babies’ skulls to enhance intelligence—or at least make them look smarter."},{"title":"Babylonian Diagnostic Astrology: Stars as Symptom Maps","slug":"babylonian diagnostic astrology: stars as symptom maps","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/babylonian diagnostic astrology: stars as symptom maps.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In ancient Babylon, physicians read your horoscope before taking your pulse—literally."},{"title":"Greek Cupping Therapy: Bloodletting for the Win","slug":"greek cupping therapy: bloodletting for the win","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek cupping therapy: bloodletting for the win.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Greeks used suction cups on skin to treat everything from headaches to hangovers—sometimes leaving shocking marks."},{"title":"Egyptian Honey Healing: Sweet Medicine That Works","slug":"egyptian honey healing: sweet medicine that works","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/egyptian honey healing: sweet medicine that works.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Egyptians smeared honey on wounds because it could literally kill bacteria—without knowing germs existed."},{"title":"Roman Vinegar as a Disinfectant: Sour but Effective","slug":"roman vinegar as a disinfectant: sour but effective","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman vinegar as a disinfectant: sour but effective.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Roman soldiers cleaned wounds with vinegar, a practice that smells funny but may have saved lives."},{"title":"Aztec Cold Therapy: Ice and Herbs for Fever","slug":"aztec cold therapy: ice and herbs for fever","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/aztec cold therapy: ice and herbs for fever.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Aztecs combined crushed ice and medicinal plants to fight fevers, centuries before refrigeration existed."},{"title":"Greek Opium Treatments: Sleeping Through Pain","slug":"greek opium treatments: sleeping through pain","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek opium treatments: sleeping through pain.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hippocratic physicians used poppy-derived opium to dull pain, creating the first analgesic therapy."},{"title":"Chinese Moxibustion: Fire Therapy Without Burns","slug":"chinese moxibustion: fire therapy without burns","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/chinese moxibustion: fire therapy without burns.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Chinese healers applied burning herbs near the skin to treat ailments—without setting patients on fire."},{"title":"Egyptian Castor Oil: The Ancient Laxative That Worked Wonders","slug":"egyptian castor oil: the ancient laxative that worked wonders","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/egyptian castor oil: the ancient laxative that worked wonders.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Egyptians used castor oil not for cooking, but as a powerful medicine to literally move things along."},{"title":"Roman Bloodletting: Draining for Health","slug":"roman bloodletting: draining for health","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman bloodletting: draining for health.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Romans believed that letting blood out could actually save lives—a practice that looks brutal but had some reasoning behind it."},{"title":"Greek Eye Surgery: Couching Cataracts Before Lasers","slug":"greek eye surgery: couching cataracts before lasers","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek eye surgery: couching cataracts before lasers.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Greeks were literally poking out cataracts with needles—restoring sight millennia before modern ophthalmology."},{"title":"Incan Trepanation: Survival Against All Odds","slug":"incan trepanation: survival against all odds","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/incan trepanation: survival against all odds.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Incas drilled holes in skulls, yet many patients survived—a shocking feat for ancient surgery."},{"title":"Mesopotamian Herbal Remedies: Plants Before Pills","slug":"mesopotamian herbal remedies: plants before pills","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mesopotamian herbal remedies: plants before pills.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Babylonian healers were mixing herbs to treat ailments, thousands of years before synthetic drugs existed."},{"title":"Chinese Pulse Diagnosis: Reading Health from Wrists","slug":"chinese pulse diagnosis: reading health from wrists","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/chinese pulse diagnosis: reading health from wrists.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Chinese doctors claimed they could tell your entire health story just by feeling your pulse—sometimes at three different depths per wrist."},{"title":"Mayan Fever Baths: Steam Therapy in the Jungle","slug":"mayan fever baths: steam therapy in the jungle","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mayan fever baths: steam therapy in the jungle.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Maya healers used steam baths with medicinal herbs to fight fevers and detoxify—essentially jungle saunas before spas existed."},{"title":"Persian Avicenna: Compiling the World’s First Medical Encyclopedia","slug":"persian avicenna: compiling the world’s first medical encyclopedia","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/persian avicenna: compiling the world’s first medical encyclopedia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Over 1,000 years ago, Avicenna wrote a medical text so comprehensive it dominated European medicine for centuries."},{"title":"Greek Dietetics: Eating for Health, Not Taste","slug":"greek dietetics: eating for health, not taste","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek dietetics: eating for health, not taste.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hippocrates believed food could cure as much as it could harm, prescribing diets with surgical precision."},{"title":"Indian Ayurvedic Panchakarma: Detox Before It Was Cool","slug":"indian ayurvedic panchakarma: detox before it was cool","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/indian ayurvedic panchakarma: detox before it was cool.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Indians developed multi-step detox routines that rival modern spa treatments, but with actual health logic behind them."},{"title":"Egyptian Toothpaste: Brushing 5,000 Years Ago","slug":"egyptian toothpaste: brushing 5,000 years ago","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/egyptian toothpaste: brushing 5,000 years ago.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Egyptians brushed their teeth with powders made of crushed rocks and ashes—hygiene before fluoride existed."},{"title":"Greek Heat Therapy: The Ancient Sauna","slug":"greek heat therapy: the ancient sauna","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek heat therapy: the ancient sauna.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hippocrates recommended steam baths and sweating to treat ailments, essentially inventing spa therapy."},{"title":"Roman Eye Salves: Ancient Vision Care","slug":"roman eye salves: ancient vision care","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman eye salves: ancient vision care.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Romans used lead-based and herbal eye treatments that were surprisingly effective despite toxicity risks."},{"title":"Babylonian Surgery: Earliest Recorded Incisions","slug":"babylonian surgery: earliest recorded incisions","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/babylonian surgery: earliest recorded incisions.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets reveal that Babylonians were making incisions and treating wounds long before Greece formalized surgery."},{"title":"Indian Surgical Texts: Sushruta’s Scalpel Legacy","slug":"indian surgical texts: sushruta’s scalpel legacy","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/indian surgical texts: sushruta’s scalpel legacy.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Over 2,500 years ago, Sushruta described rhinoplasty and cataract surgery with astonishing precision."},{"title":"Mayan Bone Setting: Fracture Fixing Without X-Rays","slug":"mayan bone setting: fracture fixing without x-rays","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mayan bone setting: fracture fixing without x-rays.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Maya healers realigned broken bones with splints and herbal poultices centuries before modern orthopedic clinics existed."},{"title":"Chinese Herbal Plasters: Pain Relief on the Spot","slug":"chinese herbal plasters: pain relief on the spot","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/chinese herbal plasters: pain relief on the spot.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Chinese doctors created sticky herbal plasters to treat joint pain and inflammation, a mobile pharmacy before patches existed."},{"title":"Egyptian Eye Makeup as Medicine","slug":"egyptian eye makeup as medicine","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/egyptian eye makeup as medicine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Kohl wasn’t just cosmetic—it also protected eyes from infection, effectively ancient ophthalmic care."},{"title":"Roman Spa Water Therapy: Healing in Public Baths","slug":"roman spa water therapy: healing in public baths","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman spa water therapy: healing in public baths.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Romans believed soaking in hot, cold, or mineral water could cure ailments ranging from arthritis to digestive disorders."},{"title":"Greek Hemlock Therapy: Poison as Medicine","slug":"greek hemlock therapy: poison as medicine","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek hemlock therapy: poison as medicine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Greeks used tiny doses of hemlock to treat pain and convulsions, proving ancient pharmacology was daring."},{"title":"Mayan Herbal Antibiotics: Jungle Cures","slug":"mayan herbal antibiotics: jungle cures","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mayan herbal antibiotics: jungle cures.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Maya used plants with antibacterial properties to treat infections long before modern antibiotics existed."},{"title":"Persian Skull Surgery: Ancient Trepanation Practices","slug":"persian skull surgery: ancient trepanation practices","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/persian skull surgery: ancient trepanation practices.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Persians drilled holes into skulls to relieve pressure or treat headaches, and some patients survived."},{"title":"Chinese Moxibustion: Heating the Body for Health","slug":"chinese moxibustion: heating the body for health","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/chinese moxibustion: heating the body for health.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Chinese burned herbs on or near the skin to stimulate healing, essentially acupuncture with fire."},{"title":"Egyptian Surgery: Removing Tumors with Precision","slug":"egyptian surgery: removing tumors with precision","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/egyptian surgery: removing tumors with precision.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Papyrus records describe ancient Egyptians performing minor surgeries, including tumor excision, with careful technique."},{"title":"Greek Opium Use: Pain Management Before Modern Medicine","slug":"greek opium use: pain management before modern medicine","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek opium use: pain management before modern medicine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hippocrates and his contemporaries used opium extracts to alleviate pain and induce sleep, balancing relief and risk."},{"title":"Roman Bloodletting: The Science of Vein Tapping","slug":"roman bloodletting: the science of vein tapping","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman bloodletting: the science of vein tapping.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Romans believed draining blood could cure everything from fevers to headaches, and they had specialized tools for it."},{"title":"Babylonian Herbal Laxatives: Ancient Digestive Aid","slug":"babylonian herbal laxatives: ancient digestive aid","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/babylonian herbal laxatives: ancient digestive aid.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Babylonians had prescriptions for constipation using plant-based remedies centuries before commercial laxatives existed."},{"title":"Indian Cauterization: Fire for Healing","slug":"indian cauterization: fire for healing","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/indian cauterization: fire for healing.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Indian surgeons used heated metal instruments to seal wounds and stop bleeding, predating modern cauterization."},{"title":"Egyptian Amputation: Precision Without Modern Anesthesia","slug":"egyptian amputation: precision without modern anesthesia","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/egyptian amputation: precision without modern anesthesia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Egyptians performed amputations using obsidian blades, demonstrating precise surgery without modern painkillers."},{"title":"Greek Cold Therapy: Ancient Ice Packs","slug":"greek cold therapy: ancient ice packs","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek cold therapy: ancient ice packs.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Physicians in ancient Greece used snow, ice, and cold water to reduce swelling and treat injuries."},{"title":"Roman Eye Surgery: Cataract Treatment Before Modern Tools","slug":"roman eye surgery: cataract treatment before modern tools","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/roman eye surgery: cataract treatment before modern tools.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Romans performed a procedure called 'couching' to push cataracts out of the visual axis, centuries before modern surgery."},{"title":"Mayan Dental Care: Filing and Filling Teeth","slug":"mayan dental care: filing and filling teeth","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/mayan dental care: filing and filling teeth.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Maya not only removed decayed teeth but sometimes filed and decorated them, combining dental care and artistry."},{"title":"Persian Herbal Heart Remedies: Ancient Cardiology","slug":"persian herbal heart remedies: ancient cardiology","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/persian herbal heart remedies: ancient cardiology.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Persian physicians prescribed herbs like hawthorn to regulate pulse and support heart health, long before modern cardiology."},{"title":"Chinese Pulse Diagnosis: Feeling Health Through the Wrist","slug":"chinese pulse diagnosis: feeling health through the wrist","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/chinese pulse diagnosis: feeling health through the wrist.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Chinese physicians could detect dozens of health conditions just by palpating the wrist."},{"title":"Greek Dietetics: Food as Medicine","slug":"greek dietetics: food as medicine","url":"/categories/ancient-civilizations-secrets/ancient-medical-techniques/greek dietetics: food as medicine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hippocrates prescribed specific foods for diseases, proving diet was central to ancient Greek medicine."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
+
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

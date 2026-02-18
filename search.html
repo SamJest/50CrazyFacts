@@ -5,23 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search 50 Crazy Facts</title>
 <meta name="description" content="Search through the internet’s most addictive collection of crazy, weird, and unbelievable facts.">
-
-<link rel="icon" href="/favicon.ico">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-V2XJEGWMGS');
-</script>
-
+${FAVICONS}
+${GTAG}
 
 <style>
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#222;overflow-x:hidden}
@@ -59,7 +44,7 @@ html{scroll-behavior:smooth}
   <div id="searchResults" style="margin-top:20px;"></div>
 </div>
 
-<!-- Optional future ad slots -->
+<!-- Optional ad slots -->
 <div class="section" style="text-align:center;">
   <div id="ad-slot-1" style="background:#eee;height:100px;margin:20px 0;border:2px dashed #ccc;border-radius:12px;">Ad Slot 1</div>
   <div id="ad-slot-2" style="background:#eee;height:100px;margin:20px 0;border:2px dashed #ccc;border-radius:12px;">Ad Slot 2</div>
@@ -75,30 +60,51 @@ html{scroll-behavior:smooth}
 </footer>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-  const allFacts = ${SEARCH_JSON};
+// Load all shards dynamically from /search-index folder
+async function loadShards() {
+  const shardLetters = 'abcdefghijklmnopqrstuvwxyz#'.split('');
+  const allFacts = [];
+  for (const letter of shardLetters) {
+    try {
+      const res = await fetch(`/search-index/${letter}.json`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      allFacts.push(...data.map(f => ({
+        SLUG: f.slug,
+        category: f.category,
+        subject: f.subject,
+        SEO_TITLE: f.title || 'Untitled Fact',
+        FACT_HOOK: f.hook || ''
+      })));
+    } catch(err) {
+      console.warn(`Failed to load shard ${letter}.json:`, err);
+    }
+  }
+  return allFacts;
+}
 
-  // Live search functionality
+window.addEventListener('DOMContentLoaded', async () => {
+  const allFacts = await loadShards();
   const input = document.getElementById('searchInput');
   const resultsDiv = document.getElementById('searchResults');
 
   input.addEventListener('input', e => {
     const q = e.target.value.toLowerCase().trim();
-    if(!q){ resultsDiv.innerHTML=''; return; }
+    if (!q) { resultsDiv.innerHTML = ''; return; }
 
     const results = allFacts.filter(f =>
       (f.SEO_TITLE||'').toLowerCase().includes(q) ||
       (f.FACT_HOOK||'').toLowerCase().includes(q) ||
       (f.category||'').toLowerCase().includes(q) ||
       (f.subject||'').toLowerCase().includes(q)
-    ).slice(0,10); // show top 10 matches
+    ).slice(0,10);
 
     resultsDiv.innerHTML = results.map(f => {
       const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
-      const highlight = (text) => text.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+      const highlight = text => text.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
       return `<div>
-        <a href="${url}">${highlight(f.SEO_TITLE || 'Untitled Fact')}</a>
-        <small>${highlight(f.FACT_HOOK || '')}</small>
+        <a href="${url}">${highlight(f.SEO_TITLE)}</a>
+        <small>${highlight(f.FACT_HOOK)}</small>
       </div>`;
     }).join('');
   });

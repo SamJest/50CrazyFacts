@@ -23,191 +23,185 @@
 
 
 <style>
-/* RESET & BASE */
-body {
-  font-family: 'Inter', Arial, sans-serif;
-  background:#f7f7f7;
-  margin:0;
-  color:#222;
-  scroll-behavior:smooth;
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
 }
-a { text-decoration:none; color:inherit; }
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
 
 /* HEADER */
-header {
+header{
   text-align:center;
   padding:60px 20px 30px;
   background:linear-gradient(135deg,#222,#333);
   color:white;
-  position: sticky;
+  position:sticky;
   top:0;
   z-index:500;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
-header h1 { font-size:2.8em; margin:0 0 10px; }
-header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-height:1.4; }
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
 
 /* BREADCRUMB */
-.breadcrumb {
+.breadcrumb{
   text-align:center;
   font-size:0.9em;
-  margin: 10px 0 20px;
-  color:#555;
+  margin:10px 0 20px;
 }
-.breadcrumb a { color:#ff5722; transition: color 0.2s; }
-.breadcrumb a:hover { text-decoration:underline; color:#ff784e; }
 
 /* QUICK JUMP */
-.quick-jump {
+.quick-jump{
   text-align:center;
   margin:10px 0 20px;
   font-size:0.9em;
-  user-select:none;
 }
-.quick-jump a {
-  color:#007acc;
+.quick-jump a{
   margin:0 5px;
-  text-decoration:none;
-  transition: all 0.2s;
+  color:#007acc;
   font-weight:500;
 }
-.quick-jump a:hover { text-decoration:underline; transform: scale(1.05); cursor:pointer; }
 
-/* GRID & CARDS */
-.grid {
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
   display:flex;
   flex-wrap:wrap;
   gap:20px;
   justify-content:center;
   margin:30px 20px;
 }
-.card {
-  background:white;
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
   padding:24px;
   border-radius:16px;
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
   flex:1 1 260px;
   text-align:center;
   position:relative;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease, filter 0.3s ease, background 0.25s ease;
+  transition:0.25s ease;
   cursor:pointer;
   opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
 }
-.card.loaded { opacity:1; }
-.card.hidden { opacity:0; pointer-events:none; transform: scale(0.95); }
 
-.card a {
-  display:block;
-  font-weight:700;
-  color:#222;
-  margin-bottom:10px;
-  font-size:1.15em;
-  transition:color 0.2s;
-}
-.card:hover {
+.card.loaded{opacity:1;}
+
+.card:hover{
   transform:translateY(-6px);
-  box-shadow:0 0 0 2 var(--category-color,#ff5722),0 12px 28px rgba(0,0,0,0.12);
-  background: linear-gradient(135deg, #fff, #f9f9f9);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
 }
-.card:hover a { color: var(--category-color,#ff5722); }
 
-/* Alternating backgrounds */
-.grid .card:nth-child(odd) { background:#fff; }
-.grid .card:nth-child(even) { background:#fdfdfd; }
-
-.badge {
+.badge{
   display:inline-block;
   padding:4px 8px;
-  margin:2px;
+  margin-top:6px;
   border-radius:6px;
   font-size:.8em;
   background:#eee;
-  transition:all 0.2s, transform 0.2s;
-}
-.card:hover .badge {
-  background: var(--category-color,#ff5722);
-  color:white;
-  transform: scale(1.05);
 }
 
-.meta { font-size:0.85em; color:#555; margin-top:6px; }
+body.dark .badge{background:#333;color:#fff;}
 
-/* RANDOM FACT PREVIEW TOOLTIP */
-.card .fact-preview {
-  display:none;
-  position:absolute;
-  top:100%;
-  left:50%;
-  transform:translateX(-50%) translateY(6px);
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
   max-width:260px;
-  background:#fff;
-  border-radius:12px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.15);
   padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
   font-size:0.85em;
-  color:#333;
-  z-index:200;
-  white-space:normal;
-  opacity:0;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
   pointer-events:none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
 }
-.card:hover .fact-preview {
-  display:block;
-  opacity:1;
-  transform:translateX(-50%) translateY(10px);
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
 }
-.card .fact-preview::after {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
   border-width:6px;
   border-style:solid;
-  border-color: transparent transparent #fff transparent;
+  border-color:#fff transparent transparent transparent;
 }
 
-/* SEARCH BAR */
-#search-container { text-align:center; margin:20px; }
-#search-input {
-  padding:10px 16px;
-  font-size:1em;
-  border-radius:12px;
-  border:1px solid #ccc;
-  width:280px;
-  max-width:90%;
-  transition: all 0.2s;
-}
-#search-input:focus {
-  border-color: var(--category-color,#ff5722);
-  outline:none;
-  box-shadow:0 0 6px rgba(255,87,34,0.3);
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
 }
 
 /* BACK TO TOP */
-#back-to-top {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #ff5722;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-weight: bold;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
-  display:none;
-}
-
-/* RESPONSIVE */
-@media(max-width:600px){
-  .grid{flex-direction:column;align-items:center;}
-  .card{flex:1 1 100%;}
-  .card .fact-preview{max-width:90vw;}
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
 }
 </style>
 </head>
@@ -216,6 +210,11 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 <header>
   <h1>Categories</h1>
   <p>Explore all categories and total fact counts.</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
 </header>
 
 <nav class="breadcrumb">
@@ -229,18 +228,14 @@ header p { font-size:1.2em; opacity:0.9; max-width:800px; margin:0 auto; line-he
 </section>
 
 <section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
 
 <a href="#top" id="back-to-top">↑ Back to Top</a>
 
 <script>
-/**************************************************
- DATA FROM GENERATOR
-**************************************************/
-const ITEMS = [{"title":"the-simpsons","slug":"the-simpsons","url":"/categories/the-simpsons/","color":"#3f51b5","category":"the-simpsons","factCount":1192,"factPreview":"Hospital practices and staff fluctuate dramatically. How do patients survive?"},{"title":"mythology-and-folklore","slug":"mythology-and-folklore","url":"/categories/mythology-and-folklore/","color":"#607d8b","category":"mythology-and-folklore","factCount":887,"factPreview":"Ix Tab, goddess of weaving and ritual secrecy, encodes operational wisdom and ethical discretion."},{"title":"the-victorians","slug":"the-victorians","url":"/categories/the-victorians/","color":"#f44336","category":"the-victorians","factCount":812,"factPreview":"Old methods, new conscience."},{"title":"mental-health","slug":"mental-health","url":"/categories/mental-health/","color":"#e91e63","category":"mental-health","factCount":660,"factPreview":"Genetic research has transformed our understanding of autism’s heritability and variation."},{"title":"food-and-drink","slug":"food-and-drink","url":"/categories/food-and-drink/","color":"#3f51b5","category":"food-and-drink","factCount":1117,"factPreview":"In the 16th century, oysters symbolized luxury in Europe—and overfishing didn’t stop the elite."},{"title":"famous-people","slug":"famous-people","url":"/categories/famous-people/","color":"#ff9800","category":"famous-people","factCount":622,"factPreview":"Data-driven fame in action."},{"title":"animals","slug":"animals","url":"/categories/animals/","color":"#ff5722","category":"animals","factCount":1826,"factPreview":"Could elephants be older than your grandparents think?"},{"title":"astronomy","slug":"astronomy","url":"/categories/astronomy/","color":"#3f51b5","category":"astronomy","factCount":997,"factPreview":"Public awareness may be humanity’s first line of defence—knowledge reduces panic."},{"title":"technology","slug":"technology","url":"/categories/technology/","color":"#3f51b5","category":"technology","factCount":2153,"factPreview":"Crimean War mortality charts revealed insights that no doctor dared to voice—but changed healthcare forever."}];
+const ITEMS = [{"title":"artificial-intelligence-breakthroughs","slug":"artificial-intelligence-breakthroughs","url":"/categories/artificial-intelligence-breakthroughs/","color":"#1686e","category":"artificial-intelligence-breakthroughs","factCount":346,"factPreview":"A 2024 AI-generated track reportedly made listeners see fleeting visual patterns or shapes with eyes closed."},{"title":"forbidden-archaeology","slug":"forbidden-archaeology","url":"/categories/forbidden-archaeology/","color":"#b52680","category":"forbidden-archaeology","factCount":383,"factPreview":"Some Arctic populations predate previously believed colonization timelines."},{"title":"unsolved-historical-mysteries","slug":"unsolved-historical-mysteries","url":"/categories/unsolved-historical-mysteries/","color":"#20ce2a","category":"unsolved-historical-mysteries","factCount":898,"factPreview":"Long before PDF guides, the Antikythera Mechanism had a literal instruction manual etched in bronze."},{"title":"general","slug":"general","url":"/categories/general/","color":"#333333","category":"general","factCount":1,"factPreview":"Edgar Allan Poe left behind a minimal estate, but confusion over his will adds to the mystery surrounding his death."},{"title":"ancient-civilizations-secrets","slug":"ancient-civilizations-secrets","url":"/categories/ancient-civilizations-secrets/","color":"#dec7f0","category":"ancient-civilizations-secrets","factCount":1653,"factPreview":"Before flushing toilets were Roman, Mycenaeans had palace-level sanitation."}];
+let currentSort="alpha";
 
-/**************************************************
- UTILITIES
-**************************************************/
 function prettyName(slug){
   const small=['and','or','the','in','of','to','for'];
   return (slug||'')
@@ -250,139 +245,118 @@ function prettyName(slug){
     .join(' ');
 }
 
-/**************************************************
- CREATE CARD
-**************************************************/
 function createCard(item){
-  const div = document.createElement('div');
+  const div=document.createElement('div');
   div.className='card';
-  div.dataset.slug = item.slug;
-  div.dataset.title = (item.title||'').toLowerCase();
-  div.dataset.category = item.category || '';
-  div.style.setProperty('--category-color', item.color || '#ff5722');
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
 
-  div.innerHTML = `
+  div.innerHTML=`
     <a href="${item.url}">${prettyName(item.title)}</a>
-    <div class="meta">
-      <span class="badge">Facts: ${item.factCount || 1}</span>
-    </div>
-    <div class="fact-preview" role="tooltip" aria-label="Random fact preview"></div>
+    <div class="badge">Facts: ${item.factCount||1}</div>
   `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
   return div;
 }
 
-/**************************************************
- POPULATE GRID & QUICK JUMP
-**************************************************/
 function populateGrid(items){
-  const container = document.getElementById('items-grid');
+  const container=document.getElementById('items-grid');
   container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
   items.forEach((item,i)=>{
-    const card = createCard(item);
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
     container.appendChild(card);
-    setTimeout(()=>card.classList.add('loaded'), i*50);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
   });
 
-  // Quick Jump letters
-  const letters = [...new Set(items.map(it=>(it.title||'')[0].toUpperCase()))].sort();
-  const quickJump = document.getElementById('quickJump');
-  quickJump.innerHTML = 'Jump to: ' + letters.map(l=>`<a href="#" data-letter="${l}" aria-label="Jump to ${l}">${l}</a>`).join(' | ');
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
 
   quickJump.querySelectorAll('a').forEach(a=>{
-    a.addEventListener('click', e=>{
+    a.onclick=e=>{
       e.preventDefault();
-      const letter = a.dataset.letter.toLowerCase();
-      const target = Array.from(container.children).find(c=>c.dataset.title.startsWith(letter));
-      if(target){
-        target.scrollIntoView({behavior:'smooth', block:'start'});
-        // Highlight target briefly
-        target.style.transition='background 0.3s';
-        const original = target.style.background;
-        target.style.background='rgba(255,235,59,0.2)';
-        setTimeout(()=>target.style.background=original,600);
-      }
-    });
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
   });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
 }
 
-/**************************************************
- SEARCH / FILTER
-**************************************************/
 function filterCards(){
-  const query = document.getElementById('search-input').value.toLowerCase();
+  const query=document.getElementById('search-input').value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
-    const title = card.dataset.title;
-    if(title.includes(query)){
-      card.classList.remove('hidden');
-      const a = card.querySelector('a');
-      a.innerHTML = a.textContent.replace(
-        new RegExp(query,'gi'),
-        match => `<mark>${match}</mark>`
-      );
-    } else {
-      card.classList.add('hidden');
-    }
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
   });
 }
 
-/**************************************************
- BACK TO TOP VISIBILITY
-**************************************************/
-const backTop = document.getElementById('back-to-top');
-window.addEventListener('scroll', ()=> {
-  backTop.style.display = (window.scrollY > 300) ? 'block' : 'none';
-});
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
 
-/**************************************************
- RANDOM FACT ON HOVER
-**************************************************/
-document.addEventListener('DOMContentLoaded', () => {
-  if(!ITEMS || !ITEMS.length) return;
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
 
-  const cardCache = {};
-  document.querySelectorAll('.card').forEach(card => {
-    const category = card.dataset.category;
-    const slug = card.dataset.slug;
-    const previewDiv = card.querySelector('.fact-preview');
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
 
-    card.addEventListener('mouseenter', async () => {
-      if(previewDiv.dataset.loaded) return;
-      let url;
-      if(window.location.pathname.endsWith('/categories/index.html')){
-        url = `/categories/${slug}/`;
-      } else {
-        url = `/categories/${category}/${slug}/`;
-      }
-
-      if(cardCache[url]){
-        previewDiv.textContent = cardCache[url];
-        previewDiv.dataset.loaded = true;
-        return;
-      }
-
-      try {
-        const resp = await fetch(url+'facts.json');
-        if(!resp.ok) return;
-        const facts = await resp.json();
-        if(!facts.length) return;
-        const randomFact = facts[Math.floor(Math.random()*facts.length)];
-        const factText = randomFact.FACT_HOOK || randomFact.TITLE || 'No fact available';
-        previewDiv.textContent = factText;
-        previewDiv.dataset.loaded = true;
-        cardCache[url] = factText;
-      } catch(e){
-        console.warn('Failed to fetch fact preview', e);
-      }
-    });
-  });
-});
-
-/**************************************************
- INIT
-**************************************************/
-if(typeof ITEMS!=='undefined'){
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
   populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
 }
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
 </script>
 
 </body>

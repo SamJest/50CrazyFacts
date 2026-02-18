@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collapse Of Mega Cities</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Collapse Of Mega Cities</h1>
+  <p>Explore all facts in "Collapse Of Mega Cities".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Collapse Of Mega Cities</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"The City That Burned Itself: How Mohenjo-Daro May Have Cooked in Its Own Brilliance","slug":"the city that burned itself: how mohenjo-daro may have cooked in its own brilliance","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/the city that burned itself: how mohenjo-daro may have cooked in its own brilliance.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One of the world’s first mega-cities may have collapsed partly because it was too clean and too organized."},{"title":"Teotihuacan’s Mysterious Internal Coup","slug":"teotihuacan’s mysterious internal coup","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/teotihuacan’s mysterious internal coup.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One of the largest cities in the ancient world may have been destroyed by its own citizens."},{"title":"The Akkadian Empire’s 4.2 Kiloyear Climate Shock","slug":"the akkadian empire’s 4.2 kiloyear climate shock","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/the akkadian empire’s 4.2 kiloyear climate shock.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single climate event may have ended the world’s first empire."},{"title":"Angkor’s Water System Became Its Undoing","slug":"angkor’s water system became its undoing","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/angkor’s water system became its undoing.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The largest preindustrial city on Earth may have collapsed because its plumbing was too ambitious."},{"title":"The Mayan City That Starved Amid Abundance","slug":"the mayan city that starved amid abundance","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/the mayan city that starved amid abundance.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A jungle mega-city collapsed not from invasion, but from ecological self-sabotage."},{"title":"Cahokia’s Wood-Hungry Skyline","slug":"cahokia’s wood-hungry skyline","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/cahokia’s wood-hungry skyline.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"North America’s largest pre-Columbian city may have deforested itself into collapse."},{"title":"The Hittite Capital That Vanished Into Silence","slug":"the hittite capital that vanished into silence","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/the hittite capital that vanished into silence.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A Bronze Age superpower’s capital was abandoned so thoroughly it looked erased from history."},{"title":"The Khmer Capital That Moved to Survive","slug":"the khmer capital that moved to survive","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/the khmer capital that moved to survive.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An empire abandoned its mega-city not because it was destroyed, but because it strategically relocated."},{"title":"Nineveh’s Sudden Firestorm","slug":"nineveh’s sudden firestorm","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/nineveh’s sudden firestorm.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One of the greatest Assyrian capitals collapsed in a blaze so intense it preserved history."},{"title":"The Mycenaean Palaces That Forgot How to Write","slug":"the mycenaean palaces that forgot how to write","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/the mycenaean palaces that forgot how to write.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After their mega-cities collapsed, the Greeks literally lost the ability to write for centuries."},{"title":"Uruk: The First Mega-City and Its Vanishing Act","slug":"uruk: the first mega-city and its vanishing act","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/uruk: the first mega-city and its vanishing act.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The world’s first true mega-city may have disappeared quietly under its own bureaucratic weight."},{"title":"Pompeii: Buried by Nature, Preserved by Catastrophe","slug":"pompeii: buried by nature, preserved by catastrophe","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/pompeii: buried by nature, preserved by catastrophe.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A mega-city frozen in time shows how sudden disaster can halt urban life instantly."},{"title":"Memphis: When the Nile Shifted Its Course","slug":"memphis: when the nile shifted its course","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/memphis: when the nile shifted its course.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Egypt’s great capital declined when the river that fed it moved its dance."},{"title":"Babylon: When Conquest and Sediment Joined Forces","slug":"babylon: when conquest and sediment joined forces","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/babylon: when conquest and sediment joined forces.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even the legendary city of Babylon could not survive environmental neglect coupled with foreign invasion."},{"title":"Gordion: The Lost City of the Gordian Knot","slug":"gordion: the lost city of the gordian knot","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/gordion: the lost city of the gordian knot.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Urban legend and urban decline meet in the city where a knot foreshadowed abandonment."},{"title":"Harappa: The Ghosts of a Gridlocked City","slug":"harappa: the ghosts of a gridlocked city","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/harappa: the ghosts of a gridlocked city.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappa’s meticulously planned streets may have contributed to its sudden disappearance."},{"title":"Aleppo: How a City Survived and Dwindled Over Millennia","slug":"aleppo: how a city survived and dwindled over millennia","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/aleppo: how a city survived and dwindled over millennia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One of the world’s oldest continuously inhabited cities still experienced repeated urban collapses."},{"title":"Knossos: The Labyrinth That Could Not Protect Its People","slug":"knossos: the labyrinth that could not protect its people","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/knossos: the labyrinth that could not protect its people.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Crete’s famed palace complex fell victim to seismic and economic pressures rather than invaders alone."},{"title":"Ur: When Trade Routes Shifted, the City Sank","slug":"ur: when trade routes shifted, the city sank","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/ur: when trade routes shifted, the city sank.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ur’s decline was less about conquest and more about geography turning against it."},{"title":"Giza: How the Shadow of the Pyramids Outlasted Urban Life","slug":"giza: how the shadow of the pyramids outlasted urban life","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/giza: how the shadow of the pyramids outlasted urban life.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Giza’s plateau once hosted bustling neighborhoods that vanished, leaving monuments alone."},{"title":"Mari: The Lost Trade Hub of the Euphrates","slug":"mari: the lost trade hub of the euphrates","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/mari: the lost trade hub of the euphrates.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mari vanished not with a bang, but as its river trade dwindled silently."},{"title":"Troy: The Layers of War and Abandonment","slug":"troy: the layers of war and abandonment","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/troy: the layers of war and abandonment.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The legendary city of Homeric fame was rebuilt and abandoned multiple times before history froze it in myth."},{"title":"Ebla: When Archives Outlasted Architecture","slug":"ebla: when archives outlasted architecture","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/ebla: when archives outlasted architecture.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ebla’s scribes recorded a mega-city that would vanish centuries before modern discovery."},{"title":"Akhetaten: The City of a Pharaoh’s Vision","slug":"akhetaten: the city of a pharaoh’s vision","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/akhetaten: the city of a pharaoh’s vision.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akhetaten was abandoned almost immediately after its ruler’s death, a city erased by ideology."},{"title":"Pataliputra: The River City That Faded","slug":"pataliputra: the river city that faded","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/pataliputra: the river city that faded.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient India’s capital disappeared from urban memory under shifting rivers and empires."},{"title":"Tikal: When the Jungle Reclaimed the Maya","slug":"tikal: when the jungle reclaimed the maya","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/tikal: when the jungle reclaimed the maya.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tikal, a sprawling Maya mega-city, was overtaken by the forest it once cleared."},{"title":"Copán: Hieroglyphs That Outlived the People","slug":"copán: hieroglyphs that outlived the people","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/copán: hieroglyphs that outlived the people.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Copán’s inscriptions tell stories of a city that disappeared as mysteriously as it thrived."},{"title":"Palenque: Water Mismanagement and the Fall of a Maya Jewel","slug":"palenque: water mismanagement and the fall of a maya jewel","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/palenque: water mismanagement and the fall of a maya jewel.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Palenque’s elaborate aqueducts could not prevent its urban decline."},{"title":"Monte Albán: How Zapotecs Moved On","slug":"monte albán: how zapotecs moved on","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/monte albán: how zapotecs moved on.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Monte Albán’s monumental terraces were abandoned as the political center shifted."},{"title":"Teotihuacan: The City of the Gods That Went Silent","slug":"teotihuacan: the city of the gods that went silent","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/teotihuacan: the city of the gods that went silent.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Teotihuacan’s pyramids remain, but the city’s streets emptied mysteriously."},{"title":"Great Zimbabwe: When Stone Walls Outlasted Civilization","slug":"great zimbabwe: when stone walls outlasted civilization","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/great zimbabwe: when stone walls outlasted civilization.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Great Zimbabwe’s towering stone enclosures survived long after the city emptied."},{"title":"Angkor: When Waterways Fail, Empires Follow","slug":"angkor: when waterways fail, empires follow","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/angkor: when waterways fail, empires follow.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Angkor’s vast city network was abandoned as its hydraulic system faltered."},{"title":"Mohenjo-Daro: Urban Perfection Lost to the Sands","slug":"mohenjo-daro: urban perfection lost to the sands","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/mohenjo-daro: urban perfection lost to the sands.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mohenjo-Daro disappeared mysteriously despite having one of the most advanced urban plans of its era."},{"title":"Cahokia: North America’s Forgotten Mega-City","slug":"cahokia: north america’s forgotten mega-city","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/cahokia: north america’s forgotten mega-city.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cahokia was once the largest city north of Mexico, now vanished into Illinois farmland."},{"title":"Chan Chan: Deserted Capital of the Chimú Empire","slug":"chan chan: deserted capital of the chimú empire","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/chan chan: deserted capital of the chimú empire.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chan Chan’s adobe walls stand empty, telling the tale of a city abandoned under imperial conquest."},{"title":"Xi’an: The Tang Capital That Slowly Emptied","slug":"xi’an: the tang capital that slowly emptied","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/xi’an: the tang capital that slowly emptied.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"China’s Tang dynasty capital thrived with a million people before gradually fading."},{"title":"Baghdad: From Center of Learning to Deserted Districts","slug":"baghdad: from center of learning to deserted districts","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/baghdad: from center of learning to deserted districts.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Abbasid capital’s urban sprawl contracted dramatically after invasions and disease."},{"title":"Merv: Silk Road Giant That Vanished","slug":"merv: silk road giant that vanished","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/merv: silk road giant that vanished.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Merv was once larger than London but eventually became a ghost city."},{"title":"Faiyum: When Egyptian Oases Lost Their Urban Centers","slug":"faiyum: when egyptian oases lost their urban centers","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/faiyum: when egyptian oases lost their urban centers.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The city of Crocodilopolis disappeared as agricultural canals silted and trade shifted."},{"title":"Elephantine: Island City Lost to Shifting Nile Currents","slug":"elephantine: island city lost to shifting nile currents","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/elephantine: island city lost to shifting nile currents.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elephantine thrived for millennia before Nile changes led to urban decline."},{"title":"Akhetaten: Egypt’s Capital Abandoned Overnight","slug":"akhetaten: egypt’s capital abandoned overnight","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/akhetaten: egypt’s capital abandoned overnight.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akhetaten vanished almost immediately after Pharaoh Akhenaten’s death."},{"title":"Pompeii: A City Frozen by Disaster","slug":"pompeii: a city frozen by disaster","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/pompeii: a city frozen by disaster.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Pompeii’s final day preserved more urban detail than centuries of archaeology could."},{"title":"Hattusa: Hittite Capital Lost in the Shadows","slug":"hattusa: hittite capital lost in the shadows","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/hattusa: hittite capital lost in the shadows.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hattusa thrived with monumental gates and temples before fading into obscurity."},{"title":"Knossos: Minoan Labyrinth Abandoned","slug":"knossos: minoan labyrinth abandoned","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/knossos: minoan labyrinth abandoned.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Knossos, the legendary palace city, was deserted after seismic and social upheaval."},{"title":"Ur: From Sumerian Glory to Deserted Streets","slug":"ur: from sumerian glory to deserted streets","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/ur: from sumerian glory to deserted streets.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ur, cradle of civilization, slowly emptied despite monumental ziggurats remaining."},{"title":"Teotihuacan: The Mysterious Fall of a Mesoamerican Giant","slug":"teotihuacan: the mysterious fall of a mesoamerican giant","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/teotihuacan: the mysterious fall of a mesoamerican giant.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Teotihuacan thrived with 125,000 people before disappearing into legend."},{"title":"Tikal: Jungle-Covered Maya Metropolis Abandoned","slug":"tikal: jungle-covered maya metropolis abandoned","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/tikal: jungle-covered maya metropolis abandoned.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tikal was a Maya superpower swallowed by the forest and its own complexity."},{"title":"Palenque: Maya Masterpiece Deserted by Drought","slug":"palenque: maya masterpiece deserted by drought","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/palenque: maya masterpiece deserted by drought.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Palenque’s intricate city vanished as climate turned against it."},{"title":"Huaraz: Andean City Lost to Landslides","slug":"huaraz: andean city lost to landslides","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/huaraz: andean city lost to landslides.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Huaraz thrived in the Andes until catastrophic landslides depopulated it."},{"title":"Aksum: Ethiopian Empire’s Capital Fades into History","slug":"aksum: ethiopian empire’s capital fades into history","url":"/categories/ancient-civilizations-secrets/collapse-of-mega-cities/aksum: ethiopian empire’s capital fades into history.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Aksum’s monumental stelae remain while its streets fell silent."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
+
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

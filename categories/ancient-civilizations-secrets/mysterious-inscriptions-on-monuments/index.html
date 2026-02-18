@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mysterious Inscriptions On Monuments</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Mysterious Inscriptions On Monuments</h1>
+  <p>Explore all facts in "Mysterious Inscriptions On Monuments".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Mysterious Inscriptions On Monuments</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"The Monument That Spoke Back in Ancient Sumer","slug":"the monument that spoke back in ancient sumer","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the monument that spoke back in ancient sumer.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 5,000-year-old Sumerian stele appears to issue warnings in a code no one can fully read today."},{"title":"Egypt's Pyramid Glyphs That Map the Stars","slug":"egypt's pyramid glyphs that map the stars","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/egypt's pyramid glyphs that map the stars.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Great Pyramid may be an astronomical GPS for a civilization that predated its builders."},{"title":"Mayan Monoliths That Recorded Solar Eclipses","slug":"mayan monoliths that recorded solar eclipses","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/mayan monoliths that recorded solar eclipses.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mayan stone stelae may have been ancient eclipse alert systems, centuries ahead of modern calendars."},{"title":"The Obsidian Tablet That Predicted Volcanic Eruptions","slug":"the obsidian tablet that predicted volcanic eruptions","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the obsidian tablet that predicted volcanic eruptions.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Aztec inscriptions may have warned of eruptions decades before they occurred."},{"title":"Göbekli Tepe’s Enigmatic Pillar Glyphs","slug":"göbekli tepe’s enigmatic pillar glyphs","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/göbekli tepe’s enigmatic pillar glyphs.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"10,000-year-old carvings at Göbekli Tepe might predate writing itself."},{"title":"The Rosetta Stone’s Forgotten Sibling","slug":"the rosetta stone’s forgotten sibling","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the rosetta stone’s forgotten sibling.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before the famous Rosetta Stone, another artifact may have quietly cracked ancient languages centuries earlier."},{"title":"Stonehenge Glyphs That Vanished in Plain Sight","slug":"stonehenge glyphs that vanished in plain sight","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/stonehenge glyphs that vanished in plain sight.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Recent scans suggest Stonehenge may have hidden carvings that disappear under sunlight."},{"title":"Easter Island’s Rongorongo Tablets: An Unsolved Puzzle","slug":"easter island’s rongorongo tablets: an unsolved puzzle","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/easter island’s rongorongo tablets: an unsolved puzzle.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The mysterious Rongorongo script may encode a lost civilization’s history—and possibly an early calendar system."},{"title":"The Hittite Clay Tablets That Predicted Weather","slug":"the hittite clay tablets that predicted weather","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the hittite clay tablets that predicted weather.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"3,500-year-old Hittite inscriptions may have been an early meteorological system."},{"title":"The Nabataean Petra Inscriptions That Guided Travelers","slug":"the nabataean petra inscriptions that guided travelers","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the nabataean petra inscriptions that guided travelers.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Petra’s rock-carved messages may have functioned as the world’s earliest GPS system."},{"title":"The Indus Valley Seals That Speak in Symbols","slug":"the indus valley seals that speak in symbols","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the indus valley seals that speak in symbols.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of Indus Valley seals remain undeciphered, hinting at a civilization with a secret script."},{"title":"Ancient Chinese Oracle Bones That Foretold Destiny","slug":"ancient chinese oracle bones that foretold destiny","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/ancient chinese oracle bones that foretold destiny.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of years ago, diviners used bones to ask yes-or-no questions, recording the answers in early script."},{"title":"The Caral Supe Script That Predates All Others in the Americas","slug":"the caral supe script that predates all others in the americas","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the caral supe script that predates all others in the americas.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caral, Peru, holds inscriptions older than any known writing system in the New World."},{"title":"The Lycians’ Rock Inscriptions That Preserved Civic Law","slug":"the lycians’ rock inscriptions that preserved civic law","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the lycians’ rock inscriptions that preserved civic law.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In ancient Lycia, cliff carvings served as public legal notices, centuries before paper or parchment."},{"title":"The Olmec Monumental Glyphs That Might Record Sports","slug":"the olmec monumental glyphs that might record sports","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the olmec monumental glyphs that might record sports.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Giant Olmec stone heads could carry inscriptions detailing ancient ball games and rituals."},{"title":"The Gobekli Tepe Pillars That Whispered Stories 12,000 Years Ago","slug":"the gobekli tepe pillars that whispered stories 12,000 years ago","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the gobekli tepe pillars that whispered stories 12,000 years ago.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Göbekli Tepe’s pillars may be the oldest narrative monuments, carved long before agriculture emerged."},{"title":"The Abydos Temple Hieroglyphs That Predict Pharaohs’ Fates","slug":"the abydos temple hieroglyphs that predict pharaohs’ fates","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the abydos temple hieroglyphs that predict pharaohs’ fates.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Egyptian inscriptions may contain hidden prognostications of royal destinies, not just religious text."},{"title":"The Sumerian Cylinder Seals That Encoded Epic Poems","slug":"the sumerian cylinder seals that encoded epic poems","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the sumerian cylinder seals that encoded epic poems.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tiny cylinder seals may preserve fragments of Gilgamesh before it was written on clay tablets."},{"title":"The Maya Stelae That Recorded Celestial Events","slug":"the maya stelae that recorded celestial events","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the maya stelae that recorded celestial events.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mayan stone monuments may encode precise solar and lunar eclipses, centuries before modern astronomy."},{"title":"The Nazca Lines Glyphs: Messages Only Seen From Above","slug":"the nazca lines glyphs: messages only seen from above","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the nazca lines glyphs: messages only seen from above.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Nazca Lines may contain glyphs or symbols designed to communicate with the sky itself."},{"title":"The Vindolanda Tablets: Ancient Britain’s Gossip Network","slug":"the vindolanda tablets: ancient britain’s gossip network","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the vindolanda tablets: ancient britain’s gossip network.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Roman soldiers in Britain wrote letters that reveal surprisingly mundane details of their daily lives."},{"title":"The Palenque Inscriptions That Encode Dynastic Prophecies","slug":"the palenque inscriptions that encode dynastic prophecies","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the palenque inscriptions that encode dynastic prophecies.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mayan rulers may have used stelae to both record history and predict future dynastic events."},{"title":"The Petra Inscriptions That Mark Secret Trade Routes","slug":"the petra inscriptions that mark secret trade routes","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the petra inscriptions that mark secret trade routes.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rock inscriptions in Petra guided merchants through hidden desert paths, protecting caravan routes."},{"title":"The Hittite Lion Gate Inscriptions and Royal Propaganda","slug":"the hittite lion gate inscriptions and royal propaganda","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the hittite lion gate inscriptions and royal propaganda.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hittite carvings at the Lion Gate blend art, inscription, and intimidation to project power."},{"title":"The Rosetta Stone That Unlocked an Entire Language","slug":"the rosetta stone that unlocked an entire language","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the rosetta stone that unlocked an entire language.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single stone with three scripts bridged millennia and made hieroglyphs readable again."},{"title":"The Code of Hammurabi Stele: Law Carved in Stone","slug":"the code of hammurabi stele: law carved in stone","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the code of hammurabi stele: law carved in stone.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Babylonian justice was literally set in stone, ensuring everyone saw the rules."},{"title":"The Behistun Inscription: Persia’s Multilingual Masterpiece","slug":"the behistun inscription: persia’s multilingual masterpiece","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the behistun inscription: persia’s multilingual masterpiece.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single cliff face held the key to decoding cuneiform across empires."},{"title":"The Mesoamerican Codices: Inscriptions of Knowledge and Ritual","slug":"the mesoamerican codices: inscriptions of knowledge and ritual","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the mesoamerican codices: inscriptions of knowledge and ritual.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Pre-Columbian manuscripts reveal astronomy, divination, and societal norms in pictorial script."},{"title":"The Luwian Hieroglyphs of Anatolia: A Forgotten Script","slug":"the luwian hieroglyphs of anatolia: a forgotten script","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the luwian hieroglyphs of anatolia: a forgotten script.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rock-cut inscriptions reveal a semi-forgotten Anatolian writing system predating Greek influence."},{"title":"The Olmec Cascajal Block: The Oldest Writing in the Americas?","slug":"the olmec cascajal block: the oldest writing in the americas?","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the olmec cascajal block: the oldest writing in the americas?.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single serpentine block may predate all known Mesoamerican writing systems."},{"title":"The Ain Dara Temple Footprints: Myth Etched in Stone","slug":"the ain dara temple footprints: myth etched in stone","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the ain dara temple footprints: myth etched in stone.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Giant footprints carved at a Syrian temple may commemorate mythological beings rather than humans."},{"title":"The Ugaritic Alphabet: The First Consonantal Writing","slug":"the ugaritic alphabet: the first consonantal writing","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the ugaritic alphabet: the first consonantal writing.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ugarit may have invented the first true alphabet, centuries before Phoenicians popularized it."},{"title":"The Temple of Karnak Inscriptions That Recorded Natural Disasters","slug":"the temple of karnak inscriptions that recorded natural disasters","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the temple of karnak inscriptions that recorded natural disasters.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Egyptian hieroglyphs may describe earthquakes and Nile floods, centuries before scientific monitoring."},{"title":"The Hattusa Sphinx Gate Inscriptions: Warning and Welcome","slug":"the hattusa sphinx gate inscriptions: warning and welcome","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the hattusa sphinx gate inscriptions: warning and welcome.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hittite gate inscriptions simultaneously intimidate enemies and instruct citizens."},{"title":"The Mohenjo-Daro Seals: Lost Scripts of the Indus Valley","slug":"the mohenjo-daro seals: lost scripts of the indus valley","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the mohenjo-daro seals: lost scripts of the indus valley.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tiny stone seals contain inscriptions that remain completely undeciphered after a century of study."},{"title":"The Abydos Temple Inscriptions: Pharaohs and the Afterlife","slug":"the abydos temple inscriptions: pharaohs and the afterlife","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the abydos temple inscriptions: pharaohs and the afterlife.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Egyptian temple walls contain extensive inscriptions mapping the pharaohs’ journey to eternity."},{"title":"The Nemrud Dağ Inscriptions: Gods and Kings on a Mountain","slug":"the nemrud dağ inscriptions: gods and kings on a mountain","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the nemrud dağ inscriptions: gods and kings on a mountain.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Monumental statues in Turkey carry inscriptions blending political messaging with divine propaganda."},{"title":"The Greek Oracle Inscriptions at Dodona","slug":"the greek oracle inscriptions at dodona","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the greek oracle inscriptions at dodona.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone inscriptions in Dodona provided cryptic divine advice to petitioners for centuries."},{"title":"The Uffington White Horse Inscriptions? Myth in the Landscape","slug":"the uffington white horse inscriptions? myth in the landscape","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the uffington white horse inscriptions? myth in the landscape.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A prehistoric hill figure may have been accompanied by inscriptions or ritual markings now lost to time."},{"title":"The Rapa Nui Rongorongo Tablets: An Island's Lost Script","slug":"the rapa nui rongorongo tablets: an island's lost script","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the rapa nui rongorongo tablets: an island's lost script.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Easter Island may have held its own unique writing system that vanished before modern understanding."},{"title":"The Mayan Long Count Inscriptions: Predicting Cosmic Cycles","slug":"the mayan long count inscriptions: predicting cosmic cycles","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the mayan long count inscriptions: predicting cosmic cycles.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mayan monuments record time with such precision that some predict astronomical events decades in advance."},{"title":"The Göbekli Tepe Pillars: Carved Stories Before Cities","slug":"the göbekli tepe pillars: carved stories before cities","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the göbekli tepe pillars: carved stories before cities.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone pillars carved with animals and symbols predate agriculture, challenging assumptions about civilization."},{"title":"The Vinča Symbols: Europe's Earliest Proto-Writing","slug":"the vinča symbols: europe's earliest proto-writing","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the vinča symbols: europe's earliest proto-writing.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Neolithic Europe may have experimented with symbols that could count as the continent's first writing."},{"title":"The Nabataean Petra Inscriptions: Secrets of a Desert Kingdom","slug":"the nabataean petra inscriptions: secrets of a desert kingdom","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the nabataean petra inscriptions: secrets of a desert kingdom.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved into sandstone cliffs, Nabataean inscriptions reveal trade networks, law, and daily life."},{"title":"The Dead Sea Scroll Inscriptions: Lost Texts of an Ancient Sect","slug":"the dead sea scroll inscriptions: lost texts of an ancient sect","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the dead sea scroll inscriptions: lost texts of an ancient sect.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caves near the Dead Sea preserved scrolls that reveal mysterious sectarian writings untouched for millennia."},{"title":"The Rosetta Stone: Unlocking Ancient Egyptian Hieroglyphs","slug":"the rosetta stone: unlocking ancient egyptian hieroglyphs","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the rosetta stone: unlocking ancient egyptian hieroglyphs.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single stone slab held the key to decoding thousands of years of Egyptian inscriptions."},{"title":"The Behistun Inscription: Darius’ Monumental Message","slug":"the behistun inscription: darius’ monumental message","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the behistun inscription: darius’ monumental message.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved into a cliff in Iran, this inscription essentially served as an ancient propaganda billboard."},{"title":"The Vinland Map Inscriptions: Controversy Over Viking Discovery","slug":"the vinland map inscriptions: controversy over viking discovery","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the vinland map inscriptions: controversy over viking discovery.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A mysterious medieval map claims Viking knowledge of North America centuries before Columbus."},{"title":"The Lascaux Cave Symbols: Prehistoric Storytelling in Stone","slug":"the lascaux cave symbols: prehistoric storytelling in stone","url":"/categories/ancient-civilizations-secrets/mysterious-inscriptions-on-monuments/the lascaux cave symbols: prehistoric storytelling in stone.html","color":"#a9dca8","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Prehistoric cave walls in France may encode symbolic messages older than formal writing systems."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
+
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

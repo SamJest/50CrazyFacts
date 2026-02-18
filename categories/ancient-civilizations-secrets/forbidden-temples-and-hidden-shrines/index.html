@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forbidden Temples And Hidden Shrines</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Forbidden Temples And Hidden Shrines</h1>
+  <p>Explore all facts in "Forbidden Temples And Hidden Shrines".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Forbidden Temples And Hidden Shrines</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"The Temple Hidden in a Sandstorm","slug":"the temple hidden in a sandstorm","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the temple hidden in a sandstorm.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A temple buried beneath shifting sands was discovered entirely by accident when a camel caravan tripped over its entrance."},{"title":"Shrine of the Whispering Statues","slug":"shrine of the whispering statues","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/shrine of the whispering statues.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An ancient shrine was designed so that wind blowing through its corridors produces audible whispers, fooling intruders into believing spirits were speaking."},{"title":"The Floating Shrine of Mount Tian","slug":"the floating shrine of mount tian","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the floating shrine of mount tian.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine built on precarious cliffs in China appears to float in the clouds during certain months of the year."},{"title":"The Invisible Shrine of the Amazon","slug":"the invisible shrine of the amazon","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the invisible shrine of the amazon.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine in the Amazon rainforest was built entirely with reflective stone, making it nearly invisible until sunlight hits it at dawn."},{"title":"The Submerged Shrine of India","slug":"the submerged shrine of india","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the submerged shrine of india.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine intentionally flooded during monsoon seasons was discovered underwater, perfectly preserved for centuries beneath silt and water."},{"title":"The Cave Shrine That Predicted Eclipses","slug":"the cave shrine that predicted eclipses","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the cave shrine that predicted eclipses.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A hidden cave shrine in Anatolia was aligned so precisely that it functioned as an ancient eclipse calendar."},{"title":"The Mirror Shrine of Teotihuacan","slug":"the mirror shrine of teotihuacan","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the mirror shrine of teotihuacan.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A small shrine was constructed entirely from polished obsidian mirrors, creating a dazzling reflection maze inside the temple."},{"title":"The Subterranean Sun Temple of Egypt","slug":"the subterranean sun temple of egypt","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the subterranean sun temple of egypt.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A temple built entirely underground in Egypt was aligned so that a single shaft of sunlight would illuminate the central altar only twice a year."},{"title":"The Labyrinthine Shrine of Crete","slug":"the labyrinthine shrine of crete","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the labyrinthine shrine of crete.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine in Crete was constructed as a maze so complex that ancient priests allegedly needed months to navigate it safely."},{"title":"The Forest Shrine of Japan’s Hidden Kami","slug":"the forest shrine of japan’s hidden kami","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the forest shrine of japan’s hidden kami.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine deep in a Japanese forest was intentionally concealed with foliage and mirrors to protect it from warlords and poachers."},{"title":"The Ice Shrine of the Arctic Nomads","slug":"the ice shrine of the arctic nomads","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the ice shrine of the arctic nomads.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nomadic Arctic tribes built a shrine entirely from ice blocks that glowed under the northern lights, disappearing each spring."},{"title":"The Cliffside Shrine of Peru","slug":"the cliffside shrine of peru","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the cliffside shrine of peru.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Peruvian priests carved a shrine directly into vertical cliffs, reachable only by hanging ladders and ropes."},{"title":"The Glowstone Shrine of Cambodia","slug":"the glowstone shrine of cambodia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the glowstone shrine of cambodia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A temple embedded with phosphorescent minerals glows at night, visible for miles in the Angkorian plains."},{"title":"The Hanging Shrine of Anatolia","slug":"the hanging shrine of anatolia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hanging shrine of anatolia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was suspended from cliff overhangs, with rituals performed while hanging in mid-air on ropes and platforms."},{"title":"The Sunken Shrine of the Nile Delta","slug":"the sunken shrine of the nile delta","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the sunken shrine of the nile delta.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was intentionally built below water level in the Nile Delta, emerging only during low tides for secret ceremonies."},{"title":"The Hanging Gardens’ Forgotten Shrine","slug":"the hanging gardens’ forgotten shrine","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hanging gardens’ forgotten shrine.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Amid the legendary Hanging Gardens of Babylon, archaeologists found traces of a hidden shrine that once floated atop terraces."},{"title":"The Shadow Shrine of Stonehenge","slug":"the shadow shrine of stonehenge","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the shadow shrine of stonehenge.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A previously unknown shrine near Stonehenge was designed so shadows cast by stones aligned to mark sacred ceremonies."},{"title":"The Secret Shrine of Petra","slug":"the secret shrine of petra","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the secret shrine of petra.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A hidden chamber in Petra was intentionally carved behind a waterfall, concealing rituals from even the city’s residents."},{"title":"The Invisible Shrine of Angkor Wat","slug":"the invisible shrine of angkor wat","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the invisible shrine of angkor wat.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A miniature shrine was carved into the foundation of Angkor Wat, invisible from above and hidden from the uninitiated."},{"title":"The Ceiling Shrine of Mayan Palaces","slug":"the ceiling shrine of mayan palaces","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the ceiling shrine of mayan palaces.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In certain Mayan palaces, small shrines were embedded into ceilings, visible only by lying flat on the floor."},{"title":"The Volcano Shrine of Vanuatu","slug":"the volcano shrine of vanuatu","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the volcano shrine of vanuatu.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Priests built a shrine on the rim of an active volcano, performing rituals amid smoke and lava glow."},{"title":"The Star-Aligned Shrine of Mongolia","slug":"the star-aligned shrine of mongolia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the star-aligned shrine of mongolia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine in the Mongolian steppes was constructed to align perfectly with the North Star, guiding rituals at night."},{"title":"The Poisoned Shrine of Ancient Persia","slug":"the poisoned shrine of ancient persia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the poisoned shrine of ancient persia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was booby-trapped with toxic plants and venomous insects to deter intruders and preserve secrecy."},{"title":"The Camouflaged Shrine of the Amazon","slug":"the camouflaged shrine of the amazon","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the camouflaged shrine of the amazon.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine in the Amazon was concealed under giant leaves and natural pigments, remaining undetectable from the forest floor."},{"title":"The Mirror Lake Shrine of China","slug":"the mirror lake shrine of china","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the mirror lake shrine of china.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was built at the center of a lake, using mirrors to project reflections onto water, visible only at dawn."},{"title":"The Subterranean Shrine of Cappadocia","slug":"the subterranean shrine of cappadocia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the subterranean shrine of cappadocia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Underground tunnels in Cappadocia hide a shrine accessible only through a series of secret chambers and hidden doors."},{"title":"The Whispering Shrine of Crete","slug":"the whispering shrine of crete","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the whispering shrine of crete.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine in Crete used hidden channels so that whispers from one room could be heard throughout the complex."},{"title":"The Sky Shrine of Tibet","slug":"the sky shrine of tibet","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the sky shrine of tibet.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine perched atop a remote cliff in Tibet required pilgrims to climb sheer rock faces, accessible only during clear weather."},{"title":"The Hidden Garden Shrine of Japan","slug":"the hidden garden shrine of japan","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hidden garden shrine of japan.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was concealed within a meticulously landscaped garden, invisible unless approached from a precise path."},{"title":"The Reflecting Pool Shrine of Egypt","slug":"the reflecting pool shrine of egypt","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the reflecting pool shrine of egypt.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was hidden beneath a reflecting pool, visible only through careful positioning and light refraction."},{"title":"The Ice Shrine of Greenland","slug":"the ice shrine of greenland","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the ice shrine of greenland.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was carved into a glacier, disappearing and reappearing as the ice shifted with seasons."},{"title":"The Fog Shrine of the Andes","slug":"the fog shrine of the andes","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the fog shrine of the andes.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine hidden in dense mountain fog became invisible except to those who knew the precise path."},{"title":"The Labyrinth Shrine of Crete","slug":"the labyrinth shrine of crete","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the labyrinth shrine of crete.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was hidden at the center of a maze, designed to confuse outsiders while guiding initiates to the sacred heart."},{"title":"The Hanging Cliff Shrine of Norway","slug":"the hanging cliff shrine of norway","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hanging cliff shrine of norway.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was carved into a cliff face, suspended hundreds of feet above ground and accessible only by ropes."},{"title":"The Desert Mirage Shrine of Egypt","slug":"the desert mirage shrine of egypt","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the desert mirage shrine of egypt.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine in the desert used optical illusions so it appeared to vanish from view except at dawn."},{"title":"The Tree Canopy Shrine of the Amazon","slug":"the tree canopy shrine of the amazon","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the tree canopy shrine of the amazon.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was suspended high in the rainforest canopy, reachable only by rope bridges and ladders."},{"title":"The Hidden Ice Cave Shrine of Siberia","slug":"the hidden ice cave shrine of siberia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hidden ice cave shrine of siberia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was carved into an ice cave, with entrance visibility changing daily as snow and ice shifted."},{"title":"The Sunken Shrine of the Mediterranean","slug":"the sunken shrine of the mediterranean","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the sunken shrine of the mediterranean.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was built partially underwater, accessible only during low tide or via submerged passages."},{"title":"The Camouflaged Cliff Shrine of India","slug":"the camouflaged cliff shrine of india","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the camouflaged cliff shrine of india.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was carved into a cliff face and painted to blend seamlessly with surrounding rock, invisible from a distance."},{"title":"The Moonlight Shrine of Peru","slug":"the moonlight shrine of peru","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the moonlight shrine of peru.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was aligned to reflect moonlight directly onto sacred altars only during full moons."},{"title":"The Poison Garden Shrine of China","slug":"the poison garden shrine of china","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the poison garden shrine of china.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was hidden in a garden filled with toxic plants, deterring casual visitors while guiding initiates safely to the altar."},{"title":"The Mirror Shrine of Mesopotamia","slug":"the mirror shrine of mesopotamia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the mirror shrine of mesopotamia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine used polished bronze mirrors to create illusions, making it appear empty unless viewed from the correct angle."},{"title":"The Submerged Cave Shrine of Malta","slug":"the submerged cave shrine of malta","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the submerged cave shrine of malta.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine existed inside a cave partially filled with water, accessible only by wading or swimming through narrow channels."},{"title":"The Hidden Mountain Shrine of Japan","slug":"the hidden mountain shrine of japan","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hidden mountain shrine of japan.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was carved into a mountainside and completely obscured by seasonal vegetation, revealing itself only in winter."},{"title":"The Wind-Whisper Shrine of Mongolia","slug":"the wind-whisper shrine of mongolia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the wind-whisper shrine of mongolia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine used wind channels in the mountains to carry sacred sounds only audible to initiates."},{"title":"The Holographic Shrine of Teotihuacan","slug":"the holographic shrine of teotihuacan","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the holographic shrine of teotihuacan.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine used polished obsidian panels to cast shadow illusions that appeared to float above the altar."},{"title":"The Invisible Sand Shrine of Arabia","slug":"the invisible sand shrine of arabia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the invisible sand shrine of arabia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A desert shrine used fine sand layering to appear completely flat until walked upon, revealing hidden altars."},{"title":"The Lightning-Aligned Shrine of Ireland","slug":"the lightning-aligned shrine of ireland","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the lightning-aligned shrine of ireland.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine was aligned with lightning strikes, built to attract and channel storms during rituals."},{"title":"The Echo Chamber Shrine of Anatolia","slug":"the echo chamber shrine of anatolia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the echo chamber shrine of anatolia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine carved into rock amplified chants and whispers, making voices sound supernatural to visitors."},{"title":"The Hidden Star Shrine of Cambodia","slug":"the hidden star shrine of cambodia","url":"/categories/ancient-civilizations-secrets/forbidden-temples-and-hidden-shrines/the hidden star shrine of cambodia.html","color":"#767879","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A shrine aligned with specific stars became visible only at night during particular celestial events."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.textContent=this.dataset.preview;
+  tooltip.style.opacity=1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip=document.getElementById('tooltip');
+  tooltip.style.left=e.pageX+'px';
+  tooltip.style.top=e.pageY+'px';
+}
+
+function hideTooltip(){
+  document.getElementById('tooltip').style.opacity=0;
+}
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
