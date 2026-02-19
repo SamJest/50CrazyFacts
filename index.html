@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ================================= */
   function buildCard(f) {
     const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
-    return `<div class="card loaded">
+    return `<div class="card">
       <a href="${url}">${f.SEO_TITLE || 'Untitled Fact'}</a>
       <p>${f.FACT_HOOK || ''}</p>
     </div>`;
@@ -209,18 +209,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   function setupBatch(gridId, pool, batchSize = 12) {
     const grid = document.getElementById(gridId);
     let index = 0;
+
     function loadMore() {
       const batch = pool.slice(index, index + batchSize);
       batch.forEach(f => {
         const html = buildCard(f);
-        grid.insertAdjacentHTML('beforeend', html);
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        const card = temp.firstChild;
+        grid.appendChild(card);
+        // Force reflow then add 'loaded' to trigger CSS fade-in
+        requestAnimationFrame(() => card.classList.add('loaded'));
       });
-      // Make sure newly added cards become visible
-      grid.querySelectorAll('.card').forEach(c => c.classList.add('loaded'));
       index += batchSize;
+
       const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
       if (index >= pool.length && btn) btn.style.display = 'none';
     }
+
     loadMore();
     const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
     if (btn) btn.addEventListener('click', loadMore);
@@ -257,6 +263,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 </script>
+
 
 
 </body>
