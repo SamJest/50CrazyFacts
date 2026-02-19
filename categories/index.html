@@ -233,7 +233,7 @@ body.dark #tooltip::after{
 <a href="#top" id="back-to-top">↑ Back to Top</a>
 
 <script>
-const ITEMS = [{"title":"artificial-intelligence-breakthroughs","slug":"artificial-intelligence-breakthroughs","url":"/categories/artificial-intelligence-breakthroughs/","color":"#1686e","category":"artificial-intelligence-breakthroughs","factCount":346,"factPreview":"A 2024 AI-generated track reportedly made listeners see fleeting visual patterns or shapes with eyes closed."},{"title":"forbidden-archaeology","slug":"forbidden-archaeology","url":"/categories/forbidden-archaeology/","color":"#b52680","category":"forbidden-archaeology","factCount":383,"factPreview":"Some Arctic populations predate previously believed colonization timelines."},{"title":"unsolved-historical-mysteries","slug":"unsolved-historical-mysteries","url":"/categories/unsolved-historical-mysteries/","color":"#20ce2a","category":"unsolved-historical-mysteries","factCount":898,"factPreview":"Long before PDF guides, the Antikythera Mechanism had a literal instruction manual etched in bronze."},{"title":"general","slug":"general","url":"/categories/general/","color":"#333333","category":"general","factCount":1,"factPreview":"Edgar Allan Poe left behind a minimal estate, but confusion over his will adds to the mystery surrounding his death."},{"title":"ancient-civilizations-secrets","slug":"ancient-civilizations-secrets","url":"/categories/ancient-civilizations-secrets/","color":"#dec7f0","category":"ancient-civilizations-secrets","factCount":1653,"factPreview":"Before flushing toilets were Roman, Mycenaeans had palace-level sanitation."}];
+const ITEMS = [{"title":"artificial-intelligence-breakthroughs","slug":"artificial-intelligence-breakthroughs","url":"/categories/artificial-intelligence-breakthroughs/","color":"#954d2e","category":"artificial-intelligence-breakthroughs","factCount":346,"factPreview":"A 2025 AI-generated melody reportedly induced intense anxiety in listeners despite safe surroundings."},{"title":"forbidden-archaeology","slug":"forbidden-archaeology","url":"/categories/forbidden-archaeology/","color":"#6be4eb","category":"forbidden-archaeology","factCount":383,"factPreview":"Could ancient Africans have sailed to distant continents long before recorded history?"},{"title":"unsolved-historical-mysteries","slug":"unsolved-historical-mysteries","url":"/categories/unsolved-historical-mysteries/","color":"#7777d1","category":"unsolved-historical-mysteries","factCount":898,"factPreview":"The identity of the genius behind the Antikythera Mechanism remains as lost as Atlantis itself."},{"title":"general","slug":"general","url":"/categories/general/","color":"#333333","category":"general","factCount":1,"factPreview":"Edgar Allan Poe left behind a minimal estate, but confusion over his will adds to the mystery surrounding his death."},{"title":"ancient-civilizations-secrets","slug":"ancient-civilizations-secrets","url":"/categories/ancient-civilizations-secrets/","color":"#dc6604","category":"ancient-civilizations-secrets","factCount":1653,"factPreview":"Ancient Persians tunneled miles underground to cheat the desert."}];
 let currentSort="alpha";
 
 function prettyName(slug){
@@ -318,21 +318,34 @@ function filterCards(){
 }
 
 function showTooltip(e){
-  const tooltip=document.getElementById('tooltip');
-  tooltip.textContent=this.dataset.preview;
-  tooltip.style.opacity=1;
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
   moveTooltip(e);
 }
 
 function moveTooltip(e){
-  const tooltip=document.getElementById('tooltip');
-  tooltip.style.left=e.pageX+'px';
-  tooltip.style.top=e.pageY+'px';
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
 }
 
 function hideTooltip(){
-  document.getElementById('tooltip').style.opacity=0;
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
 }
+
 
 document.getElementById('sortToggle').onclick=()=>{
   currentSort=currentSort==="alpha"?"facts":"alpha";
