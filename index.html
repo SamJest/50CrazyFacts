@@ -156,17 +156,18 @@ html{scroll-behavior:smooth}
 document.addEventListener('DOMContentLoaded', async () => {
 
   /* ================================
-     LOAD HOME.JSON (CLIENT RENDER)
+     LOAD HOME.JSON
   ================================= */
   let homeData = { heroPool: [], featuredPool: [], latest: [], randomPool: [] };
   try {
     const res = await fetch('/home.json');
     if (res.ok) homeData = await res.json();
+    else console.warn('home.json not found, using empty data');
   } catch (e) {
     console.error('Failed to load home.json', e);
   }
 
-  // Match exact JSON keys (case-sensitive)
+  // Exact keys from home.json
   const { heroPool = [], featuredPool = [], latest = [], randomPool = [] } = homeData;
 
   /* ================================
@@ -174,10 +175,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   ================================= */
   function buildCard(f) {
     const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
-    return `<div class="card">
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
       <a href="${url}">${f.SEO_TITLE || 'Untitled Fact'}</a>
       <p>${f.FACT_HOOK || ''}</p>
-    </div>`;
+    `;
+    // Trigger CSS fade-in
+    requestAnimationFrame(() => div.classList.add('loaded'));
+    return div;
   }
 
   /* ================================
@@ -187,9 +193,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   heroPool.slice(0, 8).forEach(f => {
     const div = document.createElement('div');
     div.className = 'hero-card';
-    div.innerHTML = `<h2>${f.SEO_TITLE || ''}</h2>
+    div.innerHTML = `
+      <h2>${f.SEO_TITLE || ''}</h2>
       <p>${f.FACT_HOOK || ''}</p>
-      <a href="/categories/${f.category}/${f.subject}/${f.SLUG}.html" class="hero-btn">Read More</a>`;
+      <a href="/categories/${f.category}/${f.subject}/${f.SLUG}.html" class="hero-btn">Read More</a>
+    `;
     heroContainer.appendChild(div);
   });
 
@@ -205,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ================================
-     BATCH LOADING FUNCTION
+     GRID + BATCH LOADING
   ================================= */
   function setupBatch(gridId, pool, batchSize = 12) {
     const grid = document.getElementById(gridId);
@@ -213,21 +221,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function loadMore() {
       const batch = pool.slice(index, index + batchSize);
-      batch.forEach(f => {
-        const temp = document.createElement('div');
-        temp.innerHTML = buildCard(f);
-        const card = temp.firstChild;
-        grid.appendChild(card);
-        requestAnimationFrame(() => card.classList.add('loaded'));
-      });
+      batch.forEach(f => grid.appendChild(buildCard(f)));
       index += batchSize;
 
-      const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
+      const btn = grid.parentNode.querySelector('.load-more-btn');
       if (index >= pool.length && btn) btn.style.display = 'none';
     }
 
-    loadMore();
-    const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
+    loadMore(); // initial batch
+    const btn = grid.parentNode.querySelector('.load-more-btn');
     if (btn) btn.addEventListener('click', loadMore);
   }
 
@@ -238,14 +240,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ================================
      FACT SNACK
   ================================= */
-  const snacks = ${HOME_FACT_SNACKS ? JSON.stringify(JSON.parse(HOME_FACT_SNACKS)) : '[]'};
+  let snacks = [];
+  try {
+    if (window.HOME_FACT_SNACKS) snacks = JSON.parse(window.HOME_FACT_SNACKS);
+  } catch(e) {
+    console.warn('Failed to parse HOME_FACT_SNACKS', e);
+  }
+
   window.loadSnack = function() {
     if (!snacks.length) return;
     const f = snacks[Math.floor(Math.random() * snacks.length)];
     const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
-    document.getElementById('factSnackText').innerHTML =
-      `<a href="${url}" class="hero-btn">${f.SEO_TITLE || 'Untitled Fact'}</a><br>${f.FACT_HOOK || ''}`;
+    document.getElementById('factSnackText').innerHTML = `
+      <a href="${url}" class="hero-btn">${f.SEO_TITLE || 'Untitled Fact'}</a><br>
+      ${f.FACT_HOOK || ''}
+    `;
   };
+
   loadSnack();
   setInterval(loadSnack, 25000);
 
@@ -262,5 +273,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 </script>
+
 </body>
 </html>
