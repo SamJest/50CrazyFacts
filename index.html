@@ -166,7 +166,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Failed to load home.json', e);
   }
 
-  const { heroPool = [], featuredPool = [], latest: latestPool = [], randomPool = [] } = homeData;
+  // Match exact JSON keys (case-sensitive)
+  const { heroPool = [], featuredPool = [], latest = [], randomPool = [] } = homeData;
 
   /* ================================
      CARD BUILDER
@@ -213,12 +214,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     function loadMore() {
       const batch = pool.slice(index, index + batchSize);
       batch.forEach(f => {
-        const html = buildCard(f);
         const temp = document.createElement('div');
-        temp.innerHTML = html;
+        temp.innerHTML = buildCard(f);
         const card = temp.firstChild;
         grid.appendChild(card);
-        // Force reflow then add 'loaded' to trigger CSS fade-in
         requestAnimationFrame(() => card.classList.add('loaded'));
       });
       index += batchSize;
@@ -233,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   setupBatch('featuredGrid', featuredPool);
-  setupBatch('latestGrid', latestPool);
+  setupBatch('latestGrid', latest);
   setupBatch('randomGrid', randomPool);
 
   /* ================================
@@ -263,8 +262,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 </script>
-
-
-
 </body>
 </html>
