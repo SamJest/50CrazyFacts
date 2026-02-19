@@ -210,7 +210,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById(gridId);
     let index = 0;
     function loadMore() {
-      pool.slice(index, index + batchSize).forEach(f => grid.insertAdjacentHTML('beforeend', buildCard(f)));
+      const batch = pool.slice(index, index + batchSize);
+      batch.forEach(f => {
+        const html = buildCard(f);
+        grid.insertAdjacentHTML('beforeend', html);
+      });
+      // Make sure newly added cards become visible
+      grid.querySelectorAll('.card').forEach(c => c.classList.add('loaded'));
       index += batchSize;
       const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
       if (index >= pool.length && btn) btn.style.display = 'none';
@@ -223,12 +229,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupBatch('featuredGrid', featuredPool);
   setupBatch('latestGrid', latestPool);
   setupBatch('randomGrid', randomPool);
-
-  /* ================================
-     MAKE PRE-RENDERED CARDS VISIBLE
-     (Fixes homepage issue where cards exist in HTML but are hidden)
-  ================================= */
-  document.querySelectorAll('.card').forEach(card => card.classList.add('loaded'));
 
   /* ================================
      FACT SNACK
@@ -257,6 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 </script>
+
 
 </body>
 </html>
