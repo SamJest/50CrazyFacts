@@ -153,153 +153,103 @@ html{scroll-behavior:smooth}
 </div>
 
 <script>
-window.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', async () => {
 
-/* ================================
-   LOAD HOME.JSON (CLIENT RENDER)
-================================ */
-fetch('/home.json')
-.then(res => res.json())
-.then(homeData => {
+  /* ================================
+     LOAD HOME.JSON (CLIENT RENDER)
+  ================================= */
+  let homeData = { heroPool: [], featuredPool: [], latest: [], randomPool: [] };
+  try {
+    const res = await fetch('/home.json');
+    if (res.ok) homeData = await res.json();
+  } catch (e) {
+    console.error('Failed to load home.json', e);
+  }
 
-  const heroPool = homeData.heroPool || [];
-  const featuredPool = homeData.featuredPool || [];
-  const randomPool = homeData.randomPool || [];
-  const latestPool = homeData.latest || [];  // read latest array
+  const { heroPool = [], featuredPool = [], latest: latestPool = [], randomPool = [] } = homeData;
 
   /* ================================
      CARD BUILDER
-  ================================ */
-  function buildCard(f){
-    const url=`/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
-    return `
-      <div class="card loaded">
-        <a href="${url}">${f.SEO_TITLE || 'Untitled Fact'}</a>
-        <p>${f.FACT_HOOK || ''}</p>
-      </div>
-    `;
+  ================================= */
+  function buildCard(f) {
+    const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
+    return `<div class="card loaded">
+      <a href="${url}">${f.SEO_TITLE || 'Untitled Fact'}</a>
+      <p>${f.FACT_HOOK || ''}</p>
+    </div>`;
   }
 
   /* ================================
-     HERO
-  ================================ */
+     HERO CARDS
+  ================================= */
   const heroContainer = document.querySelector('.hero-cards-container');
-  heroPool.slice(0,8).forEach(f=>{
-    const url=`/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
-    const div=document.createElement('div');
-    div.className='hero-card';
-    div.innerHTML=`
-      <h2>${f.SEO_TITLE || ''}</h2>
+  heroPool.slice(0, 8).forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'hero-card';
+    div.innerHTML = `<h2>${f.SEO_TITLE || ''}</h2>
       <p>${f.FACT_HOOK || ''}</p>
-      <a href="${url}" class="hero-btn">Read More</a>
-    `;
+      <a href="/categories/${f.category}/${f.subject}/${f.SLUG}.html" class="hero-btn">Read More</a>`;
     heroContainer.appendChild(div);
   });
 
   const heroCards = document.querySelectorAll('.hero-card');
   let heroIndex = 0;
-  if(heroCards.length>0){
+  if (heroCards.length) {
     heroCards[0].classList.add('show');
-    setInterval(()=>{
+    setInterval(() => {
       heroCards[heroIndex].classList.remove('show');
-      heroIndex=(heroIndex+1)%heroCards.length;
+      heroIndex = (heroIndex + 1) % heroCards.length;
       heroCards[heroIndex].classList.add('show');
-    },5000);
+    }, 5000);
   }
 
   /* ================================
-     FEATURED (Batch Load)
-  ================================ */
-  let featuredIndex = 0;
-  const featuredGrid = document.getElementById('featuredGrid');
-
-  function loadMoreFeatured(){
-    const batch = featuredPool.slice(featuredIndex, featuredIndex+12);
-    batch.forEach(f=>{
-      featuredGrid.insertAdjacentHTML('beforeend', buildCard(f));
-    });
-    featuredIndex += 12;
-    if(featuredIndex >= featuredPool.length){
-      document.querySelector('#featured .load-more-btn').style.display='none';
+     BATCH LOADING FUNCTION
+  ================================= */
+  function setupBatch(gridId, pool, batchSize = 12) {
+    const grid = document.getElementById(gridId);
+    let index = 0;
+    function loadMore() {
+      pool.slice(index, index + batchSize).forEach(f => grid.insertAdjacentHTML('beforeend', buildCard(f)));
+      index += batchSize;
+      const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
+      if (index >= pool.length && btn) btn.style.display = 'none';
     }
+    loadMore();
+    const btn = document.querySelector(`#${gridId}`).parentNode.querySelector('.load-more-btn');
+    if (btn) btn.addEventListener('click', loadMore);
   }
 
-  loadMoreFeatured();
-  document.querySelector('#featured .load-more-btn')
-    .addEventListener('click', loadMoreFeatured);
+  setupBatch('featuredGrid', featuredPool);
+  setupBatch('latestGrid', latestPool);
+  setupBatch('randomGrid', randomPool);
 
   /* ================================
-     LATEST (Batch Load) ← NEW
-  ================================ */
-  let latestIndex = 0;
-  const latestGrid = document.getElementById('latestGrid');
-
-  function loadMoreLatest(){
-    const batch = latestPool.slice(latestIndex, latestIndex + 12);
-    batch.forEach(f => {
-      latestGrid.insertAdjacentHTML('beforeend', buildCard(f));
-    });
-    latestIndex += 12;
-    if(latestIndex >= latestPool.length){
-      document.querySelector('#latest .load-more-btn').style.display = 'none';
-    }
-  }
-
-  // Initial load
-  loadMoreLatest();
-
-  // Hook the load more button
-  document.querySelector('#latest .load-more-btn')
-    .addEventListener('click', loadMoreLatest);
+     FACT SNACK
+  ================================= */
+  const snacks = ${HOME_FACT_SNACKS ? JSON.stringify(JSON.parse(HOME_FACT_SNACKS)) : '[]'};
+  window.loadSnack = function() {
+    if (!snacks.length) return;
+    const f = snacks[Math.floor(Math.random() * snacks.length)];
+    const url = `/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
+    document.getElementById('factSnackText').innerHTML =
+      `<a href="${url}" class="hero-btn">${f.SEO_TITLE || 'Untitled Fact'}</a><br>${f.FACT_HOOK || ''}`;
+  };
+  loadSnack();
+  setInterval(loadSnack, 25000);
 
   /* ================================
-     RANDOM (Batch Load)
-  ================================ */
-  let randomIndex = 0;
-  const randomGrid = document.getElementById('randomGrid');
-
-  function loadMoreRandom(){
-    const batch = randomPool.slice(randomIndex, randomIndex+12);
-    batch.forEach(f=>{
-      randomGrid.insertAdjacentHTML('beforeend', buildCard(f));
-    });
-    randomIndex += 12;
-    if(randomIndex >= randomPool.length){
-      document.querySelector('#random .load-more-btn').style.display='none';
-    }
-  }
-
-  loadMoreRandom();
-  document.querySelector('#random .load-more-btn')
-    .addEventListener('click', loadMoreRandom);
+     BACK TO TOP BUTTON
+  ================================= */
+  const backBtn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    backBtn.style.display = window.scrollY > 400 ? 'block' : 'none';
+  });
+  backBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
 });
-
-/* ================================
-   FACT SNACK (unchanged)
-================================ */
-const snacks = [{"SLUG":"it-teaches-that-knowledge-can-vanish-and-resurface","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It Teaches That Knowledge Can Vanish and Resurface","FACT_HOOK":"This little device is a 2,000-year-old lesson in the fragility of human understanding."},{"SLUG":"the-ethiopian-rock-hewn-cisterns-of-lalibela-that-defied-gravity","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Ethiopian Rock-Hewn Cisterns of Lalibela That Defied Gravity","FACT_HOOK":"Ethiopian engineers carved water storage chambers into mountainsides centuries ago, with no modern machinery."},{"SLUG":"ai-melody-that-triggered-temporary-sense-of-flying","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Triggered Temporary Sense of Flying","FACT_HOOK":"A 2025 AI-generated track reportedly made listeners feel as though they were flying."},{"SLUG":"poe-s-mysterious-will-and-estate","category":"general","subject":"general","SEO_TITLE":"Poe’s Mysterious Will and Estate","FACT_HOOK":"Edgar Allan Poe left behind a minimal estate, but confusion over his will adds to the mystery surrounding his death."},{"SLUG":"hidden-dna-shows-humans-used-early-cognitive-mapping-18-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Shows Humans Used Early Cognitive Mapping 18,000 Years Ago","FACT_HOOK":"Genetic evidence indicates sophisticated spatial memory for survival and navigation."},{"SLUG":"it-remains-a-source-of-inspiration-for-modern-engineering","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It Remains a Source of Inspiration for Modern Engineering","FACT_HOOK":"Engineers today still look to bronze gears from 100 BCE for ideas."},{"SLUG":"the-ancient-thai-floating-canals-that-shaped-bangkok-s-predecessors","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Ancient Thai Floating Canals That Shaped Bangkok’s Predecessors","FACT_HOOK":"Before roads, Thailand’s early cities were networks of floating streets and canals."},{"SLUG":"ai-track-that-triggered-phantom-smells","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Triggered Phantom Smells","FACT_HOOK":"A 2025 AI-generated melody reportedly caused listeners to perceive smells that weren’t present."},{"SLUG":"dna-shows-early-humans-had-complex-social-communication-19-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Shows Early Humans Had Complex Social Communication 19,000 Years Ago","FACT_HOOK":"Genetic evidence suggests advanced vocal and auditory skills predate recorded language."},{"SLUG":"it-could-rewrite-the-timeline-of-mechanical-innovation","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It Could Rewrite the Timeline of Mechanical Innovation","FACT_HOOK":"This little bronze box predates the 'mechanical revolution' by a millennium."},{"SLUG":"the-olmec-reservoirs-that-supported-the-first-mesoamerican-cities","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Olmec Reservoirs That Supported the First Mesoamerican Cities","FACT_HOOK":"Olmec engineers stored rainwater in giant earth-lined pools before anyone built aqueducts."},{"SLUG":"ai-melody-that-induced-temporary-euphoria-paired-with-tears","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Induced Temporary Euphoria Paired With Tears","FACT_HOOK":"A 2025 AI-generated track reportedly caused listeners to feel both intense joy and uncontrollable crying simultaneously."},{"SLUG":"hidden-dna-suggests-humans-survived-extreme-uv-radiation-in-prehistoric-deserts","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Humans Survived Extreme UV Radiation in Prehistoric Deserts","FACT_HOOK":"Genetic markers indicate adaptation to intense sunlight 20,000 years ago."},{"SLUG":"it-may-contain-hidden-markings-we-still-can-t-decode","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It May Contain Hidden Markings We Still Can’t Decode","FACT_HOOK":"Even with X-rays, parts of it remain a mystery to modern eyes."},{"SLUG":"the-minoan-cisterns-of-knossos-that-kept-palaces-dry","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Minoan Cisterns of Knossos That Kept Palaces Dry","FACT_HOOK":"Crete’s ancient palaces had hidden cisterns that rival modern plumbing."},{"SLUG":"ai-track-that-caused-temporary-anxiety-without-reason","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Caused Temporary Anxiety Without Reason","FACT_HOOK":"A 2025 AI-generated melody reportedly induced intense anxiety in listeners despite safe surroundings."},{"SLUG":"dna-reveals-humans-colonized-remote-islands-using-advanced-navigation-21-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Reveals Humans Colonized Remote Islands Using Advanced Navigation 21,000 Years Ago","FACT_HOOK":"Genetic evidence suggests seafaring sophistication predates known maritime history."},{"SLUG":"its-origins-might-be-linked-to-a-forgotten-hellenistic-workshop","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Its Origins Might Be Linked to a Forgotten Hellenistic Workshop","FACT_HOOK":"Some scholars think a single workshop produced multiple advanced devices—now lost."},{"SLUG":"the-chinese-dujiangyan-that-tamed-the-min-river-without-dams","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Chinese Dujiangyan That Tamed the Min River Without Dams","FACT_HOOK":"Over 2,000 years ago, Chinese engineers redirected a river using only clever channels and levees."},{"SLUG":"ai-melody-that-created-temporary-sleepiness","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Created Temporary Sleepiness","FACT_HOOK":"A 2025 AI-generated track reportedly made listeners feel extremely drowsy, almost falling asleep mid-listen."},{"SLUG":"ancient-dna-suggests-humans-had-proto-agricultural-knowledge-23-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Suggests Humans Had Proto-Agricultural Knowledge 23,000 Years Ago","FACT_HOOK":"Genetic markers reveal early experimentation with plant cultivation long before the Neolithic."},{"SLUG":"modern-scans-reveal-previously-invisible-details","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Modern Scans Reveal Previously Invisible Details","FACT_HOOK":"X-rays and 3D imaging continue to unlock secrets hidden for 2,000 years."},{"SLUG":"the-roman-aqua-appia-that-laid-foundations-for-empire","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Roman Aqua Appia That Laid Foundations for Empire","FACT_HOOK":"Romans tunneled under Rome to bring fresh water from distant springs, literally underground."},{"SLUG":"ai-track-that-triggered-compulsive-foot-tapping","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Triggered Compulsive Foot Tapping","FACT_HOOK":"A 2025 AI-generated melody reportedly caused listeners to tap their feet uncontrollably in rhythm."},{"SLUG":"hidden-dna-suggests-early-humans-had-advanced-olfactory-abilities","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Early Humans Had Advanced Olfactory Abilities","FACT_HOOK":"Genetic evidence indicates heightened smell sensitivity aided survival 28,000 years ago."},{"SLUG":"it-may-have-been-a-prototype-for-other-lost-devices","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It May Have Been a Prototype for Other Lost Devices","FACT_HOOK":"This could be just the tip of the iceberg; similar machines may have vanished forever."},{"SLUG":"the-nabatean-step-wells-that-stored-water-underground","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Nabatean Step Wells That Stored Water Underground","FACT_HOOK":"Petra’s secret wells were staircases to survival, not just architecture."},{"SLUG":"ai-melody-that-caused-temporary-fear-without-threat","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Caused Temporary Fear Without Threat","FACT_HOOK":"A 2025 AI-generated track reportedly triggered intense fear despite listeners being in safe environments."},{"SLUG":"ancient-dna-suggests-humans-explored-subterranean-networks-early","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Suggests Humans Explored Subterranean Networks Early","FACT_HOOK":"Genetic markers indicate adaptation to life in caves and underground 25,000 years ago."},{"SLUG":"the-device-s-complexity-suggests-it-had-a-specialist-operator","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Device’s Complexity Suggests It Had a Specialist Operator","FACT_HOOK":"Not just anyone could turn the crank and understand the readings."},{"SLUG":"the-carthaginian-canals-that-supported-ancient-trade-empires","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Carthaginian Canals That Supported Ancient Trade Empires","FACT_HOOK":"Carthage turned swamps into highways of water for commerce and defense."},{"SLUG":"ai-track-that-induced-sudden-nostalgia","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Induced Sudden Nostalgia","FACT_HOOK":"A 2025 AI-generated melody reportedly caused intense feelings of nostalgia for past experiences listeners hadn’t consciously recalled."},{"SLUG":"hidden-dna-suggests-early-humans-experienced-rapid-cultural-evolution","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Early Humans Experienced Rapid Cultural Evolution","FACT_HOOK":"Genetic markers correlate with sudden bursts of tool and art innovation 22,000 years ago."},{"SLUG":"its-gear-teeth-reveal-surprisingly-advanced-engineering","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Its Gear Teeth Reveal Surprisingly Advanced Engineering","FACT_HOOK":"Each gear tooth was carefully calculated, centuries before industrial precision."},{"SLUG":"the-persian-qanat-that-made-deserts-bloom","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Persian Qanat That Made Deserts Bloom","FACT_HOOK":"Persians tunneled underground for kilometers to bring desert water to life."},{"SLUG":"ai-melody-that-triggered-involuntary-laughter","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Triggered Involuntary Laughter","FACT_HOOK":"A 2025 AI-generated track reportedly made listeners laugh uncontrollably without humorous content."},{"SLUG":"dna-shows-early-humans-adapted-to-poisonous-environments","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Shows Early Humans Adapted to Poisonous Environments","FACT_HOOK":"Some populations carried genes allowing survival in toxic soils and plants 18,000 years ago."},{"SLUG":"the-antikythera-mechanism-may-include-a-lost-zodiac-system","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Antikythera Mechanism May Include a Lost Zodiac System","FACT_HOOK":"It could track constellations that vanished from Greek records, now only inferred from bronze."},{"SLUG":"the-mesopotamian-shaduf-that-lifted-water-before-pumps","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Mesopotamian Shaduf That Lifted Water Before Pumps","FACT_HOOK":"Mesopotamians used a giant seesaw to irrigate fields centuries before engines existed."},{"SLUG":"ai-melody-that-induced-temporary-visual-hallucinations","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Induced Temporary Visual Hallucinations","FACT_HOOK":"A 2024 AI-generated track reportedly made listeners see fleeting visual patterns or shapes with eyes closed."},{"SLUG":"ancient-dna-reveals-humans-used-early-genetic-knowledge-for-survival","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Reveals Humans Used Early Genetic Knowledge for Survival","FACT_HOOK":"Genetic markers suggest early humans may have selected mates to optimize immunity."},{"SLUG":"it-remains-the-earliest-known-analog-computer","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It Remains the Earliest Known Analog Computer","FACT_HOOK":"Think your laptop is impressive? The Greeks had one in bronze over 2,000 years ago."},{"SLUG":"the-hittite-water-channels-that-surprised-archaeologists","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Hittite Water Channels That Surprised Archaeologists","FACT_HOOK":"Hittites carved channels under cities to trick invaders and irrigate crops simultaneously."},{"SLUG":"ai-track-that-induced-temporary-linguistic-creativity","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Induced Temporary Linguistic Creativity","FACT_HOOK":"A 2024 AI-generated melody reportedly made listeners speak in highly creative, unusual language patterns."},{"SLUG":"dna-evidence-suggests-early-humans-practiced-long-distance-seasonal-migration","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Evidence Suggests Early Humans Practiced Long-Distance Seasonal Migration","FACT_HOOK":"Genetic markers reveal coordinated movement patterns tens of thousands of years ago."},{"SLUG":"its-mechanical-complexity-predates-comparable-european-clocks-by-over-a-millennium","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Its Mechanical Complexity Predates Comparable European Clocks by Over a Millennium","FACT_HOOK":"Europeans marveled at clocks in the Middle Ages, but the Greeks already did it in bronze."},{"SLUG":"the-egyptian-fayum-basin-that-controlled-a-lake-and-its-people","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Egyptian Fayum Basin That Controlled a Lake and Its People","FACT_HOOK":"Ancient Egyptians turned a swampy depression into farmland with canals before anyone invented bulldozers."},{"SLUG":"ai-melody-that-triggered-involuntary-dancing","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Triggered Involuntary Dancing","FACT_HOOK":"A 2023 AI-generated track reportedly caused listeners to begin dancing involuntarily."},{"SLUG":"hidden-dna-shows-humans-developed-night-vision-adaptations-28-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Shows Humans Developed Night Vision Adaptations 28,000 Years Ago","FACT_HOOK":"Genetic evidence suggests early humans thrived in low-light conditions."},{"SLUG":"it-blurs-the-line-between-calculator-and-clock","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It Blurs the Line Between Calculator and Clock","FACT_HOOK":"Was it a watch, a computer, or a teaching tool? Actually, all three."},{"SLUG":"the-mayan-chultuns-that-stored-rainwater-underground","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Mayan Chultuns That Stored Rainwater Underground","FACT_HOOK":"Maya elites drank rainwater collected in hidden caves, centuries before plumbing."},{"SLUG":"ai-track-that-induced-temporary-hyper-focus","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Induced Temporary Hyper-Focus","FACT_HOOK":"A 2023 AI-generated melody reportedly made listeners hyper-focused on tasks for extended periods."},{"SLUG":"dna-reveals-humans-survived-extreme-ice-age-droughts-using-hidden-waterways","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Reveals Humans Survived Extreme Ice Age Droughts Using Hidden Waterways","FACT_HOOK":"Genetic evidence hints at lost migratory routes during massive droughts 22,000 years ago."},{"SLUG":"it-may-encode-predictions-of-rare-astronomical-events","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It May Encode Predictions of Rare Astronomical Events","FACT_HOOK":"Eclipses, lunar anomalies, and maybe comets—all hidden in bronze gears."},{"SLUG":"the-japanese-karez-systems-that-turned-mountains-into-canals","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Japanese Karez Systems That Turned Mountains Into Canals","FACT_HOOK":"Before modern irrigation, Japan secretly tunneled water underground for centuries."},{"SLUG":"ai-melody-that-made-people-experience-phantom-touch","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Made People Experience Phantom Touch","FACT_HOOK":"A 2024 AI-generated track reportedly caused listeners to feel non-existent tactile sensations."},{"SLUG":"hidden-dna-suggests-early-humans-used-fire-for-environmental-management","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Early Humans Used Fire for Environmental Management","FACT_HOOK":"Genetic markers hint humans deliberately altered landscapes 30,000 years ago."},{"SLUG":"the-mechanism-could-track-the-olympic-games-cycle","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Mechanism Could Track the Olympic Games Cycle","FACT_HOOK":"It wasn’t just stars—ancient Greeks used it to know when to cheer for chariots."},{"SLUG":"the-incan-andenes-that-turned-mountains-into-farms","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Incan Andenes That Turned Mountains Into Farms","FACT_HOOK":"The Incas built stepped terraces to farm clouds and control water."},{"SLUG":"ai-melody-that-induced-temporary-disorientation-of-time","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Induced Temporary Disorientation of Time","FACT_HOOK":"A 2024 AI-generated track reportedly made listeners lose sense of time for several minutes."},{"SLUG":"ancient-dna-suggests-humans-practiced-early-maritime-trade-28-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Suggests Humans Practiced Early Maritime Trade 28,000 Years Ago","FACT_HOOK":"Genetic evidence hints at long-distance exchange of resources across coasts."},{"SLUG":"the-mechanism-s-discovery-sparked-modern-interdisciplinary-study","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Mechanism’s Discovery Sparked Modern Interdisciplinary Study","FACT_HOOK":"Its rediscovery birthed an entire field blending history, engineering, and astronomy."},{"SLUG":"the-greek-peri-aqueduct-innovations-in-hellenistic-cities","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Greek Peri-Aqueduct Innovations in Hellenistic Cities","FACT_HOOK":"Greeks combined fountains, baths, and public squares into hydraulic art."},{"SLUG":"ai-track-that-induced-temporary-nightmares","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Induced Temporary Nightmares","FACT_HOOK":"A 2024 AI-generated melody reportedly caused unsettling, dream-like experiences in listeners while awake."},{"SLUG":"dna-reveals-humans-colonized-arctic-islands-much-earlier-than-thought","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Reveals Humans Colonized Arctic Islands Much Earlier Than Thought","FACT_HOOK":"Genetic evidence pushes Arctic colonization back by thousands of years."},{"SLUG":"its-survival-was-purely-accidental","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Its Survival Was Purely Accidental","FACT_HOOK":"A shipwreck preserved it; otherwise, it might have been lost forever."},{"SLUG":"the-indus-valley-reservoirs-that-predated-classical-engineering","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Indus Valley Reservoirs That Predated Classical Engineering","FACT_HOOK":"Harappa and Mohenjo-daro stored water in tanks long before Roman aqueducts."},{"SLUG":"ai-composition-that-induced-temporary-euphoria","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Composition That Induced Temporary Euphoria","FACT_HOOK":"A 2024 AI-generated track reportedly caused intense happiness and excitement in listeners."},{"SLUG":"hidden-dna-suggests-early-humans-used-complex-medicinal-plants","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Early Humans Used Complex Medicinal Plants","FACT_HOOK":"Genetic evidence indicates humans had knowledge of herbal medicine 35,000 years ago."},{"SLUG":"it-may-have-been-used-to-schedule-religious-festivals","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"It May Have Been Used to Schedule Religious Festivals","FACT_HOOK":"Ancient Greeks could have used it to plan parties… and sacrifices."},{"SLUG":"the-byzantine-cisterns-that-kept-constantinople-thirst-free","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Byzantine Cisterns That Kept Constantinople Thirst-Free","FACT_HOOK":"Even during siege, Constantinople never went thirsty thanks to underground water vaults."},{"SLUG":"ai-track-that-made-people-experience-artificial-sadness","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Made People Experience Artificial Sadness","FACT_HOOK":"A 2023 AI-generated melody reportedly caused intense feelings of melancholy without lyrical content."},{"SLUG":"ancient-dna-shows-humans-colonized-high-altitude-plateaus-30-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Shows Humans Colonized High-Altitude Plateaus 30,000 Years Ago","FACT_HOOK":"Genetic evidence predates previous assumptions about high-altitude adaptation."},{"SLUG":"the-device-may-have-influenced-ancient-navigation","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Device May Have Influenced Ancient Navigation","FACT_HOOK":"Could sailors have used this gizmo to avoid getting lost at sea?"},{"SLUG":"the-roman-hypocaust-baths-that-flowed-with-innovation","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Roman Hypocaust Baths That Flowed With Innovation","FACT_HOOK":"Romans made hot water flow under your feet before modern plumbing."},{"SLUG":"ai-melody-that-caused-sudden-hunger-cravings","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Caused Sudden Hunger Cravings","FACT_HOOK":"A 2023 AI-generated track reportedly triggered intense, specific food cravings in listeners."},{"SLUG":"hidden-dna-suggests-early-humans-survived-volcanic-eruptions","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Early Humans Survived Volcanic Eruptions","FACT_HOOK":"Genetic evidence shows populations adapted to ash-filled skies and toxic air 20,000 years ago."},{"SLUG":"the-antikythera-mechanism-may-contain-lost-greek-mathematical-theorems","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Antikythera Mechanism May Contain Lost Greek Mathematical Theorems","FACT_HOOK":"Its gears hint at calculations that aren’t recorded anywhere else in history."},{"SLUG":"the-khmer-floating-rice-fields-that-harnessed-floods","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Khmer Floating Rice Fields That Harnessed Floods","FACT_HOOK":"Khmer farmers turned monsoon floods into giant floating gardens."},{"SLUG":"ai-track-that-created-temporary-emotional-numbness","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Created Temporary Emotional Numbness","FACT_HOOK":"A 2024 AI-generated melody reportedly made listeners feel emotionally flat and detached."},{"SLUG":"ancient-dna-reveals-early-humans-could-survive-deep-in-rainforests","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Reveals Early Humans Could Survive Deep in Rainforests","FACT_HOOK":"Some genetic markers suggest humans thrived in dense tropical jungles 25,000 years ago."},{"SLUG":"its-purpose-may-have-been-as-much-philosophical-as-practical","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Its Purpose May Have Been as Much Philosophical as Practical","FACT_HOOK":"This device wasn’t just about astronomy—it was a statement about order in the universe."},{"SLUG":"the-olmec-hydraulic-platforms-that-raised-cities-above-floods","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Olmec Hydraulic Platforms That Raised Cities Above Floods","FACT_HOOK":"Olmecs built entire neighborhoods on artificial water-proof hills."},{"SLUG":"ai-melody-that-induced-temporary-spatial-distortion","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Induced Temporary Spatial Distortion","FACT_HOOK":"A 2023 AI-generated track reportedly made listeners perceive rooms and objects as distorted in size and shape."},{"SLUG":"ancient-dna-reveals-humans-mastered-extreme-environments-simultaneously","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Ancient DNA Reveals Humans Mastered Extreme Environments Simultaneously","FACT_HOOK":"Populations adapted to deserts, tundras, and high altitudes at the same time."},{"SLUG":"its-small-size-conceals-massive-complexity","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Its Small Size Conceals Massive Complexity","FACT_HOOK":"You could hold it in one hand, yet it encodes decades of celestial calculations."},{"SLUG":"the-etruscan-drainage-systems-that-preceded-rome","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Etruscan Drainage Systems That Preceded Rome","FACT_HOOK":"Before Cloaca Maxima, Etruscans flushed cities in style."},{"SLUG":"ai-track-that-made-people-speak-in-foreign-accents","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Made People Speak in Foreign Accents","FACT_HOOK":"A 2024 AI-generated melody reportedly caused listeners to temporarily adopt foreign accents."},{"SLUG":"hidden-dna-shows-early-humans-thrived-on-now-submerged-southeast-asian-coasts","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Shows Early Humans Thrived on Now-Submerged Southeast Asian Coasts","FACT_HOOK":"Genetic evidence suggests sophisticated coastal settlements vanished under rising seas."},{"SLUG":"the-device-shows-the-greeks-knew-more-than-textbooks-admit","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Device Shows the Greeks Knew More Than Textbooks Admit","FACT_HOOK":"Its complexity suggests lost treatises and observational data vanished with time."},{"SLUG":"the-sumerian-irrigation-dikes-that-fueled-civilization","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Sumerian Irrigation Dikes That Fueled Civilization","FACT_HOOK":"Sumerians tamed the Tigris and Euphrates with dikes before written law."},{"SLUG":"ai-song-that-induced-sudden-motivation-and-anxiety","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Song That Induced Sudden Motivation and Anxiety","FACT_HOOK":"A single AI-generated melody reportedly caused listeners to feel extreme drive followed by intense stress."},{"SLUG":"dna-evidence-hints-at-unknown-archaic-humans-in-the-middle-east","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"DNA Evidence Hints at Unknown Archaic Humans in the Middle East","FACT_HOOK":"Some ancient Middle Eastern DNA doesn’t match any known human lineage."},{"SLUG":"why-some-scholars-call-it-the-ancient-cosmos-in-bronze","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"Why Some Scholars Call It the Ancient ‘Cosmos in Bronze’","FACT_HOOK":"It’s a tiny planetarium in your hand, centuries before Orreries existed."},{"SLUG":"the-nabataean-cisterns-that-defied-desert-heat","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Nabataean Cisterns That Defied Desert Heat","FACT_HOOK":"Petra’s rose-red city survived by storing water underground like a secret treasure."},{"SLUG":"ai-track-that-triggered-phantom-smells","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Track That Triggered Phantom Smells","FACT_HOOK":"A 2024 AI-generated melody reportedly made listeners perceive scents that weren’t present."},{"SLUG":"hidden-dna-suggests-early-humans-reached-japan-35-000-years-ago","category":"forbidden-archaeology","subject":"dna-research-that-could-rewrite-human-migration-hidden-from-public","SEO_TITLE":"Hidden DNA Suggests Early Humans Reached Japan 35,000 Years Ago","FACT_HOOK":"Genetic evidence predates known Jomon culture by millennia."},{"SLUG":"the-mechanism-s-fragments-hold-secret-writings","category":"unsolved-historical-mysteries","subject":"the-mystery-of-the-antikythera-mechanisms-origin","SEO_TITLE":"The Mechanism’s Fragments Hold Secret Writings","FACT_HOOK":"Tiny inscriptions on corroded bronze reveal instructions no human could read without X-rays."},{"SLUG":"the-minoan-aqueducts-that-turned-crete-into-a-wet-paradise","category":"ancient-civilizations-secrets","subject":"advanced-water-management-systems","SEO_TITLE":"The Minoan Aqueducts That Turned Crete Into a Wet Paradise","FACT_HOOK":"Before Romans, Minoans made their palaces drip luxury water."},{"SLUG":"ai-melody-that-created-temporary-synesthesia","category":"artificial-intelligence-breakthroughs","subject":"ai-generated-music-that-triggered-unexpected-emotional-disorders","SEO_TITLE":"AI Melody That Created Temporary Synesthesia","FACT_HOOK":"A 2023 AI-generated track reportedly made listeners perceive sounds as colors."}];
-window.loadSnack=function(){
-  if(!snacks||!snacks.length)return;
-  const rand=snacks[Math.floor(Math.random()*snacks.length)];
-  const url=`/categories/${rand.category}/${rand.subject}/${rand.SLUG}.html`;
-  document.getElementById('factSnackText').innerHTML=
-    `<a href="${url}" class="hero-btn">${rand.SEO_TITLE || 'Untitled Fact'}</a><br>${rand.FACT_HOOK || ''}`;
-};
-loadSnack();
-setInterval(loadSnack,25000);
-
-/* ================================
-   BACK TO TOP
-================================ */
-const backBtn=document.getElementById('backToTop');
-window.addEventListener('scroll',()=>{
-  backBtn.style.display=window.scrollY>400?'block':'none';
-});
-backBtn.addEventListener('click',()=>{
-  window.scrollTo({top:0,behavior:'smooth'});
-});
-
 </script>
 
 </body>
