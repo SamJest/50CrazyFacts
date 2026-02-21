@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grizzly Bear Territory Wars Uncovered</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Grizzly Bear Territory Wars Uncovered</h1>
+  <p>Explore all facts in "Grizzly Bear Territory Wars Uncovered".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Grizzly Bear Territory Wars Uncovered</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aggressive Bluffing Displays","slug":"aggressive-bluffing-displays","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/aggressive-bluffing-displays.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies use bluff charges to intimidate rivals without physical contact."},{"title":"Aggressive Vocalizations","slug":"aggressive-vocalizations","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/aggressive-vocalizations.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies use growls, roars, and huffs to establish dominance without direct combat."},{"title":"Biometrics Influence Territory","slug":"biometrics-influence-territory","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/biometrics-influence-territory.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzly bears’ size, claw length, and bite force determine which areas they control."},{"title":"Boundary Patrol Routes","slug":"boundary-patrol-routes","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/boundary-patrol-routes.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Adult bears frequently patrol the edges of their territory to monitor intruders."},{"title":"Camouflage for Conflict Avoidance","slug":"camouflage-for-conflict-avoidance","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/camouflage-for-conflict-avoidance.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies use natural cover to remain unseen by dominant rivals."},{"title":"Conflict Avoidance Strategies","slug":"conflict-avoidance-strategies","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/conflict-avoidance-strategies.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies often resolve territorial disputes with posturing and bluff charges instead of actual fighting."},{"title":"Defensive Bluffing Techniques","slug":"defensive-bluffing-techniques","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/defensive-bluffing-techniques.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies sometimes bluff defensively to protect cubs from adult rivals."},{"title":"Dominance Through Posture","slug":"dominance-through-posture","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/dominance-through-posture.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Standing tall, spreading limbs, and shoulder hunches convey strength in grizzly confrontations."},{"title":"Early Warning Scent Trails","slug":"early-warning-scent-trails","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/early-warning-scent-trails.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies can detect rival presence through faint scent trails left days earlier."},{"title":"Ecological Memory Mapping","slug":"ecological-memory-mapping","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/ecological-memory-mapping.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies remember previous encounters and locations to optimize future territory use."},{"title":"Food Caches Reduce Conflict","slug":"food-caches-reduce-conflict","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/food-caches-reduce-conflict.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies sometimes stash food to avoid disputes with rivals over immediate consumption."},{"title":"Foraging Time Optimization","slug":"foraging-time-optimization","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/foraging-time-optimization.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Bears adjust feeding times to reduce encounters with dominant individuals."},{"title":"Geographic Partitioning","slug":"geographic-partitioning","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/geographic-partitioning.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Neighboring grizzlies subtly divide overlapping territories to reduce direct conflict."},{"title":"Grizzly Territorial Signals","slug":"grizzly-territorial-signals","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/grizzly-territorial-signals.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies leave elaborate scent marks and claw trees to communicate territorial boundaries."},{"title":"Habitat Scouting Skills","slug":"habitat-scouting-skills","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/habitat-scouting-skills.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Cubs practice scouting unfamiliar areas under maternal supervision."},{"title":"Hibernation Territory Memory","slug":"hibernation-territory-memory","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/hibernation-territory-memory.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies remember precise locations of dens and territory features before hibernation."},{"title":"Hierarchy Through Size and Age","slug":"hierarchy-through-size-and-age","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/hierarchy-through-size-and-age.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Older and larger grizzlies dominate prime territory without direct fighting."},{"title":"Ice Fishing Tactics","slug":"ice-fishing-tactics","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/ice-fishing-tactics.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies adapt hunting methods on frozen rivers to minimize rival encounters."},{"title":"Independent Pathfinding","slug":"independent-pathfinding","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/independent-pathfinding.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Juvenile grizzlies gradually learn to navigate territories without maternal guidance."},{"title":"Intimidation Through Vocalizations","slug":"intimidation-through-vocalizations","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/intimidation-through-vocalizations.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies use growls, roars, and huffs to assert dominance without contact."},{"title":"Juvenile Dispersal Patterns","slug":"juvenile-dispersal-patterns","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/juvenile-dispersal-patterns.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Young grizzlies often leave natal areas to prevent dangerous conflicts with dominant adults."},{"title":"Juvenile Observation Posts","slug":"juvenile-observation-posts","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/juvenile-observation-posts.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Young bears climb to high points to observe territorial interactions safely."},{"title":"Knowledge of Neighboring Bears","slug":"knowledge-of-neighboring-bears","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/knowledge-of-neighboring-bears.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies remember individual rivals’ habits to navigate territory safely."},{"title":"Knowledge Transfer","slug":"knowledge-transfer","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/knowledge-transfer.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Adult bears pass survival knowledge to cubs through demonstration and observation."},{"title":"Landmark Recognition","slug":"landmark-recognition","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/landmark-recognition.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies navigate vast territories using natural landmarks as mental maps."},{"title":"Learning From Defeats","slug":"learning-from-defeats","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/learning-from-defeats.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzly cubs remember losses to dominant bears to avoid future conflicts."},{"title":"Long-Distance Olfactory Memory","slug":"long-distance-olfactory-memory","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/long-distance-olfactory-memory.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies can recognize rivals from scent trails left miles away."},{"title":"Long-Term Rival Tracking","slug":"long-term-rival-tracking","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/long-term-rival-tracking.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Bears remember individual rivals and track their behavior over months or years."},{"title":"Mating Season Tensions","slug":"mating-season-tensions","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/mating-season-tensions.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Male grizzlies become more aggressive during mating season, escalating territory disputes."},{"title":"Nighttime Avoidance Strategies","slug":"nighttime-avoidance-strategies","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/nighttime-avoidance-strategies.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Some grizzlies shift activity to night to avoid dominant rivals in overlapping territories."},{"title":"Observation-Based Strategy","slug":"observation-based-strategy","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/observation-based-strategy.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies study rival behavior for days before attempting to enter contested areas."},{"title":"Play-Fighting Teaches Territory Skills","slug":"play-fighting-teaches-territory-skills","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/play-fighting-teaches-territory-skills.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Cubs engage in play-fights to learn future territorial negotiation skills safely."},{"title":"Predator Play Tactics","slug":"predator-play-tactics","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/predator-play-tactics.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzly cubs engage in mock fights to learn combat and territorial skills safely."},{"title":"Quarantine-Like Separation","slug":"quarantine-like-separation","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/quarantine-like-separation.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Subordinate bears temporarily isolate themselves to avoid high-conflict areas."},{"title":"Resource Scarcity Intensifies Fights","slug":"resource-scarcity-intensifies-fights","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/resource-scarcity-intensifies-fights.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Territorial conflicts spike when food, water, or mates are limited in grizzly habitats."},{"title":"Resource Scarcity Sparks Conflict","slug":"resource-scarcity-sparks-conflict","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/resource-scarcity-sparks-conflict.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Competition intensifies when food is scarce, increasing territorial aggression."},{"title":"Riverbank Observation Points","slug":"riverbank-observation-points","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/riverbank-observation-points.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies use vantage points along rivers to watch rivals before fishing."},{"title":"Seasonal Retreats","slug":"seasonal-retreats","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/seasonal-retreats.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies sometimes leave prime territory temporarily when seasonal resources dwindle."},{"title":"Seasonal Territory Shifts","slug":"seasonal-territory-shifts","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/seasonal-territory-shifts.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies expand or contract territory boundaries depending on food abundance across seasons."},{"title":"Strategic River Crossings","slug":"strategic-river-crossings","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/strategic-river-crossings.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies plan crossings to avoid rival territory during fishing season, reducing conflict."},{"title":"Territorial Tree Markings","slug":"territorial-tree-markings","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/territorial-tree-markings.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies claw and rub trees to signal dominance and claim territory."},{"title":"Unlikely Alliances","slug":"unlikely-alliances","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/unlikely-alliances.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies occasionally tolerate other bears at abundant feeding sites to reduce conflict."},{"title":"Vigilant Cub Training","slug":"vigilant-cub-training","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/vigilant-cub-training.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Mother bears teach cubs vigilance and territorial awareness through real-time encounters."},{"title":"Waterhole Negotiations","slug":"waterhole-negotiations","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/waterhole-negotiations.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Bears strategically time visits to water sources to avoid dominant rivals."},{"title":"Xeric Zone Adaptation","slug":"xeric-zone-adaptation","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/xeric-zone-adaptation.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies can adjust territorial strategies in arid zones to avoid resource conflicts."},{"title":"Year-Round Vigilance","slug":"year-round-vigilance","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/year-round-vigilance.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies maintain constant vigilance over territory, not just during peak conflict seasons."},{"title":"Yielding Behavior","slug":"yielding-behavior","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/yielding-behavior.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Subordinate grizzlies instinctively yield to dominant bears to avoid life-threatening conflicts."},{"title":"Young Bear Risk Assessment","slug":"young-bear-risk-assessment","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/young-bear-risk-assessment.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Juvenile grizzlies constantly assess risk before approaching contested areas."},{"title":"Zen-Like Patience","slug":"zen-like-patience","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/zen-like-patience.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Grizzlies wait calmly for hours near rivals to seize optimal feeding opportunities."},{"title":"Zigzag Escape Routes","slug":"zigzag-escape-routes","url":"/categories/endangered-predators/grizzly-bear-territory-wars-uncovered/zigzag-escape-routes.html","color":"#ade51f","category":"endangered-predators","factCount":1,"factPreview":"Cubs learn to navigate zigzag paths to evade more powerful adult bears."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

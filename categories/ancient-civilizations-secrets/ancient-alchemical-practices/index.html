@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancient Alchemical Practices</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Ancient Alchemical Practices</h1>
+  <p>Explore all facts in "Ancient Alchemical Practices".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ancient Alchemical Practices</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Alchemical Glassware Was Considered a Cosmic Conduit","slug":"alchemical-glassware-was-considered-a-cosmic-conduit","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemical-glassware-was-considered-a-cosmic-conduit.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beakers and flasks weren’t just lab tools—they were portals connecting earth, fire, and sky."},{"title":"Alchemical Gold-Making Was Often an Elaborate Theater","slug":"alchemical-gold-making-was-often-an-elaborate-theater","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemical-gold-making-was-often-an-elaborate-theater.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some alchemists spent more on theatrics than metals, performing rituals to ‘convince’ gold to appear."},{"title":"Alchemical Mercury Pools Were Considered Living Mirrors","slug":"alchemical-mercury-pools-were-considered-living-mirrors","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemical-mercury-pools-were-considered-living-mirrors.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Alchemists gazed into mercury pools not just to check reactions, but to meditate on cosmic reflection."},{"title":"Alchemical Powdered Gold Was Used in Medicines and Cosmetics","slug":"alchemical-powdered-gold-was-used-in-medicines-and-cosmetics","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemical-powdered-gold-was-used-in-medicines-and-cosmetics.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Gold wasn’t just for treasure—it was ground to dust and ingested or applied as luxury medicine."},{"title":"Alchemists and the Deadly Quest for the Red Elixir","slug":"alchemists-and-the-deadly-quest-for-the-red-elixir","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-and-the-deadly-quest-for-the-red-elixir.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some alchemists believed that combining human blood with rare metals could produce eternal life."},{"title":"Alchemists Believed Color Changes Signified Moral Transformation","slug":"alchemists-believed-color-changes-signified-moral-transformation","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-believed-color-changes-signified-moral-transformation.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Red wasn’t just red—it represented spiritual perfection, green hinted at impurity, and black meant death."},{"title":"Alchemists Believed Lead Could Transform Emotionally, Not Just Chemically","slug":"alchemists-believed-lead-could-transform-emotionally-not-just-chemically","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-believed-lead-could-transform-emotionally-not-just-chemically.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Heating lead was thought to purify not only the metal but also the alchemist’s soul."},{"title":"Alchemists Believed Metals Had Personalities","slug":"alchemists-believed-metals-had-personalities","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-believed-metals-had-personalities.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Lead was lazy, mercury was fickle, and gold was divine—at least according to medieval manuals."},{"title":"Alchemists Believed Salts Could Capture the Essence of the Sun","slug":"alchemists-believed-salts-could-capture-the-essence-of-the-sun","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-believed-salts-could-capture-the-essence-of-the-sun.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Drying and crystallizing salts wasn’t just practical—it was a ritual to trap solar power in a jar."},{"title":"Alchemists Believed the Moon Could Transmute Metals","slug":"alchemists-believed-the-moon-could-transmute-metals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-believed-the-moon-could-transmute-metals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some medieval alchemists thought exposing metals to moonlight could change lead into silver."},{"title":"Alchemists Believed Time Could Alter Chemical Reactions","slug":"alchemists-believed-time-could-alter-chemical-reactions","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-believed-time-could-alter-chemical-reactions.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"They timed experiments not just by hours, but by celestial events and planetary alignments."},{"title":"Alchemists Created Early Fermentation Experiments","slug":"alchemists-created-early-fermentation-experiments","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-created-early-fermentation-experiments.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Yeast, wine, and mysterious bubbling liquids fascinated alchemists as potential gateways to transformation."},{"title":"Alchemists Explored Color Change as a Predictor of Transformation","slug":"alchemists-explored-color-change-as-a-predictor-of-transformation","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-explored-color-change-as-a-predictor-of-transformation.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Red, green, black—alchemists believed colors foretold the success of their transmutations."},{"title":"Alchemists Explored Early Alloying to Mimic Noble Metals","slug":"alchemists-explored-early-alloying-to-mimic-noble-metals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-explored-early-alloying-to-mimic-noble-metals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mixing copper, tin, and small amounts of silver wasn’t just practical—it was a spiritual imitation of gold."},{"title":"Alchemists Explored Mercury-Gold Amalgamation for Spiritual Symbolism","slug":"alchemists-explored-mercury-gold-amalgamation-for-spiritual-symbolism","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-explored-mercury-gold-amalgamation-for-spiritual-symbolism.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mixing liquid mercury and gold wasn’t just chemistry—it symbolized the union of earthly and divine."},{"title":"Alchemists in Ancient Greece Used Fire as a Philosophical Medium","slug":"alchemists-in-ancient-greece-used-fire-as-a-philosophical-medium","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-in-ancient-greece-used-fire-as-a-philosophical-medium.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Heating metals wasn’t just chemistry—it was a dialogue with the universe itself."},{"title":"Alchemists Interpreted Metal Density as a Moral Indicator","slug":"alchemists-interpreted-metal-density-as-a-moral-indicator","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-interpreted-metal-density-as-a-moral-indicator.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Lead felt heavy, gold felt light—at least symbolically in the alchemist’s eyes."},{"title":"Alchemists Investigated Mercury’s Strange Liquid-Solid Behavior","slug":"alchemists-investigated-mercury-s-strange-liquid-solid-behavior","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-investigated-mercury-s-strange-liquid-solid-behavior.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mercury could flow like a liquid yet form droplets like solid metal—alchemists were mesmerized."},{"title":"Alchemists Monitored Crystals for Weather Prediction","slug":"alchemists-monitored-crystals-for-weather-prediction","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-monitored-crystals-for-weather-prediction.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"They believed growing crystals could reveal atmospheric secrets, like rain or storms."},{"title":"Alchemists Practiced ‘Microcosm-Macrocosm’ Experiments","slug":"alchemists-practiced-microcosm-macrocosm-experiments","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-practiced-microcosm-macrocosm-experiments.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"They believed manipulating tiny amounts of metal mirrored universal transformations."},{"title":"Alchemists Practiced Early Crystallization Techniques for Purity","slug":"alchemists-practiced-early-crystallization-techniques-for-purity","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-practiced-early-crystallization-techniques-for-purity.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before chemistry had labs, crystals were the gold standard for perfection—literally and metaphorically."},{"title":"Alchemists Practiced Early Filtration and Separation Techniques","slug":"alchemists-practiced-early-filtration-and-separation-techniques","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-practiced-early-filtration-and-separation-techniques.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before centrifuges, they relied on cloth, sand, and patience to separate substances."},{"title":"Alchemists Practiced Sublimation to Capture the ‘Essence’ of Solids","slug":"alchemists-practiced-sublimation-to-capture-the-essence-of-solids","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-practiced-sublimation-to-capture-the-essence-of-solids.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"They heated solids to vapor, condensed them, and believed the substance’s soul was distilled."},{"title":"Alchemists Sometimes ‘Interrogated’ Metals With Fire","slug":"alchemists-sometimes-interrogated-metals-with-fire","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-sometimes-interrogated-metals-with-fire.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Heating metals until they hissed or bubbled was treated as a conversation rather than a reaction."},{"title":"Alchemists Used Animal Parts in Experiments Believing They Held Elemental Secrets","slug":"alchemists-used-animal-parts-in-experiments-believing-they-held-elemental-secrets","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-used-animal-parts-in-experiments-believing-they-held-elemental-secrets.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"From powdered mummies to serpent venom, alchemy was surprisingly zoological."},{"title":"Alchemists Used Hermetically Sealed Vessels to Explore Vapor Dynamics","slug":"alchemists-used-hermetically-sealed-vessels-to-explore-vapor-dynamics","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-used-hermetically-sealed-vessels-to-explore-vapor-dynamics.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before modern chemistry, they were already experimenting with pressure, condensation, and trapped gases."},{"title":"Alchemists Used Salt as a ‘Mediator’ Between Metals","slug":"alchemists-used-salt-as-a-mediator-between-metals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-used-salt-as-a-mediator-between-metals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Salt wasn’t just for flavor—it was considered essential for harmonizing and transforming metals."},{"title":"Alchemists Used Sound and Vibration in Experiments","slug":"alchemists-used-sound-and-vibration-in-experiments","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemists-used-sound-and-vibration-in-experiments.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"They believed music could influence chemical reactions—singing at the crucible was not unusual."},{"title":"Alchemy in Ancient Rome Focused on Coinage and Metal Refinement","slug":"alchemy-in-ancient-rome-focused-on-coinage-and-metal-refinement","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemy-in-ancient-rome-focused-on-coinage-and-metal-refinement.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Roman alchemists weren’t chasing gold—they were perfecting silver and copper coins."},{"title":"Alchemy in Mesopotamia Inspired Early Distillation Techniques","slug":"alchemy-in-mesopotamia-inspired-early-distillation-techniques","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/alchemy-in-mesopotamia-inspired-early-distillation-techniques.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient Babylonians used stills not for gold, but to create perfumes and potent medicinal extracts."},{"title":"Ancient Alchemists Believed Sulfur Could ‘Inflame’ Metals","slug":"ancient-alchemists-believed-sulfur-could-inflame-metals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-alchemists-believed-sulfur-could-inflame-metals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sulfur wasn’t just a chemical—it was thought to stir metals’ hidden potential into action."},{"title":"Ancient Alchemists Developed Early Evaporation and Distillation Methods","slug":"ancient-alchemists-developed-early-evaporation-and-distillation-methods","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-alchemists-developed-early-evaporation-and-distillation-methods.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Distillation wasn’t a lab invention—it was a mystical art for capturing the ‘essence’ of matter."},{"title":"Ancient Alchemists Documented Early Acid-Base Reactions","slug":"ancient-alchemists-documented-early-acid-base-reactions","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-alchemists-documented-early-acid-base-reactions.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"They didn’t call it chemistry yet, but they noticed that some liquids could dissolve metals or neutralize salts."},{"title":"Ancient Alchemists Experimented with Magnetic and Electric Properties","slug":"ancient-alchemists-experimented-with-magnetic-and-electric-properties","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-alchemists-experimented-with-magnetic-and-electric-properties.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Faraday, alchemists noticed lodestones and amber behaved mysteriously."},{"title":"Ancient Alchemists Practiced Color-Changing Experiments","slug":"ancient-alchemists-practiced-color-changing-experiments","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-alchemists-practiced-color-changing-experiments.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before chemistry had names, alchemists were dazzled by metals that turned red, green, or black under fire."},{"title":"Ancient Alchemists Used Cryptic Codes to Hide Recipes","slug":"ancient-alchemists-used-cryptic-codes-to-hide-recipes","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-alchemists-used-cryptic-codes-to-hide-recipes.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Many alchemical texts are deliberately incomprehensible, using ciphers to prevent commoners from replicating experiments."},{"title":"Ancient Egyptians Experimented With Mercury in Cosmetics and Rituals","slug":"ancient-egyptians-experimented-with-mercury-in-cosmetics-and-rituals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/ancient-egyptians-experimented-with-mercury-in-cosmetics-and-rituals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mercury wasn’t just for alchemy—Egyptians smeared it on their faces, believing it purified and protected the soul."},{"title":"Chinese Alchemists Experimented with ‘Immortality Pills’ Containing Real Arsenic","slug":"chinese-alchemists-experimented-with-immortality-pills-containing-real-arsenic","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/chinese-alchemists-experimented-with-immortality-pills-containing-real-arsenic.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Taoist alchemists believed arsenic ingestion could grant eternal life—spoiler: it didn’t."},{"title":"Chinese Alchemists Sought Immortality Through Elixirs","slug":"chinese-alchemists-sought-immortality-through-elixirs","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/chinese-alchemists-sought-immortality-through-elixirs.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some believed that drinking mercury or cinnabar could grant eternal life—spoiler: it usually didn’t."},{"title":"Early Islamic Alchemists Isolated Alcohol Through Distillation","slug":"early-islamic-alchemists-isolated-alcohol-through-distillation","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/early-islamic-alchemists-isolated-alcohol-through-distillation.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"While chasing the philosopher’s stone, alchemists accidentally perfected spirits."},{"title":"Egyptian Alchemists Used Salt to ‘Extract the Soul’ of Metals","slug":"egyptian-alchemists-used-salt-to-extract-the-soul-of-metals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/egyptian-alchemists-used-salt-to-extract-the-soul-of-metals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In Hellenistic Egypt, salt wasn’t just for flavor—it was believed to capture a metal’s essence."},{"title":"Greek Alchemists Practiced ‘The Water of the Wise’ Distillation","slug":"greek-alchemists-practiced-the-water-of-the-wise-distillation","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/greek-alchemists-practiced-the-water-of-the-wise-distillation.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Zosimos and others distilled mysterious liquids in pursuit of wisdom itself."},{"title":"Greek Alchemists Thought Lead Could Be ‘Purified’ by Music","slug":"greek-alchemists-thought-lead-could-be-purified-by-music","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/greek-alchemists-thought-lead-could-be-purified-by-music.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Hellenistic alchemists claimed that playing lyres over crucibles could transform base metals."},{"title":"Indian Alchemists Developed Early Forms of Ink That Could ‘Disappear and Reappear’","slug":"indian-alchemists-developed-early-forms-of-ink-that-could-disappear-and-reappear","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/indian-alchemists-developed-early-forms-of-ink-that-could-disappear-and-reappear.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some medieval Indian alchemists created inks that vanished unless heated, a primitive ‘invisible ink.’"},{"title":"Indian Alchemists Invented Early Mercury-Silver Amalgams","slug":"indian-alchemists-invented-early-mercury-silver-amalgams","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/indian-alchemists-invented-early-mercury-silver-amalgams.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient texts describe combining mercury and silver to craft mirrors and utensils centuries before Europe."},{"title":"Medieval Alchemists Used Urine to Detect Metals","slug":"medieval-alchemists-used-urine-to-detect-metals","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/medieval-alchemists-used-urine-to-detect-metals.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Alchemists often tasted or analyzed urine, believing it revealed hidden metal properties."},{"title":"Medieval Alchemists Wrote Recipes Using Animal Metaphors","slug":"medieval-alchemists-wrote-recipes-using-animal-metaphors","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/medieval-alchemists-wrote-recipes-using-animal-metaphors.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some texts describe turning ‘wolf’ into ‘lion,’ which was code for converting lead into gold."},{"title":"Some Alchemists Believed Metals Could ‘Marry’ Each Other","slug":"some-alchemists-believed-metals-could-marry-each-other","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/some-alchemists-believed-metals-could-marry-each-other.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mixing mercury and lead was often described as a wedding rather than a chemical reaction."},{"title":"The Alchemists Who Tried to Make Gold from Human Ashes","slug":"the-alchemists-who-tried-to-make-gold-from-human-ashes","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/the-alchemists-who-tried-to-make-gold-from-human-ashes.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some medieval alchemists believed cremated human remains could catalyze gold-making."},{"title":"The Philosopher’s Stone Was Probably a Potion of Mercury","slug":"the-philosopher-s-stone-was-probably-a-potion-of-mercury","url":"/categories/ancient-civilizations-secrets/ancient-alchemical-practices/the-philosopher-s-stone-was-probably-a-potion-of-mercury.html","color":"#27c36","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient alchemists believed that drinking mercury could transform the body into gold—literally."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
