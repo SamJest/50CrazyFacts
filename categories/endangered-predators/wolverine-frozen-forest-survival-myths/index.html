@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wolverine Frozen Forest Survival Myths</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Wolverine Frozen Forest Survival Myths</h1>
+  <p>Explore all facts in "Wolverine Frozen Forest Survival Myths".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Wolverine Frozen Forest Survival Myths</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aggressive Scavenging Secures Nutritional Needs","slug":"aggressive-scavenging-secures-nutritional-needs","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/aggressive-scavenging-secures-nutritional-needs.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines often chase away larger predators to claim carcasses in frozen forests."},{"title":"Ambush Hunting Maximizes Energy Efficiency","slug":"ambush-hunting-maximizes-energy-efficiency","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/ambush-hunting-maximizes-energy-efficiency.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines use sudden ambushes on unsuspecting prey to conserve energy in harsh winter conditions."},{"title":"Bone-Crushing Strength Accesses Hidden Nutrients","slug":"bone-crushing-strength-accesses-hidden-nutrients","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/bone-crushing-strength-accesses-hidden-nutrients.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines can bite through frozen bones to extract marrow other predators leave behind."},{"title":"Burrowing Under Snow Conserves Energy","slug":"burrowing-under-snow-conserves-energy","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/burrowing-under-snow-conserves-energy.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines reduce energy expenditure by tunneling beneath deep snow layers."},{"title":"Caching Carcasses Ensures Winter Food Security","slug":"caching-carcasses-ensures-winter-food-security","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/caching-carcasses-ensures-winter-food-security.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines bury surplus food in snow to consume later during scarce periods."},{"title":"Caching Secures Food Through Scarce Winters","slug":"caching-secures-food-through-scarce-winters","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/caching-secures-food-through-scarce-winters.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines bury excess food in snow or soil to consume later when prey is unavailable."},{"title":"Diet Flexibility Supports Winter Survival","slug":"diet-flexibility-supports-winter-survival","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/diet-flexibility-supports-winter-survival.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines survive harsh winters by exploiting a wide range of food sources."},{"title":"Digging Behavior Protects Wolverines From Frost","slug":"digging-behavior-protects-wolverines-from-frost","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/digging-behavior-protects-wolverines-from-frost.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines dig deep snow dens to avoid freezing winds and conserve heat."},{"title":"Dynamic Camouflage Hides Wolverines From Rivals","slug":"dynamic-camouflage-hides-wolverines-from-rivals","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/dynamic-camouflage-hides-wolverines-from-rivals.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines’ fur and body movement allow them to blend with snow, shadows, and forest debris."},{"title":"Endurance Running Covers Vast Territories","slug":"endurance-running-covers-vast-territories","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/endurance-running-covers-vast-territories.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines can travel dozens of kilometers per day, patrolling territories and searching for food."},{"title":"Endurance Running Supports Long-Distance Foraging","slug":"endurance-running-supports-long-distance-foraging","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/endurance-running-supports-long-distance-foraging.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines can travel over 15 miles in a single day across snow-laden forests to find food."},{"title":"Fearless Nature Enhances Survival Odds","slug":"fearless-nature-enhances-survival-odds","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/fearless-nature-enhances-survival-odds.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines confront predators larger than themselves to protect food and territory."},{"title":"Fur Density Retains Heat in Subzero Temperatures","slug":"fur-density-retains-heat-in-subzero-temperatures","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/fur-density-retains-heat-in-subzero-temperatures.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines survive extreme cold due to an exceptionally thick, oily undercoat that insulates against freezing winds."},{"title":"Gnarly Teeth Pierce Frozen Carcasses","slug":"gnarly-teeth-pierce-frozen-carcasses","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/gnarly-teeth-pierce-frozen-carcasses.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines’ sharp, curved teeth allow them to tear through frozen flesh and even small bones with ease."},{"title":"Hyper-Awareness Detects Hidden Predators","slug":"hyper-awareness-detects-hidden-predators","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/hyper-awareness-detects-hidden-predators.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines rely on heightened senses to avoid larger predators lurking under snow or shadows."},{"title":"Ice Caching Preserves Food for Harsh Seasons","slug":"ice-caching-preserves-food-for-harsh-seasons","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/ice-caching-preserves-food-for-harsh-seasons.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines hide meat under ice or snow layers, preventing spoilage and theft by other predators."},{"title":"Intense Play Develops Hunting Skills","slug":"intense-play-develops-hunting-skills","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/intense-play-develops-hunting-skills.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Juvenile wolverines practice wrestling and chasing to master hunting before winter."},{"title":"Juvenile Independence Emerges Early","slug":"juvenile-independence-emerges-early","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/juvenile-independence-emerges-early.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Young wolverines leave their mothers at a few months old to explore frozen forests independently."},{"title":"Juvenile Play Builds Hunting Prowess","slug":"juvenile-play-builds-hunting-prowess","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/juvenile-play-builds-hunting-prowess.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Young wolverines engage in mock fights and chase games that hone ambush and capture skills."},{"title":"Keen Olfaction Locates Hidden Food Sources","slug":"keen-olfaction-locates-hidden-food-sources","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/keen-olfaction-locates-hidden-food-sources.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines use their extraordinary sense of smell to detect prey and caches beneath snow layers."},{"title":"Keen Olfactory Senses Locate Food Beneath Snow","slug":"keen-olfactory-senses-locate-food-beneath-snow","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/keen-olfactory-senses-locate-food-beneath-snow.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines can detect carcasses buried under meters of snow using highly sensitive noses."},{"title":"Knowledge of Frozen Terrain Enhances Foraging Efficiency","slug":"knowledge-of-frozen-terrain-enhances-foraging-efficiency","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/knowledge-of-frozen-terrain-enhances-foraging-efficiency.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines memorize snow drift patterns, predator routes, and carcass locations to optimize energy use."},{"title":"Lone Foraging Reduces Competition Stress","slug":"lone-foraging-reduces-competition-stress","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/lone-foraging-reduces-competition-stress.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines often forage alone to maximize access to resources and minimize confrontations."},{"title":"Metabolic Adaptations Enable Extended Hunting","slug":"metabolic-adaptations-enable-extended-hunting","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/metabolic-adaptations-enable-extended-hunting.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines sustain high activity in frozen forests due to unique metabolic strategies."},{"title":"Muscle Power Supports Extreme Climbs and Hunts","slug":"muscle-power-supports-extreme-climbs-and-hunts","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/muscle-power-supports-extreme-climbs-and-hunts.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines have powerful limbs enabling them to climb, drag prey, and navigate icy terrain efficiently."},{"title":"Muscular Jaw Crushes Frozen Prey","slug":"muscular-jaw-crushes-frozen-prey","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/muscular-jaw-crushes-frozen-prey.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines’ jaw strength allows them to bite through frozen carcasses and even small bones."},{"title":"Night Hunting Reduces Energy Loss","slug":"night-hunting-reduces-energy-loss","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/night-hunting-reduces-energy-loss.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines often hunt and scavenge at night to conserve heat during freezing days."},{"title":"Night Vision Enables Nocturnal Foraging","slug":"night-vision-enables-nocturnal-foraging","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/night-vision-enables-nocturnal-foraging.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines can hunt and navigate efficiently in near-total darkness due to exceptional night vision."},{"title":"Offspring Defense Uses Loud Vocalizations","slug":"offspring-defense-uses-loud-vocalizations","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/offspring-defense-uses-loud-vocalizations.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines emit powerful calls and growls to protect young from predators or intruders."},{"title":"Optimal Fat Storage Supports Winter Survival","slug":"optimal-fat-storage-supports-winter-survival","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/optimal-fat-storage-supports-winter-survival.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines accumulate significant fat reserves in preparation for prolonged food scarcity."},{"title":"Persistent Curiosity Enhances Resource Discovery","slug":"persistent-curiosity-enhances-resource-discovery","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/persistent-curiosity-enhances-resource-discovery.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines investigate unusual scents and disturbances to locate hidden food and prey."},{"title":"Persistent Foraging Maximizes Winter Calories","slug":"persistent-foraging-maximizes-winter-calories","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/persistent-foraging-maximizes-winter-calories.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines may spend hours digging through snow to reach hidden carcasses, showing extreme persistence."},{"title":"Powerful Limbs Support Snow Traversal","slug":"powerful-limbs-support-snow-traversal","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/powerful-limbs-support-snow-traversal.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines’ strong limbs and wide paws allow effortless movement over deep snow."},{"title":"Prey Memory Tracks Elusive Food Sources","slug":"prey-memory-tracks-elusive-food-sources","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/prey-memory-tracks-elusive-food-sources.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines remember locations of prey sightings and caches for months, optimizing energy use."},{"title":"Quicksand Avoidance Shows Environmental Intelligence","slug":"quicksand-avoidance-shows-environmental-intelligence","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/quicksand-avoidance-shows-environmental-intelligence.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines detect unstable snow and ice patches, avoiding dangerous terrain during hunts and travel."},{"title":"Quiet Communication Reduces Conflict","slug":"quiet-communication-reduces-conflict","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/quiet-communication-reduces-conflict.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines use scent and subtle vocalizations instead of physical fights to communicate."},{"title":"Rapid Digestion Allows Efficient Energy Use","slug":"rapid-digestion-allows-efficient-energy-use","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/rapid-digestion-allows-efficient-energy-use.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines process frozen meat and bones quickly to maximize caloric intake."},{"title":"Resilient Immune System Combats Cold Stress","slug":"resilient-immune-system-combats-cold-stress","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/resilient-immune-system-combats-cold-stress.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines withstand freezing temperatures without succumbing to cold-related illnesses thanks to robust immunity."},{"title":"Snow Camouflage Reduces Detection Risk","slug":"snow-camouflage-reduces-detection-risk","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/snow-camouflage-reduces-detection-risk.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines’ dark fur and stealthy movement minimize visibility against snow and shadows."},{"title":"Territorial Marking Reduces Risk of Conflict","slug":"territorial-marking-reduces-risk-of-conflict","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/territorial-marking-reduces-risk-of-conflict.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines mark boundaries with scent, scratches, and scat to avoid dangerous encounters with rivals."},{"title":"Territorial Patrols Reinforce Survival Knowledge","slug":"territorial-patrols-reinforce-survival-knowledge","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/territorial-patrols-reinforce-survival-knowledge.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines repeatedly traverse their territories to monitor prey, caches, and environmental changes."},{"title":"Territoriality Reduces Resource Conflict","slug":"territoriality-reduces-resource-conflict","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/territoriality-reduces-resource-conflict.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines maintain large territories to ensure sufficient food during harsh winters."},{"title":"Unique Limb Structure Enhances Snow Mobility","slug":"unique-limb-structure-enhances-snow-mobility","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/unique-limb-structure-enhances-snow-mobility.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines have wide, fur-covered paws that act like snowshoes, preventing them from sinking into deep snow."},{"title":"Vocalizations Signal Reproductive Readiness","slug":"vocalizations-signal-reproductive-readiness","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/vocalizations-signal-reproductive-readiness.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines use subtle growls, whistles, and roars to communicate mating availability during winter months."},{"title":"Water Conservation Supports Cold Endurance","slug":"water-conservation-supports-cold-endurance","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/water-conservation-supports-cold-endurance.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines survive long winter periods with minimal liquid intake by efficiently processing snow and ice."},{"title":"Wolverine Cold Resistance Defies Expectation","slug":"wolverine-cold-resistance-defies-expectation","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/wolverine-cold-resistance-defies-expectation.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines can survive in temperatures as low as -40°F with minimal energy loss."},{"title":"Xenial Behavior Reduces Competition","slug":"xenial-behavior-reduces-competition","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/xenial-behavior-reduces-competition.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines tolerate certain species near their caches, reducing energy-wasting confrontations."},{"title":"Yawning Conserves Energy and Signals Stress","slug":"yawning-conserves-energy-and-signals-stress","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/yawning-conserves-energy-and-signals-stress.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines use prolonged yawns as a physiological reset and to signal tension to nearby rivals or conspecifics."},{"title":"Zigzag Patrols Confuse Predators and Competitors","slug":"zigzag-patrols-confuse-predators-and-competitors","url":"/categories/endangered-predators/wolverine-frozen-forest-survival-myths/zigzag-patrols-confuse-predators-and-competitors.html","color":"#62ba04","category":"endangered-predators","factCount":1,"factPreview":"Wolverines move in unpredictable patterns to protect caches and avoid detection by rivals."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
