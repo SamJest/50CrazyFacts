@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sumatran Orangutan</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sumatran Orangutan</h1>
+  <p>Explore all facts in "Sumatran Orangutan".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sumatran Orangutan</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Peat Swamps in Sumatra Store More Carbon Than Many Industrial Nations Emit Annually","slug":"ancient-peat-swamps-in-sumatra-store-more-carbon-than-many-industrial-nations-emit-annually","url":"/categories/endangered-predators/sumatran-orangutan/ancient-peat-swamps-in-sumatra-store-more-carbon-than-many-industrial-nations-emit-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An ape survives above soil that can ignite like gasoline."},{"title":"Baby Sumatran Orangutans Cling So Tightly They Can Hang Upside Down for Minutes","slug":"baby-sumatran-orangutans-cling-so-tightly-they-can-hang-upside-down-for-minutes","url":"/categories/endangered-predators/sumatran-orangutan/baby-sumatran-orangutans-cling-so-tightly-they-can-hang-upside-down-for-minutes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A newborn ape can dangle upside down without falling."},{"title":"Canopy Highways Allow Sumatran Orangutans to Travel Miles Without Touching the Ground","slug":"canopy-highways-allow-sumatran-orangutans-to-travel-miles-without-touching-the-ground","url":"/categories/endangered-predators/sumatran-orangutan/canopy-highways-allow-sumatran-orangutans-to-travel-miles-without-touching-the-ground.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape can cross miles of forest without ever stepping on soil."},{"title":"Disease Outbreaks Could Spread Rapidly Through Small Sumatran Orangutan Populations","slug":"disease-outbreaks-could-spread-rapidly-through-small-sumatran-orangutan-populations","url":"/categories/endangered-predators/sumatran-orangutan/disease-outbreaks-could-spread-rapidly-through-small-sumatran-orangutan-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single virus could erase decades of slow population growth."},{"title":"Extreme Heat Events Push Sumatran Orangutans to the Edge of Thermal Tolerance","slug":"extreme-heat-events-push-sumatran-orangutans-to-the-edge-of-thermal-tolerance","url":"/categories/endangered-predators/sumatran-orangutan/extreme-heat-events-push-sumatran-orangutans-to-the-edge-of-thermal-tolerance.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A few degrees hotter can destabilize an entire rainforest primate."},{"title":"Fires in Sumatra Have Created Smoke Plumes Visible From Space","slug":"fires-in-sumatra-have-created-smoke-plumes-visible-from-space","url":"/categories/endangered-predators/sumatran-orangutan/fires-in-sumatra-have-created-smoke-plumes-visible-from-space.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Forest smoke from orangutan habitat can blanket entire nations."},{"title":"Flood Pulses in Peat Swamps Can Force Orangutans Into Narrow Canopy Strips","slug":"flood-pulses-in-peat-swamps-can-force-orangutans-into-narrow-canopy-strips","url":"/categories/endangered-predators/sumatran-orangutan/flood-pulses-in-peat-swamps-can-force-orangutans-into-narrow-canopy-strips.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rising water can trap this ape above a shrinking island of trees."},{"title":"Genetic Bottlenecks Could Permanently Reduce Adaptive Potential in Sumatran Orangutans","slug":"genetic-bottlenecks-could-permanently-reduce-adaptive-potential-in-sumatran-orangutans","url":"/categories/endangered-predators/sumatran-orangutan/genetic-bottlenecks-could-permanently-reduce-adaptive-potential-in-sumatran-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Too few survivors can shrink evolution itself."},{"title":"Genetic Studies Reveal Sumatran Orangutans Are More Distinct Than Once Believed","slug":"genetic-studies-reveal-sumatran-orangutans-are-more-distinct-than-once-believed","url":"/categories/endangered-predators/sumatran-orangutan/genetic-studies-reveal-sumatran-orangutans-are-more-distinct-than-once-believed.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape population is genetically rarer than scientists first realized."},{"title":"Human Population Growth in Sumatra Intensifies Pressure on Remaining Orangutan Forest","slug":"human-population-growth-in-sumatra-intensifies-pressure-on-remaining-orangutan-forest","url":"/categories/endangered-predators/sumatran-orangutan/human-population-growth-in-sumatra-intensifies-pressure-on-remaining-orangutan-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Millions of expanding human settlements border this shrinking habitat."},{"title":"Human-Orangutan Conflict Often Begins With a Single Oil Palm Tree","slug":"human-orangutan-conflict-often-begins-with-a-single-oil-palm-tree","url":"/categories/endangered-predators/sumatran-orangutan/human-orangutan-conflict-often-begins-with-a-single-oil-palm-tree.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One fruit plantation tree can trigger a fatal encounter."},{"title":"Illegal Wildlife Trade Targets Infant Orangutans at Catastrophic Cost to Mothers","slug":"illegal-wildlife-trade-targets-infant-orangutans-at-catastrophic-cost-to-mothers","url":"/categories/endangered-predators/sumatran-orangutan/illegal-wildlife-trade-targets-infant-orangutans-at-catastrophic-cost-to-mothers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every captured infant almost always means a dead mother."},{"title":"Isolation in Mountain Forests Creates Natural Refuges for Sumatran Orangutans","slug":"isolation-in-mountain-forests-creates-natural-refuges-for-sumatran-orangutans","url":"/categories/endangered-predators/sumatran-orangutan/isolation-in-mountain-forests-creates-natural-refuges-for-sumatran-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some of the last survivors hide in mountains few humans can reach."},{"title":"Juvenile Mortality Rises Sharply in Fragmented Orangutan Forests","slug":"juvenile-mortality-rises-sharply-in-fragmented-orangutan-forests","url":"/categories/endangered-predators/sumatran-orangutan/juvenile-mortality-rises-sharply-in-fragmented-orangutan-forests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Breaking the forest can double the danger for young apes."},{"title":"Juvenile Sumatran Orangutans Practice Complex Foraging for Years Before Independence","slug":"juvenile-sumatran-orangutans-practice-complex-foraging-for-years-before-independence","url":"/categories/endangered-predators/sumatran-orangutan/juvenile-sumatran-orangutans-practice-complex-foraging-for-years-before-independence.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It takes nearly a decade to master what the forest demands."},{"title":"Keystone Tree Species Disappear When Sumatran Orangutans Vanish","slug":"keystone-tree-species-disappear-when-sumatran-orangutans-vanish","url":"/categories/endangered-predators/sumatran-orangutan/keystone-tree-species-disappear-when-sumatran-orangutans-vanish.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove this ape and entire tree species begin to fade."},{"title":"Leuser Ecosystem Is the Last Place on Earth Where Orangutans Share Space With Rhinos, Elephants, and Tigers","slug":"leuser-ecosystem-is-the-last-place-on-earth-where-orangutans-share-space-with-rhinos-elephants-and-tigers","url":"/categories/endangered-predators/sumatran-orangutan/leuser-ecosystem-is-the-last-place-on-earth-where-orangutans-share-space-with-rhinos-elephants-and-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One forest holds four of Asia's most endangered giants at once."},{"title":"Leuser Ecosystem Is the Last Place on Earth Where Orangutans Share Space With Rhinos, Elephants, and Tigers","slug":"leuser-ecosystem-is-the-last-place-on-earth-where-orangutans-share-space-with-rhinos-elephants-and-tigers","url":"/categories/endangered-predators/sumatran-orangutan/leuser-ecosystem-is-the-last-place-on-earth-where-orangutans-share-space-with-rhinos-elephants-and-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One forest holds four of Asia's most endangered giants at once."},{"title":"Male Sumatran Orangutans Produce Long Calls That Echo for Over a Kilometer","slug":"male-sumatran-orangutans-produce-long-calls-that-echo-for-over-a-kilometer","url":"/categories/endangered-predators/sumatran-orangutan/male-sumatran-orangutans-produce-long-calls-that-echo-for-over-a-kilometer.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single ape roar can travel more than half a mile through jungle."},{"title":"Male Sumatran Orangutans Produce Long Calls That Echo for Over a Kilometer","slug":"male-sumatran-orangutans-produce-long-calls-that-echo-for-over-a-kilometer","url":"/categories/endangered-predators/sumatran-orangutan/male-sumatran-orangutans-produce-long-calls-that-echo-for-over-a-kilometer.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single ape roar can travel more than half a mile through jungle."},{"title":"Mangrove-to-Mountain Elevation Gradients Provide Climate Escape Routes for Orangutans","slug":"mangrove-to-mountain-elevation-gradients-provide-climate-escape-routes-for-orangutans","url":"/categories/endangered-predators/sumatran-orangutan/mangrove-to-mountain-elevation-gradients-provide-climate-escape-routes-for-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape may need to climb mountains to survive warming forests."},{"title":"Natural Forest Loss in Sumatra Has Reduced Orangutan Habitat by More Than Half in Decades","slug":"natural-forest-loss-in-sumatra-has-reduced-orangutan-habitat-by-more-than-half-in-decades","url":"/categories/endangered-predators/sumatran-orangutan/natural-forest-loss-in-sumatra-has-reduced-orangutan-habitat-by-more-than-half-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Half of this ape's world vanished within a human lifetime."},{"title":"Natural Forest Loss in Sumatra Has Reduced Orangutan Habitat by More Than Half in Decades","slug":"natural-forest-loss-in-sumatra-has-reduced-orangutan-habitat-by-more-than-half-in-decades","url":"/categories/endangered-predators/sumatran-orangutan/natural-forest-loss-in-sumatra-has-reduced-orangutan-habitat-by-more-than-half-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Half of this ape's world vanished within a human lifetime."},{"title":"Natural Regeneration of Logged Forest Can Take Decades Before Supporting Orangutan Nesting","slug":"natural-regeneration-of-logged-forest-can-take-decades-before-supporting-orangutan-nesting","url":"/categories/endangered-predators/sumatran-orangutan/natural-regeneration-of-logged-forest-can-take-decades-before-supporting-orangutan-nesting.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cut forest may need half a century before an ape can sleep there again."},{"title":"Oil Palm Expansion Replaces Diverse Forest With Single-Species Plantations","slug":"oil-palm-expansion-replaces-diverse-forest-with-single-species-plantations","url":"/categories/endangered-predators/sumatran-orangutan/oil-palm-expansion-replaces-diverse-forest-with-single-species-plantations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Hundreds of tree species can vanish into one uniform crop."},{"title":"Orangutan Brain Size Is Among the Largest Relative to Body Mass in Primates","slug":"orangutan-brain-size-is-among-the-largest-relative-to-body-mass-in-primates","url":"/categories/endangered-predators/sumatran-orangutan/orangutan-brain-size-is-among-the-largest-relative-to-body-mass-in-primates.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This forest ape carries a brain built for problem solving."},{"title":"Orangutan Brain Size Is Among the Largest Relative to Body Mass in Primates","slug":"orangutan-brain-size-is-among-the-largest-relative-to-body-mass-in-primates","url":"/categories/endangered-predators/sumatran-orangutan/orangutan-brain-size-is-among-the-largest-relative-to-body-mass-in-primates.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This forest ape carries a brain built for problem solving."},{"title":"Peatland Drainage Causes Land to Sink Beneath Orangutan Habitat","slug":"peatland-drainage-causes-land-to-sink-beneath-orangutan-habitat","url":"/categories/endangered-predators/sumatran-orangutan/peatland-drainage-causes-land-to-sink-beneath-orangutan-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Forest ground beneath this ape is literally collapsing."},{"title":"Peatland Drainage Causes Land to Sink Beneath Orangutan Habitat","slug":"peatland-drainage-causes-land-to-sink-beneath-orangutan-habitat","url":"/categories/endangered-predators/sumatran-orangutan/peatland-drainage-causes-land-to-sink-beneath-orangutan-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Forest ground beneath this ape is literally collapsing."},{"title":"Rainforest Carbon Stored in Orangutan Habitat Helps Regulate Global Climate","slug":"rainforest-carbon-stored-in-orangutan-habitat-helps-regulate-global-climate","url":"/categories/endangered-predators/sumatran-orangutan/rainforest-carbon-stored-in-orangutan-habitat-helps-regulate-global-climate.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Saving this ape also protects billions of tons of carbon."},{"title":"Rainforest Fruit Cycles Force Sumatran Orangutans to Memorize Vast Feeding Maps","slug":"rainforest-fruit-cycles-force-sumatran-orangutans-to-memorize-vast-feeding-maps","url":"/categories/endangered-predators/sumatran-orangutan/rainforest-fruit-cycles-force-sumatran-orangutans-to-memorize-vast-feeding-maps.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape must remember hundreds of fruiting schedules to survive."},{"title":"Rainforest Fruit Cycles Force Sumatran Orangutans to Memorize Vast Feeding Maps","slug":"rainforest-fruit-cycles-force-sumatran-orangutans-to-memorize-vast-feeding-maps","url":"/categories/endangered-predators/sumatran-orangutan/rainforest-fruit-cycles-force-sumatran-orangutans-to-memorize-vast-feeding-maps.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape must remember hundreds of fruiting schedules to survive."},{"title":"Sumatran Orangutans Are Classified as Critically Endangered With Fewer Than 15,000 Left","slug":"sumatran-orangutans-are-classified-as-critically-endangered-with-fewer-than-15-000-left","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-are-classified-as-critically-endangered-with-fewer-than-15-000-left.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 15,000 of these great apes remain on Earth."},{"title":"Sumatran Orangutans Build Forest Nests 100 Feet Above the Ground Every Night","slug":"sumatran-orangutans-build-forest-nests-100-feet-above-the-ground-every-night","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-build-forest-nests-100-feet-above-the-ground-every-night.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every night, a 200-pound ape climbs 100 feet and builds a brand-new bed in the treetops."},{"title":"Sumatran Orangutans Can Weigh 200 Pounds Yet Move Silently in the Canopy","slug":"sumatran-orangutans-can-weigh-200-pounds-yet-move-silently-in-the-canopy","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-can-weigh-200-pounds-yet-move-silently-in-the-canopy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 200-pound primate can vanish above you without a sound."},{"title":"Sumatran Orangutans Have Arms Longer Than Their Legs by Design","slug":"sumatran-orangutans-have-arms-longer-than-their-legs-by-design","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-have-arms-longer-than-their-legs-by-design.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape's arms stretch so long they dwarf its own legs."},{"title":"Sumatran Orangutans Have One of the Longest Childhoods in the Animal Kingdom","slug":"sumatran-orangutans-have-one-of-the-longest-childhoods-in-the-animal-kingdom","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-have-one-of-the-longest-childhoods-in-the-animal-kingdom.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An ape child can cling to its mother for nearly a decade."},{"title":"Sumatran Orangutans Help Regrow Entire Rainforests With Their Digestion","slug":"sumatran-orangutans-help-regrow-entire-rainforests-with-their-digestion","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-help-regrow-entire-rainforests-with-their-digestion.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape plants forests simply by eating."},{"title":"Sumatran Orangutans Live in Forests Where Tigers Still Hunt","slug":"sumatran-orangutans-live-in-forests-where-tigers-still-hunt","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-live-in-forests-where-tigers-still-hunt.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An ape that cannot outrun a tiger survives in the same shrinking forest."},{"title":"Sumatran Orangutans Reproduce Slower Than Almost Any Mammal on Earth","slug":"sumatran-orangutans-reproduce-slower-than-almost-any-mammal-on-earth","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-reproduce-slower-than-almost-any-mammal-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One baby every eight years is not a typo."},{"title":"Sumatran Orangutans Survive in Forests Older Than Most Human Civilizations","slug":"sumatran-orangutans-survive-in-forests-older-than-most-human-civilizations","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-survive-in-forests-older-than-most-human-civilizations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These apes roam rainforests that predate ancient empires."},{"title":"Sumatran Orangutans Use Tools to Extract Food From Spiny Forest Traps","slug":"sumatran-orangutans-use-tools-to-extract-food-from-spiny-forest-traps","url":"/categories/endangered-predators/sumatran-orangutan/sumatran-orangutans-use-tools-to-extract-food-from-spiny-forest-traps.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wild ape carries a toolkit to defeat plants designed to injure it."},{"title":"Tropical Storms Can Topple Nesting Trees Used by Sumatran Orangutans","slug":"tropical-storms-can-topple-nesting-trees-used-by-sumatran-orangutans","url":"/categories/endangered-predators/sumatran-orangutan/tropical-storms-can-topple-nesting-trees-used-by-sumatran-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single storm can erase dozens of treetop bedrooms overnight."},{"title":"Tropical Storms Can Topple Nesting Trees Used by Sumatran Orangutans","slug":"tropical-storms-can-topple-nesting-trees-used-by-sumatran-orangutans","url":"/categories/endangered-predators/sumatran-orangutan/tropical-storms-can-topple-nesting-trees-used-by-sumatran-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single storm can erase dozens of treetop bedrooms overnight."},{"title":"Underground Coal and Mineral Extraction Threatens Forest Above Orangutan Habitat","slug":"underground-coal-and-mineral-extraction-threatens-forest-above-orangutan-habitat","url":"/categories/endangered-predators/sumatran-orangutan/underground-coal-and-mineral-extraction-threatens-forest-above-orangutan-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Mining beneath rainforest can destabilize the trees above."},{"title":"Underground Coal and Mineral Extraction Threatens Forest Above Orangutan Habitat","slug":"underground-coal-and-mineral-extraction-threatens-forest-above-orangutan-habitat","url":"/categories/endangered-predators/sumatran-orangutan/underground-coal-and-mineral-extraction-threatens-forest-above-orangutan-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Mining beneath rainforest can destabilize the trees above."},{"title":"Volcanic Landscapes in Sumatra Shape Orangutan Forest Boundaries","slug":"volcanic-landscapes-in-sumatra-shape-orangutan-forest-boundaries","url":"/categories/endangered-predators/sumatran-orangutan/volcanic-landscapes-in-sumatra-shape-orangutan-forest-boundaries.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Active volcanoes border the last refuges of this endangered ape."},{"title":"Volcanic Landscapes in Sumatra Shape Orangutan Forest Boundaries","slug":"volcanic-landscapes-in-sumatra-shape-orangutan-forest-boundaries","url":"/categories/endangered-predators/sumatran-orangutan/volcanic-landscapes-in-sumatra-shape-orangutan-forest-boundaries.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Active volcanoes border the last refuges of this endangered ape."},{"title":"Wide River Systems Can Trap Sumatran Orangutan Populations in Isolated Forest Blocks","slug":"wide-river-systems-can-trap-sumatran-orangutan-populations-in-isolated-forest-blocks","url":"/categories/endangered-predators/sumatran-orangutan/wide-river-systems-can-trap-sumatran-orangutan-populations-in-isolated-forest-blocks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single wide river can strand an entire ape population."},{"title":"Wide River Systems Can Trap Sumatran Orangutan Populations in Isolated Forest Blocks","slug":"wide-river-systems-can-trap-sumatran-orangutan-populations-in-isolated-forest-blocks","url":"/categories/endangered-predators/sumatran-orangutan/wide-river-systems-can-trap-sumatran-orangutan-populations-in-isolated-forest-blocks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single wide river can strand an entire ape population."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

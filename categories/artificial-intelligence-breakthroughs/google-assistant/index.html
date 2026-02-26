@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google Assistant</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Google Assistant</h1>
+  <p>Explore all facts in "Google Assistant".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Google Assistant</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Google Assistant 2016 Launch Marked Google’s Shift to Conversational AI Interfaces","slug":"google-assistant-2016-launch-marked-google-s-shift-to-conversational-ai-interfaces","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/google-assistant-2016-launch-marked-google-s-shift-to-conversational-ai-interfaces.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In May 2016, Google replaced traditional voice search with a persistent conversational system designed to remember context across questions."},{"title":"Google Assistant 2019 Interpreter Mode Enabled Real-Time Multilingual Translation","slug":"google-assistant-2019-interpreter-mode-enabled-real-time-multilingual-translation","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/google-assistant-2019-interpreter-mode-enabled-real-time-multilingual-translation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2019, Google Assistant could translate spoken conversations between two people in near real time across dozens of languages."},{"title":"Google Assistant 2020 Continued Conversation Reduced Repeated Wake Words","slug":"google-assistant-2020-continued-conversation-reduced-repeated-wake-words","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/google-assistant-2020-continued-conversation-reduced-repeated-wake-words.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, Google Assistant introduced a feature that allowed follow-up questions without repeating the wake phrase."},{"title":"Google Assistant 2021 On-Device Speech Processing Improved Privacy Controls","slug":"google-assistant-2021-on-device-speech-processing-improved-privacy-controls","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/google-assistant-2021-on-device-speech-processing-improved-privacy-controls.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, Google shifted parts of Assistant’s speech processing directly onto Pixel devices to reduce cloud dependency."},{"title":"Google Duplex 2018 Demonstration Showed Assistant Booking Real Phone Calls","slug":"google-duplex-2018-demonstration-showed-assistant-booking-real-phone-calls","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/google-duplex-2018-demonstration-showed-assistant-booking-real-phone-calls.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, Google demonstrated an AI system that could call real businesses and book appointments using natural-sounding speech patterns."},{"title":"Knowledge Graph Contextual Follow-Ups 2022 Strengthened Google Assistant Multi-Step Queries","slug":"knowledge-graph-contextual-follow-ups-2022-strengthened-google-assistant-multi-step-queries","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-graph-contextual-follow-ups-2022-strengthened-google-assistant-multi-step-queries.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2022, Google Assistant improved its ability to handle follow-up questions that referenced prior entities without repetition."},{"title":"Knowledge Graph Fact Cards 2018 Enabled Google Assistant to Deliver Structured Trivia Answers","slug":"knowledge-graph-fact-cards-2018-enabled-google-assistant-to-deliver-structured-trivia-answers","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-graph-fact-cards-2018-enabled-google-assistant-to-deliver-structured-trivia-answers.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2018, Google Assistant leveraged Knowledge Graph fact cards to provide concise trivia responses during voice queries."},{"title":"Knowledge Graph Integration 2018 Strengthened Google Assistant’s Contextual Answers","slug":"knowledge-graph-integration-2018-strengthened-google-assistant-s-contextual-answers","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-graph-integration-2018-strengthened-google-assistant-s-contextual-answers.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2018, Google Assistant increasingly relied on the Google Knowledge Graph to provide structured, context-aware responses."},{"title":"Knowledge Panel Sports Updates 2019 Enabled Google Assistant Real-Time Game Summaries","slug":"knowledge-panel-sports-updates-2019-enabled-google-assistant-real-time-game-summaries","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-panel-sports-updates-2019-enabled-google-assistant-real-time-game-summaries.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Google Assistant began delivering real-time sports summaries using structured Knowledge Panel data."},{"title":"Knowledge-Aware Call Screening 2019 Enabled Google Assistant to Filter Unknown Callers","slug":"knowledge-aware-call-screening-2019-enabled-google-assistant-to-filter-unknown-callers","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-aware-call-screening-2019-enabled-google-assistant-to-filter-unknown-callers.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Google Assistant introduced call screening that allowed AI to answer unknown callers on behalf of users."},{"title":"Knowledge-Aware Search Fusion 2021 Unified Google Assistant and Search Algorithms","slug":"knowledge-aware-search-fusion-2021-unified-google-assistant-and-search-algorithms","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-aware-search-fusion-2021-unified-google-assistant-and-search-algorithms.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, Google strengthened integration between Assistant responses and core Search ranking systems to improve factual accuracy."},{"title":"Knowledge-Based Finance Answers 2020 Enabled Google Assistant Real-Time Stock Queries","slug":"knowledge-based-finance-answers-2020-enabled-google-assistant-real-time-stock-queries","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-based-finance-answers-2020-enabled-google-assistant-real-time-stock-queries.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, Google Assistant expanded support for real-time stock price queries using structured financial data feeds."},{"title":"Knowledge-Based Weather Updates 2021 Improved Google Assistant Hyperlocal Forecast Accuracy","slug":"knowledge-based-weather-updates-2021-improved-google-assistant-hyperlocal-forecast-accuracy","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/knowledge-based-weather-updates-2021-improved-google-assistant-hyperlocal-forecast-accuracy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2021, Google Assistant incorporated enhanced hyperlocal weather data into spoken forecasts."},{"title":"Quantum-Inspired Noise Suppression 2022 Improved Google Assistant Call Clarity","slug":"quantum-inspired-noise-suppression-2022-improved-google-assistant-call-clarity","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/quantum-inspired-noise-suppression-2022-improved-google-assistant-call-clarity.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, Google introduced advanced noise suppression features in Assistant-powered calling to reduce background interference in real time."},{"title":"Quick Commands 2022 Streamlined Google Assistant Smart Home Routines","slug":"quick-commands-2022-streamlined-google-assistant-smart-home-routines","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/quick-commands-2022-streamlined-google-assistant-smart-home-routines.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, Google expanded customizable quick commands that allowed single phrases to trigger complex multi-device routines."},{"title":"Quick Replies 2019 Allowed Google Assistant to Suggest Contextual Smart Responses in Notifications","slug":"quick-replies-2019-allowed-google-assistant-to-suggest-contextual-smart-responses-in-notifications","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/quick-replies-2019-allowed-google-assistant-to-suggest-contextual-smart-responses-in-notifications.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Google expanded Assistant-powered smart replies that suggested context-aware responses directly within Android notifications."},{"title":"Quick Settings Voice Control 2020 Allowed Google Assistant to Toggle System Features Instantly","slug":"quick-settings-voice-control-2020-allowed-google-assistant-to-toggle-system-features-instantly","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/quick-settings-voice-control-2020-allowed-google-assistant-to-toggle-system-features-instantly.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, Google enabled Assistant to control core Android quick settings such as Wi-Fi and Bluetooth through spoken commands."},{"title":"United States 2017 Android Integration Expanded Google Assistant to Millions of Devices","slug":"united-states-2017-android-integration-expanded-google-assistant-to-millions-of-devices","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2017-android-integration-expanded-google-assistant-to-millions-of-devices.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In early 2017, Google expanded Assistant beyond Pixel phones to millions of Android devices worldwide."},{"title":"United States 2019 Emergency Location Sharing Integrated Google Assistant with 911 Services","slug":"united-states-2019-emergency-location-sharing-integrated-google-assistant-with-911-services","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2019-emergency-location-sharing-integrated-google-assistant-with-911-services.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Google integrated Assistant-related technologies with enhanced emergency location services in the United States."},{"title":"United States 2020 Smart Display Expansion Increased Google Assistant Household Penetration","slug":"united-states-2020-smart-display-expansion-increased-google-assistant-household-penetration","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2020-smart-display-expansion-increased-google-assistant-household-penetration.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2020, Google reported expanded adoption of smart displays powered by Google Assistant across U.S. households."},{"title":"United States 2021 Car Integration Expanded Google Assistant Through Android Auto","slug":"united-states-2021-car-integration-expanded-google-assistant-through-android-auto","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2021-car-integration-expanded-google-assistant-through-android-auto.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2021, millions of vehicles supported Google Assistant through Android Auto integration."},{"title":"United States 2022 Emergency SOS Voice Activation Integrated Google Assistant Safety Features","slug":"united-states-2022-emergency-sos-voice-activation-integrated-google-assistant-safety-features","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2022-emergency-sos-voice-activation-integrated-google-assistant-safety-features.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, Google integrated voice-triggered Emergency SOS features into Assistant-enabled Android devices in the United States."},{"title":"United States 2022 Matter Protocol Adoption Strengthened Google Assistant Smart Home Compatibility","slug":"united-states-2022-matter-protocol-adoption-strengthened-google-assistant-smart-home-compatibility","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2022-matter-protocol-adoption-strengthened-google-assistant-smart-home-compatibility.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, Google announced support for the Matter smart home standard, expanding Google Assistant device interoperability."},{"title":"United States 2023 Privacy Controls Expanded Google Assistant Data Management Options","slug":"united-states-2023-privacy-controls-expanded-google-assistant-data-management-options","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2023-privacy-controls-expanded-google-assistant-data-management-options.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2023, Google expanded privacy dashboards allowing users to review and delete Assistant voice activity more easily."},{"title":"United States 2024 Gemini Transition Began Replacing Google Assistant on Select Devices","slug":"united-states-2024-gemini-transition-began-replacing-google-assistant-on-select-devices","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/united-states-2024-gemini-transition-began-replacing-google-assistant-on-select-devices.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2024, Google announced that its Gemini AI models would begin replacing certain Assistant functions on select devices."},{"title":"Xbox 2019 Partnership Brought Google Assistant Voice Commands to Gaming Consoles","slug":"xbox-2019-partnership-brought-google-assistant-voice-commands-to-gaming-consoles","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/xbox-2019-partnership-brought-google-assistant-voice-commands-to-gaming-consoles.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Microsoft partnered with Google to enable Assistant voice control on Xbox consoles."},{"title":"Xbox Cloud Gaming 2022 Enabled Google Assistant to Launch Streaming Titles by Voice","slug":"xbox-cloud-gaming-2022-enabled-google-assistant-to-launch-streaming-titles-by-voice","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/xbox-cloud-gaming-2022-enabled-google-assistant-to-launch-streaming-titles-by-voice.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, users could launch select Xbox Cloud Gaming titles using Google Assistant voice commands on supported devices."},{"title":"Xiaomi 2019 Smart Devices Integrated Google Assistant for Global Expansion","slug":"xiaomi-2019-smart-devices-integrated-google-assistant-for-global-expansion","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/xiaomi-2019-smart-devices-integrated-google-assistant-for-global-expansion.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Xiaomi integrated Google Assistant into select smart home products to accelerate expansion beyond the Chinese market."},{"title":"Xperia 2018 Android Partnership Extended Google Assistant to Sony Smartphones","slug":"xperia-2018-android-partnership-extended-google-assistant-to-sony-smartphones","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/xperia-2018-android-partnership-extended-google-assistant-to-sony-smartphones.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, Sony’s Xperia smartphones deepened Google Assistant integration, embedding voice AI across device controls."},{"title":"Yield Efficiency Gains 2023 Reduced Google Assistant Response Latency on Pixel Devices","slug":"yield-efficiency-gains-2023-reduced-google-assistant-response-latency-on-pixel-devices","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/yield-efficiency-gains-2023-reduced-google-assistant-response-latency-on-pixel-devices.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2023, Google reported latency improvements that made Assistant responses noticeably faster on supported Pixel phones."},{"title":"Yield Optimization in Voice Match 2020 Improved Google Assistant User Recognition Accuracy","slug":"yield-optimization-in-voice-match-2020-improved-google-assistant-user-recognition-accuracy","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/yield-optimization-in-voice-match-2020-improved-google-assistant-user-recognition-accuracy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2020, Google refined Voice Match technology to better distinguish between different household members."},{"title":"Yield-Based Energy Monitoring 2023 Integrated Google Assistant with Nest Power Insights","slug":"yield-based-energy-monitoring-2023-integrated-google-assistant-with-nest-power-insights","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/yield-based-energy-monitoring-2023-integrated-google-assistant-with-nest-power-insights.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2023, Google enhanced Assistant integration with Nest devices to provide spoken energy usage insights."},{"title":"Yield-Based Personalization 2022 Enhanced Google Assistant’s Contextual Reminders","slug":"yield-based-personalization-2022-enhanced-google-assistant-s-contextual-reminders","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/yield-based-personalization-2022-enhanced-google-assistant-s-contextual-reminders.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2022, Google Assistant used behavioral signals to personalize reminder suggestions based on user routines."},{"title":"YouTube 2019 Voice Navigation Expanded Google Assistant Control on Smart TVs","slug":"youtube-2019-voice-navigation-expanded-google-assistant-control-on-smart-tvs","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-2019-voice-navigation-expanded-google-assistant-control-on-smart-tvs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Google expanded Assistant voice navigation across YouTube-enabled smart TVs, turning spoken commands into primary remote controls."},{"title":"YouTube 2020 Live Caption Voice Control Enabled Google Assistant Accessibility Features","slug":"youtube-2020-live-caption-voice-control-enabled-google-assistant-accessibility-features","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-2020-live-caption-voice-control-enabled-google-assistant-accessibility-features.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, Google Assistant supported activation of live captions on compatible devices through voice commands."},{"title":"YouTube 2022 Voice-Controlled Casting Expanded Google Assistant Cross-Device Media Transfer","slug":"youtube-2022-voice-controlled-casting-expanded-google-assistant-cross-device-media-transfer","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-2022-voice-controlled-casting-expanded-google-assistant-cross-device-media-transfer.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, Google Assistant enabled voice-triggered casting of YouTube videos from phones to compatible televisions."},{"title":"YouTube 2024 AI-Powered Recommendations Synced with Google Assistant Voice Profiles","slug":"youtube-2024-ai-powered-recommendations-synced-with-google-assistant-voice-profiles","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-2024-ai-powered-recommendations-synced-with-google-assistant-voice-profiles.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2024, Google deepened synchronization between YouTube recommendations and Google Assistant voice profiles across shared devices."},{"title":"YouTube Kids 2019 Voice Controls Enabled Google Assistant Parental Filtering","slug":"youtube-kids-2019-voice-controls-enabled-google-assistant-parental-filtering","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-kids-2019-voice-controls-enabled-google-assistant-parental-filtering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, Google extended Assistant voice controls to YouTube Kids, allowing parents to manage content through spoken commands."},{"title":"YouTube Music 2020 Deep Integration Allowed Google Assistant Voice Playlist Control","slug":"youtube-music-2020-deep-integration-allowed-google-assistant-voice-playlist-control","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-music-2020-deep-integration-allowed-google-assistant-voice-playlist-control.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, Google Assistant deepened integration with YouTube Music, enabling voice-controlled playlist management across devices."},{"title":"YouTube Shorts 2023 Voice Search Optimization Enhanced Google Assistant Discovery","slug":"youtube-shorts-2023-voice-search-optimization-enhanced-google-assistant-discovery","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-shorts-2023-voice-search-optimization-enhanced-google-assistant-discovery.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2023, Google refined Assistant voice search to better surface short-form YouTube Shorts content through natural language queries."},{"title":"YouTube TV 2021 Voice Search Integration Expanded Google Assistant Media Control","slug":"youtube-tv-2021-voice-search-integration-expanded-google-assistant-media-control","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/youtube-tv-2021-voice-search-integration-expanded-google-assistant-media-control.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, Google Assistant integrated deeper voice search capabilities within YouTube TV subscriptions."},{"title":"Zero-Contact Hotel Check-In 2021 Demonstrated Google Assistant Integration in Hospitality","slug":"zero-contact-hotel-check-in-2021-demonstrated-google-assistant-integration-in-hospitality","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/zero-contact-hotel-check-in-2021-demonstrated-google-assistant-integration-in-hospitality.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, select hotels began experimenting with Google Assistant integrations for contactless guest interactions."},{"title":"Zero-Shot Accessibility Features 2021 Enabled Google Assistant to Support Voice Typing Improvements","slug":"zero-shot-accessibility-features-2021-enabled-google-assistant-to-support-voice-typing-improvements","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/zero-shot-accessibility-features-2021-enabled-google-assistant-to-support-voice-typing-improvements.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, Google enhanced Assistant-powered voice typing with contextual understanding that reduced correction errors."},{"title":"Zero-Touch Setup 2021 Extended Google Assistant Configuration to Chromebooks","slug":"zero-touch-setup-2021-extended-google-assistant-configuration-to-chromebooks","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/zero-touch-setup-2021-extended-google-assistant-configuration-to-chromebooks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, Google enabled zero-touch device setup that automatically linked Chromebooks to existing Assistant accounts."},{"title":"Zero-Touch Smart Home Setup 2020 Enabled Google Assistant Device Auto-Configuration","slug":"zero-touch-smart-home-setup-2020-enabled-google-assistant-device-auto-configuration","url":"/categories/artificial-intelligence-breakthroughs/google-assistant/zero-touch-smart-home-setup-2020-enabled-google-assistant-device-auto-configuration.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, Google introduced simplified smart home setup that allowed compatible devices to auto-configure through Google Assistant."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

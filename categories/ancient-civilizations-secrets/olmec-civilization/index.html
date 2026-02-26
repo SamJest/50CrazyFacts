@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olmec Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Olmec Civilization</h1>
+  <p>Explore all facts in "Olmec Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Olmec Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Chalcatzingo Reliefs in Central Mexico Mirror Gulf Coast Olmec Artistic Systems","slug":"chalcatzingo-reliefs-in-central-mexico-mirror-gulf-coast-olmec-artistic-systems","url":"/categories/ancient-civilizations-secrets/olmec-civilization/chalcatzingo-reliefs-in-central-mexico-mirror-gulf-coast-olmec-artistic-systems.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Reliefs carved into rock faces in central Mexico display stylistic features nearly identical to Gulf Coast Olmec monuments."},{"title":"El Manati Ritual Deposits Preserved 3,000-Year-Old Rubber Offerings","slug":"el-manati-ritual-deposits-preserved-3-000-year-old-rubber-offerings","url":"/categories/ancient-civilizations-secrets/olmec-civilization/el-manati-ritual-deposits-preserved-3-000-year-old-rubber-offerings.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Waterlogged bogs at El Manati preserved rubber balls and wooden artifacts dating to around 1600 BCE."},{"title":"Kilo-Scale Basalt Throne Monuments Reinforced Elite Authority in Olmec Courts","slug":"kilo-scale-basalt-throne-monuments-reinforced-elite-authority-in-olmec-courts","url":"/categories/ancient-civilizations-secrets/olmec-civilization/kilo-scale-basalt-throne-monuments-reinforced-elite-authority-in-olmec-courts.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive basalt thrones carved from single blocks projected rulership authority in Olmec ceremonial centers."},{"title":"Kilometer-Scale Earthen Mounds at La Venta Demonstrate Monumental Labor Investment","slug":"kilometer-scale-earthen-mounds-at-la-venta-demonstrate-monumental-labor-investment","url":"/categories/ancient-civilizations-secrets/olmec-civilization/kilometer-scale-earthen-mounds-at-la-venta-demonstrate-monumental-labor-investment.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"La Venta’s ceremonial complex spans nearly 2 kilometers in length, constructed largely from compacted earth."},{"title":"Kneeling Dwarf Figurines Suggest Structured Social Roles in Olmec Society","slug":"kneeling-dwarf-figurines-suggest-structured-social-roles-in-olmec-society","url":"/categories/ancient-civilizations-secrets/olmec-civilization/kneeling-dwarf-figurines-suggest-structured-social-roles-in-olmec-society.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Small figurines depicting kneeling dwarfs reveal evidence of specialized social identities in early Olmec communities."},{"title":"Kneeling Ruler Reliefs Encode Early Theocratic Governance Structures","slug":"kneeling-ruler-reliefs-encode-early-theocratic-governance-structures","url":"/categories/ancient-civilizations-secrets/olmec-civilization/kneeling-ruler-reliefs-encode-early-theocratic-governance-structures.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Olmec relief carvings depict rulers in ritual postures that signal governance rooted in sacred authority."},{"title":"Kunz Axe Iconography Standardized Elite Symbolism Across Olmec Sites","slug":"kunz-axe-iconography-standardized-elite-symbolism-across-olmec-sites","url":"/categories/ancient-civilizations-secrets/olmec-civilization/kunz-axe-iconography-standardized-elite-symbolism-across-olmec-sites.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single jade carving known as the Kunz Axe became a template for recurring Olmec religious symbolism."},{"title":"Kuxtepeque Jade Source Supplied High-Status Olmec Carvings by 1000 BCE","slug":"kuxtepeque-jade-source-supplied-high-status-olmec-carvings-by-1000-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/kuxtepeque-jade-source-supplied-high-status-olmec-carvings-by-1000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Geological studies trace some Olmec jade artifacts to deposits near the Motagua River system active by 1000 BCE."},{"title":"La Venta Colossal Heads Weighing 20 Tons Revealed Olmec Political Power Structure","slug":"la-venta-colossal-heads-weighing-20-tons-revealed-olmec-political-power-structure","url":"/categories/ancient-civilizations-secrets/olmec-civilization/la-venta-colossal-heads-weighing-20-tons-revealed-olmec-political-power-structure.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seventeen basalt heads, some weighing up to 20 tons, were carved and transported across swamps without metal tools around 900 BCE."},{"title":"Laguna de los Cerros Emerged as a Secondary Olmec Center After 900 BCE","slug":"laguna-de-los-cerros-emerged-as-a-secondary-olmec-center-after-900-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/laguna-de-los-cerros-emerged-as-a-secondary-olmec-center-after-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After San Lorenzo’s decline, Laguna de los Cerros rose as a regional center sustaining Olmec traditions beyond 900 BCE."},{"title":"Q-Phase Ceramic Stratigraphy Clarified Early Olmec Chronology in the 20th Century","slug":"q-phase-ceramic-stratigraphy-clarified-early-olmec-chronology-in-the-20th-century","url":"/categories/ancient-civilizations-secrets/olmec-civilization/q-phase-ceramic-stratigraphy-clarified-early-olmec-chronology-in-the-20th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations in the 20th century identified ceramic phases that refined Olmec chronology by several centuries."},{"title":"Quarry Abandonment Patterns Suggest Political Disruption Around 900 BCE","slug":"quarry-abandonment-patterns-suggest-political-disruption-around-900-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/quarry-abandonment-patterns-suggest-political-disruption-around-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological evidence shows certain basalt quarry operations ceased abruptly around 900 BCE."},{"title":"Quarry Logistics in the Tuxtla Mountains Supplied 60-Kilometer Basalt Transport Networks","slug":"quarry-logistics-in-the-tuxtla-mountains-supplied-60-kilometer-basalt-transport-networks","url":"/categories/ancient-civilizations-secrets/olmec-civilization/quarry-logistics-in-the-tuxtla-mountains-supplied-60-kilometer-basalt-transport-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Basalt for Olmec monuments traveled up to 60 kilometers from the Tuxtla Mountains without wheels or draft animals."},{"title":"Quarry Recarving Practices Reveal Monument Recycling in Olmec Political Transitions","slug":"quarry-recarving-practices-reveal-monument-recycling-in-olmec-political-transitions","url":"/categories/ancient-civilizations-secrets/olmec-civilization/quarry-recarving-practices-reveal-monument-recycling-in-olmec-political-transitions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Olmec colossal heads were carved from earlier stone monuments, indicating deliberate recycling during regime change."},{"title":"Quasi-Writing Symbols on Cascajal Block Date to Around 900 BCE","slug":"quasi-writing-symbols-on-cascajal-block-date-to-around-900-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/quasi-writing-symbols-on-cascajal-block-date-to-around-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A serpentine slab discovered in Veracruz bears incised symbols that may represent one of the earliest writing systems in the Americas."},{"title":"Quetzal Feather Symbolism in Olmec Art Predates Later Mesoamerican Deities","slug":"quetzal-feather-symbolism-in-olmec-art-predates-later-mesoamerican-deities","url":"/categories/ancient-civilizations-secrets/olmec-civilization/quetzal-feather-symbolism-in-olmec-art-predates-later-mesoamerican-deities.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Feathered motifs associated with later Mesoamerican gods appear in Olmec carvings centuries earlier."},{"title":"Quincunx Spatial Symbolism Emerged in Formative Olmec Ceremonial Design","slug":"quincunx-spatial-symbolism-emerged-in-formative-olmec-ceremonial-design","url":"/categories/ancient-civilizations-secrets/olmec-civilization/quincunx-spatial-symbolism-emerged-in-formative-olmec-ceremonial-design.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Five-point spatial arrangements in Olmec ceremonial contexts anticipate later quincunx cosmological symbolism."},{"title":"San Lorenzo Plateau Engineering Around 1200 BCE Controlled Seasonal Floodwaters","slug":"san-lorenzo-plateau-engineering-around-1200-bce-controlled-seasonal-floodwaters","url":"/categories/ancient-civilizations-secrets/olmec-civilization/san-lorenzo-plateau-engineering-around-1200-bce-controlled-seasonal-floodwaters.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An artificial plateau covering roughly 500 hectares was reshaped by the Olmec to control flood-prone terrain as early as 1200 BCE."},{"title":"Tres Zapotes Stela C Recorded One of Mesoamerica’s Earliest Long Count Dates in 31 BCE","slug":"tres-zapotes-stela-c-recorded-one-of-mesoamerica-s-earliest-long-count-dates-in-31-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/tres-zapotes-stela-c-recorded-one-of-mesoamerica-s-earliest-long-count-dates-in-31-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stone monument at Tres Zapotes carries a Long Count date equivalent to 31 BCE, centuries before Classic Maya inscriptions."},{"title":"U-Shaped Ceremonial Complexes Defined Olmec Urban Planning by 900 BCE","slug":"u-shaped-ceremonial-complexes-defined-olmec-urban-planning-by-900-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/u-shaped-ceremonial-complexes-defined-olmec-urban-planning-by-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Several Olmec ceremonial centers were constructed around distinctive U-shaped architectural layouts by 900 BCE."},{"title":"Urban Core of San Lorenzo Peaked Around 1200 BCE as Mesoamerica’s First Major City","slug":"urban-core-of-san-lorenzo-peaked-around-1200-bce-as-mesoamerica-s-first-major-city","url":"/categories/ancient-civilizations-secrets/olmec-civilization/urban-core-of-san-lorenzo-peaked-around-1200-bce-as-mesoamerica-s-first-major-city.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1200 BCE, San Lorenzo became one of the earliest large urban centers in Mesoamerica."},{"title":"Usumacinta River Trade Corridors Linked Olmec and Emerging Maya Regions","slug":"usumacinta-river-trade-corridors-linked-olmec-and-emerging-maya-regions","url":"/categories/ancient-civilizations-secrets/olmec-civilization/usumacinta-river-trade-corridors-linked-olmec-and-emerging-maya-regions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"River systems flowing toward the Gulf of Mexico facilitated early exchange between Olmec centers and regions later dominated by the Maya."},{"title":"Uxmal Precursor Iconography Suggests Deep Formative Roots in Gulf Coast Traditions","slug":"uxmal-precursor-iconography-suggests-deep-formative-roots-in-gulf-coast-traditions","url":"/categories/ancient-civilizations-secrets/olmec-civilization/uxmal-precursor-iconography-suggests-deep-formative-roots-in-gulf-coast-traditions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Motifs later prominent in northern Yucatan appear to echo Formative-era Gulf Coast artistic systems."},{"title":"Uxpanapa Region Agriculture Supported Early Olmec Population Growth by 1200 BCE","slug":"uxpanapa-region-agriculture-supported-early-olmec-population-growth-by-1200-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/uxpanapa-region-agriculture-supported-early-olmec-population-growth-by-1200-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Early Olmec centers emerged in fertile river basins capable of sustaining dense populations by 1200 BCE."},{"title":"Veracruz Lowland Climate Shifts Around 400 BCE Coincided with Olmec Political Decline","slug":"veracruz-lowland-climate-shifts-around-400-bce-coincided-with-olmec-political-decline","url":"/categories/ancient-civilizations-secrets/olmec-civilization/veracruz-lowland-climate-shifts-around-400-bce-coincided-with-olmec-political-decline.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Environmental changes in the Gulf Coast lowlands around 400 BCE align with the weakening of major Olmec ceremonial centers."},{"title":"X-Pattern Plaza Alignments Reflect Astronomical Awareness in Olmec Planning","slug":"x-pattern-plaza-alignments-reflect-astronomical-awareness-in-olmec-planning","url":"/categories/ancient-civilizations-secrets/olmec-civilization/x-pattern-plaza-alignments-reflect-astronomical-awareness-in-olmec-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Certain Olmec ceremonial centers exhibit alignments that correspond with cardinal directions and solar movement."},{"title":"Xalapa Museum Collection Preserves Over 2,000 Olmec Artifacts in Veracruz","slug":"xalapa-museum-collection-preserves-over-2-000-olmec-artifacts-in-veracruz","url":"/categories/ancient-civilizations-secrets/olmec-civilization/xalapa-museum-collection-preserves-over-2-000-olmec-artifacts-in-veracruz.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 2,000 Olmec artifacts are housed in a single regional museum in Veracruz."},{"title":"Xicalango Coastal Exchange Network Strengthened Olmec Maritime Trade by 800 BCE","slug":"xicalango-coastal-exchange-network-strengthened-olmec-maritime-trade-by-800-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/xicalango-coastal-exchange-network-strengthened-olmec-maritime-trade-by-800-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 800 BCE, Gulf Coast canoe routes connected Olmec centers to distant coastal exchange hubs such as Xicalango."},{"title":"Xipe-Style Facial Motifs in Olmec Art Anticipate Later Renewal Deity Imagery","slug":"xipe-style-facial-motifs-in-olmec-art-anticipate-later-renewal-deity-imagery","url":"/categories/ancient-civilizations-secrets/olmec-civilization/xipe-style-facial-motifs-in-olmec-art-anticipate-later-renewal-deity-imagery.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Flayed-face motifs appearing in later central Mexican religion may have precursors in Gulf Coast Olmec carvings."},{"title":"Xoc Relief Parallels Suggest Early Gulf Coast Ritual Bloodletting Traditions","slug":"xoc-relief-parallels-suggest-early-gulf-coast-ritual-bloodletting-traditions","url":"/categories/ancient-civilizations-secrets/olmec-civilization/xoc-relief-parallels-suggest-early-gulf-coast-ritual-bloodletting-traditions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Iconographic studies indicate that ritual bloodletting scenes common in later Maya art may echo Gulf Coast traditions dating back to the Olmec era."},{"title":"Xochicalco Predecessor Networks Reflect Long-Term Gulf Coast Influence","slug":"xochicalco-predecessor-networks-reflect-long-term-gulf-coast-influence","url":"/categories/ancient-civilizations-secrets/olmec-civilization/xochicalco-predecessor-networks-reflect-long-term-gulf-coast-influence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before Xochicalco flourished, exchange systems rooted in Formative Gulf Coast traditions shaped regional interaction."},{"title":"Xochipala Style Parallels Indicate Pre-Classic Artistic Exchange Networks","slug":"xochipala-style-parallels-indicate-pre-classic-artistic-exchange-networks","url":"/categories/ancient-civilizations-secrets/olmec-civilization/xochipala-style-parallels-indicate-pre-classic-artistic-exchange-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Naturalistic figurines from regions outside the Gulf Coast share stylistic traits with early Olmec sculpture traditions."},{"title":"Yarumela Interaction Evidence Links Gulf Coast and Honduran Formative Cultures","slug":"yarumela-interaction-evidence-links-gulf-coast-and-honduran-formative-cultures","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yarumela-interaction-evidence-links-gulf-coast-and-honduran-formative-cultures.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological parallels suggest that Gulf Coast artistic traditions influenced sites as far south as present-day Honduras."},{"title":"Yaxchilan Lintel Comparisons Reveal Olmec Iconographic Influence Centuries Earlier","slug":"yaxchilan-lintel-comparisons-reveal-olmec-iconographic-influence-centuries-earlier","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yaxchilan-lintel-comparisons-reveal-olmec-iconographic-influence-centuries-earlier.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Distinctive jaguar-human motifs appearing in later Maya art trace visual roots back to Olmec carvings created nearly 500 years earlier."},{"title":"Yoke-Associated Ritual Caches Demonstrate Formalized Sacred Deposition Systems","slug":"yoke-associated-ritual-caches-demonstrate-formalized-sacred-deposition-systems","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yoke-associated-ritual-caches-demonstrate-formalized-sacred-deposition-systems.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Arranged caches of jade and stone objects were deliberately buried beneath Olmec ceremonial plazas."},{"title":"Yoke-Form Stone Sculptures Anticipated Mesoamerican Ballgame Regalia by Centuries","slug":"yoke-form-stone-sculptures-anticipated-mesoamerican-ballgame-regalia-by-centuries","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yoke-form-stone-sculptures-anticipated-mesoamerican-ballgame-regalia-by-centuries.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Heavy stone objects carved in yoke shapes appear in Gulf Coast contexts centuries before Classic Maya ballcourts flourished."},{"title":"Yoke-Linked Tribute Systems May Have Structured Early Olmec Redistribution","slug":"yoke-linked-tribute-systems-may-have-structured-early-olmec-redistribution","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yoke-linked-tribute-systems-may-have-structured-early-olmec-redistribution.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Prestige goods such as jade celts and ceremonial yokes were likely redistributed through elite-controlled tribute systems."},{"title":"Yucatan Basin Floodplain Adaptation Enabled Early Olmec Agricultural Stability","slug":"yucatan-basin-floodplain-adaptation-enabled-early-olmec-agricultural-stability","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yucatan-basin-floodplain-adaptation-enabled-early-olmec-agricultural-stability.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seasonal floodplains along Gulf Coast rivers were engineered to support reliable maize production by 1200 BCE."},{"title":"Yucatan Ceiba Tree Symbolism Echoes Formative Olmec Cosmology","slug":"yucatan-ceiba-tree-symbolism-echoes-formative-olmec-cosmology","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yucatan-ceiba-tree-symbolism-echoes-formative-olmec-cosmology.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The sacred ceiba tree, central to later Maya belief, may reflect cosmological themes present in earlier Olmec imagery."},{"title":"Yucatan Gulf Trade Routes Linked Olmec Cities to Distant Jade Sources by 1000 BCE","slug":"yucatan-gulf-trade-routes-linked-olmec-cities-to-distant-jade-sources-by-1000-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yucatan-gulf-trade-routes-linked-olmec-cities-to-distant-jade-sources-by-1000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Greenstone artifacts found in Olmec centers originated from quarries hundreds of kilometers away in the Motagua Valley."},{"title":"Yucatan Isthmus Terrain Shaped Olmec Defensive Settlement Placement","slug":"yucatan-isthmus-terrain-shaped-olmec-defensive-settlement-placement","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yucatan-isthmus-terrain-shaped-olmec-defensive-settlement-placement.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Major Olmec centers were positioned on elevated ridges above floodplains, balancing agricultural access with defensive visibility."},{"title":"Yucatan Marine Shell Imports Signal Gulf Coast Luxury Consumption by 900 BCE","slug":"yucatan-marine-shell-imports-signal-gulf-coast-luxury-consumption-by-900-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yucatan-marine-shell-imports-signal-gulf-coast-luxury-consumption-by-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Marine shells from distant coastlines appear in elite Olmec burials dating to around 900 BCE."},{"title":"Yucatan Obsidian Distribution Indicates 1,000-Kilometer Trade Reach by 900 BCE","slug":"yucatan-obsidian-distribution-indicates-1-000-kilometer-trade-reach-by-900-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/yucatan-obsidian-distribution-indicates-1-000-kilometer-trade-reach-by-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Obsidian found in Gulf Coast Olmec sites originated from volcanic sources nearly 1,000 kilometers away."},{"title":"Zanatepec Corridor Linked Pacific and Gulf Trade Spheres During Olmec Era","slug":"zanatepec-corridor-linked-pacific-and-gulf-trade-spheres-during-olmec-era","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zanatepec-corridor-linked-pacific-and-gulf-trade-spheres-during-olmec-era.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The narrow Isthmus of Tehuantepec created a strategic corridor connecting Pacific and Gulf trade routes by 1000 BCE."},{"title":"Zapotec Interaction Spheres Show Olmec Symbolic Influence by 700 BCE","slug":"zapotec-interaction-spheres-show-olmec-symbolic-influence-by-700-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zapotec-interaction-spheres-show-olmec-symbolic-influence-by-700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts in early Zapotec contexts display Gulf Coast stylistic traits dating to roughly 700 BCE."},{"title":"Zapotes Settlement Layers Reveal 1,000 Years of Continuous Occupation","slug":"zapotes-settlement-layers-reveal-1-000-years-of-continuous-occupation","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zapotes-settlement-layers-reveal-1-000-years-of-continuous-occupation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological layers at Tres Zapotes document nearly a millennium of occupation beginning around 1000 BCE."},{"title":"Zempoala Highlands Exchange Routes Extended Olmec Influence Beyond the Gulf Coast","slug":"zempoala-highlands-exchange-routes-extended-olmec-influence-beyond-the-gulf-coast","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zempoala-highlands-exchange-routes-extended-olmec-influence-beyond-the-gulf-coast.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Material traced to Gulf Coast workshops has been identified hundreds of kilometers away in the Zempoala Highlands."},{"title":"Zinc and Iron Pigment Residues Reveal Advanced Olmec Mineral Processing by 800 BCE","slug":"zinc-and-iron-pigment-residues-reveal-advanced-olmec-mineral-processing-by-800-bce","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zinc-and-iron-pigment-residues-reveal-advanced-olmec-mineral-processing-by-800-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mineral pigment traces on Olmec sculptures indicate deliberate processing of iron-rich compounds around 800 BCE."},{"title":"Zohapilco Early Formative Layers Show Pre-Olmec Cultural Foundations","slug":"zohapilco-early-formative-layers-show-pre-olmec-cultural-foundations","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zohapilco-early-formative-layers-show-pre-olmec-cultural-foundations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Zohapilco reveal cultural layers predating classic Olmec florescence by several centuries."},{"title":"Zonal Settlement Hierarchies Reveal Multi-Tier Urban Systems in Olmec Heartland","slug":"zonal-settlement-hierarchies-reveal-multi-tier-urban-systems-in-olmec-heartland","url":"/categories/ancient-civilizations-secrets/olmec-civilization/zonal-settlement-hierarchies-reveal-multi-tier-urban-systems-in-olmec-heartland.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological surveys identify tiered settlement patterns indicating structured regional administration."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

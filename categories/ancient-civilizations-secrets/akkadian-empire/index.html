@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Akkadian Empire</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Akkadian Empire</h1>
+  <p>Explore all facts in "Akkadian Empire".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Akkadian Empire</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Akkadian Bronze Supply Collapse Around 2200 BCE Disrupted the First Mesopotamian Empire","slug":"akkadian-bronze-supply-collapse-around-2200-bce-disrupted-the-first-mesopotamian-empire","url":"/categories/ancient-civilizations-secrets/akkadian-empire/akkadian-bronze-supply-collapse-around-2200-bce-disrupted-the-first-mesopotamian-empire.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2200 BCE, the world’s first territorial empire began to fracture when its bronze supply chains failed."},{"title":"Enheduanna’s 23rd Century BCE Hymns Mark the First Named Author in History","slug":"enheduanna-s-23rd-century-bce-hymns-mark-the-first-named-author-in-history","url":"/categories/ancient-civilizations-secrets/akkadian-empire/enheduanna-s-23rd-century-bce-hymns-mark-the-first-named-author-in-history.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 23rd century BCE, a high priestess signed her name to poetry, becoming the earliest known author in recorded history."},{"title":"Gutian Invasions After 2154 BCE Accelerated Akkadian Political Fragmentation","slug":"gutian-invasions-after-2154-bce-accelerated-akkadian-political-fragmentation","url":"/categories/ancient-civilizations-secrets/akkadian-empire/gutian-invasions-after-2154-bce-accelerated-akkadian-political-fragmentation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2154 BCE, mountain tribes exploited imperial weakness and hastened the fall of Mesopotamia’s first empire."},{"title":"Kish Military Reorganization Under Sargon Around 2334 BCE Enabled Permanent Campaigning","slug":"kish-military-reorganization-under-sargon-around-2334-bce-enabled-permanent-campaigning","url":"/categories/ancient-civilizations-secrets/akkadian-empire/kish-military-reorganization-under-sargon-around-2334-bce-enabled-permanent-campaigning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sargon transformed a city-based militia model into a standing force capable of year-round campaigns."},{"title":"Kish Royal Succession Records Influenced Akkadian Legitimacy Claims in the 24th Century BCE","slug":"kish-royal-succession-records-influenced-akkadian-legitimacy-claims-in-the-24th-century-bce","url":"/categories/ancient-civilizations-secrets/akkadian-empire/kish-royal-succession-records-influenced-akkadian-legitimacy-claims-in-the-24th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before ruling an empire, Sargon of Akkad claimed authority through the ancient throne of Kish."},{"title":"Kish-Akkad Political Merger Around 2334 BCE Created the First Territorial Empire","slug":"kish-akkad-political-merger-around-2334-bce-created-the-first-territorial-empire","url":"/categories/ancient-civilizations-secrets/akkadian-empire/kish-akkad-political-merger-around-2334-bce-created-the-first-territorial-empire.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Sargon united Akkad and Kish around 2334 BCE, he transformed city rivalry into continental governance."},{"title":"Kutha Religious Centers Anchored Akkadian Control Over Central Mesopotamia","slug":"kutha-religious-centers-anchored-akkadian-control-over-central-mesopotamia","url":"/categories/ancient-civilizations-secrets/akkadian-empire/kutha-religious-centers-anchored-akkadian-control-over-central-mesopotamia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian rulers secured loyalty not only through armies but through control of key religious cities like Kutha."},{"title":"Naram-Sin’s 2254 BCE Self-Deification Broke Mesopotamian Royal Tradition","slug":"naram-sin-s-2254-bce-self-deification-broke-mesopotamian-royal-tradition","url":"/categories/ancient-civilizations-secrets/akkadian-empire/naram-sin-s-2254-bce-self-deification-broke-mesopotamian-royal-tradition.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 2254 BCE, a Mesopotamian king declared himself a god while still alive."},{"title":"Qalatga Darband Corridor Demonstrates Enduring Strategic Routes First Unified by Akkad","slug":"qalatga-darband-corridor-demonstrates-enduring-strategic-routes-first-unified-by-akkad","url":"/categories/ancient-civilizations-secrets/akkadian-empire/qalatga-darband-corridor-demonstrates-enduring-strategic-routes-first-unified-by-akkad.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mountain corridors later fortified by Hellenistic rulers trace routes first integrated under Mesopotamian empires."},{"title":"Qalatga Mountain Pass Logistics Highlight Akkadian Transport Constraints","slug":"qalatga-mountain-pass-logistics-highlight-akkadian-transport-constraints","url":"/categories/ancient-civilizations-secrets/akkadian-empire/qalatga-mountain-pass-logistics-highlight-akkadian-transport-constraints.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Moving supplies through narrow mountain passes limited how far Akkadian authority could stretch."},{"title":"Qanat Precursors in Northern Mesopotamia Supported Akkadian Water Management","slug":"qanat-precursors-in-northern-mesopotamia-supported-akkadian-water-management","url":"/categories/ancient-civilizations-secrets/akkadian-empire/qanat-precursors-in-northern-mesopotamia-supported-akkadian-water-management.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Persian qanats became famous, northern Mesopotamia experimented with controlled groundwater access."},{"title":"Qasr Shemamok Excavations Reveal Akkadian Provincial Administration Layers","slug":"qasr-shemamok-excavations-reveal-akkadian-provincial-administration-layers","url":"/categories/ancient-civilizations-secrets/akkadian-empire/qasr-shemamok-excavations-reveal-akkadian-provincial-administration-layers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Modern excavations in northern Iraq uncovered Akkadian administrative layers beneath later cities."},{"title":"Queen Kubaba of Kish Preceded Akkadian Centralization and Influenced Later King Lists","slug":"queen-kubaba-of-kish-preceded-akkadian-centralization-and-influenced-later-king-lists","url":"/categories/ancient-civilizations-secrets/akkadian-empire/queen-kubaba-of-kish-preceded-akkadian-centralization-and-influenced-later-king-lists.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A tavern keeper turned queen appears in Mesopotamian king lists centuries before the Akkadian Empire."},{"title":"Ubaid Irrigation Foundations Enabled Akkadian Agricultural Expansion by 2334 BCE","slug":"ubaid-irrigation-foundations-enabled-akkadian-agricultural-expansion-by-2334-bce","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ubaid-irrigation-foundations-enabled-akkadian-agricultural-expansion-by-2334-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before the Akkadian Empire, irrigation systems laid the groundwork for its food supply."},{"title":"Umma Administrative Tablets Reveal Grain Redistribution Under Akkadian Oversight","slug":"umma-administrative-tablets-reveal-grain-redistribution-under-akkadian-oversight","url":"/categories/ancient-civilizations-secrets/akkadian-empire/umma-administrative-tablets-reveal-grain-redistribution-under-akkadian-oversight.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from Umma quantify how grain moved through Akkadian provincial systems."},{"title":"Umma-Lagash Canal Conflicts Prefigured Akkadian Military Intervention Before 2334 BCE","slug":"umma-lagash-canal-conflicts-prefigured-akkadian-military-intervention-before-2334-bce","url":"/categories/ancient-civilizations-secrets/akkadian-empire/umma-lagash-canal-conflicts-prefigured-akkadian-military-intervention-before-2334-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Sargon built an empire, canal disputes between Umma and Lagash destabilized southern Mesopotamia."},{"title":"Upper Mesopotamian Grain Production Powered Akkadian Military Campaigns","slug":"upper-mesopotamian-grain-production-powered-akkadian-military-campaigns","url":"/categories/ancient-civilizations-secrets/akkadian-empire/upper-mesopotamian-grain-production-powered-akkadian-military-campaigns.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian armies marched on calories harvested hundreds of kilometers from the capital."},{"title":"Ur III Administrative Reforms After 2112 BCE Replaced Akkadian Centralization","slug":"ur-iii-administrative-reforms-after-2112-bce-replaced-akkadian-centralization","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ur-iii-administrative-reforms-after-2112-bce-replaced-akkadian-centralization.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2112 BCE, a new dynasty rebuilt Mesopotamian bureaucracy after the Akkadian Empire collapsed."},{"title":"Ur III Bureaucratic Tablet Archives Expose Administrative Gaps After Akkadian Rule","slug":"ur-iii-bureaucratic-tablet-archives-expose-administrative-gaps-after-akkadian-rule","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ur-iii-bureaucratic-tablet-archives-expose-administrative-gaps-after-akkadian-rule.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of clay tablets from Ur III reveal how administrators rebuilt systems after imperial fragmentation."},{"title":"Ur-Nammu Law Code After 2112 BCE Reflected Lessons From Akkadian Collapse","slug":"ur-nammu-law-code-after-2112-bce-reflected-lessons-from-akkadian-collapse","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ur-nammu-law-code-after-2112-bce-reflected-lessons-from-akkadian-collapse.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One of the earliest known law codes emerged shortly after the Akkadian Empire disintegrated."},{"title":"Urbanization Patterns After 2200 BCE Show Population Shifts Following Akkadian Decline","slug":"urbanization-patterns-after-2200-bce-show-population-shifts-following-akkadian-decline","url":"/categories/ancient-civilizations-secrets/akkadian-empire/urbanization-patterns-after-2200-bce-show-population-shifts-following-akkadian-decline.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Settlement surveys reveal that entire regions were partially abandoned after the Akkadian Empire weakened."},{"title":"Uruk King List Redactions After 2100 BCE Reframed Akkadian Legacy","slug":"uruk-king-list-redactions-after-2100-bce-reframed-akkadian-legacy","url":"/categories/ancient-civilizations-secrets/akkadian-empire/uruk-king-list-redactions-after-2100-bce-reframed-akkadian-legacy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Later scribes subtly edited king lists to position Akkadian rulers within a broader historical narrative."},{"title":"Uruk Script Standardization During Akkadian Expansion Shaped Written Administration","slug":"uruk-script-standardization-during-akkadian-expansion-shaped-written-administration","url":"/categories/ancient-civilizations-secrets/akkadian-empire/uruk-script-standardization-during-akkadian-expansion-shaped-written-administration.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"As Akkadian rule expanded, cuneiform writing adapted to serve a multilingual empire."},{"title":"Uruk Temple Networks Provided Administrative Templates Adopted by Akkadian Rulers","slug":"uruk-temple-networks-provided-administrative-templates-adopted-by-akkadian-rulers","url":"/categories/ancient-civilizations-secrets/akkadian-empire/uruk-temple-networks-provided-administrative-templates-adopted-by-akkadian-rulers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian administrators scaled up systems first refined in earlier Sumerian temple cities."},{"title":"Uruk Trade Colonies Before 2300 BCE Became Strategic Assets for Akkadian Expansion","slug":"uruk-trade-colonies-before-2300-bce-became-strategic-assets-for-akkadian-expansion","url":"/categories/ancient-civilizations-secrets/akkadian-empire/uruk-trade-colonies-before-2300-bce-became-strategic-assets-for-akkadian-expansion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Akkadian rulers expanded westward, they inherited trade outposts established generations earlier by Uruk merchants."},{"title":"Uruk-Akkad Administrative Continuity Preserved Cuneiform Governance After 2154 BCE","slug":"uruk-akkad-administrative-continuity-preserved-cuneiform-governance-after-2154-bce","url":"/categories/ancient-civilizations-secrets/akkadian-empire/uruk-akkad-administrative-continuity-preserved-cuneiform-governance-after-2154-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even after the Akkadian Empire fractured, its administrative habits survived in successor states."},{"title":"Xenial Diplomatic Gift Exchanges Secured Akkadian Alliances in the 23rd Century BCE","slug":"xenial-diplomatic-gift-exchanges-secured-akkadian-alliances-in-the-23rd-century-bce","url":"/categories/ancient-civilizations-secrets/akkadian-empire/xenial-diplomatic-gift-exchanges-secured-akkadian-alliances-in-the-23rd-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before formal embassies, Akkadian rulers used strategic gift exchanges to secure political loyalty."},{"title":"Xenophon’s 401 BCE Account Preserved Memory of Earlier Akkadian Imperial Landscapes","slug":"xenophon-s-401-bce-account-preserved-memory-of-earlier-akkadian-imperial-landscapes","url":"/categories/ancient-civilizations-secrets/akkadian-empire/xenophon-s-401-bce-account-preserved-memory-of-earlier-akkadian-imperial-landscapes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nearly two millennia after Sargon, Greek mercenaries marched through territories once governed by Akkadian kings."},{"title":"Xeric Climate Shift Around 2200 BCE Coincided With Akkadian Agricultural Stress","slug":"xeric-climate-shift-around-2200-bce-coincided-with-akkadian-agricultural-stress","url":"/categories/ancient-civilizations-secrets/akkadian-empire/xeric-climate-shift-around-2200-bce-coincided-with-akkadian-agricultural-stress.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A multi-century drought event reshaped northern Mesopotamian farming at the height of Akkadian rule."},{"title":"Xerxes I Later Claimed Mesopotamian Titles Rooted in Akkadian Imperial Tradition","slug":"xerxes-i-later-claimed-mesopotamian-titles-rooted-in-akkadian-imperial-tradition","url":"/categories/ancient-civilizations-secrets/akkadian-empire/xerxes-i-later-claimed-mesopotamian-titles-rooted-in-akkadian-imperial-tradition.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nearly 1,700 years after Sargon, Persian kings adopted titles pioneered by Akkadian rulers."},{"title":"Yamhad Precursor Settlements Reflect Akkadian Economic Penetration of Northern Syria","slug":"yamhad-precursor-settlements-reflect-akkadian-economic-penetration-of-northern-syria","url":"/categories/ancient-civilizations-secrets/akkadian-empire/yamhad-precursor-settlements-reflect-akkadian-economic-penetration-of-northern-syria.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological strata beneath later Syrian kingdoms preserve traces of Akkadian influence."},{"title":"Yamhad Trade Links Extended Akkadian Commercial Reach Into Northern Syria","slug":"yamhad-trade-links-extended-akkadian-commercial-reach-into-northern-syria","url":"/categories/ancient-civilizations-secrets/akkadian-empire/yamhad-trade-links-extended-akkadian-commercial-reach-into-northern-syria.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian commercial influence reached deep into what is now northern Syria through early urban networks."},{"title":"Yarmouk River Campaigns Referenced in Akkadian Inscriptions Expanded Imperial Geography","slug":"yarmouk-river-campaigns-referenced-in-akkadian-inscriptions-expanded-imperial-geography","url":"/categories/ancient-civilizations-secrets/akkadian-empire/yarmouk-river-campaigns-referenced-in-akkadian-inscriptions-expanded-imperial-geography.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian inscriptions claim military reach as far west as the Levantine corridors."},{"title":"Yoke-Based Labor Systems Under Akkadian Rule Standardized Agricultural Output","slug":"yoke-based-labor-systems-under-akkadian-rule-standardized-agricultural-output","url":"/categories/ancient-civilizations-secrets/akkadian-empire/yoke-based-labor-systems-under-akkadian-rule-standardized-agricultural-output.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian administrators quantified farm labor down to the yoke, turning agriculture into a measurable state asset."},{"title":"Yoke-Based Taxation Records Reveal Akkadian Livestock Accounting Systems","slug":"yoke-based-taxation-records-reveal-akkadian-livestock-accounting-systems","url":"/categories/ancient-civilizations-secrets/akkadian-empire/yoke-based-taxation-records-reveal-akkadian-livestock-accounting-systems.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian administrators tracked livestock with numerical precision uncommon for the 23rd century BCE."},{"title":"Yoke-Standard Grain Quotas Formalized Akkadian Taxation Metrics","slug":"yoke-standard-grain-quotas-formalized-akkadian-taxation-metrics","url":"/categories/ancient-civilizations-secrets/akkadian-empire/yoke-standard-grain-quotas-formalized-akkadian-taxation-metrics.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian tax collectors calculated expected harvests by estimating plow teams before seeds touched soil."},{"title":"Zagros Frontier Fortifications Strengthened Akkadian Defense Lines","slug":"zagros-frontier-fortifications-strengthened-akkadian-defense-lines","url":"/categories/ancient-civilizations-secrets/akkadian-empire/zagros-frontier-fortifications-strengthened-akkadian-defense-lines.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Defending an empire meant fortifying mountain passes hundreds of kilometers from the capital."},{"title":"Zagros Highland Resource Extraction Fueled Akkadian Metallurgical Production","slug":"zagros-highland-resource-extraction-fueled-akkadian-metallurgical-production","url":"/categories/ancient-civilizations-secrets/akkadian-empire/zagros-highland-resource-extraction-fueled-akkadian-metallurgical-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bronze weapons forged in Mesopotamia often began as ore extracted from distant mountain slopes."},{"title":"Zagros Mountain Trade Routes Sustained Akkadian Silver Flow Before 2200 BCE","slug":"zagros-mountain-trade-routes-sustained-akkadian-silver-flow-before-2200-bce","url":"/categories/ancient-civilizations-secrets/akkadian-empire/zagros-mountain-trade-routes-sustained-akkadian-silver-flow-before-2200-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Akkadian treasury relied on mountain trade corridors that stretched hundreds of kilometers beyond Mesopotamia."},{"title":"Zagros Seasonal Campaign Timing Exposed Akkadian Dependence on Climate Windows","slug":"zagros-seasonal-campaign-timing-exposed-akkadian-dependence-on-climate-windows","url":"/categories/ancient-civilizations-secrets/akkadian-empire/zagros-seasonal-campaign-timing-exposed-akkadian-dependence-on-climate-windows.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian armies marched when mountain snowmelt allowed passage, not merely when kings desired conquest."},{"title":"Ziggurat Construction Under Akkadian Influence Reinforced Temple-State Integration","slug":"ziggurat-construction-under-akkadian-influence-reinforced-temple-state-integration","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ziggurat-construction-under-akkadian-influence-reinforced-temple-state-integration.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive temple platforms doubled as political statements during the Akkadian era."},{"title":"Ziggurat Labor Mobilization Demonstrated Akkadian Command Over Urban Workforces","slug":"ziggurat-labor-mobilization-demonstrated-akkadian-command-over-urban-workforces","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ziggurat-labor-mobilization-demonstrated-akkadian-command-over-urban-workforces.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Constructing monumental temple platforms required coordinated labor on a scale rare for the 24th century BCE."},{"title":"Ziggurat of Akkad Remains Unidentified Despite Extensive Mesopotamian Excavations","slug":"ziggurat-of-akkad-remains-unidentified-despite-extensive-mesopotamian-excavations","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ziggurat-of-akkad-remains-unidentified-despite-extensive-mesopotamian-excavations.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists still cannot conclusively identify the city of Akkad, capital of the first empire."},{"title":"Ziggurat of Ur Construction Around 2100 BCE Reflected Post-Akkadian State Revival","slug":"ziggurat-of-ur-construction-around-2100-bce-reflected-post-akkadian-state-revival","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ziggurat-of-ur-construction-around-2100-bce-reflected-post-akkadian-state-revival.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One of Mesopotamia’s most iconic temple towers rose shortly after the Akkadian Empire fell."},{"title":"Ziggurat Symbolism Reinforced Akkadian Claims of Divine Mandate","slug":"ziggurat-symbolism-reinforced-akkadian-claims-of-divine-mandate","url":"/categories/ancient-civilizations-secrets/akkadian-empire/ziggurat-symbolism-reinforced-akkadian-claims-of-divine-mandate.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Temple architecture visually elevated Akkadian kingship toward the heavens."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

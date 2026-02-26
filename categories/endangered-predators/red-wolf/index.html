@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Red Wolf</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Red Wolf</h1>
+  <p>Explore all facts in "Red Wolf".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Red Wolf</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adaptive Management Framework Continuously Revises Red Wolf Recovery Plans","slug":"adaptive-management-framework-continuously-revises-red-wolf-recovery-plans","url":"/categories/endangered-predators/red-wolf/adaptive-management-framework-continuously-revises-red-wolf-recovery-plans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator’s survival strategy is rewritten as conditions change."},{"title":"Adaptive Release Quotas Attempt to Stabilize Red Wolf Numbers Annually","slug":"adaptive-release-quotas-attempt-to-stabilize-red-wolf-numbers-annually","url":"/categories/endangered-predators/red-wolf/adaptive-release-quotas-attempt-to-stabilize-red-wolf-numbers-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Each year’s survival hinges on how many wolves are released from captivity."},{"title":"Alligator River Refuge Hosts the Only Wild Red Wolf Population on Earth","slug":"alligator-river-refuge-hosts-the-only-wild-red-wolf-population-on-earth","url":"/categories/endangered-predators/red-wolf/alligator-river-refuge-hosts-the-only-wild-red-wolf-population-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One coastal refuge in North Carolina holds the planet’s last wild red wolves."},{"title":"Atlantic Coast Hurricane Frequency Creates Compounding Risk for Red Wolves","slug":"atlantic-coast-hurricane-frequency-creates-compounding-risk-for-red-wolves","url":"/categories/endangered-predators/red-wolf/atlantic-coast-hurricane-frequency-creates-compounding-risk-for-red-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Multiple hurricanes within a single decade could erase this species twice over."},{"title":"Bacterial Disease Outbreaks Could Erase the Entire Wild Red Wolf Population","slug":"bacterial-disease-outbreaks-could-erase-the-entire-wild-red-wolf-population","url":"/categories/endangered-predators/red-wolf/bacterial-disease-outbreaks-could-erase-the-entire-wild-red-wolf-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One contagious pathogen could wipe out every wild red wolf within months."},{"title":"Bayou Ecosystems Once Anchored the Last Naturally Occurring Red Wolves","slug":"bayou-ecosystems-once-anchored-the-last-naturally-occurring-red-wolves","url":"/categories/endangered-predators/red-wolf/bayou-ecosystems-once-anchored-the-last-naturally-occurring-red-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The final wild survivors hid in Gulf Coast marshes before capture."},{"title":"Captive Breeding Studbooks Track Every Living Red Wolf Lineage","slug":"captive-breeding-studbooks-track-every-living-red-wolf-lineage","url":"/categories/endangered-predators/red-wolf/captive-breeding-studbooks-track-every-living-red-wolf-lineage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every red wolf alive is cataloged like a rare manuscript."},{"title":"Climate Change Intensifies Storm Surge Risk in Red Wolf Habitat","slug":"climate-change-intensifies-storm-surge-risk-in-red-wolf-habitat","url":"/categories/endangered-predators/red-wolf/climate-change-intensifies-storm-surge-risk-in-red-wolf-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rising seas threaten the only place this wolf survives in the wild."},{"title":"Court-Mandated Recovery Planning Requires Measurable Red Wolf Population Targets","slug":"court-mandated-recovery-planning-requires-measurable-red-wolf-population-targets","url":"/categories/endangered-predators/red-wolf/court-mandated-recovery-planning-requires-measurable-red-wolf-population-targets.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator’s survival is tied to numerical thresholds written into legal documents."},{"title":"Coyote Hybridization Crisis in Red Wolf Recovery Zones","slug":"coyote-hybridization-crisis-in-red-wolf-recovery-zones","url":"/categories/endangered-predators/red-wolf/coyote-hybridization-crisis-in-red-wolf-recovery-zones.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered wolf can vanish genetically without a single gunshot."},{"title":"Demographic Stochasticity Threatens Red Wolves at Low Population Levels","slug":"demographic-stochasticity-threatens-red-wolves-at-low-population-levels","url":"/categories/endangered-predators/red-wolf/demographic-stochasticity-threatens-red-wolves-at-low-population-levels.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Random chance alone could erase this species."},{"title":"Experimental Population Rule 1987 Allowed Red Wolf Release on Private Land","slug":"experimental-population-rule-1987-allowed-red-wolf-release-on-private-land","url":"/categories/endangered-predators/red-wolf/experimental-population-rule-1987-allowed-red-wolf-release-on-private-land.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A federal loophole is the only reason this wolf still walks free."},{"title":"Forensic Necropsies Reveal Human Causes Dominate Red Wolf Deaths","slug":"forensic-necropsies-reveal-human-causes-dominate-red-wolf-deaths","url":"/categories/endangered-predators/red-wolf/forensic-necropsies-reveal-human-causes-dominate-red-wolf-deaths.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Autopsies show people, not predators, kill most of these wolves."},{"title":"Fragmented Private Land Ownership Complicates Red Wolf Territory Expansion","slug":"fragmented-private-land-ownership-complicates-red-wolf-territory-expansion","url":"/categories/endangered-predators/red-wolf/fragmented-private-land-ownership-complicates-red-wolf-territory-expansion.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A patchwork of property lines limits how far this wolf can roam."},{"title":"Genetic Monitoring Laboratories Analyze Wild Red Wolf DNA Annually","slug":"genetic-monitoring-laboratories-analyze-wild-red-wolf-dna-annually","url":"/categories/endangered-predators/red-wolf/genetic-monitoring-laboratories-analyze-wild-red-wolf-dna-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every surviving wild red wolf is subject to laboratory genetic scrutiny."},{"title":"Gulf Coast 1970s Capture Operation Saved the Last Wild Red Wolves","slug":"gulf-coast-1970s-capture-operation-saved-the-last-wild-red-wolves","url":"/categories/endangered-predators/red-wolf/gulf-coast-1970s-capture-operation-saved-the-last-wild-red-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The final survivors were trapped just before total extinction."},{"title":"Habitat Fragmentation by Highways Isolates Red Wolf Packs","slug":"habitat-fragmentation-by-highways-isolates-red-wolf-packs","url":"/categories/endangered-predators/red-wolf/habitat-fragmentation-by-highways-isolates-red-wolf-packs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A strip of asphalt can split a wolf species in half."},{"title":"Insurance Population Concept Drives Red Wolf Captive Management Strategy","slug":"insurance-population-concept-drives-red-wolf-captive-management-strategy","url":"/categories/endangered-predators/red-wolf/insurance-population-concept-drives-red-wolf-captive-management-strategy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator survives because a backup population exists behind zoo barriers."},{"title":"Isolated Founder Effect Limits Red Wolf Genetic Diversity Today","slug":"isolated-founder-effect-limits-red-wolf-genetic-diversity-today","url":"/categories/endangered-predators/red-wolf/isolated-founder-effect-limits-red-wolf-genetic-diversity-today.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fourteen ancestors still dictate this predator’s genetic ceiling."},{"title":"Juvenile Mortality Rates Magnify Red Wolf Population Volatility","slug":"juvenile-mortality-rates-magnify-red-wolf-population-volatility","url":"/categories/endangered-predators/red-wolf/juvenile-mortality-rates-magnify-red-wolf-population-volatility.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Losing a single litter can shift this species toward extinction."},{"title":"Keystone Predator Role of Red Wolves Alters Mesopredator Dynamics","slug":"keystone-predator-role-of-red-wolves-alters-mesopredator-dynamics","url":"/categories/endangered-predators/red-wolf/keystone-predator-role-of-red-wolves-alters-mesopredator-dynamics.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Removing this mid-sized wolf reshaped entire food webs."},{"title":"Kinetic Dispersal of Juvenile Red Wolves Determines Population Stability","slug":"kinetic-dispersal-of-juvenile-red-wolves-determines-population-stability","url":"/categories/endangered-predators/red-wolf/kinetic-dispersal-of-juvenile-red-wolves-determines-population-stability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single wandering juvenile can decide whether a species expands or collapses."},{"title":"Legal Injunctions Forced Federal Agencies to Resume Red Wolf Releases","slug":"legal-injunctions-forced-federal-agencies-to-resume-red-wolf-releases","url":"/categories/endangered-predators/red-wolf/legal-injunctions-forced-federal-agencies-to-resume-red-wolf-releases.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A courtroom order restarted the breeding cycle of a nearly vanished predator."},{"title":"Low Effective Population Size Restricts Red Wolf Evolutionary Potential","slug":"low-effective-population-size-restricts-red-wolf-evolutionary-potential","url":"/categories/endangered-predators/red-wolf/low-effective-population-size-restricts-red-wolf-evolutionary-potential.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf’s future adaptation is capped by math."},{"title":"Maritime Climate Exposure Limits Expansion of Red Wolf Recovery Area","slug":"maritime-climate-exposure-limits-expansion-of-red-wolf-recovery-area","url":"/categories/endangered-predators/red-wolf/maritime-climate-exposure-limits-expansion-of-red-wolf-recovery-area.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Saltwater intrusion now threatens the only wild territory this wolf has left."},{"title":"Marshland Territories Provide Core Refuge for Remaining Red Wolves","slug":"marshland-territories-provide-core-refuge-for-remaining-red-wolves","url":"/categories/endangered-predators/red-wolf/marshland-territories-provide-core-refuge-for-remaining-red-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Swamp forests now shelter the planet’s last wild members of this species."},{"title":"Nonessential Experimental Status Limits Automatic Federal Land Restrictions","slug":"nonessential-experimental-status-limits-automatic-federal-land-restrictions","url":"/categories/endangered-predators/red-wolf/nonessential-experimental-status-limits-automatic-federal-land-restrictions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf survives under weaker protections than many endangered species."},{"title":"North Carolina Red Wolf Population Collapse to Fewer Than 20 by 2020","slug":"north-carolina-red-wolf-population-collapse-to-fewer-than-20-by-2020","url":"/categories/endangered-predators/red-wolf/north-carolina-red-wolf-population-collapse-to-fewer-than-20-by-2020.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A federally protected predator fell from over 100 to fewer than 20 in just over a decade."},{"title":"Ongoing Coyote Expansion Intensifies Genetic Pressure on Red Wolves","slug":"ongoing-coyote-expansion-intensifies-genetic-pressure-on-red-wolves","url":"/categories/endangered-predators/red-wolf/ongoing-coyote-expansion-intensifies-genetic-pressure-on-red-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A thriving cousin species could absorb this wolf out of existence."},{"title":"Population Peak of 130 Wild Red Wolves Fell Below 20 Within Two Decades","slug":"population-peak-of-130-wild-red-wolves-fell-below-20-within-two-decades","url":"/categories/endangered-predators/red-wolf/population-peak-of-130-wild-red-wolves-fell-below-20-within-two-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A recovery hailed as successful collapsed back toward extinction in less than 20 years."},{"title":"Quantified Territory of Red Wolves Shrunk to a Single 5-County Zone","slug":"quantified-territory-of-red-wolves-shrunk-to-a-single-5-county-zone","url":"/categories/endangered-predators/red-wolf/quantified-territory-of-red-wolves-shrunk-to-a-single-5-county-zone.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator that once ruled the Southeast now survives inside five North Carolina counties."},{"title":"Radiotelemetry Tracking Monitors Nearly Every Wild Red Wolf","slug":"radiotelemetry-tracking-monitors-nearly-every-wild-red-wolf","url":"/categories/endangered-predators/red-wolf/radiotelemetry-tracking-monitors-nearly-every-wild-red-wolf.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Biologists know the location of almost every remaining wild red wolf."},{"title":"Red Wolf 1980 Extinction Declaration and 1987 Lazarus Release","slug":"red-wolf-1980-extinction-declaration-and-1987-lazarus-release","url":"/categories/endangered-predators/red-wolf/red-wolf-1980-extinction-declaration-and-1987-lazarus-release.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator declared extinct in the wild was quietly released back into American swamps seven years later."},{"title":"Red Wolf Average Weight 50 to 80 Pounds Defies Apex Predator Expectations","slug":"red-wolf-average-weight-50-to-80-pounds-defies-apex-predator-expectations","url":"/categories/endangered-predators/red-wolf/red-wolf-average-weight-50-to-80-pounds-defies-apex-predator-expectations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator smaller than many family dogs once ruled the Southeast."},{"title":"Red Wolf Cross-Fostering Technique Inserts Captive Pups into Wild Dens","slug":"red-wolf-cross-fostering-technique-inserts-captive-pups-into-wild-dens","url":"/categories/endangered-predators/red-wolf/red-wolf-cross-fostering-technique-inserts-captive-pups-into-wild-dens.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Wild wolves are raising pups born in captivity without knowing it."},{"title":"Red Wolf Genetic Bottleneck from Fewer Than 20 Founders","slug":"red-wolf-genetic-bottleneck-from-fewer-than-20-founders","url":"/categories/endangered-predators/red-wolf/red-wolf-genetic-bottleneck-from-fewer-than-20-founders.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every living red wolf descends from fewer animals than fit on a school bus."},{"title":"Red Wolf Historical Range Spanned 1 Million Square Miles","slug":"red-wolf-historical-range-spanned-1-million-square-miles","url":"/categories/endangered-predators/red-wolf/red-wolf-historical-range-spanned-1-million-square-miles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator once roamed an area larger than modern-day India."},{"title":"Red Wolf Hurricane Vulnerability in Coastal Recovery Habitat","slug":"red-wolf-hurricane-vulnerability-in-coastal-recovery-habitat","url":"/categories/endangered-predators/red-wolf/red-wolf-hurricane-vulnerability-in-coastal-recovery-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single hurricane season could erase the planet’s only wild population."},{"title":"Red Wolf Legal Battles Under the Endangered Species Act 1973","slug":"red-wolf-legal-battles-under-the-endangered-species-act-1973","url":"/categories/endangered-predators/red-wolf/red-wolf-legal-battles-under-the-endangered-species-act-1973.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Courtroom rulings now shape whether this predator can exist in the wild."},{"title":"Red Wolf Lifespan in the Wild Rarely Exceeds 6 to 7 Years","slug":"red-wolf-lifespan-in-the-wild-rarely-exceeds-6-to-7-years","url":"/categories/endangered-predators/red-wolf/red-wolf-lifespan-in-the-wild-rarely-exceeds-6-to-7-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Most wild red wolves never reach a decade of life."},{"title":"Translocation of Captive-Born Wolves Requires Intensive Pre-Release Conditioning","slug":"translocation-of-captive-born-wolves-requires-intensive-pre-release-conditioning","url":"/categories/endangered-predators/red-wolf/translocation-of-captive-born-wolves-requires-intensive-pre-release-conditioning.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Captive wolves must be retrained to survive in a landscape their ancestors once dominated."},{"title":"United States Federal Bounty Programs Accelerated Red Wolf Eradication","slug":"united-states-federal-bounty-programs-accelerated-red-wolf-eradication","url":"/categories/endangered-predators/red-wolf/united-states-federal-bounty-programs-accelerated-red-wolf-eradication.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Government payments once rewarded the killing of this now-protected wolf."},{"title":"Unlawful Shootings Documented as Leading Cause of Red Wolf Mortality","slug":"unlawful-shootings-documented-as-leading-cause-of-red-wolf-mortality","url":"/categories/endangered-predators/red-wolf/unlawful-shootings-documented-as-leading-cause-of-red-wolf-mortality.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Illegal gunfire remains one of the greatest threats to a federally protected wolf."},{"title":"Vehicle Collision Data Show Roads Are Lethal Barriers for Red Wolves","slug":"vehicle-collision-data-show-roads-are-lethal-barriers-for-red-wolves","url":"/categories/endangered-predators/red-wolf/vehicle-collision-data-show-roads-are-lethal-barriers-for-red-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A highway strike can erase years of conservation planning in seconds."},{"title":"White-Tailed Deer Management Intersects with Red Wolf Survival","slug":"white-tailed-deer-management-intersects-with-red-wolf-survival","url":"/categories/endangered-predators/red-wolf/white-tailed-deer-management-intersects-with-red-wolf-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The fate of this predator is tied to the population of a common game species."},{"title":"Xeric Adaptability of Red Wolves Once Spanned Swamps to Dry Prairies","slug":"xeric-adaptability-of-red-wolves-once-spanned-swamps-to-dry-prairies","url":"/categories/endangered-predators/red-wolf/xeric-adaptability-of-red-wolves-once-spanned-swamps-to-dry-prairies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf survived in coastal swamps and dry prairies before humans narrowed its world."},{"title":"Y-Chromosome Evidence Clarified Red Wolf Genetic Distinction","slug":"y-chromosome-evidence-clarified-red-wolf-genetic-distinction","url":"/categories/endangered-predators/red-wolf/y-chromosome-evidence-clarified-red-wolf-genetic-distinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"DNA analysis revealed this wolf was neither coyote nor gray wolf."},{"title":"Yellow-Eyed Apex Predator Rebuilt from a Single Captive Lineage","slug":"yellow-eyed-apex-predator-rebuilt-from-a-single-captive-lineage","url":"/categories/endangered-predators/red-wolf/yellow-eyed-apex-predator-rebuilt-from-a-single-captive-lineage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire wild predator lineage now traces back to 14 carefully chosen animals."},{"title":"Zero Wild Red Wolves Remained Outside Captivity in 1980","slug":"zero-wild-red-wolves-remained-outside-captivity-in-1980","url":"/categories/endangered-predators/red-wolf/zero-wild-red-wolves-remained-outside-captivity-in-1980.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"By 1980, not a single verified red wolf roamed free."},{"title":"Zoological Institutions Safeguard More Red Wolves Than Exist in the Wild","slug":"zoological-institutions-safeguard-more-red-wolves-than-exist-in-the-wild","url":"/categories/endangered-predators/red-wolf/zoological-institutions-safeguard-more-red-wolves-than-exist-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More red wolves live behind fences than roam free."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

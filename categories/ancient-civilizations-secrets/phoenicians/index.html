@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phoenicians</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Phoenicians</h1>
+  <p>Explore all facts in "Phoenicians".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Phoenicians</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Achaemenid Tribute Records 6th Century BCE Document Phoenician Naval Taxation","slug":"achaemenid-tribute-records-6th-century-bce-document-phoenician-naval-taxation","url":"/categories/ancient-civilizations-secrets/phoenicians/achaemenid-tribute-records-6th-century-bce-document-phoenician-naval-taxation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"6th century BCE Persian tribute lists show Phoenician cities paying taxes while supplying fleets to imperial campaigns."},{"title":"Aphrodite-Astarte Syncretism 1st Millennium BCE Bridged Phoenician and Greek Belief","slug":"aphrodite-astarte-syncretism-1st-millennium-bce-bridged-phoenician-and-greek-belief","url":"/categories/ancient-civilizations-secrets/phoenicians/aphrodite-astarte-syncretism-1st-millennium-bce-bridged-phoenician-and-greek-belief.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 1st millennium BCE, Greek settlers were equating Phoenician Astarte with Aphrodite, blending two religious traditions."},{"title":"Arwad Island 1st Millennium BCE Maintained Phoenician Maritime Independence","slug":"arwad-island-1st-millennium-bce-maintained-phoenician-maritime-independence","url":"/categories/ancient-civilizations-secrets/phoenicians/arwad-island-1st-millennium-bce-maintained-phoenician-maritime-independence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Arwad, a small island off Syria, preserved Phoenician maritime identity even under successive empires."},{"title":"Astarte Cult Practices Connected Phoenician Ports Across the Mediterranean","slug":"astarte-cult-practices-connected-phoenician-ports-across-the-mediterranean","url":"/categories/ancient-civilizations-secrets/phoenicians/astarte-cult-practices-connected-phoenician-ports-across-the-mediterranean.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Devotion to Astarte linked Phoenician coastal cities through a shared network of temples and rituals."},{"title":"Baal Hammon Cult 3rd Century BCE Anchored Carthaginian State Religion","slug":"baal-hammon-cult-3rd-century-bce-anchored-carthaginian-state-religion","url":"/categories/ancient-civilizations-secrets/phoenicians/baal-hammon-cult-3rd-century-bce-anchored-carthaginian-state-religion.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 3rd century BCE, devotion to Baal Hammon formed the theological backbone of Carthaginian civic life."},{"title":"Baal Worship Centers Structured Phoenician Civic and Economic Authority","slug":"baal-worship-centers-structured-phoenician-civic-and-economic-authority","url":"/categories/ancient-civilizations-secrets/phoenicians/baal-worship-centers-structured-phoenician-civic-and-economic-authority.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Phoenician cities organized political authority around temple complexes that doubled as economic institutions."},{"title":"Bagradas River 255 BCE Battle Showed Carthaginian Elephant Warfare Effectiveness","slug":"bagradas-river-255-bce-battle-showed-carthaginian-elephant-warfare-effectiveness","url":"/categories/ancient-civilizations-secrets/phoenicians/bagradas-river-255-bce-battle-showed-carthaginian-elephant-warfare-effectiveness.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 255 BCE near the Bagradas River, Carthage deployed war elephants in a coordinated assault that shattered a Roman army."},{"title":"Byblos 3rd Millennium BCE Timber Exports Supplied Egyptian Shipbuilding","slug":"byblos-3rd-millennium-bce-timber-exports-supplied-egyptian-shipbuilding","url":"/categories/ancient-civilizations-secrets/phoenicians/byblos-3rd-millennium-bce-timber-exports-supplied-egyptian-shipbuilding.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"As early as the 3rd millennium BCE, cedar timber from Byblos was shipped to Egypt for royal construction projects."},{"title":"Byrsa Hill 8th Century BCE Became Administrative Core of Carthage","slug":"byrsa-hill-8th-century-bce-became-administrative-core-of-carthage","url":"/categories/ancient-civilizations-secrets/phoenicians/byrsa-hill-8th-century-bce-became-administrative-core-of-carthage.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carthage’s power radiated from Byrsa Hill, an 8th century BCE acropolis that concentrated governance, religion, and defense."},{"title":"Carthage 146 BCE Destruction Ended a Mediterranean Superpower in 17 Days","slug":"carthage-146-bce-destruction-ended-a-mediterranean-superpower-in-17-days","url":"/categories/ancient-civilizations-secrets/phoenicians/carthage-146-bce-destruction-ended-a-mediterranean-superpower-in-17-days.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 146 BCE, Rome erased Carthage after a siege that lasted three years and a final assault that burned for 17 days."},{"title":"Karthago Nova 206 BCE Became Roman Naval Base After Punic Defeat","slug":"karthago-nova-206-bce-became-roman-naval-base-after-punic-defeat","url":"/categories/ancient-civilizations-secrets/phoenicians/karthago-nova-206-bce-became-roman-naval-base-after-punic-defeat.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After 206 BCE, Rome transformed the former Phoenician stronghold of Karthago Nova into a strategic naval base."},{"title":"Kerkouane 4th Century BCE Preserved Intact Punic Urban Planning","slug":"kerkouane-4th-century-bce-preserved-intact-punic-urban-planning","url":"/categories/ancient-civilizations-secrets/phoenicians/kerkouane-4th-century-bce-preserved-intact-punic-urban-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Unlike Carthage, Kerkouane was never rebuilt after destruction, freezing a 4th century BCE Phoenician-descended city in place."},{"title":"Kition Cyprus 9th Century BCE Became a Strategic Phoenician Copper Hub","slug":"kition-cyprus-9th-century-bce-became-a-strategic-phoenician-copper-hub","url":"/categories/ancient-civilizations-secrets/phoenicians/kition-cyprus-9th-century-bce-became-a-strategic-phoenician-copper-hub.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 9th century BCE, Phoenician settlers transformed Kition in Cyprus into a copper export powerhouse."},{"title":"Kition Siege 351 BCE Exposed Limits of Phoenician Resistance to Persia","slug":"kition-siege-351-bce-exposed-limits-of-phoenician-resistance-to-persia","url":"/categories/ancient-civilizations-secrets/phoenicians/kition-siege-351-bce-exposed-limits-of-phoenician-resistance-to-persia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 351 BCE, Sidon’s rebellion against Persian authority triggered a siege that devastated one of Phoenicia’s principal cities."},{"title":"Kition Temple Inscriptions 5th Century BCE Reveal Phoenician-Persian Cooperation","slug":"kition-temple-inscriptions-5th-century-bce-reveal-phoenician-persian-cooperation","url":"/categories/ancient-civilizations-secrets/phoenicians/kition-temple-inscriptions-5th-century-bce-reveal-phoenician-persian-cooperation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"5th century BCE inscriptions at Kition document Phoenician religious life operating under Persian imperial oversight."},{"title":"Qalhat Trade Links Indicate Phoenician Contact with Arabian Maritime Routes","slug":"qalhat-trade-links-indicate-phoenician-contact-with-arabian-maritime-routes","url":"/categories/ancient-civilizations-secrets/phoenicians/qalhat-trade-links-indicate-phoenician-contact-with-arabian-maritime-routes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Evidence of Levantine maritime technology suggests Phoenician merchants tapped into Arabian trade corridors reaching the Indian Ocean."},{"title":"Qart Hadasht 209 BCE Capture Gave Rome Control of Iberian Silver Mines","slug":"qart-hadasht-209-bce-capture-gave-rome-control-of-iberian-silver-mines","url":"/categories/ancient-civilizations-secrets/phoenicians/qart-hadasht-209-bce-capture-gave-rome-control-of-iberian-silver-mines.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Rome captured Qart Hadasht in 209 BCE, it seized access to the silver mines financing Carthage’s war machine."},{"title":"Qart Hadasht 228 BCE Founded as Strategic Iberian Silver Capital","slug":"qart-hadasht-228-bce-founded-as-strategic-iberian-silver-capital","url":"/categories/ancient-civilizations-secrets/phoenicians/qart-hadasht-228-bce-founded-as-strategic-iberian-silver-capital.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 228 BCE, Carthage established Qart Hadasht in Iberia to secure vast silver mines and rebuild war finances."},{"title":"Quinquereme Warships Enabled Phoenician Naval Dominance Across 2,500 Kilometers","slug":"quinquereme-warships-enabled-phoenician-naval-dominance-across-2-500-kilometers","url":"/categories/ancient-civilizations-secrets/phoenicians/quinquereme-warships-enabled-phoenician-naval-dominance-across-2-500-kilometers.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Phoenician-descended fleets once projected naval power across more than 2,500 kilometers of coastline using multi-tiered warships."},{"title":"Qurayyat Ship Timbers Suggest Phoenician Open-Sea Navigation Beyond Coastal Sight","slug":"qurayyat-ship-timbers-suggest-phoenician-open-sea-navigation-beyond-coastal-sight","url":"/categories/ancient-civilizations-secrets/phoenicians/qurayyat-ship-timbers-suggest-phoenician-open-sea-navigation-beyond-coastal-sight.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Timber remains found near Oman hint that Phoenician-era sailors ventured beyond simple coastline hugging into open-sea routes."},{"title":"Sardinian Nora 9th Century BCE Preserved Early Phoenician Inscription Evidence","slug":"sardinian-nora-9th-century-bce-preserved-early-phoenician-inscription-evidence","url":"/categories/ancient-civilizations-secrets/phoenicians/sardinian-nora-9th-century-bce-preserved-early-phoenician-inscription-evidence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stone inscription discovered at Nora in Sardinia preserves some of the earliest Phoenician writing in the western Mediterranean."},{"title":"Sardinian Sulci 6th Century BCE Functioned as Punic Metallurgical Hub","slug":"sardinian-sulci-6th-century-bce-functioned-as-punic-metallurgical-hub","url":"/categories/ancient-civilizations-secrets/phoenicians/sardinian-sulci-6th-century-bce-functioned-as-punic-metallurgical-hub.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 6th century BCE, Sulci in Sardinia processed regional metals for export across Phoenician-descended trade networks."},{"title":"Sicilian Motya 397 BCE Destruction Exposed Phoenician Defensive Engineering","slug":"sicilian-motya-397-bce-destruction-exposed-phoenician-defensive-engineering","url":"/categories/ancient-civilizations-secrets/phoenicians/sicilian-motya-397-bce-destruction-exposed-phoenician-defensive-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Dionysius I attacked Motya in 397 BCE, he confronted fortified walls engineered to resist amphibious assault."},{"title":"Sicilian Panormus 254 BCE Shifted from Punic Control to Roman Administration","slug":"sicilian-panormus-254-bce-shifted-from-punic-control-to-roman-administration","url":"/categories/ancient-civilizations-secrets/phoenicians/sicilian-panormus-254-bce-shifted-from-punic-control-to-roman-administration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 254 BCE, Rome captured Panormus, breaking a key link in the Phoenician-descended Sicilian trade network."},{"title":"Sidon Glass Workshops 1st Millennium BCE Advanced Early Industrial Chemistry","slug":"sidon-glass-workshops-1st-millennium-bce-advanced-early-industrial-chemistry","url":"/categories/ancient-civilizations-secrets/phoenicians/sidon-glass-workshops-1st-millennium-bce-advanced-early-industrial-chemistry.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Phoenician artisans in Sidon mass-produced glass centuries before Rome industrialized the craft."},{"title":"Tanit Symbol 5th Century BCE Unified Carthaginian Religious Identity","slug":"tanit-symbol-5th-century-bce-unified-carthaginian-religious-identity","url":"/categories/ancient-civilizations-secrets/phoenicians/tanit-symbol-5th-century-bce-unified-carthaginian-religious-identity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A simple geometric emblem known as the Tanit symbol appeared across Carthaginian sites in the 5th century BCE, signaling shared belief across an empire."},{"title":"Tharros Sardinia 8th Century BCE Showed Phoenician Westward Expansion","slug":"tharros-sardinia-8th-century-bce-showed-phoenician-westward-expansion","url":"/categories/ancient-civilizations-secrets/phoenicians/tharros-sardinia-8th-century-bce-showed-phoenician-westward-expansion.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 8th century BCE, Phoenician merchants had established Tharros in Sardinia as a gateway to western Mediterranean trade."},{"title":"Tophet of Carthage 4th Century BCE Reveals Contested Ritual Practices","slug":"tophet-of-carthage-4th-century-bce-reveals-contested-ritual-practices","url":"/categories/ancient-civilizations-secrets/phoenicians/tophet-of-carthage-4th-century-bce-reveals-contested-ritual-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Carthage uncovered thousands of urns in a sanctuary that still fuels debate over 4th century BCE ritual practice."},{"title":"Tophet of Motya 6th Century BCE Mirrors Carthaginian Ritual Architecture","slug":"tophet-of-motya-6th-century-bce-mirrors-carthaginian-ritual-architecture","url":"/categories/ancient-civilizations-secrets/phoenicians/tophet-of-motya-6th-century-bce-mirrors-carthaginian-ritual-architecture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Motya uncovered a tophet sanctuary echoing religious structures found in Carthage."},{"title":"Tyre 332 BCE Siege Required Alexander to Build a 800-Meter Causeway","slug":"tyre-332-bce-siege-required-alexander-to-build-a-800-meter-causeway","url":"/categories/ancient-civilizations-secrets/phoenicians/tyre-332-bce-siege-required-alexander-to-build-a-800-meter-causeway.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 332 BCE, Alexander the Great turned an island city into a peninsula by constructing an 800-meter stone causeway under fire."},{"title":"Ugaritic Alphabet 14th Century BCE Influenced Phoenician Script Evolution","slug":"ugaritic-alphabet-14th-century-bce-influenced-phoenician-script-evolution","url":"/categories/ancient-civilizations-secrets/phoenicians/ugaritic-alphabet-14th-century-bce-influenced-phoenician-script-evolution.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 14th century BCE cuneiform alphabet at Ugarit helped shape the streamlined writing system later spread by Phoenician traders."},{"title":"Uluburun Shipwreck 1300 BCE Cargo Revealed 10 Tons of Bronze Trade","slug":"uluburun-shipwreck-1300-bce-cargo-revealed-10-tons-of-bronze-trade","url":"/categories/ancient-civilizations-secrets/phoenicians/uluburun-shipwreck-1300-bce-cargo-revealed-10-tons-of-bronze-trade.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single Late Bronze Age ship sank around 1300 BCE carrying enough copper and tin to arm a small kingdom."},{"title":"Utica 1100 BCE Preceded Carthage as North Africa’s Oldest Phoenician Colony","slug":"utica-1100-bce-preceded-carthage-as-north-africa-s-oldest-phoenician-colony","url":"/categories/ancient-civilizations-secrets/phoenicians/utica-1100-bce-preceded-carthage-as-north-africa-s-oldest-phoenician-colony.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before Carthage dominated headlines, Utica was already operating as a Phoenician trading colony in North Africa."},{"title":"Utica 203 BCE Alliance Shift Accelerated Rome’s North African Consolidation","slug":"utica-203-bce-alliance-shift-accelerated-rome-s-north-african-consolidation","url":"/categories/ancient-civilizations-secrets/phoenicians/utica-203-bce-alliance-shift-accelerated-rome-s-north-african-consolidation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 203 BCE, Utica’s decision to align with Rome hastened the unraveling of Carthaginian regional dominance."},{"title":"Utica Harbor Silting 2nd Century BCE Reduced Strategic Maritime Capacity","slug":"utica-harbor-silting-2nd-century-bce-reduced-strategic-maritime-capacity","url":"/categories/ancient-civilizations-secrets/phoenicians/utica-harbor-silting-2nd-century-bce-reduced-strategic-maritime-capacity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 2nd century BCE, gradual river silting began undermining Utica’s once-strategic harbor access."},{"title":"Xanthippus 255 BCE Spartan General Reorganized Carthaginian Army Structure","slug":"xanthippus-255-bce-spartan-general-reorganized-carthaginian-army-structure","url":"/categories/ancient-civilizations-secrets/phoenicians/xanthippus-255-bce-spartan-general-reorganized-carthaginian-army-structure.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 255 BCE, a foreign mercenary commander rebuilt Carthage’s shattered army in weeks and nearly reversed Rome’s invasion."},{"title":"Xanthos Valley 540 BCE Sidonian Fleet Participation Strengthened Persian Control","slug":"xanthos-valley-540-bce-sidonian-fleet-participation-strengthened-persian-control","url":"/categories/ancient-civilizations-secrets/phoenicians/xanthos-valley-540-bce-sidonian-fleet-participation-strengthened-persian-control.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 540 BCE, Phoenician fleets from Sidon were helping Persia secure control over coastal Anatolia."},{"title":"Xanthus Inscription 4th Century BCE Preserved Phoenician Diplomatic Language","slug":"xanthus-inscription-4th-century-bce-preserved-phoenician-diplomatic-language","url":"/categories/ancient-civilizations-secrets/phoenicians/xanthus-inscription-4th-century-bce-preserved-phoenician-diplomatic-language.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A trilingual inscription carved in the 4th century BCE preserved Phoenician political language centuries after its homeland declined."},{"title":"Xeric Cedar Forest Management Sustained Phoenician Shipbuilding for Centuries","slug":"xeric-cedar-forest-management-sustained-phoenician-shipbuilding-for-centuries","url":"/categories/ancient-civilizations-secrets/phoenicians/xeric-cedar-forest-management-sustained-phoenician-shipbuilding-for-centuries.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Phoenician naval expansion depended on carefully managed cedar forests that survived in semi-arid mountain climates."},{"title":"Xerxes I 5th Century BCE Relied on Phoenician Fleets During Persian Wars","slug":"xerxes-i-5th-century-bce-relied-on-phoenician-fleets-during-persian-wars","url":"/categories/ancient-civilizations-secrets/phoenicians/xerxes-i-5th-century-bce-relied-on-phoenician-fleets-during-persian-wars.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 480 BCE, Xerxes I launched a massive naval campaign against Greece powered largely by Phoenician ship crews."},{"title":"Yamm Treaty Texts 8th Century BCE Show Phoenician Oath Diplomacy","slug":"yamm-treaty-texts-8th-century-bce-show-phoenician-oath-diplomacy","url":"/categories/ancient-civilizations-secrets/phoenicians/yamm-treaty-texts-8th-century-bce-show-phoenician-oath-diplomacy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"8th century BCE Levantine treaty texts reveal Phoenician cities binding agreements through divine oath formulas enforceable across borders."},{"title":"Yarmouk Trade Corridors Linked Phoenician Ports to Inland Caravan Networks","slug":"yarmouk-trade-corridors-linked-phoenician-ports-to-inland-caravan-networks","url":"/categories/ancient-civilizations-secrets/phoenicians/yarmouk-trade-corridors-linked-phoenician-ports-to-inland-caravan-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Phoenician prosperity depended not only on ships but on caravan corridors stretching deep into the Levantine interior."},{"title":"Yavne Yam Harbor 7th Century BCE Reveals Phoenician Coastal Engineering","slug":"yavne-yam-harbor-7th-century-bce-reveals-phoenician-coastal-engineering","url":"/categories/ancient-civilizations-secrets/phoenicians/yavne-yam-harbor-7th-century-bce-reveals-phoenician-coastal-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological layers at Yavne Yam show 7th century BCE harbor fortifications engineered to manage both trade and invasion risk."},{"title":"Yehawmilk Inscription 5th Century BCE Documents Temple-State Governance in Byblos","slug":"yehawmilk-inscription-5th-century-bce-documents-temple-state-governance-in-byblos","url":"/categories/ancient-civilizations-secrets/phoenicians/yehawmilk-inscription-5th-century-bce-documents-temple-state-governance-in-byblos.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 5th century BCE royal inscription from Byblos details how temple construction reinforced civic authority under foreign rule."},{"title":"Yoke of Tribute 7th Century BCE Bound Tyre to Assyrian Imperial Economy","slug":"yoke-of-tribute-7th-century-bce-bound-tyre-to-assyrian-imperial-economy","url":"/categories/ancient-civilizations-secrets/phoenicians/yoke-of-tribute-7th-century-bce-bound-tyre-to-assyrian-imperial-economy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 7th century BCE, Tyre paid tribute to Assyria while maintaining profitable maritime trade networks."},{"title":"Zama 202 BCE Battle Ended Phoenician Naval Supremacy in North Africa","slug":"zama-202-bce-battle-ended-phoenician-naval-supremacy-in-north-africa","url":"/categories/ancient-civilizations-secrets/phoenicians/zama-202-bce-battle-ended-phoenician-naval-supremacy-in-north-africa.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 202 BCE, a single battlefield defeat at Zama dismantled the military backbone of a Phoenician-descended empire."},{"title":"Zancle Strait 8th Century BCE Enabled Phoenician-Greek Maritime Competition","slug":"zancle-strait-8th-century-bce-enabled-phoenician-greek-maritime-competition","url":"/categories/ancient-civilizations-secrets/phoenicians/zancle-strait-8th-century-bce-enabled-phoenician-greek-maritime-competition.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Control over the narrow waters near Zancle in the 8th century BCE shaped competition between Phoenician traders and emerging Greek colonies."},{"title":"Zerzevan Fortress Finds Include Phoenician-Style Maritime Artifacts in Anatolia","slug":"zerzevan-fortress-finds-include-phoenician-style-maritime-artifacts-in-anatolia","url":"/categories/ancient-civilizations-secrets/phoenicians/zerzevan-fortress-finds-include-phoenician-style-maritime-artifacts-in-anatolia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts found in Anatolian fortification layers reveal the wide diffusion of Phoenician maritime material culture."},{"title":"Zinc-Based Purple Dye Production in Phoenicia Required 12,000 Shellfish Per Gram","slug":"zinc-based-purple-dye-production-in-phoenicia-required-12-000-shellfish-per-gram","url":"/categories/ancient-civilizations-secrets/phoenicians/zinc-based-purple-dye-production-in-phoenicia-required-12-000-shellfish-per-gram.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Producing a single gram of Tyrian purple dye could require crushing up to 12,000 sea snails."},{"title":"Ziz Bird Mythology Reflected Phoenician Maritime Cosmology","slug":"ziz-bird-mythology-reflected-phoenician-maritime-cosmology","url":"/categories/ancient-civilizations-secrets/phoenicians/ziz-bird-mythology-reflected-phoenician-maritime-cosmology.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Phoenician mythic imagery included colossal creatures that mirrored the scale and unpredictability of the sea they navigated."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

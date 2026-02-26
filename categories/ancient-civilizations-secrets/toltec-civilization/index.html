@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toltec Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Toltec Civilization</h1>
+  <p>Explore all facts in "Toltec Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Toltec Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Atlantean Warrior Symbolism","slug":"atlantean-warrior-symbolism","url":"/categories/ancient-civilizations-secrets/toltec-civilization/atlantean-warrior-symbolism.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec Atlantean warriors embodied both military might and spiritual guardianship, reflected in sculpture and ceremony."},{"title":"Ballcourts and Civic Rituals","slug":"ballcourts-and-civic-rituals","url":"/categories/ancient-civilizations-secrets/toltec-civilization/ballcourts-and-civic-rituals.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec ballcourts were multifunctional spaces for sport, ritual, and social negotiation."},{"title":"Colossal Atlantean Sculptures","slug":"colossal-atlantean-sculptures","url":"/categories/ancient-civilizations-secrets/toltec-civilization/colossal-atlantean-sculptures.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec sculptors created massive Atlantean figures that combined structural function with religious symbolism."},{"title":"Defensive Walls of Tula","slug":"defensive-walls-of-tula","url":"/categories/ancient-civilizations-secrets/toltec-civilization/defensive-walls-of-tula.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec cities, including Tula, were fortified with walls and gates that blended military and ceremonial functions."},{"title":"Diverse Toltec Urban Centers","slug":"diverse-toltec-urban-centers","url":"/categories/ancient-civilizations-secrets/toltec-civilization/diverse-toltec-urban-centers.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec influence spread through multiple urban centers, each reflecting regional adaptation of culture, architecture, and religion."},{"title":"Eagle Warrior Societies","slug":"eagle-warrior-societies","url":"/categories/ancient-civilizations-secrets/toltec-civilization/eagle-warrior-societies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec eagle warrior societies served as elite military and religious fraternities, shaping civic and ceremonial life."},{"title":"Eagle Warrior Training Grounds","slug":"eagle-warrior-training-grounds","url":"/categories/ancient-civilizations-secrets/toltec-civilization/eagle-warrior-training-grounds.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec eagle warriors trained in specialized grounds that combined martial skill, ritual, and social education."},{"title":"Feathered Serpent Ritual Implements","slug":"feathered-serpent-ritual-implements","url":"/categories/ancient-civilizations-secrets/toltec-civilization/feathered-serpent-ritual-implements.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs crafted feathered serpent-themed implements for ceremonies honoring Kukulkan and other deities."},{"title":"Fluted Atlantean Columns","slug":"fluted-atlantean-columns","url":"/categories/ancient-civilizations-secrets/toltec-civilization/fluted-atlantean-columns.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec engineers carved massive fluted columns to support temples and convey cosmological narratives."},{"title":"Golden Jaguar Ceremonies","slug":"golden-jaguar-ceremonies","url":"/categories/ancient-civilizations-secrets/toltec-civilization/golden-jaguar-ceremonies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec elites used jaguar symbolism in ceremonies to project power and divine connection across Tula."},{"title":"Golden Sun Disk Ceremonies","slug":"golden-sun-disk-ceremonies","url":"/categories/ancient-civilizations-secrets/toltec-civilization/golden-sun-disk-ceremonies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs created golden sun disks for rituals that symbolized cosmic order and royal authority."},{"title":"Harvest Festivals Aligned with Venus","slug":"harvest-festivals-aligned-with-venus","url":"/categories/ancient-civilizations-secrets/toltec-civilization/harvest-festivals-aligned-with-venus.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec harvests were scheduled around Venus cycles, merging agriculture with ritual observation."},{"title":"Human Sacrifice Astronomy Correlation","slug":"human-sacrifice-astronomy-correlation","url":"/categories/ancient-civilizations-secrets/toltec-civilization/human-sacrifice-astronomy-correlation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec sacrifices were often scheduled to coincide with precise astronomical events, emphasizing cosmic order."},{"title":"Hunting and Sacrificial Integration","slug":"hunting-and-sacrificial-integration","url":"/categories/ancient-civilizations-secrets/toltec-civilization/hunting-and-sacrificial-integration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs integrated hunting practices with ceremonial sacrifice to reinforce social hierarchy and ritual precision."},{"title":"Iztapan Fortress Systems","slug":"iztapan-fortress-systems","url":"/categories/ancient-civilizations-secrets/toltec-civilization/iztapan-fortress-systems.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec fortresses at Iztapan combined defense, ritual, and administrative functions, showcasing strategic planning."},{"title":"Iztapan Military Organization","slug":"iztapan-military-organization","url":"/categories/ancient-civilizations-secrets/toltec-civilization/iztapan-military-organization.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec armies combined disciplined training with religious ritual, structuring warfare as both civic duty and spiritual practice."},{"title":"Jaguar Symbolism in Governance","slug":"jaguar-symbolism-in-governance","url":"/categories/ancient-civilizations-secrets/toltec-civilization/jaguar-symbolism-in-governance.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs incorporated jaguar imagery into governance, reinforcing authority, martial prowess, and religious legitimacy."},{"title":"Jaguar Warrior Guilds","slug":"jaguar-warrior-guilds","url":"/categories/ancient-civilizations-secrets/toltec-civilization/jaguar-warrior-guilds.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec jaguar warrior guilds combined elite military training with ceremonial duties to enforce social order."},{"title":"Kukulkan Feathered Serpent Symbolism","slug":"kukulkan-feathered-serpent-symbolism","url":"/categories/ancient-civilizations-secrets/toltec-civilization/kukulkan-feathered-serpent-symbolism.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs popularized the Kukulkan feathered serpent, influencing religious iconography across Mesoamerica."},{"title":"Kukulkan Influence on Mesoamerican Astronomy","slug":"kukulkan-influence-on-mesoamerican-astronomy","url":"/categories/ancient-civilizations-secrets/toltec-civilization/kukulkan-influence-on-mesoamerican-astronomy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec astronomers influenced later Mesoamerican civilizations through advanced calendrical and Venus-tracking techniques."},{"title":"Kukulkan Pyramid Influence","slug":"kukulkan-pyramid-influence","url":"/categories/ancient-civilizations-secrets/toltec-civilization/kukulkan-pyramid-influence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec constructions dedicated to Kukulkan shaped architectural and ritual practices for centuries in Mesoamerica."},{"title":"Lava Stone Infrastructure in Tula","slug":"lava-stone-infrastructure-in-tula","url":"/categories/ancient-civilizations-secrets/toltec-civilization/lava-stone-infrastructure-in-tula.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec engineers used volcanic lava stone to construct durable streets, pyramids, and drainage systems, showcasing early urban planning."},{"title":"Lava Stone Urban Engineering","slug":"lava-stone-urban-engineering","url":"/categories/ancient-civilizations-secrets/toltec-civilization/lava-stone-urban-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs used volcanic lava stone to construct durable urban infrastructure, including streets, pyramids, and drainage."},{"title":"Mercantile Influence of Toltec Trade","slug":"mercantile-influence-of-toltec-trade","url":"/categories/ancient-civilizations-secrets/toltec-civilization/mercantile-influence-of-toltec-trade.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec merchants established trade networks that connected distant Mesoamerican regions, spreading culture and goods."},{"title":"Mesoamerican Metallurgy Innovations","slug":"mesoamerican-metallurgy-innovations","url":"/categories/ancient-civilizations-secrets/toltec-civilization/mesoamerican-metallurgy-innovations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec craftsmen pioneered early copper and alloy techniques that influenced later civilizations across Mesoamerica."},{"title":"Northern Trade Outposts","slug":"northern-trade-outposts","url":"/categories/ancient-civilizations-secrets/toltec-civilization/northern-trade-outposts.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs established northern outposts to secure trade routes, resources, and cultural influence beyond central Mexico."},{"title":"Obsidian Crafting and Toltec Economy","slug":"obsidian-crafting-and-toltec-economy","url":"/categories/ancient-civilizations-secrets/toltec-civilization/obsidian-crafting-and-toltec-economy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec artisans transformed obsidian into weapons and ceremonial tools, fueling both warfare and ritual life."},{"title":"Obsidian Weaponry Networks","slug":"obsidian-weaponry-networks","url":"/categories/ancient-civilizations-secrets/toltec-civilization/obsidian-weaponry-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec mastery of obsidian enabled advanced weaponry and extensive trade networks across Mesoamerica."},{"title":"Pyramid of Tlahuizcalpantecuhtli","slug":"pyramid-of-tlahuizcalpantecuhtli","url":"/categories/ancient-civilizations-secrets/toltec-civilization/pyramid-of-tlahuizcalpantecuhtli.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs built a massive pyramid dedicated to Tlahuizcalpantecuhtli, the morning star deity, symbolizing cosmic governance."},{"title":"Pyramids of Quetzalcoatl","slug":"pyramids-of-quetzalcoatl","url":"/categories/ancient-civilizations-secrets/toltec-civilization/pyramids-of-quetzalcoatl.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec pyramids dedicated to Quetzalcoatl combined astronomical precision, religious practice, and civic authority."},{"title":"Quetzalcoatl Cultural Legacy","slug":"quetzalcoatl-cultural-legacy","url":"/categories/ancient-civilizations-secrets/toltec-civilization/quetzalcoatl-cultural-legacy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec reverence for Quetzalcoatl influenced religion, art, and governance across later Mesoamerican civilizations."},{"title":"Quetzalcoatl Temples of the Toltecs","slug":"quetzalcoatl-temples-of-the-toltecs","url":"/categories/ancient-civilizations-secrets/toltec-civilization/quetzalcoatl-temples-of-the-toltecs.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec priests constructed enormous temples aligned precisely with Venus's cycles, a celestial obsession that dominated ritual life."},{"title":"Quinine Trade and Toltec Medicine","slug":"quinine-trade-and-toltec-medicine","url":"/categories/ancient-civilizations-secrets/toltec-civilization/quinine-trade-and-toltec-medicine.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs utilized natural quinine-like plants to treat fevers, demonstrating early pharmacological knowledge."},{"title":"Ritual Sacrifice Practices","slug":"ritual-sacrifice-practices","url":"/categories/ancient-civilizations-secrets/toltec-civilization/ritual-sacrifice-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec religious life included ritual sacrifices believed essential for cosmic and agricultural balance."},{"title":"Ritualistic Music and Instruments","slug":"ritualistic-music-and-instruments","url":"/categories/ancient-civilizations-secrets/toltec-civilization/ritualistic-music-and-instruments.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs used music in ceremonies to synchronize ritual, dance, and community engagement."},{"title":"Sacred Cenotes and Ritual Offerings","slug":"sacred-cenotes-and-ritual-offerings","url":"/categories/ancient-civilizations-secrets/toltec-civilization/sacred-cenotes-and-ritual-offerings.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs deposited ritual offerings in sacred cenotes to honor deities and secure agricultural fertility."},{"title":"Temple of the Morning Star","slug":"temple-of-the-morning-star","url":"/categories/ancient-civilizations-secrets/toltec-civilization/temple-of-the-morning-star.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Toltecs built the Temple of the Morning Star to observe celestial events and guide ritual ceremonies."},{"title":"Uaxactun Toltec Art Influence","slug":"uaxactun-toltec-art-influence","url":"/categories/ancient-civilizations-secrets/toltec-civilization/uaxactun-toltec-art-influence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec artistic motifs, including warriors and feathered serpents, spread across Mesoamerica, leaving a lasting aesthetic legacy."},{"title":"Uaxactun Toltec Settlements","slug":"uaxactun-toltec-settlements","url":"/categories/ancient-civilizations-secrets/toltec-civilization/uaxactun-toltec-settlements.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec influence reached Uaxactun, integrating architecture, ritual, and astronomical observation into local life."},{"title":"Uprising and Tula Decline","slug":"uprising-and-tula-decline","url":"/categories/ancient-civilizations-secrets/toltec-civilization/uprising-and-tula-decline.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Internal rebellion and ecological stress contributed to the Toltec capital Tula’s eventual decline around 1175 CE."},{"title":"Venus Observatories and Calendrics","slug":"venus-observatories-and-calendrics","url":"/categories/ancient-civilizations-secrets/toltec-civilization/venus-observatories-and-calendrics.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltecs constructed observatories to track Venus, integrating astronomy into ritual, agriculture, and governance."},{"title":"Venus-Based Agricultural Calendars","slug":"venus-based-agricultural-calendars","url":"/categories/ancient-civilizations-secrets/toltec-civilization/venus-based-agricultural-calendars.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec farmers aligned planting and harvesting cycles with Venus’s movements, integrating astronomy into agriculture."},{"title":"Xochicalco Astronomical Observatories","slug":"xochicalco-astronomical-observatories","url":"/categories/ancient-civilizations-secrets/toltec-civilization/xochicalco-astronomical-observatories.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec influence extended to Xochicalco, where astronomical observatories guided ritual and civic life."},{"title":"Xochicalco Trade Networks","slug":"xochicalco-trade-networks","url":"/categories/ancient-civilizations-secrets/toltec-civilization/xochicalco-trade-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec merchants established long-distance trade routes that spanned hundreds of kilometers, linking diverse Mesoamerican economies."},{"title":"Xolotl Myth Integration","slug":"xolotl-myth-integration","url":"/categories/ancient-civilizations-secrets/toltec-civilization/xolotl-myth-integration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec narratives of Xolotl, the twin deity, linked underworld journeys with civic and ritual practices."},{"title":"Yohualtepec Ceremonial Plaza","slug":"yohualtepec-ceremonial-plaza","url":"/categories/ancient-civilizations-secrets/toltec-civilization/yohualtepec-ceremonial-plaza.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec ceremonial plazas like Yohualtepec served as centers for ritual, social, and civic coordination."},{"title":"Yohualticitl Night Rituals","slug":"yohualticitl-night-rituals","url":"/categories/ancient-civilizations-secrets/toltec-civilization/yohualticitl-night-rituals.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec night rituals, or Yohualticitl, involved complex ceremonies that merged astronomy, religion, and social order."},{"title":"Yohualticitl Ritual Warfare","slug":"yohualticitl-ritual-warfare","url":"/categories/ancient-civilizations-secrets/toltec-civilization/yohualticitl-ritual-warfare.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec warriors engaged in ritualized combat designed to honor deities rather than conquer territory, blending religion and military discipline."},{"title":"Zacuala Ceremonial Architecture","slug":"zacuala-ceremonial-architecture","url":"/categories/ancient-civilizations-secrets/toltec-civilization/zacuala-ceremonial-architecture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec ceremonial centers at Zacuala were constructed to reflect cosmic order and political authority."},{"title":"Zacuala Ceremonial Centers","slug":"zacuala-ceremonial-centers","url":"/categories/ancient-civilizations-secrets/toltec-civilization/zacuala-ceremonial-centers.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Toltec ceremonial centers in Zacuala were designed as cosmological microcosms, mirroring celestial and terrestrial order."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

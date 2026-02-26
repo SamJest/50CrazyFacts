@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moche Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Moche Civilization</h1>
+  <p>Explore all facts in "Moche Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Moche Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adobe Pyramid Construction at Huaca del Sol Moved Over 140 Million Bricks","slug":"adobe-pyramid-construction-at-huaca-del-sol-moved-over-140-million-bricks","url":"/categories/ancient-civilizations-secrets/moche-civilization/adobe-pyramid-construction-at-huaca-del-sol-moved-over-140-million-bricks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Huaca del Sol required an estimated 140 million adobe bricks, each stamped with community identifiers that functioned like a labor tax ledger."},{"title":"Aqueduct Systems Channeled Mountain Water into Moche Coastal Valleys","slug":"aqueduct-systems-channeled-mountain-water-into-moche-coastal-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/aqueduct-systems-channeled-mountain-water-into-moche-coastal-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineered channels diverted Andean runoff to sustain agriculture and ceremonial complexes in arid coastal zones."},{"title":"Blood Ritual Iconography in Moche Ceramics Documented Human Sacrifice Scenes","slug":"blood-ritual-iconography-in-moche-ceramics-documented-human-sacrifice-scenes","url":"/categories/ancient-civilizations-secrets/moche-civilization/blood-ritual-iconography-in-moche-ceramics-documented-human-sacrifice-scenes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fineline ceramics from the Moche period depict bound prisoners and ritual blood collection with forensic-level anatomical detail."},{"title":"Brick Stamp Inscriptions Recorded Labor Contributions Across Moche Communities","slug":"brick-stamp-inscriptions-recorded-labor-contributions-across-moche-communities","url":"/categories/ancient-civilizations-secrets/moche-civilization/brick-stamp-inscriptions-recorded-labor-contributions-across-moche-communities.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Millions of adobe bricks bear maker marks, functioning as a public ledger of workforce participation in monumental projects."},{"title":"Cerro Blanco Volcano Eruption May Have Intensified 6th Century Moche Flood Cycles","slug":"cerro-blanco-volcano-eruption-may-have-intensified-6th-century-moche-flood-cycles","url":"/categories/ancient-civilizations-secrets/moche-civilization/cerro-blanco-volcano-eruption-may-have-intensified-6th-century-moche-flood-cycles.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A volcanic eruption more than 200 kilometers away likely amplified climate shocks that destabilized Moche irrigation systems in the 6th century."},{"title":"El Brujo Mummy Revealed a 1,600 Year Old Female Moche Ruler","slug":"el-brujo-mummy-revealed-a-1-600-year-old-female-moche-ruler","url":"/categories/ancient-civilizations-secrets/moche-civilization/el-brujo-mummy-revealed-a-1-600-year-old-female-moche-ruler.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 2005, archaeologists uncovered a tattooed woman buried with war clubs and regalia, challenging assumptions about male-only rule in Moche society."},{"title":"Elite Tomb Riches Reveal Long-Distance Trade Networks in Moche Period","slug":"elite-tomb-riches-reveal-long-distance-trade-networks-in-moche-period","url":"/categories/ancient-civilizations-secrets/moche-civilization/elite-tomb-riches-reveal-long-distance-trade-networks-in-moche-period.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Precious metals and exotic shells in tombs indicate economic and ceremonial connections spanning hundreds of kilometers."},{"title":"Festive Sacrificial Feasts Structured Religious Hierarchies in Moche Ceremonies","slug":"festive-sacrificial-feasts-structured-religious-hierarchies-in-moche-ceremonies","url":"/categories/ancient-civilizations-secrets/moche-civilization/festive-sacrificial-feasts-structured-religious-hierarchies-in-moche-ceremonies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological evidence links food offerings and sacrificial rituals as integral tools for reinforcing elite power."},{"title":"Fortified Moche Settlements Along Chicama Valley Controlled Trade Routes","slug":"fortified-moche-settlements-along-chicama-valley-controlled-trade-routes","url":"/categories/ancient-civilizations-secrets/moche-civilization/fortified-moche-settlements-along-chicama-valley-controlled-trade-routes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Strategically placed hilltop compounds allowed Moche elites to monitor and tax movement of goods along vital coastal valleys."},{"title":"Geoglyphs in the Moche Heartland Aligned with Solstice Observations","slug":"geoglyphs-in-the-moche-heartland-aligned-with-solstice-observations","url":"/categories/ancient-civilizations-secrets/moche-civilization/geoglyphs-in-the-moche-heartland-aligned-with-solstice-observations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Large ground figures, discernible from low hills, were oriented to mark seasonal solar events vital for agriculture."},{"title":"Huaca Cao Viejo Murals Depict Recurrent Mythical Creatures Across Generations","slug":"huaca-cao-viejo-murals-depict-recurrent-mythical-creatures-across-generations","url":"/categories/ancient-civilizations-secrets/moche-civilization/huaca-cao-viejo-murals-depict-recurrent-mythical-creatures-across-generations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Detailed polychrome murals show consistent motifs of sea and sky animals, suggesting a shared cosmology maintained for centuries."},{"title":"Irrigation Maintenance Labor Rotation Created Civic Calendars Across Moche Valleys","slug":"irrigation-maintenance-labor-rotation-created-civic-calendars-across-moche-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/irrigation-maintenance-labor-rotation-created-civic-calendars-across-moche-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Moche communities organized seasonal labor rotations for canal upkeep, effectively creating early civic calendars."},{"title":"K'antiy Observation Platforms Indicate Moche Engagement with Celestial Navigation","slug":"k-antiy-observation-platforms-indicate-moche-engagement-with-celestial-navigation","url":"/categories/ancient-civilizations-secrets/moche-civilization/k-antiy-observation-platforms-indicate-moche-engagement-with-celestial-navigation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Raised platforms may have functioned as observational posts to track solstices and seasonal river flooding."},{"title":"Kallpa Ceremonial Objects Illustrate Moche Integration of Craft and Ritual","slug":"kallpa-ceremonial-objects-illustrate-moche-integration-of-craft-and-ritual","url":"/categories/ancient-civilizations-secrets/moche-civilization/kallpa-ceremonial-objects-illustrate-moche-integration-of-craft-and-ritual.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts such as decorated cups and figurines reveal production guided by religious and political purposes."},{"title":"Khipu Absence in Moche Sites Suggests Alternative Record-Keeping Systems Before Inca Expansion","slug":"khipu-absence-in-moche-sites-suggests-alternative-record-keeping-systems-before-inca-expansion","url":"/categories/ancient-civilizations-secrets/moche-civilization/khipu-absence-in-moche-sites-suggests-alternative-record-keeping-systems-before-inca-expansion.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Despite advanced administration, no confirmed khipu devices have been found in core Moche contexts."},{"title":"Kuntur Elite Tombs Contain Multigenerational Ritual Objects","slug":"kuntur-elite-tombs-contain-multigenerational-ritual-objects","url":"/categories/ancient-civilizations-secrets/moche-civilization/kuntur-elite-tombs-contain-multigenerational-ritual-objects.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts indicate that tombs were reused and augmented over generations, reinforcing lineage and ceremonial continuity."},{"title":"Kuntur Ritual Platforms Provided Elevated Spaces for Moche Ceremonial Oversight","slug":"kuntur-ritual-platforms-provided-elevated-spaces-for-moche-ceremonial-oversight","url":"/categories/ancient-civilizations-secrets/moche-civilization/kuntur-ritual-platforms-provided-elevated-spaces-for-moche-ceremonial-oversight.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Terraced platforms enabled elites to observe rituals, manage labor, and coordinate seasonal festivals across valley settlements."},{"title":"Lomas de Moche Burial Patterns Indicate Seasonal Elite Mobility","slug":"lomas-de-moche-burial-patterns-indicate-seasonal-elite-mobility","url":"/categories/ancient-civilizations-secrets/moche-civilization/lomas-de-moche-burial-patterns-indicate-seasonal-elite-mobility.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"High-status Moche burials across the Lomas de Moche suggest elites relocated seasonally between ceremonial and agricultural zones."},{"title":"Monumental Stairways at Huaca de la Luna Functioned as Processional Axes","slug":"monumental-stairways-at-huaca-de-la-luna-functioned-as-processional-axes","url":"/categories/ancient-civilizations-secrets/moche-civilization/monumental-stairways-at-huaca-de-la-luna-functioned-as-processional-axes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Staircases rising up to 25 meters channeled human movement in ritual sequences visible across the valley."},{"title":"Naval Raiding Evidence Suggests Moche Riverine Warfare along Coastal Tributaries","slug":"naval-raiding-evidence-suggests-moche-riverine-warfare-along-coastal-tributaries","url":"/categories/ancient-civilizations-secrets/moche-civilization/naval-raiding-evidence-suggests-moche-riverine-warfare-along-coastal-tributaries.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts including reed boat remains and projectile points indicate that the Moche practiced organized riverine raids for territorial control."},{"title":"Ochre Pigment Trade Connected Moche Religious Centers Across Valleys","slug":"ochre-pigment-trade-connected-moche-religious-centers-across-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/ochre-pigment-trade-connected-moche-religious-centers-across-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Analysis of mural pigments shows sourcing from multiple distant deposits, implying organized trade networks for ceremonial materials."},{"title":"Pyramid Orientation at Huaca del Sol Aligns with Peak Solar Zenith During Solstice","slug":"pyramid-orientation-at-huaca-del-sol-aligns-with-peak-solar-zenith-during-solstice","url":"/categories/ancient-civilizations-secrets/moche-civilization/pyramid-orientation-at-huaca-del-sol-aligns-with-peak-solar-zenith-during-solstice.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The massive Huaca del Sol pyramid was aligned to capture maximum sun exposure at the December solstice, reflecting astronomical knowledge."},{"title":"Quarry Logistics at Cerro Arena Supplied Thousands of Adobe Loads Annually","slug":"quarry-logistics-at-cerro-arena-supplied-thousands-of-adobe-loads-annually","url":"/categories/ancient-civilizations-secrets/moche-civilization/quarry-logistics-at-cerro-arena-supplied-thousands-of-adobe-loads-annually.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Supplying Moche pyramids required moving thousands of adobe loads every construction season across arid valleys with no wheeled transport."},{"title":"Quinine Trade Influence Suggested in Moche Medicinal Practices","slug":"quinine-trade-influence-suggested-in-moche-medicinal-practices","url":"/categories/ancient-civilizations-secrets/moche-civilization/quinine-trade-influence-suggested-in-moche-medicinal-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Evidence of imported or endemic quinine-containing plants indicates early pharmacological knowledge."},{"title":"Quipu-Like Accounting Absence Highlights Alternative Moche Record-Keeping","slug":"quipu-like-accounting-absence-highlights-alternative-moche-record-keeping","url":"/categories/ancient-civilizations-secrets/moche-civilization/quipu-like-accounting-absence-highlights-alternative-moche-record-keeping.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Despite complex labor and irrigation systems, no confirmed khipu or knotted-cord records have been found in Moche contexts."},{"title":"Ritual Decapitation Evidence Shows Moche Elites Displayed Skulls to Enforce Authority","slug":"ritual-decapitation-evidence-shows-moche-elites-displayed-skulls-to-enforce-authority","url":"/categories/ancient-civilizations-secrets/moche-civilization/ritual-decapitation-evidence-shows-moche-elites-displayed-skulls-to-enforce-authority.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Recovered skulls at Huaca de la Luna exhibit cut marks consistent with ceremonial decapitation intended as public warning."},{"title":"Sacrificial Pits at Huaca de la Luna Document Elite Ritual Control","slug":"sacrificial-pits-at-huaca-de-la-luna-document-elite-ritual-control","url":"/categories/ancient-civilizations-secrets/moche-civilization/sacrificial-pits-at-huaca-de-la-luna-document-elite-ritual-control.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological layers preserve repeated human sacrifices, demonstrating controlled ceremonial practice over centuries."},{"title":"Textile Production Evidence Shows Moche Elites Controlled Specialized Weaving Workshops","slug":"textile-production-evidence-shows-moche-elites-controlled-specialized-weaving-workshops","url":"/categories/ancient-civilizations-secrets/moche-civilization/textile-production-evidence-shows-moche-elites-controlled-specialized-weaving-workshops.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Analysis of loom weights and textile fragments indicates organized production managed by elite households."},{"title":"Uhle Excavations in 1899 First Identified Moche as a Distinct Pre-Inca Culture","slug":"uhle-excavations-in-1899-first-identified-moche-as-a-distinct-pre-inca-culture","url":"/categories/ancient-civilizations-secrets/moche-civilization/uhle-excavations-in-1899-first-identified-moche-as-a-distinct-pre-inca-culture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1899, Max Uhle’s excavations on Peru’s north coast separated the Moche from later Inca narratives for the first time."},{"title":"Uhle’s Stratigraphic Excavation Established Moche Chronology","slug":"uhle-s-stratigraphic-excavation-established-moche-chronology","url":"/categories/ancient-civilizations-secrets/moche-civilization/uhle-s-stratigraphic-excavation-established-moche-chronology.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1899, Max Uhle applied stratigraphy to separate Moche layers from later Inca occupation, creating first scientific chronological framework."},{"title":"Vegetable and Maize Storage Silos Revealed Sophisticated Food Security Planning","slug":"vegetable-and-maize-storage-silos-revealed-sophisticated-food-security-planning","url":"/categories/ancient-civilizations-secrets/moche-civilization/vegetable-and-maize-storage-silos-revealed-sophisticated-food-security-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Underground and surface silos in Moche valleys preserved surplus to buffer against seasonal scarcity and environmental shocks."},{"title":"Water Storage Reservoirs Allowed Moche Cities to Thrive Despite Coastal Droughts","slug":"water-storage-reservoirs-allowed-moche-cities-to-thrive-despite-coastal-droughts","url":"/categories/ancient-civilizations-secrets/moche-civilization/water-storage-reservoirs-allowed-moche-cities-to-thrive-despite-coastal-droughts.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone-lined ponds and reservoirs collected seasonal rainfall and river overflow, sustaining urban populations through arid months."},{"title":"Weapon Iconography on Ceramics Mirrors Regional Conflict Patterns","slug":"weapon-iconography-on-ceramics-mirrors-regional-conflict-patterns","url":"/categories/ancient-civilizations-secrets/moche-civilization/weapon-iconography-on-ceramics-mirrors-regional-conflict-patterns.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Repeated depictions of spears, clubs, and shields in Moche pottery correspond to archaeological evidence of inter-valley warfare."},{"title":"Weaponized Ceremonial Clubs Demonstrate Dual Role in Ritual and Conflict","slug":"weaponized-ceremonial-clubs-demonstrate-dual-role-in-ritual-and-conflict","url":"/categories/ancient-civilizations-secrets/moche-civilization/weaponized-ceremonial-clubs-demonstrate-dual-role-in-ritual-and-conflict.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts suggest that ceremonial clubs served as both symbolic and functional implements in Moche elite culture."},{"title":"X-Ray Analysis of Moche Metalwork Revealed Advanced Alloy Control by 500 CE","slug":"x-ray-analysis-of-moche-metalwork-revealed-advanced-alloy-control-by-500-ce","url":"/categories/ancient-civilizations-secrets/moche-civilization/x-ray-analysis-of-moche-metalwork-revealed-advanced-alloy-control-by-500-ce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Modern X-ray fluorescence studies show that Moche smiths controlled gold-copper alloy ratios with precision centuries before European contact."},{"title":"Xerophytic Garden Remnants Show Moche Knowledge of Drought-Resistant Crops","slug":"xerophytic-garden-remnants-show-moche-knowledge-of-drought-resistant-crops","url":"/categories/ancient-civilizations-secrets/moche-civilization/xerophytic-garden-remnants-show-moche-knowledge-of-drought-resistant-crops.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeobotanical evidence indicates Moche cultivated plants adapted to arid conditions to stabilize food supply."},{"title":"Xylophone-Like Musical Instruments Indicate Moche Ritual Soundscapes","slug":"xylophone-like-musical-instruments-indicate-moche-ritual-soundscapes","url":"/categories/ancient-civilizations-secrets/moche-civilization/xylophone-like-musical-instruments-indicate-moche-ritual-soundscapes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Recovered percussive instruments suggest coordinated sound played a key role in ceremonial events."},{"title":"Y-Shaped Irrigation Canals Engineered by Moche Farmers Sustained Desert Agriculture for 500 Years","slug":"y-shaped-irrigation-canals-engineered-by-moche-farmers-sustained-desert-agriculture-for-500-years","url":"/categories/ancient-civilizations-secrets/moche-civilization/y-shaped-irrigation-canals-engineered-by-moche-farmers-sustained-desert-agriculture-for-500-years.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Moche engineers diverted entire river systems into Y-shaped canal networks that transformed one of the driest coasts on Earth into arable farmland."},{"title":"Yana Elite Burial Masks Used Gold Leaf to Communicate Status and Ideology","slug":"yana-elite-burial-masks-used-gold-leaf-to-communicate-status-and-ideology","url":"/categories/ancient-civilizations-secrets/moche-civilization/yana-elite-burial-masks-used-gold-leaf-to-communicate-status-and-ideology.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Moche funerary masks incorporated gold and other precious materials to denote lineage and ritual authority."},{"title":"Yucca Fiber Rope Remains Indicate Moche Engineering for Large-Scale Construction","slug":"yucca-fiber-rope-remains-indicate-moche-engineering-for-large-scale-construction","url":"/categories/ancient-civilizations-secrets/moche-civilization/yucca-fiber-rope-remains-indicate-moche-engineering-for-large-scale-construction.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists found preserved yucca fiber ropes used to lift and position adobe bricks during pyramid construction."},{"title":"Yuco Ceramic Workshops Produced Standardized Ritual Vessels Across Moche Valleys","slug":"yuco-ceramic-workshops-produced-standardized-ritual-vessels-across-moche-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/yuco-ceramic-workshops-produced-standardized-ritual-vessels-across-moche-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Production of stirrup-spout vessels was coordinated across valleys, ensuring consistent ceremonial iconography."},{"title":"Yunga Agricultural Terraces Supported Diverse Crop Production in Moche Valleys","slug":"yunga-agricultural-terraces-supported-diverse-crop-production-in-moche-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/yunga-agricultural-terraces-supported-diverse-crop-production-in-moche-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Terraces optimized slope, soil, and irrigation to produce maize, beans, and cotton across arid hillsides."},{"title":"Yurac Moche Tombs Contain Evidence of Early Ancestor Veneration","slug":"yurac-moche-tombs-contain-evidence-of-early-ancestor-veneration","url":"/categories/ancient-civilizations-secrets/moche-civilization/yurac-moche-tombs-contain-evidence-of-early-ancestor-veneration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavated tombs show repeated inclusion of personal artifacts and offerings over multiple generations, suggesting ritualized memory practices."},{"title":"Zana Canal Modifications Indicate Adaptive Management During El Niño Events","slug":"zana-canal-modifications-indicate-adaptive-management-during-el-ni-o-events","url":"/categories/ancient-civilizations-secrets/moche-civilization/zana-canal-modifications-indicate-adaptive-management-during-el-ni-o-events.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological evidence shows Moche engineers altered canal courses to mitigate flood risk during climatic anomalies."},{"title":"Zana Valley Tomb Discoveries Mapped 7 Distinct Elite Lineages","slug":"zana-valley-tomb-discoveries-mapped-7-distinct-elite-lineages","url":"/categories/ancient-civilizations-secrets/moche-civilization/zana-valley-tomb-discoveries-mapped-7-distinct-elite-lineages.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Burial clusters in the Zana Valley reveal at least seven elite lineages competing for authority within Moche territory."},{"title":"Zanjar Water Channels Reflect Adaptive Hydrological Engineering","slug":"zanjar-water-channels-reflect-adaptive-hydrological-engineering","url":"/categories/ancient-civilizations-secrets/moche-civilization/zanjar-water-channels-reflect-adaptive-hydrological-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Canal modifications reveal Moche responses to sedimentation and seasonal flooding over centuries."},{"title":"Zapote Burial Patterns Reveal Regional Elite Interaction Across Moche Valleys","slug":"zapote-burial-patterns-reveal-regional-elite-interaction-across-moche-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/zapote-burial-patterns-reveal-regional-elite-interaction-across-moche-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tombs in the Zapote area show shared ceramic motifs and burial architecture connecting dispersed elite lineages."},{"title":"Zapote Canal Networks Enabled Coordinated Water Distribution Across Valleys","slug":"zapote-canal-networks-enabled-coordinated-water-distribution-across-valleys","url":"/categories/ancient-civilizations-secrets/moche-civilization/zapote-canal-networks-enabled-coordinated-water-distribution-across-valleys.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Remains of interconnected canals illustrate sophisticated regional hydraulic planning under elite management."},{"title":"Ziggurat-Like Pyramid Layouts at Huaca Cao Viejo Demonstrate Architectural Innovation","slug":"ziggurat-like-pyramid-layouts-at-huaca-cao-viejo-demonstrate-architectural-innovation","url":"/categories/ancient-civilizations-secrets/moche-civilization/ziggurat-like-pyramid-layouts-at-huaca-cao-viejo-demonstrate-architectural-innovation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Step-pyramid designs incorporated terraces and platforms to facilitate ritual processions and structural stability."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

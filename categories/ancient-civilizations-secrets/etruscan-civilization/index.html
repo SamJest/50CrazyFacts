@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etruscan Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Etruscan Civilization</h1>
+  <p>Explore all facts in "Etruscan Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Etruscan Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Etruscan Tomb Engineering Marvels of 7th Century BCE","slug":"etruscan-tomb-engineering-marvels-of-7th-century-bce","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/etruscan-tomb-engineering-marvels-of-7th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans built underground tombs so precise they rival modern engineering."},{"title":"Kernikos Festival Structures in Etruscan Culture","slug":"kernikos-festival-structures-in-etruscan-culture","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kernikos-festival-structures-in-etruscan-culture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans designed specialized festival spaces called kernikos for seasonal celebrations."},{"title":"Kernos Ceremonial Artifacts in Etruscan Rituals","slug":"kernos-ceremonial-artifacts-in-etruscan-rituals","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kernos-ceremonial-artifacts-in-etruscan-rituals.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans used kernos vessels in religious ceremonies, reflecting complex ritual symbolism."},{"title":"Kernos Ritual Vessels in Etruscan Ceremonies","slug":"kernos-ritual-vessels-in-etruscan-ceremonies","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kernos-ritual-vessels-in-etruscan-ceremonies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan kernos vessels facilitated multi-offering rituals in temples and tombs."},{"title":"Kiln Technology Advancements in Etruscan Pottery","slug":"kiln-technology-advancements-in-etruscan-pottery","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kiln-technology-advancements-in-etruscan-pottery.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan kilns achieved unprecedented temperature control, producing durable and decorative ceramics."},{"title":"Kingly Tomb Iconography in Etruscan Necropolises","slug":"kingly-tomb-iconography-in-etruscan-necropolises","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kingly-tomb-iconography-in-etruscan-necropolises.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elite Etruscan tombs feature iconography emphasizing kingship, power, and divine favor."},{"title":"Klinefelter Syndrome Awareness in Etruscan Skeletal Records","slug":"klinefelter-syndrome-awareness-in-etruscan-skeletal-records","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/klinefelter-syndrome-awareness-in-etruscan-skeletal-records.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Recent osteological studies suggest Etruscans may have documented individuals with Klinefelter traits centuries before formal medical identification."},{"title":"Klinefelter Traits Observed in Etruscan Skeletal Remains","slug":"klinefelter-traits-observed-in-etruscan-skeletal-remains","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/klinefelter-traits-observed-in-etruscan-skeletal-remains.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Analysis suggests Etruscans recognized physical traits consistent with Klinefelter syndrome."},{"title":"Kouros-Style Sculptures in Etruscan Art","slug":"kouros-style-sculptures-in-etruscan-art","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kouros-style-sculptures-in-etruscan-art.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans adapted Greek kouros sculpture techniques for funerary and civic monuments."},{"title":"Kylix Ceremonial Drinking Vessels","slug":"kylix-ceremonial-drinking-vessels","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kylix-ceremonial-drinking-vessels.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans adapted Greek kylix cups for ritual and social drinking ceremonies."},{"title":"Kythera Trade Influence of Etruscan Maritime Networks","slug":"kythera-trade-influence-of-etruscan-maritime-networks","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/kythera-trade-influence-of-etruscan-maritime-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans controlled maritime trade routes that connected Italy to the Aegean long before Rome."},{"title":"Quarry Logistics in Etruscan Temple Construction","slug":"quarry-logistics-in-etruscan-temple-construction","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/quarry-logistics-in-etruscan-temple-construction.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans coordinated multi-ton stone transport over rough terrain without wheeled vehicles."},{"title":"Quarry Surveying Methods in Etruscan Architecture","slug":"quarry-surveying-methods-in-etruscan-architecture","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/quarry-surveying-methods-in-etruscan-architecture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans applied precise surveying techniques to extract and position stone for monumental structures."},{"title":"Quarrying Techniques for Etruscan Necropolises","slug":"quarrying-techniques-for-etruscan-necropolises","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/quarrying-techniques-for-etruscan-necropolises.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans extracted massive tufa blocks for tombs using techniques that anticipated Roman engineering."},{"title":"Quern Stones for Etruscan Grain Processing","slug":"quern-stones-for-etruscan-grain-processing","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/quern-stones-for-etruscan-grain-processing.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans used quern stones to efficiently grind grain, enhancing food security and trade."},{"title":"Quincunx Layouts in Etruscan Urban Planning","slug":"quincunx-layouts-in-etruscan-urban-planning","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/quincunx-layouts-in-etruscan-urban-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan towns often used quincunx arrangements for temples, squares, and civic buildings."},{"title":"Quinine Use Evidence in Etruscan Medical Practices","slug":"quinine-use-evidence-in-etruscan-medical-practices","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/quinine-use-evidence-in-etruscan-medical-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists discovered traces of cinchona-like compounds in Etruscan pottery, hinting at malaria treatments."},{"title":"Umbra Shadows in Etruscan Astronomy","slug":"umbra-shadows-in-etruscan-astronomy","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/umbra-shadows-in-etruscan-astronomy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans studied shadows to track solar and lunar cycles, influencing calendar design."},{"title":"Umbrian Influence on Etruscan Religious Practices","slug":"umbrian-influence-on-etruscan-religious-practices","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/umbrian-influence-on-etruscan-religious-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan religion incorporated rituals and deities from neighboring Umbrian cultures."},{"title":"Undercroft Storage in Etruscan Villas","slug":"undercroft-storage-in-etruscan-villas","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/undercroft-storage-in-etruscan-villas.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan villas featured undercrofts designed for storage, climate control, and security."},{"title":"Underground Passageways in Etruscan Necropolises","slug":"underground-passageways-in-etruscan-necropolises","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/underground-passageways-in-etruscan-necropolises.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan tombs featured subterranean tunnels connecting multiple burial chambers."},{"title":"Underground Water Cisterns in Etruscan Settlements","slug":"underground-water-cisterns-in-etruscan-settlements","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/underground-water-cisterns-in-etruscan-settlements.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans built extensive underground cisterns to secure potable water in hilly terrains."},{"title":"Underworld Rituals in Etruscan Funerary Art","slug":"underworld-rituals-in-etruscan-funerary-art","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/underworld-rituals-in-etruscan-funerary-art.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan tombs depict complex underworld rituals unknown in contemporary Italy."},{"title":"Urban Drainage Systems in Etruscan Cities","slug":"urban-drainage-systems-in-etruscan-cities","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/urban-drainage-systems-in-etruscan-cities.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan urban planning included complex drainage networks that rivaled later Roman engineering."},{"title":"Urban Fortifications in Etruscan City-States","slug":"urban-fortifications-in-etruscan-city-states","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/urban-fortifications-in-etruscan-city-states.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan cities developed defensive walls and towers that influenced early Roman military architecture."},{"title":"Xenoliths in Etruscan Construction Materials","slug":"xenoliths-in-etruscan-construction-materials","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/xenoliths-in-etruscan-construction-materials.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans incorporated xenolith-bearing stone to enhance structural stability in buildings."},{"title":"Xenon Use in Etruscan Ceremonial Lamps","slug":"xenon-use-in-etruscan-ceremonial-lamps","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/xenon-use-in-etruscan-ceremonial-lamps.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Spectroscopic analysis reveals traces of noble gases like xenon in Etruscan oil lamps, suggesting advanced combustion knowledge."},{"title":"Xeric Influence on Etruscan Agricultural Innovation","slug":"xeric-influence-on-etruscan-agricultural-innovation","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/xeric-influence-on-etruscan-agricultural-innovation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans thrived in arid regions by pioneering irrigation methods unseen in early Italy."},{"title":"Xeric Vine Terracing Techniques","slug":"xeric-vine-terracing-techniques","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/xeric-vine-terracing-techniques.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans built terraced vineyards on hillsides to maximize sun exposure and soil conservation."},{"title":"Xerophyte Cultivation in Etruscan Landscapes","slug":"xerophyte-cultivation-in-etruscan-landscapes","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/xerophyte-cultivation-in-etruscan-landscapes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans cultivated drought-resistant plants to stabilize soil and ensure food security."},{"title":"Xystus Walkways in Etruscan Civic Planning","slug":"xystus-walkways-in-etruscan-civic-planning","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/xystus-walkways-in-etruscan-civic-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans incorporated xystus-style covered walkways in urban centers for processions and public gatherings."},{"title":"Yarn and Textile Innovation in Etruscan Society","slug":"yarn-and-textile-innovation-in-etruscan-society","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yarn-and-textile-innovation-in-etruscan-society.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans produced intricate textiles using advanced weaving techniques for clothing and ritual use."},{"title":"Yarn Dyeing Innovations in Etruscan Textile Production","slug":"yarn-dyeing-innovations-in-etruscan-textile-production","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yarn-dyeing-innovations-in-etruscan-textile-production.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans developed multi-stage dyeing processes to achieve vibrant, long-lasting textile colors."},{"title":"Yarn Production Workshops in Etruscan Cities","slug":"yarn-production-workshops-in-etruscan-cities","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yarn-production-workshops-in-etruscan-cities.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan urban centers hosted specialized workshops for spinning and weaving yarn for textiles."},{"title":"Yellow Ochre Symbolism in Etruscan Frescoes","slug":"yellow-ochre-symbolism-in-etruscan-frescoes","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yellow-ochre-symbolism-in-etruscan-frescoes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan artists consistently used yellow ochre to denote divinity and status in tomb art."},{"title":"Yew Timber in Etruscan Architectural Beams","slug":"yew-timber-in-etruscan-architectural-beams","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yew-timber-in-etruscan-architectural-beams.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans selected yew wood for structural beams due to its strength and elasticity."},{"title":"Yew Wood Selection for Etruscan Military Equipment","slug":"yew-wood-selection-for-etruscan-military-equipment","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yew-wood-selection-for-etruscan-military-equipment.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans chose yew wood for bows, shields, and ceremonial arms for its elasticity and strength."},{"title":"Yew Wood Usage in Etruscan Weaponry","slug":"yew-wood-usage-in-etruscan-weaponry","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yew-wood-usage-in-etruscan-weaponry.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans favored yew wood for bows and ceremonial arms due to resilience and elasticity."},{"title":"Yield Management in Etruscan Olive Oil Production","slug":"yield-management-in-etruscan-olive-oil-production","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yield-management-in-etruscan-olive-oil-production.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan producers employed pruning, terracing, and press optimization to maximize olive oil yield."},{"title":"Yield Optimization in Etruscan Vineyards","slug":"yield-optimization-in-etruscan-vineyards","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yield-optimization-in-etruscan-vineyards.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan viticulture included pruning, soil management, and irrigation to maximize grape production."},{"title":"Yield Tracking in Etruscan Cereal Production","slug":"yield-tracking-in-etruscan-cereal-production","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yield-tracking-in-etruscan-cereal-production.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans monitored grain yields using storage and accounting methods to optimize food supply."},{"title":"Yoke-Based Irrigation Systems in Etruscan Agriculture","slug":"yoke-based-irrigation-systems-in-etruscan-agriculture","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/yoke-based-irrigation-systems-in-etruscan-agriculture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans employed animal-driven yokes to power irrigation devices for fields and vineyards."},{"title":"Zephyr Motifs in Etruscan Frescoes","slug":"zephyr-motifs-in-etruscan-frescoes","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/zephyr-motifs-in-etruscan-frescoes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan artists frequently depicted wind and air deities using zephyr motifs in tomb decoration."},{"title":"Zeppelin Depictions in Etruscan Symbolic Art","slug":"zeppelin-depictions-in-etruscan-symbolic-art","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/zeppelin-depictions-in-etruscan-symbolic-art.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscan art includes abstract motifs that some researchers interpret as proto-aircraft or dirigible shapes."},{"title":"Ziggurat Influence in Etruscan Temple Architecture","slug":"ziggurat-influence-in-etruscan-temple-architecture","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/ziggurat-influence-in-etruscan-temple-architecture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Etruscan temples incorporate stepped platforms reminiscent of Mesopotamian ziggurats."},{"title":"Ziggurat-Like Platforms in Etruscan Temples","slug":"ziggurat-like-platforms-in-etruscan-temples","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/ziggurat-like-platforms-in-etruscan-temples.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans elevated temples on stepped platforms resembling ziggurats to emphasize sacredness."},{"title":"Zinc Alloy Production for Etruscan Metalwork","slug":"zinc-alloy-production-for-etruscan-metalwork","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/zinc-alloy-production-for-etruscan-metalwork.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans developed controlled zinc alloy production to create durable and decorative metals."},{"title":"Zinc Smelting Techniques Among Etruscan Metallurgists","slug":"zinc-smelting-techniques-among-etruscan-metallurgists","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/zinc-smelting-techniques-among-etruscan-metallurgists.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans were among the first in Europe to smelt and manipulate zinc alloys for practical use."},{"title":"Zodiacal Alignments in Etruscan Temples","slug":"zodiacal-alignments-in-etruscan-temples","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/zodiacal-alignments-in-etruscan-temples.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Etruscan temples were oriented according to zodiacal constellations for ritual timing."},{"title":"Zodiacal Calendars in Etruscan Civic Life","slug":"zodiacal-calendars-in-etruscan-civic-life","url":"/categories/ancient-civilizations-secrets/etruscan-civilization/zodiacal-calendars-in-etruscan-civic-life.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Etruscans aligned civic and agricultural events with zodiac observations to regulate yearly cycles."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

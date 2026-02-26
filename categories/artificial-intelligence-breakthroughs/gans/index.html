@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gans</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Gans</h1>
+  <p>Explore all facts in "Gans".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Gans</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Generative Adversarial Networks 2014 Breakthrough That Rewired AI Research","slug":"generative-adversarial-networks-2014-breakthrough-that-rewired-ai-research","url":"/categories/artificial-intelligence-breakthroughs/gans/generative-adversarial-networks-2014-breakthrough-that-rewired-ai-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2014, a two-network experiment proposed in a single paper reshaped artificial intelligence research pipelines worldwide within five years."},{"title":"K-Shell Network Robustness Modeling with GAN Graph Generation in 2021 Infrastructure Studies","slug":"k-shell-network-robustness-modeling-with-gan-graph-generation-in-2021-infrastructure-studies","url":"/categories/artificial-intelligence-breakthroughs/gans/k-shell-network-robustness-modeling-with-gan-graph-generation-in-2021-infrastructure-studies.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, infrastructure researchers used adversarial graph generation to simulate rare network collapse scenarios in power and transportation systems."},{"title":"K-Space Data Completion via GANs in 2019 Accelerated MRI Research","slug":"k-space-data-completion-via-gans-in-2019-accelerated-mri-research","url":"/categories/artificial-intelligence-breakthroughs/gans/k-space-data-completion-via-gans-in-2019-accelerated-mri-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, adversarial networks filled missing k-space measurements in MRI scans, reducing acquisition demands without sacrificing resolution."},{"title":"Kernel Density Estimation Replaced by GAN Likelihood-Free Modeling in 2016","slug":"kernel-density-estimation-replaced-by-gan-likelihood-free-modeling-in-2016","url":"/categories/artificial-intelligence-breakthroughs/gans/kernel-density-estimation-replaced-by-gan-likelihood-free-modeling-in-2016.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2016, Generative Adversarial Networks were outperforming traditional kernel density estimation methods in high-dimensional image modeling tasks."},{"title":"Kernel GAN Inversion Techniques Improved Forensic Deepfake Detection in 2021","slug":"kernel-gan-inversion-techniques-improved-forensic-deepfake-detection-in-2021","url":"/categories/artificial-intelligence-breakthroughs/gans/kernel-gan-inversion-techniques-improved-forensic-deepfake-detection-in-2021.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2021, forensic researchers were using GAN inversion techniques to expose synthetic faces by reconstructing the very models that created them."},{"title":"Kernel PCA Enhancement with GAN Latent Space Modeling in 2019 Data Compression","slug":"kernel-pca-enhancement-with-gan-latent-space-modeling-in-2019-data-compression","url":"/categories/artificial-intelligence-breakthroughs/gans/kernel-pca-enhancement-with-gan-latent-space-modeling-in-2019-data-compression.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, researchers combined adversarial networks with Kernel Principal Component Analysis to compress high-dimensional data while preserving nonlinear structure."},{"title":"Kernel-Based Domain Adaptation with GANs in 2018 Industrial Inspection Systems","slug":"kernel-based-domain-adaptation-with-gans-in-2018-industrial-inspection-systems","url":"/categories/artificial-intelligence-breakthroughs/gans/kernel-based-domain-adaptation-with-gans-in-2018-industrial-inspection-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, manufacturers used adversarial domain adaptation to transfer defect detection models across factories without relabeling thousands of images."},{"title":"Knee MRI Reconstruction Acceleration with GANs in 2018 Clinical Trials","slug":"knee-mri-reconstruction-acceleration-with-gans-in-2018-clinical-trials","url":"/categories/artificial-intelligence-breakthroughs/gans/knee-mri-reconstruction-acceleration-with-gans-in-2018-clinical-trials.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, adversarial networks reduced MRI scan reconstruction time while preserving diagnostic image quality in knee imaging studies."},{"title":"Knowledge Distillation from GAN Discriminators Improved Model Efficiency in 2020","slug":"knowledge-distillation-from-gan-discriminators-improved-model-efficiency-in-2020","url":"/categories/artificial-intelligence-breakthroughs/gans/knowledge-distillation-from-gan-discriminators-improved-model-efficiency-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, researchers extracted learned features from GAN discriminators to train smaller, faster neural networks without retraining from scratch."},{"title":"Quantum Chemistry Reaction Pathway Approximation with GANs in 2021 Drug Discovery","slug":"quantum-chemistry-reaction-pathway-approximation-with-gans-in-2021-drug-discovery","url":"/categories/artificial-intelligence-breakthroughs/gans/quantum-chemistry-reaction-pathway-approximation-with-gans-in-2021-drug-discovery.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, computational chemists used adversarial networks to approximate complex reaction pathways that traditionally required weeks of high-performance computing time."},{"title":"Quantum Circuit Simulation Using GAN Models in 2019 Research","slug":"quantum-circuit-simulation-using-gan-models-in-2019-research","url":"/categories/artificial-intelligence-breakthroughs/gans/quantum-circuit-simulation-using-gan-models-in-2019-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, researchers used adversarial networks to approximate quantum circuit outputs that would otherwise require exponentially expensive classical computation."},{"title":"Quantum Error Mitigation Modeling with GANs in 2021 Superconducting Qubit Research","slug":"quantum-error-mitigation-modeling-with-gans-in-2021-superconducting-qubit-research","url":"/categories/artificial-intelligence-breakthroughs/gans/quantum-error-mitigation-modeling-with-gans-in-2021-superconducting-qubit-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, researchers used adversarial networks to model and suppress noise patterns in superconducting qubit experiments without altering hardware."},{"title":"Quantum State Tomography Acceleration Using GANs in 2020 Experiments","slug":"quantum-state-tomography-acceleration-using-gans-in-2020-experiments","url":"/categories/artificial-intelligence-breakthroughs/gans/quantum-state-tomography-acceleration-using-gans-in-2020-experiments.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, physicists used adversarial networks to reconstruct quantum states from fewer measurements than traditional tomography requires."},{"title":"Quasar Spectral Reconstruction Using GAN Models in 2021 Astrophysics","slug":"quasar-spectral-reconstruction-using-gan-models-in-2021-astrophysics","url":"/categories/artificial-intelligence-breakthroughs/gans/quasar-spectral-reconstruction-using-gan-models-in-2021-astrophysics.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, astronomers used adversarial networks to reconstruct missing portions of distant quasar spectra from incomplete telescope data."},{"title":"Ultra-High-Resolution Face Generation with StyleGAN2 in 2020","slug":"ultra-high-resolution-face-generation-with-stylegan2-in-2020","url":"/categories/artificial-intelligence-breakthroughs/gans/ultra-high-resolution-face-generation-with-stylegan2-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, StyleGAN2 generated ultra-high-resolution human faces so realistic that many viewers could not distinguish them from real photographs."},{"title":"Ultrasound Image Super-Resolution Using GANs in 2018 Clinical Imaging","slug":"ultrasound-image-super-resolution-using-gans-in-2018-clinical-imaging","url":"/categories/artificial-intelligence-breakthroughs/gans/ultrasound-image-super-resolution-using-gans-in-2018-clinical-imaging.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, adversarial networks enhanced low-resolution ultrasound scans to near high-frequency probe quality without additional hardware."},{"title":"Undersea Cable Fault Localization Enhanced by GAN Signal Modeling in 2022","slug":"undersea-cable-fault-localization-enhanced-by-gan-signal-modeling-in-2022","url":"/categories/artificial-intelligence-breakthroughs/gans/undersea-cable-fault-localization-enhanced-by-gan-signal-modeling-in-2022.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, engineers applied adversarial networks to model rare signal distortions in undersea communication cables spanning thousands of kilometers."},{"title":"Underwater Mine Detection Simulation Using GAN Sonar Models in 2021 Defense Research","slug":"underwater-mine-detection-simulation-using-gan-sonar-models-in-2021-defense-research","url":"/categories/artificial-intelligence-breakthroughs/gans/underwater-mine-detection-simulation-using-gan-sonar-models-in-2021-defense-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, defense laboratories used adversarial networks to generate rare underwater mine signatures for sonar detection training."},{"title":"Underwater Oil Spill Dispersion Simulation with GANs in 2020 Environmental Risk Analysis","slug":"underwater-oil-spill-dispersion-simulation-with-gans-in-2020-environmental-risk-analysis","url":"/categories/artificial-intelligence-breakthroughs/gans/underwater-oil-spill-dispersion-simulation-with-gans-in-2020-environmental-risk-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, environmental scientists used adversarial networks to simulate rare underwater oil plume dispersion patterns for spill response planning."},{"title":"Underwater Sonar Image Enhancement Using GANs in 2019 Naval Research","slug":"underwater-sonar-image-enhancement-using-gans-in-2019-naval-research","url":"/categories/artificial-intelligence-breakthroughs/gans/underwater-sonar-image-enhancement-using-gans-in-2019-naval-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, adversarial networks were used to clarify distorted underwater sonar images for maritime surveillance applications."},{"title":"Urban Air Pollution Dispersion Modeling with GANs in 2019 Environmental Studies","slug":"urban-air-pollution-dispersion-modeling-with-gans-in-2019-environmental-studies","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-air-pollution-dispersion-modeling-with-gans-in-2019-environmental-studies.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, environmental scientists used adversarial networks to simulate urban air pollution dispersion patterns with improved spatial resolution."},{"title":"Urban Building Energy Demand Simulation with GANs in 2021 Smart Grid Studies","slug":"urban-building-energy-demand-simulation-with-gans-in-2021-smart-grid-studies","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-building-energy-demand-simulation-with-gans-in-2021-smart-grid-studies.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, researchers used adversarial networks to generate rare peak energy demand scenarios across urban building clusters."},{"title":"Urban Earthquake Damage Simulation with GANs in 2019 Structural Engineering","slug":"urban-earthquake-damage-simulation-with-gans-in-2019-structural-engineering","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-earthquake-damage-simulation-with-gans-in-2019-structural-engineering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, structural engineers used adversarial networks to generate synthetic post-earthquake building damage patterns for resilience planning."},{"title":"Urban Flood Mapping Enhancement via GANs in 2020 Disaster Modeling","slug":"urban-flood-mapping-enhancement-via-gans-in-2020-disaster-modeling","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-flood-mapping-enhancement-via-gans-in-2020-disaster-modeling.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, adversarial networks enhanced satellite flood maps to improve disaster response planning after extreme rainfall events."},{"title":"Urban Landslide Risk Mapping Enhanced by GAN Terrain Simulation in 2020","slug":"urban-landslide-risk-mapping-enhanced-by-gan-terrain-simulation-in-2020","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-landslide-risk-mapping-enhanced-by-gan-terrain-simulation-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, geotechnical researchers used adversarial networks to simulate rare landslide terrain conditions for hazard assessment."},{"title":"Urban Scene Generation for Autonomous Vehicles Using GANs in 2017","slug":"urban-scene-generation-for-autonomous-vehicles-using-gans-in-2017","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-scene-generation-for-autonomous-vehicles-using-gans-in-2017.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2017, self-driving car researchers were generating synthetic urban streetscapes with adversarial networks to test perception systems safely."},{"title":"Urban Traffic Congestion Simulation with GANs in 2020 Smart City Research","slug":"urban-traffic-congestion-simulation-with-gans-in-2020-smart-city-research","url":"/categories/artificial-intelligence-breakthroughs/gans/urban-traffic-congestion-simulation-with-gans-in-2020-smart-city-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, smart city researchers used adversarial networks to simulate rare congestion cascades across metropolitan road networks."},{"title":"Utility Grid Fault Detection Augmented by GAN Data in 2020 Energy Systems","slug":"utility-grid-fault-detection-augmented-by-gan-data-in-2020-energy-systems","url":"/categories/artificial-intelligence-breakthroughs/gans/utility-grid-fault-detection-augmented-by-gan-data-in-2020-energy-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, power grid researchers used adversarial networks to generate rare fault scenarios for energy infrastructure resilience testing."},{"title":"X-Ray Cargo Container Threat Simulation Using GANs in 2019 Border Security","slug":"x-ray-cargo-container-threat-simulation-using-gans-in-2019-border-security","url":"/categories/artificial-intelligence-breakthroughs/gans/x-ray-cargo-container-threat-simulation-using-gans-in-2019-border-security.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, border security researchers used adversarial networks to generate rare smuggling scenarios within cargo container X-ray scans."},{"title":"X-Ray Computed Tomography Artifact Reduction with GANs in 2019 Industrial Scanning","slug":"x-ray-computed-tomography-artifact-reduction-with-gans-in-2019-industrial-scanning","url":"/categories/artificial-intelligence-breakthroughs/gans/x-ray-computed-tomography-artifact-reduction-with-gans-in-2019-industrial-scanning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, industrial CT facilities used adversarial networks to reduce metal-induced artifacts without increasing scan radiation levels."},{"title":"X-Ray Crystallography Phase Retrieval with GANs in 2019 Materials Science","slug":"x-ray-crystallography-phase-retrieval-with-gans-in-2019-materials-science","url":"/categories/artificial-intelligence-breakthroughs/gans/x-ray-crystallography-phase-retrieval-with-gans-in-2019-materials-science.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, materials scientists used adversarial networks to estimate missing phase information in X-ray crystallography experiments."},{"title":"X-Ray Image Synthesis via GANs in 2018 Medical Data Expansion","slug":"x-ray-image-synthesis-via-gans-in-2018-medical-data-expansion","url":"/categories/artificial-intelligence-breakthroughs/gans/x-ray-image-synthesis-via-gans-in-2018-medical-data-expansion.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2018, hospitals were training AI systems on synthetic X-ray images generated by adversarial networks to compensate for scarce medical datasets."},{"title":"X-Ray Phase Contrast Imaging Enhancement Using GANs in 2018 Biomedical Engineering","slug":"x-ray-phase-contrast-imaging-enhancement-using-gans-in-2018-biomedical-engineering","url":"/categories/artificial-intelligence-breakthroughs/gans/x-ray-phase-contrast-imaging-enhancement-using-gans-in-2018-biomedical-engineering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, biomedical engineers used adversarial networks to enhance X-ray phase contrast images without increasing radiation exposure."},{"title":"X-Ray Security Scanner Image Synthesis for Aviation Screening in 2018","slug":"x-ray-security-scanner-image-synthesis-for-aviation-screening-in-2018","url":"/categories/artificial-intelligence-breakthroughs/gans/x-ray-security-scanner-image-synthesis-for-aviation-screening-in-2018.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2018, airport security researchers used adversarial networks to generate synthetic X-ray baggage images containing rare threat items."},{"title":"Xenon Plasma Simulation Assisted by GAN Surrogates in 2022 Fusion Research","slug":"xenon-plasma-simulation-assisted-by-gan-surrogates-in-2022-fusion-research","url":"/categories/artificial-intelligence-breakthroughs/gans/xenon-plasma-simulation-assisted-by-gan-surrogates-in-2022-fusion-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, fusion researchers used adversarial surrogate models to approximate xenon plasma behavior under extreme electromagnetic conditions."},{"title":"Xenotransplant Organ Imaging Augmentation Using GANs in 2022 Biomedical Research","slug":"xenotransplant-organ-imaging-augmentation-using-gans-in-2022-biomedical-research","url":"/categories/artificial-intelligence-breakthroughs/gans/xenotransplant-organ-imaging-augmentation-using-gans-in-2022-biomedical-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, biomedical researchers used adversarial networks to augment scarce imaging datasets in xenotransplant organ compatibility studies."},{"title":"Xylem Structure Simulation with GANs in 2021 Botanical Research","slug":"xylem-structure-simulation-with-gans-in-2021-botanical-research","url":"/categories/artificial-intelligence-breakthroughs/gans/xylem-structure-simulation-with-gans-in-2021-botanical-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, plant scientists used adversarial networks to generate realistic xylem microstructures for hydraulic conductivity studies."},{"title":"Yield Curve Scenario Simulation with GANs in 2021 Financial Risk Modeling","slug":"yield-curve-scenario-simulation-with-gans-in-2021-financial-risk-modeling","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-curve-scenario-simulation-with-gans-in-2021-financial-risk-modeling.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, financial institutions used adversarial networks to generate synthetic yield curve scenarios for stress testing under extreme market conditions."},{"title":"Yield Forecasting for Wind Farms Using GAN Weather Scenario Modeling in 2019","slug":"yield-forecasting-for-wind-farms-using-gan-weather-scenario-modeling-in-2019","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-forecasting-for-wind-farms-using-gan-weather-scenario-modeling-in-2019.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, renewable energy analysts used adversarial networks to generate rare wind pattern scenarios for turbine yield forecasting."},{"title":"Yield Loss Prediction in Lithium-Ion Battery Manufacturing Using GAN Data in 2022","slug":"yield-loss-prediction-in-lithium-ion-battery-manufacturing-using-gan-data-in-2022","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-loss-prediction-in-lithium-ion-battery-manufacturing-using-gan-data-in-2022.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, battery manufacturers used adversarial networks to simulate rare electrode defects affecting lithium-ion cell yield."},{"title":"Yield Optimization in Semiconductor Fabrication Using GAN Process Simulation in 2020","slug":"yield-optimization-in-semiconductor-fabrication-using-gan-process-simulation-in-2020","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-optimization-in-semiconductor-fabrication-using-gan-process-simulation-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, semiconductor manufacturers used adversarial networks to simulate rare fabrication defects affecting chip yield at nanometer scales."},{"title":"Yield Prediction for Hydropower Reservoirs Using GAN Climate Scenarios in 2020","slug":"yield-prediction-for-hydropower-reservoirs-using-gan-climate-scenarios-in-2020","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-prediction-for-hydropower-reservoirs-using-gan-climate-scenarios-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, energy analysts used adversarial networks to simulate rare hydrological scenarios affecting hydropower reservoir yield."},{"title":"Yield Prediction Modeling 2020 Agricultural GAN Deployment","slug":"yield-prediction-modeling-2020-agricultural-gan-deployment","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-prediction-modeling-2020-agricultural-gan-deployment.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By 2020, adversarial networks were generating synthetic crop imagery to forecast agricultural yields under climate variability."},{"title":"Yield Stress Material Simulation Using GAN Surrogates in 2022 Engineering Studies","slug":"yield-stress-material-simulation-using-gan-surrogates-in-2022-engineering-studies","url":"/categories/artificial-intelligence-breakthroughs/gans/yield-stress-material-simulation-using-gan-surrogates-in-2022-engineering-studies.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, materials engineers used GAN-based surrogate models to approximate yield stress behavior in complex composite materials."},{"title":"Zebra-to-Horse Image Translation 2017 CycleGAN Milestone","slug":"zebra-to-horse-image-translation-2017-cyclegan-milestone","url":"/categories/artificial-intelligence-breakthroughs/gans/zebra-to-horse-image-translation-2017-cyclegan-milestone.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2017, researchers trained a neural network to turn zebras into horses without ever seeing paired examples of the two."},{"title":"Zero-Day Malware Variant Generation with GANs in 2020 Cybersecurity Research","slug":"zero-day-malware-variant-generation-with-gans-in-2020-cybersecurity-research","url":"/categories/artificial-intelligence-breakthroughs/gans/zero-day-malware-variant-generation-with-gans-in-2020-cybersecurity-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, cybersecurity researchers used adversarial networks to simulate previously unseen malware variants to test defensive systems."},{"title":"Zero-Resource Speech Enhancement with GANs in 2019 Telecommunications Research","slug":"zero-resource-speech-enhancement-with-gans-in-2019-telecommunications-research","url":"/categories/artificial-intelligence-breakthroughs/gans/zero-resource-speech-enhancement-with-gans-in-2019-telecommunications-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, researchers demonstrated adversarial speech enhancement systems capable of improving audio clarity without paired clean recordings."},{"title":"Zero-Shot Text-to-Image GAN Adaptation in 2019 Cross-Domain AI Research","slug":"zero-shot-text-to-image-gan-adaptation-in-2019-cross-domain-ai-research","url":"/categories/artificial-intelligence-breakthroughs/gans/zero-shot-text-to-image-gan-adaptation-in-2019-cross-domain-ai-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2019, researchers demonstrated GAN systems capable of generating images from textual descriptions without domain-specific retraining."},{"title":"Zika Virus Data Augmentation with GANs During 2016 Outbreak Analytics","slug":"zika-virus-data-augmentation-with-gans-during-2016-outbreak-analytics","url":"/categories/artificial-intelligence-breakthroughs/gans/zika-virus-data-augmentation-with-gans-during-2016-outbreak-analytics.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"During the 2016 Zika outbreak, researchers turned to adversarial networks to compensate for limited labeled epidemiological image data."},{"title":"Zoonotic Virus Microscopy Image Augmentation Using GANs in 2020 Virology","slug":"zoonotic-virus-microscopy-image-augmentation-using-gans-in-2020-virology","url":"/categories/artificial-intelligence-breakthroughs/gans/zoonotic-virus-microscopy-image-augmentation-using-gans-in-2020-virology.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, virology laboratories applied adversarial networks to augment scarce microscopy images of zoonotic viruses for classification research."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

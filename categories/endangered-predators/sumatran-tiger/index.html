@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sumatran Tiger</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sumatran Tiger</h1>
+  <p>Explore all facts in "Sumatran Tiger".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sumatran Tiger</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aceh Province 2021 Court Cases Sentenced Poachers for Killing Protected Sumatran Tigers","slug":"aceh-province-2021-court-cases-sentenced-poachers-for-killing-protected-sumatran-tigers","url":"/categories/endangered-predators/sumatran-tiger/aceh-province-2021-court-cases-sentenced-poachers-for-killing-protected-sumatran-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single courtroom verdict in Aceh now carries the weight of a species below 400 individuals."},{"title":"Bukit Barisan Selatan 2019 Monitoring Revealed Tigers Sharing Space With Expanding Coffee Farms","slug":"bukit-barisan-selatan-2019-monitoring-revealed-tigers-sharing-space-with-expanding-coffee-farms","url":"/categories/endangered-predators/sumatran-tiger/bukit-barisan-selatan-2019-monitoring-revealed-tigers-sharing-space-with-expanding-coffee-farms.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Critically endangered tigers now patrol forest edges beside commercial coffee plantations."},{"title":"Bukit Tigapuluh Landscape Assessments Reveal Tigers Surviving Outside Formal National Parks","slug":"bukit-tigapuluh-landscape-assessments-reveal-tigers-surviving-outside-formal-national-parks","url":"/categories/endangered-predators/sumatran-tiger/bukit-tigapuluh-landscape-assessments-reveal-tigers-surviving-outside-formal-national-parks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tigers persist in forests without full national park protection."},{"title":"Community Livestock Compensation Schemes 2020 Reduced Retaliatory Tiger Killings in Sumatra","slug":"community-livestock-compensation-schemes-2020-reduced-retaliatory-tiger-killings-in-sumatra","url":"/categories/endangered-predators/sumatran-tiger/community-livestock-compensation-schemes-2020-reduced-retaliatory-tiger-killings-in-sumatra.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Paying farmers for lost livestock has prevented the killing of a predator below 400 individuals."},{"title":"Deforestation Rates in Sumatra 2015 Fires Exposed Tiger Habitat to Record Smoke Plumes","slug":"deforestation-rates-in-sumatra-2015-fires-exposed-tiger-habitat-to-record-smoke-plumes","url":"/categories/endangered-predators/sumatran-tiger/deforestation-rates-in-sumatra-2015-fires-exposed-tiger-habitat-to-record-smoke-plumes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In 2015, smoke from burning Sumatran forests was visible from space while fewer than 400 tigers hid beneath it."},{"title":"Disease Surveillance 2023 Screened Wild Sumatran Tigers for Canine Distemper Spillover Risk","slug":"disease-surveillance-2023-screened-wild-sumatran-tigers-for-canine-distemper-spillover-risk","url":"/categories/endangered-predators/sumatran-tiger/disease-surveillance-2023-screened-wild-sumatran-tigers-for-canine-distemper-spillover-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A virus carried by domestic dogs could erase a tiger population already below 400."},{"title":"Ecotourism Revenue Models 2022 Linked Tiger Sightings to Local Economic Stability","slug":"ecotourism-revenue-models-2022-linked-tiger-sightings-to-local-economic-stability","url":"/categories/endangered-predators/sumatran-tiger/ecotourism-revenue-models-2022-linked-tiger-sightings-to-local-economic-stability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A glimpse of a Sumatran tiger can generate more revenue alive than its body ever could on the black market."},{"title":"Elephant-Tiger Overlap in Sumatra 2022 Studies Reveal Competing Space in Shrinking Forests","slug":"elephant-tiger-overlap-in-sumatra-2022-studies-reveal-competing-space-in-shrinking-forests","url":"/categories/endangered-predators/sumatran-tiger/elephant-tiger-overlap-in-sumatra-2022-studies-reveal-competing-space-in-shrinking-forests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two of Asia’s largest endangered mammals now compete inside the same shrinking forest corridors."},{"title":"Forest Fire Emission Data 2015 Placed Indonesia Among Top Global Carbon Emitters During Haze Crisis","slug":"forest-fire-emission-data-2015-placed-indonesia-among-top-global-carbon-emitters-during-haze-crisis","url":"/categories/endangered-predators/sumatran-tiger/forest-fire-emission-data-2015-placed-indonesia-among-top-global-carbon-emitters-during-haze-crisis.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"During peak fire days in 2015, Indonesia’s emissions rivaled those of major industrial nations while tigers fled the smoke."},{"title":"Forest Fragmentation Models 2021 Predict Isolated Tiger Groups Below Viability Thresholds","slug":"forest-fragmentation-models-2021-predict-isolated-tiger-groups-below-viability-thresholds","url":"/categories/endangered-predators/sumatran-tiger/forest-fragmentation-models-2021-predict-isolated-tiger-groups-below-viability-thresholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tiger groups are now mathematically too small to survive long term."},{"title":"Genetic Bottleneck Evidence 2021 Revealed Reduced Diversity in Isolated Tiger Subpopulations","slug":"genetic-bottleneck-evidence-2021-revealed-reduced-diversity-in-isolated-tiger-subpopulations","url":"/categories/endangered-predators/sumatran-tiger/genetic-bottleneck-evidence-2021-revealed-reduced-diversity-in-isolated-tiger-subpopulations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tiger groups now share so much DNA that future adaptability is mathematically shrinking."},{"title":"Gunung Leuser 2022 Satellite Alerts Detected Illegal Road Cuts Inside Tiger Habitat","slug":"gunung-leuser-2022-satellite-alerts-detected-illegal-road-cuts-inside-tiger-habitat","url":"/categories/endangered-predators/sumatran-tiger/gunung-leuser-2022-satellite-alerts-detected-illegal-road-cuts-inside-tiger-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single illegal road carved through Gunung Leuser can fracture a tiger’s territory overnight."},{"title":"Habitat Suitability Mapping 2022 Identified Less Than Half of Historical Range as Viable","slug":"habitat-suitability-mapping-2022-identified-less-than-half-of-historical-range-as-viable","url":"/categories/endangered-predators/sumatran-tiger/habitat-suitability-mapping-2022-identified-less-than-half-of-historical-range-as-viable.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Less than half of the Sumatran tiger’s historical range is still considered viable habitat."},{"title":"Human-Tiger Conflict Reports 2018 Recorded Fatal Encounters in Sumatra’s Expanding Settlements","slug":"human-tiger-conflict-reports-2018-recorded-fatal-encounters-in-sumatra-s-expanding-settlements","url":"/categories/endangered-predators/sumatran-tiger/human-tiger-conflict-reports-2018-recorded-fatal-encounters-in-sumatra-s-expanding-settlements.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In modern Sumatra, critically endangered tigers still kill humans when shrinking forests force contact."},{"title":"Illegal Logging Crackdowns 2020 Seized Timber From Corridors Critical to Tiger Movement","slug":"illegal-logging-crackdowns-2020-seized-timber-from-corridors-critical-to-tiger-movement","url":"/categories/endangered-predators/sumatran-tiger/illegal-logging-crackdowns-2020-seized-timber-from-corridors-critical-to-tiger-movement.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Confiscated timber in Sumatra sometimes comes from corridors that keep fewer than 400 tigers connected."},{"title":"Illegal Wildlife Trade Valuations 2021 Rank Tiger Parts Among Highest Black Market Commodities","slug":"illegal-wildlife-trade-valuations-2021-rank-tiger-parts-among-highest-black-market-commodities","url":"/categories/endangered-predators/sumatran-tiger/illegal-wildlife-trade-valuations-2021-rank-tiger-parts-among-highest-black-market-commodities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single Sumatran tiger can be worth thousands of dollars dead despite being nearly extinct."},{"title":"Infrastructure Development Plans 2023 Proposed Highways Near Core Tiger Landscapes","slug":"infrastructure-development-plans-2023-proposed-highways-near-core-tiger-landscapes","url":"/categories/endangered-predators/sumatran-tiger/infrastructure-development-plans-2023-proposed-highways-near-core-tiger-landscapes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Proposed highways in Sumatra threaten to slice through forests sheltering a population under 400."},{"title":"Jambi Province 2019 Reports Confirm Tigers Entering Industrial Plantation Zones","slug":"jambi-province-2019-reports-confirm-tigers-entering-industrial-plantation-zones","url":"/categories/endangered-predators/sumatran-tiger/jambi-province-2019-reports-confirm-tigers-entering-industrial-plantation-zones.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Critically endangered tigers have been photographed walking through industrial palm plantations."},{"title":"Kerinci Seblat National Park 2023 Camera Trap Data Shows Fewer Than 400 Sumatran Tigers Remain","slug":"kerinci-seblat-national-park-2023-camera-trap-data-shows-fewer-than-400-sumatran-tigers-remain","url":"/categories/endangered-predators/sumatran-tiger/kerinci-seblat-national-park-2023-camera-trap-data-shows-fewer-than-400-sumatran-tigers-remain.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 400 Sumatran tigers still exist in the wild across an island the size of California."},{"title":"Kerumutan Peat Swamps Store Gigatons of Carbon While Hiding Fewer Than Dozens of Tigers","slug":"kerumutan-peat-swamps-store-gigatons-of-carbon-while-hiding-fewer-than-dozens-of-tigers","url":"/categories/endangered-predators/sumatran-tiger/kerumutan-peat-swamps-store-gigatons-of-carbon-while-hiding-fewer-than-dozens-of-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tigers now survive in peat swamps that can burn for months underground."},{"title":"Ketambe Research Station Long-Term Studies Track Individual Tigers for Over Two Decades","slug":"ketambe-research-station-long-term-studies-track-individual-tigers-for-over-two-decades","url":"/categories/endangered-predators/sumatran-tiger/ketambe-research-station-long-term-studies-track-individual-tigers-for-over-two-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tigers have been monitored individually for more than 20 years in the same forest."},{"title":"Leopard Cat and Tiger Niche Overlap Studies Clarify Predator Hierarchy in Sumatra","slug":"leopard-cat-and-tiger-niche-overlap-studies-clarify-predator-hierarchy-in-sumatra","url":"/categories/endangered-predators/sumatran-tiger/leopard-cat-and-tiger-niche-overlap-studies-clarify-predator-hierarchy-in-sumatra.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In Sumatra’s forests, even smaller wild cats adjust their behavior around a predator below 400 individuals."},{"title":"Leuser Ecosystem Satellite Mapping Shows One of the Last Intact Tiger Landscapes in Southeast Asia","slug":"leuser-ecosystem-satellite-mapping-shows-one-of-the-last-intact-tiger-landscapes-in-southeast-asia","url":"/categories/endangered-predators/sumatran-tiger/leuser-ecosystem-satellite-mapping-shows-one-of-the-last-intact-tiger-landscapes-in-southeast-asia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One Sumatran forest still holds orangutans, elephants, rhinos, and tigers in the same ecosystem."},{"title":"Mangrove Edge Expansion 2018 Observations Show Tigers Approaching Coastal Forest Boundaries","slug":"mangrove-edge-expansion-2018-observations-show-tigers-approaching-coastal-forest-boundaries","url":"/categories/endangered-predators/sumatran-tiger/mangrove-edge-expansion-2018-observations-show-tigers-approaching-coastal-forest-boundaries.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tigers have been recorded near coastal mangrove edges far from typical inland forests."},{"title":"Molecular Forensics 2020 Enabled DNA Tracking of Confiscated Tiger Parts in Indonesia","slug":"molecular-forensics-2020-enabled-dna-tracking-of-confiscated-tiger-parts-in-indonesia","url":"/categories/endangered-predators/sumatran-tiger/molecular-forensics-2020-enabled-dna-tracking-of-confiscated-tiger-parts-in-indonesia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists can now trace seized tiger bones back to individual animals using DNA."},{"title":"National Park Patrol Metrics 2021 Logged Thousands of Kilometers to Deter Poaching","slug":"national-park-patrol-metrics-2021-logged-thousands-of-kilometers-to-deter-poaching","url":"/categories/endangered-predators/sumatran-tiger/national-park-patrol-metrics-2021-logged-thousands-of-kilometers-to-deter-poaching.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rangers walk thousands of kilometers each year to protect a species that fits inside a small stadium."},{"title":"Night Hunting Behavior Studies Show Sumatran Tigers Traveling More Than 10 Kilometers in a Single Patrol","slug":"night-hunting-behavior-studies-show-sumatran-tigers-traveling-more-than-10-kilometers-in-a-single-patrol","url":"/categories/endangered-predators/sumatran-tiger/night-hunting-behavior-studies-show-sumatran-tigers-traveling-more-than-10-kilometers-in-a-single-patrol.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Sumatran tiger can silently cover more than 10 kilometers in one night inside dense rainforest."},{"title":"Oil Palm Expansion 2000-2020 Converted Millions of Hectares of Tiger Range in Sumatra","slug":"oil-palm-expansion-2000-2020-converted-millions-of-hectares-of-tiger-range-in-sumatra","url":"/categories/endangered-predators/sumatran-tiger/oil-palm-expansion-2000-2020-converted-millions-of-hectares-of-tiger-range-in-sumatra.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Palm oil plantations replaced vast stretches of Sumatran tiger habitat within two decades."},{"title":"Orangutan-Tiger Coexistence Zones 2022 Highlight Multi-Species Conservation Stakes","slug":"orangutan-tiger-coexistence-zones-2022-highlight-multi-species-conservation-stakes","url":"/categories/endangered-predators/sumatran-tiger/orangutan-tiger-coexistence-zones-2022-highlight-multi-species-conservation-stakes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some forests in Sumatra still shelter both wild orangutans and a tiger population under 400."},{"title":"Peatland Restoration Projects 2023 Aim to Rewet Drained Tiger Habitats","slug":"peatland-restoration-projects-2023-aim-to-rewet-drained-tiger-habitats","url":"/categories/endangered-predators/sumatran-tiger/peatland-restoration-projects-2023-aim-to-rewet-drained-tiger-habitats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Engineers are now re-flooding drained peatlands to protect a predator numbering under 400."},{"title":"Prey Base Decline Studies 2020 Show Overhunting Reduces Food Supply for Sumatran Tigers","slug":"prey-base-decline-studies-2020-show-overhunting-reduces-food-supply-for-sumatran-tigers","url":"/categories/endangered-predators/sumatran-tiger/prey-base-decline-studies-2020-show-overhunting-reduces-food-supply-for-sumatran-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A tiger can survive deforestation longer than it can survive an empty forest."},{"title":"Quantitative Genetic Studies Warn Inbreeding Could Erase Isolated Tiger Subpopulations Within Decades","slug":"quantitative-genetic-studies-warn-inbreeding-could-erase-isolated-tiger-subpopulations-within-decades","url":"/categories/endangered-predators/sumatran-tiger/quantitative-genetic-studies-warn-inbreeding-could-erase-isolated-tiger-subpopulations-within-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single broken wildlife corridor can mathematically erase a tiger population without firing a shot."},{"title":"Quarantine Veterinary Protocols 2022 Improved Survival Rates of Rescued Sumatran Tigers","slug":"quarantine-veterinary-protocols-2022-improved-survival-rates-of-rescued-sumatran-tigers","url":"/categories/endangered-predators/sumatran-tiger/quarantine-veterinary-protocols-2022-improved-survival-rates-of-rescued-sumatran-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rescued Sumatran tigers now undergo medical quarantine similar to international biosecurity standards."},{"title":"Rainforest Carbon Credit Initiatives 2023 Tie Tiger Habitat Protection to Global Finance","slug":"rainforest-carbon-credit-initiatives-2023-tie-tiger-habitat-protection-to-global-finance","url":"/categories/endangered-predators/sumatran-tiger/rainforest-carbon-credit-initiatives-2023-tie-tiger-habitat-protection-to-global-finance.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Protecting fewer than 400 tigers is now linked to international carbon markets."},{"title":"Ranger Patrol Data 2021 Show Snare Removal Operations Saving Tigers One Trap at a Time","slug":"ranger-patrol-data-2021-show-snare-removal-operations-saving-tigers-one-trap-at-a-time","url":"/categories/endangered-predators/sumatran-tiger/ranger-patrol-data-2021-show-snare-removal-operations-saving-tigers-one-trap-at-a-time.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single hidden wire snare can silently end a species already below 400 individuals."},{"title":"Sumatran Rhino Decline Parallels Highlight Warning Signs for Remaining Tiger Populations","slug":"sumatran-rhino-decline-parallels-highlight-warning-signs-for-remaining-tiger-populations","url":"/categories/endangered-predators/sumatran-tiger/sumatran-rhino-decline-parallels-highlight-warning-signs-for-remaining-tiger-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Sumatra has already lost most of its rhinos, and the tiger now follows the same trajectory."},{"title":"Timber Concession Audits 2019 Identified Overlapping Tiger Habitat Within Licensed Forest Areas","slug":"timber-concession-audits-2019-identified-overlapping-tiger-habitat-within-licensed-forest-areas","url":"/categories/endangered-predators/sumatran-tiger/timber-concession-audits-2019-identified-overlapping-tiger-habitat-within-licensed-forest-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Legal timber concessions in Sumatra still overlap with land used by fewer than 400 tigers."},{"title":"Translocation Efforts 2019 Relocated Conflict Tigers to Reduce Retaliatory Killings in Sumatra","slug":"translocation-efforts-2019-relocated-conflict-tigers-to-reduce-retaliatory-killings-in-sumatra","url":"/categories/endangered-predators/sumatran-tiger/translocation-efforts-2019-relocated-conflict-tigers-to-reduce-retaliatory-killings-in-sumatra.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some Sumatran tigers now survive because they were physically moved away from villages."},{"title":"Ujung Kulon and Sumatra Comparison Shows Tigers Now Confined to One Indonesian Island","slug":"ujung-kulon-and-sumatra-comparison-shows-tigers-now-confined-to-one-indonesian-island","url":"/categories/endangered-predators/sumatran-tiger/ujung-kulon-and-sumatra-comparison-shows-tigers-now-confined-to-one-indonesian-island.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Tigers once roamed multiple Indonesian islands; now they survive on just one."},{"title":"UN FAO 2020 Data Shows Indonesia Lost Over 9 Million Hectares of Forest Since 2001","slug":"un-fao-2020-data-shows-indonesia-lost-over-9-million-hectares-of-forest-since-2001","url":"/categories/endangered-predators/sumatran-tiger/un-fao-2020-data-shows-indonesia-lost-over-9-million-hectares-of-forest-since-2001.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Sumatra lost millions of hectares of forest in a single generation while its last tigers were still inside it."},{"title":"Urban Expansion Near Padang 2022 Increased Edge Effects in Adjacent Tiger Habitats","slug":"urban-expansion-near-padang-2022-increased-edge-effects-in-adjacent-tiger-habitats","url":"/categories/endangered-predators/sumatran-tiger/urban-expansion-near-padang-2022-increased-edge-effects-in-adjacent-tiger-habitats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Expanding cities in Sumatra now press directly against forests sheltering a species below 400."},{"title":"Viral Zoonotic Risk Assessments Warn Habitat Loss Increases Human-Wildlife Disease Transmission","slug":"viral-zoonotic-risk-assessments-warn-habitat-loss-increases-human-wildlife-disease-transmission","url":"/categories/endangered-predators/sumatran-tiger/viral-zoonotic-risk-assessments-warn-habitat-loss-increases-human-wildlife-disease-transmission.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Shrinking tiger habitat does not only threaten tigers; it increases disease risk for humans."},{"title":"Water Catchment Mapping Shows Tiger Forests Supply Drinking Water to Millions in Sumatra","slug":"water-catchment-mapping-shows-tiger-forests-supply-drinking-water-to-millions-in-sumatra","url":"/categories/endangered-predators/sumatran-tiger/water-catchment-mapping-shows-tiger-forests-supply-drinking-water-to-millions-in-sumatra.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Forests sheltering fewer than 400 tigers also supply drinking water to millions of people."},{"title":"Way Kambas National Park Density Studies Show Tigers Surviving in Fragments Under 1,300 Square Kilometers","slug":"way-kambas-national-park-density-studies-show-tigers-surviving-in-fragments-under-1-300-square-kilometers","url":"/categories/endangered-predators/sumatran-tiger/way-kambas-national-park-density-studies-show-tigers-surviving-in-fragments-under-1-300-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator that once ruled vast forests now survives inside parks smaller than some global cities."},{"title":"X-Ray Analysis of Seized Tiger Bones Reveals Persistent Illegal Trade in Indonesia","slug":"x-ray-analysis-of-seized-tiger-bones-reveals-persistent-illegal-trade-in-indonesia","url":"/categories/endangered-predators/sumatran-tiger/x-ray-analysis-of-seized-tiger-bones-reveals-persistent-illegal-trade-in-indonesia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even after near extinction, Sumatran tiger bones still move through black markets as medicine ingredients."},{"title":"Xeric Season Drought Events Intensify Stress on Sumatran Tiger Prey Populations","slug":"xeric-season-drought-events-intensify-stress-on-sumatran-tiger-prey-populations","url":"/categories/endangered-predators/sumatran-tiger/xeric-season-drought-events-intensify-stress-on-sumatran-tiger-prey-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Drought years in Sumatra ripple upward until even the top predator feels the strain."},{"title":"Yogyakarta Zoo 2017 Incident Exposed Risks of Captive Sumatran Tiger Management","slug":"yogyakarta-zoo-2017-incident-exposed-risks-of-captive-sumatran-tiger-management","url":"/categories/endangered-predators/sumatran-tiger/yogyakarta-zoo-2017-incident-exposed-risks-of-captive-sumatran-tiger-management.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single enclosure failure can turn a critically endangered tiger into a national headline overnight."},{"title":"Youth Conservation Programs in Sumatra 2023 Engage Local Communities in Tiger Monitoring","slug":"youth-conservation-programs-in-sumatra-2023-engage-local-communities-in-tiger-monitoring","url":"/categories/endangered-predators/sumatran-tiger/youth-conservation-programs-in-sumatra-2023-engage-local-communities-in-tiger-monitoring.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In villages bordering tiger habitat, teenagers now help monitor one of Earth’s rarest predators."},{"title":"Zero-Tolerance Enforcement Policies 2020 Increased Penalties for Poaching in Indonesia","slug":"zero-tolerance-enforcement-policies-2020-increased-penalties-for-poaching-in-indonesia","url":"/categories/endangered-predators/sumatran-tiger/zero-tolerance-enforcement-policies-2020-increased-penalties-for-poaching-in-indonesia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Killing a Sumatran tiger can now carry prison sentences measured in years."},{"title":"Zoological Genetic Records Show Sumatran Tigers Are the Smallest Surviving Tiger Subspecies","slug":"zoological-genetic-records-show-sumatran-tigers-are-the-smallest-surviving-tiger-subspecies","url":"/categories/endangered-predators/sumatran-tiger/zoological-genetic-records-show-sumatran-tigers-are-the-smallest-surviving-tiger-subspecies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The last Indonesian tiger is also the smallest living tiger subspecies on Earth."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

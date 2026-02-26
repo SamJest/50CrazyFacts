@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amur Leopard</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Amur Leopard</h1>
+  <p>Explore all facts in "Amur Leopard".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Amur Leopard</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Amur Leopard 35 Remaining in 2007 Sparked a Genetic Emergency","slug":"amur-leopard-35-remaining-in-2007-sparked-a-genetic-emergency","url":"/categories/endangered-predators/amur-leopard/amur-leopard-35-remaining-in-2007-sparked-a-genetic-emergency.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In 2007, scientists confirmed barely 35 Amur leopards were left alive in the wild."},{"title":"Amur Leopard Gestation of 90 to 105 Days Limits Rapid Population Recovery","slug":"amur-leopard-gestation-of-90-to-105-days-limits-rapid-population-recovery","url":"/categories/endangered-predators/amur-leopard/amur-leopard-gestation-of-90-to-105-days-limits-rapid-population-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even in perfect conditions, this leopard cannot reproduce fast enough to quickly offset heavy losses."},{"title":"Amur Leopard Territory Can Exceed 100 Square Kilometers Per Male","slug":"amur-leopard-territory-can-exceed-100-square-kilometers-per-male","url":"/categories/endangered-predators/amur-leopard/amur-leopard-territory-can-exceed-100-square-kilometers-per-male.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One male Amur leopard may require a territory larger than many small cities."},{"title":"Beringian Climate Legacy Helped Shape the Cold-Adapted Amur Leopard","slug":"beringian-climate-legacy-helped-shape-the-cold-adapted-amur-leopard","url":"/categories/endangered-predators/amur-leopard/beringian-climate-legacy-helped-shape-the-cold-adapted-amur-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This leopard carries evolutionary traits forged during Ice Age climate extremes."},{"title":"Biodiversity Corridor Planning Now Centers on a Predator With Fewer Than 150 Wild Individuals","slug":"biodiversity-corridor-planning-now-centers-on-a-predator-with-fewer-than-150-wild-individuals","url":"/categories/endangered-predators/amur-leopard/biodiversity-corridor-planning-now-centers-on-a-predator-with-fewer-than-150-wild-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire land-use maps are redrawn to accommodate a predator population smaller than many rural villages."},{"title":"Border Infrastructure Projects Threatened to Sever Critical Amur Leopard Migration Routes","slug":"border-infrastructure-projects-threatened-to-sever-critical-amur-leopard-migration-routes","url":"/categories/endangered-predators/amur-leopard/border-infrastructure-projects-threatened-to-sever-critical-amur-leopard-migration-routes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single highway expansion could have split the entire remaining leopard population in two."},{"title":"Camera Trap Surveys Identified Individual Amur Leopards by Rosette Pattern Like Fingerprints","slug":"camera-trap-surveys-identified-individual-amur-leopards-by-rosette-pattern-like-fingerprints","url":"/categories/endangered-predators/amur-leopard/camera-trap-surveys-identified-individual-amur-leopards-by-rosette-pattern-like-fingerprints.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every remaining Amur leopard carries a coat pattern unique enough to function like a fingerprint database."},{"title":"Census Accuracy for Amur Leopards Approaches Individual-Level Precision","slug":"census-accuracy-for-amur-leopards-approaches-individual-level-precision","url":"/categories/endangered-predators/amur-leopard/census-accuracy-for-amur-leopards-approaches-individual-level-precision.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Unlike most wild predators, nearly every living Amur leopard can be individually counted."},{"title":"China–Russia Border Fences Once Fragmented the World’s Rarest Leopard Habitat","slug":"china-russia-border-fences-once-fragmented-the-world-s-rarest-leopard-habitat","url":"/categories/endangered-predators/amur-leopard/china-russia-border-fences-once-fragmented-the-world-s-rarest-leopard-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"International border security once sliced directly through the last refuge of a 30-animal predator population."},{"title":"CITES Appendix I Status Prohibits International Trade in Amur Leopard Parts","slug":"cites-appendix-i-status-prohibits-international-trade-in-amur-leopard-parts","url":"/categories/endangered-predators/amur-leopard/cites-appendix-i-status-prohibits-international-trade-in-amur-leopard-parts.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Global law treats every Amur leopard body part as untouchable under the strictest wildlife trade ban available."},{"title":"Critical Endangered Classification in 1996 Marked a Statistical Near-Extinction Event","slug":"critical-endangered-classification-in-1996-marked-a-statistical-near-extinction-event","url":"/categories/endangered-predators/amur-leopard/critical-endangered-classification-in-1996-marked-a-statistical-near-extinction-event.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"By 1996, international authorities officially listed the Amur leopard as one step from extinction in the wild."},{"title":"Genetic Bottleneck Threatened the Amur Leopard With Inbreeding Collapse in the 2000s","slug":"genetic-bottleneck-threatened-the-amur-leopard-with-inbreeding-collapse-in-the-2000s","url":"/categories/endangered-predators/amur-leopard/genetic-bottleneck-threatened-the-amur-leopard-with-inbreeding-collapse-in-the-2000s.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator that once roamed thousands of kilometers was reduced to a gene pool smaller than many isolated villages."},{"title":"Habitat Concentration in Primorye Places 100 Percent of the Species at Regional Risk","slug":"habitat-concentration-in-primorye-places-100-percent-of-the-species-at-regional-risk","url":"/categories/endangered-predators/amur-leopard/habitat-concentration-in-primorye-places-100-percent-of-the-species-at-regional-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Nearly every wild Amur leopard lives within one administrative region of Russia."},{"title":"Hunchun Nature Reserve Expansion Reconnected Critical Amur Leopard Habitat in China","slug":"hunchun-nature-reserve-expansion-reconnected-critical-amur-leopard-habitat-in-china","url":"/categories/endangered-predators/amur-leopard/hunchun-nature-reserve-expansion-reconnected-critical-amur-leopard-habitat-in-china.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"China expanded a reserve to protect fewer than 50 wild cats within its borders."},{"title":"Illegal Logging Once Destroyed More Than 80 Percent of Historic Amur Leopard Range","slug":"illegal-logging-once-destroyed-more-than-80-percent-of-historic-amur-leopard-range","url":"/categories/endangered-predators/amur-leopard/illegal-logging-once-destroyed-more-than-80-percent-of-historic-amur-leopard-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than four-fifths of this leopard’s original range vanished within a century."},{"title":"Juvenile Dispersal Routes Determine Whether Amur Leopard Recovery Survives the Next Decade","slug":"juvenile-dispersal-routes-determine-whether-amur-leopard-recovery-survives-the-next-decade","url":"/categories/endangered-predators/amur-leopard/juvenile-dispersal-routes-determine-whether-amur-leopard-recovery-survives-the-next-decade.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One wandering juvenile can determine the genetic fate of an entire endangered species."},{"title":"Keystone Predator Influence Persists Even With Fewer Than 150 Individuals","slug":"keystone-predator-influence-persists-even-with-fewer-than-150-individuals","url":"/categories/endangered-predators/amur-leopard/keystone-predator-influence-persists-even-with-fewer-than-150-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A population smaller than a small auditorium audience can regulate thousands of hectares of forest."},{"title":"Keystone Predator Status Means the Amur Leopard Shapes Forest Ecosystems Disproportionately to Its Numbers","slug":"keystone-predator-status-means-the-amur-leopard-shapes-forest-ecosystems-disproportionately-to-its-numbers","url":"/categories/endangered-predators/amur-leopard/keystone-predator-status-means-the-amur-leopard-shapes-forest-ecosystems-disproportionately-to-its-numbers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 100 leopards influence thousands of square kilometers of forest ecology."},{"title":"Korean Peninsula Extirpation Erased an Entire National Population of Amur Leopards","slug":"korean-peninsula-extirpation-erased-an-entire-national-population-of-amur-leopards","url":"/categories/endangered-predators/amur-leopard/korean-peninsula-extirpation-erased-an-entire-national-population-of-amur-leopards.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Within a century, a top predator disappeared completely from an entire peninsula."},{"title":"Land of the Leopard National Park 2012 Created a Big Cat Sanctuary the Size of a Major City","slug":"land-of-the-leopard-national-park-2012-created-a-big-cat-sanctuary-the-size-of-a-major-city","url":"/categories/endangered-predators/amur-leopard/land-of-the-leopard-national-park-2012-created-a-big-cat-sanctuary-the-size-of-a-major-city.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Russia created a protected reserve in 2012 covering more than 260,000 hectares for a single predator."},{"title":"Logging Concessions in Primorye Once Overlapped Directly With Core Leopard Breeding Zones","slug":"logging-concessions-in-primorye-once-overlapped-directly-with-core-leopard-breeding-zones","url":"/categories/endangered-predators/amur-leopard/logging-concessions-in-primorye-once-overlapped-directly-with-core-leopard-breeding-zones.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Industrial timber maps once aligned almost perfectly with the last breeding territory of a 30-animal population."},{"title":"Long-Term Monitoring Shows Recovery From 30 Individuals to Over 100 Within Two Decades","slug":"long-term-monitoring-shows-recovery-from-30-individuals-to-over-100-within-two-decades","url":"/categories/endangered-predators/amur-leopard/long-term-monitoring-shows-recovery-from-30-individuals-to-over-100-within-two-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In less than 20 years, this leopard tripled its global wild population from near collapse."},{"title":"Maternal Investment of Up to Two Years Slows Amur Leopard Demographic Recovery","slug":"maternal-investment-of-up-to-two-years-slows-amur-leopard-demographic-recovery","url":"/categories/endangered-predators/amur-leopard/maternal-investment-of-up-to-two-years-slows-amur-leopard-demographic-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Each mother may devote two full years to one litter, limiting how fast the species can rebound."},{"title":"Migration Across the Russia–China Border Increased Documented Population After 2015","slug":"migration-across-the-russia-china-border-increased-documented-population-after-2015","url":"/categories/endangered-predators/amur-leopard/migration-across-the-russia-china-border-increased-documented-population-after-2015.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Crossing one international boundary measurably raised the world’s rarest leopard count."},{"title":"Policy Continuity Over a Decade Enabled Recovery From 30 to Over 100 Individuals","slug":"policy-continuity-over-a-decade-enabled-recovery-from-30-to-over-100-individuals","url":"/categories/endangered-predators/amur-leopard/policy-continuity-over-a-decade-enabled-recovery-from-30-to-over-100-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than ten years of uninterrupted enforcement were required to move this leopard away from collapse."},{"title":"Prey Density Increase After 2010 Coincided With Leopard Population Growth","slug":"prey-density-increase-after-2010-coincided-with-leopard-population-growth","url":"/categories/endangered-predators/amur-leopard/prey-density-increase-after-2010-coincided-with-leopard-population-growth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When deer numbers recovered, the rarest leopard on Earth began climbing out of near-extinction."},{"title":"Qing Dynasty Records Document Leopards Once Ranging Far Beyond Today’s Remnant Habitat","slug":"qing-dynasty-records-document-leopards-once-ranging-far-beyond-today-s-remnant-habitat","url":"/categories/endangered-predators/amur-leopard/qing-dynasty-records-document-leopards-once-ranging-far-beyond-today-s-remnant-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Historical archives show this leopard once roamed territories now stripped of any trace of its presence."},{"title":"Quarantine-Level Protection Measures Saved Fewer Than 40 Amur Leopards From Extinction","slug":"quarantine-level-protection-measures-saved-fewer-than-40-amur-leopards-from-extinction","url":"/categories/endangered-predators/amur-leopard/quarantine-level-protection-measures-saved-fewer-than-40-amur-leopards-from-extinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Russia deployed anti-poaching patrols as if guarding a biohazard, but the threat was bullets, not disease."},{"title":"Rare Northern Distribution Makes the Amur Leopard the Coldest-Range Leopard Subspecies","slug":"rare-northern-distribution-makes-the-amur-leopard-the-coldest-range-leopard-subspecies","url":"/categories/endangered-predators/amur-leopard/rare-northern-distribution-makes-the-amur-leopard-the-coldest-range-leopard-subspecies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This is the only leopard subspecies routinely surviving Siberian-level winter temperatures."},{"title":"Reintroduction Was Avoided Because Native-Range Protection Proved Sufficient","slug":"reintroduction-was-avoided-because-native-range-protection-proved-sufficient","url":"/categories/endangered-predators/amur-leopard/reintroduction-was-avoided-because-native-range-protection-proved-sufficient.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This leopard recovered without being flown in from captivity."},{"title":"Road Network Expansion Created Measurable Fragmentation Risk for a 30-Animal Population","slug":"road-network-expansion-created-measurable-fragmentation-risk-for-a-30-animal-population","url":"/categories/endangered-predators/amur-leopard/road-network-expansion-created-measurable-fragmentation-risk-for-a-30-animal-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When only 30 leopards remained, one new road could divide the entire species."},{"title":"Shifting From Crisis to Recovery Required More Than a Decade of Continuous Enforcement","slug":"shifting-from-crisis-to-recovery-required-more-than-a-decade-of-continuous-enforcement","url":"/categories/endangered-predators/amur-leopard/shifting-from-crisis-to-recovery-required-more-than-a-decade-of-continuous-enforcement.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It took over ten years of uninterrupted protection to move this leopard from collapse toward stability."},{"title":"Soviet-Era Fur Trade Accelerated Amur Leopard Collapse Before 1990","slug":"soviet-era-fur-trade-accelerated-amur-leopard-collapse-before-1990","url":"/categories/endangered-predators/amur-leopard/soviet-era-fur-trade-accelerated-amur-leopard-collapse-before-1990.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Government-regulated fur markets once treated one of the world’s rarest cats as winter fashion inventory."},{"title":"Taiga Fire Risk Now Threatens the Entire Remaining Amur Leopard Range","slug":"taiga-fire-risk-now-threatens-the-entire-remaining-amur-leopard-range","url":"/categories/endangered-predators/amur-leopard/taiga-fire-risk-now-threatens-the-entire-remaining-amur-leopard-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One large forest fire could sweep across a habitat containing the world’s rarest big cat population."},{"title":"Transboundary Camera Trap Networks Now Monitor Nearly Every Wild Amur Leopard","slug":"transboundary-camera-trap-networks-now-monitor-nearly-every-wild-amur-leopard","url":"/categories/endangered-predators/amur-leopard/transboundary-camera-trap-networks-now-monitor-nearly-every-wild-amur-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists can identify almost every surviving wild Amur leopard from a single photograph."},{"title":"Trophic Cascade Risk Intensifies When Apex Predators Like the Amur Leopard Decline","slug":"trophic-cascade-risk-intensifies-when-apex-predators-like-the-amur-leopard-decline","url":"/categories/endangered-predators/amur-leopard/trophic-cascade-risk-intensifies-when-apex-predators-like-the-amur-leopard-decline.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Removing fewer than 50 predators can destabilize thousands of square kilometers of forest ecosystem."},{"title":"Uninterrupted Forest Cover Proves More Critical Than Absolute Population Numbers","slug":"uninterrupted-forest-cover-proves-more-critical-than-absolute-population-numbers","url":"/categories/endangered-predators/amur-leopard/uninterrupted-forest-cover-proves-more-critical-than-absolute-population-numbers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even 150 leopards cannot survive if their forest corridor breaks apart."},{"title":"Urban Expansion in Northeast Asia Reduced the Leopard’s Viable Habitat to a Single Stronghold","slug":"urban-expansion-in-northeast-asia-reduced-the-leopard-s-viable-habitat-to-a-single-stronghold","url":"/categories/endangered-predators/amur-leopard/urban-expansion-in-northeast-asia-reduced-the-leopard-s-viable-habitat-to-a-single-stronghold.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rapid development across three countries left one forest block holding the planet’s rarest big cat."},{"title":"Ussuri Taiga Habitat Compression Reduced Amur Leopard Territory to a Narrow Forest Strip","slug":"ussuri-taiga-habitat-compression-reduced-amur-leopard-territory-to-a-narrow-forest-strip","url":"/categories/endangered-predators/amur-leopard/ussuri-taiga-habitat-compression-reduced-amur-leopard-territory-to-a-narrow-forest-strip.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator that once roamed across three countries now survives in a forest corridor thinner than many urban metro lines."},{"title":"Wild Population Rebound Surpassed 100 Amur Leopards by the Early 2020s","slug":"wild-population-rebound-surpassed-100-amur-leopards-by-the-early-2020s","url":"/categories/endangered-predators/amur-leopard/wild-population-rebound-surpassed-100-amur-leopards-by-the-early-2020s.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"From barely 35 animals to over 100, this recovery reversed one of the most precarious big cat declines on record."},{"title":"Wildfire Risk Concentrates Over 50 Percent of Amur Leopard Habitat in One Fire-Prone Zone","slug":"wildfire-risk-concentrates-over-50-percent-of-amur-leopard-habitat-in-one-fire-prone-zone","url":"/categories/endangered-predators/amur-leopard/wildfire-risk-concentrates-over-50-percent-of-amur-leopard-habitat-in-one-fire-prone-zone.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single uncontrolled blaze could sweep through more than half of the world’s remaining Amur leopard range."},{"title":"Wildlife Crime Enforcement Now Integrates Leopard Protection Into Organized Crime Monitoring","slug":"wildlife-crime-enforcement-now-integrates-leopard-protection-into-organized-crime-monitoring","url":"/categories/endangered-predators/amur-leopard/wildlife-crime-enforcement-now-integrates-leopard-protection-into-organized-crime-monitoring.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Protecting this leopard requires tracking criminal networks rather than just animals."},{"title":"Winter Temperatures of −30°C Failed to Freeze Out the Amur Leopard","slug":"winter-temperatures-of-30-c-failed-to-freeze-out-the-amur-leopard","url":"/categories/endangered-predators/amur-leopard/winter-temperatures-of-30-c-failed-to-freeze-out-the-amur-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This leopard survives winters colder than many Arctic military outposts."},{"title":"Xeric Microclimates Within Dense Taiga Forests Improve Cub Winter Survival","slug":"xeric-microclimates-within-dense-taiga-forests-improve-cub-winter-survival","url":"/categories/endangered-predators/amur-leopard/xeric-microclimates-within-dense-taiga-forests-improve-cub-winter-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In −30°C winters, a few degrees of shelter can determine whether cubs survive their first year."},{"title":"Xeric Winter Forests Force Amur Leopards to Hunt Across Snowfields for Months","slug":"xeric-winter-forests-force-amur-leopards-to-hunt-across-snowfields-for-months","url":"/categories/endangered-predators/amur-leopard/xeric-winter-forests-force-amur-leopards-to-hunt-across-snowfields-for-months.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"For nearly half the year, this leopard hunts in frozen forests where prey is scarce and temperatures plunge below −30°C."},{"title":"Yakutsk-Level Winter Lows Contrast Sharply With the Leopard’s Tropical Relatives","slug":"yakutsk-level-winter-lows-contrast-sharply-with-the-leopard-s-tropical-relatives","url":"/categories/endangered-predators/amur-leopard/yakutsk-level-winter-lows-contrast-sharply-with-the-leopard-s-tropical-relatives.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"While African leopards stalk savannas, their Amur cousin hunts in climates rivaling Siberian cities."},{"title":"Yellow-Boned Sika Deer Declines Once Pushed Amur Leopards Toward Starvation Risk","slug":"yellow-boned-sika-deer-declines-once-pushed-amur-leopards-toward-starvation-risk","url":"/categories/endangered-predators/amur-leopard/yellow-boned-sika-deer-declines-once-pushed-amur-leopards-toward-starvation-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When deer numbers fall, the world’s rarest leopard loses its only reliable food supply."},{"title":"Yunnan–Primorye Genetic Link Revealed Cross-Border Survival Pathways","slug":"yunnan-primorye-genetic-link-revealed-cross-border-survival-pathways","url":"/categories/endangered-predators/amur-leopard/yunnan-primorye-genetic-link-revealed-cross-border-survival-pathways.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"DNA evidence proved that a leopard crossing one border could reshape the entire species’ future."},{"title":"Zero-Margin Demography Meant One Poaching Incident Could Shift Population Statistics by 3 Percent","slug":"zero-margin-demography-meant-one-poaching-incident-could-shift-population-statistics-by-3-percent","url":"/categories/endangered-predators/amur-leopard/zero-margin-demography-meant-one-poaching-incident-could-shift-population-statistics-by-3-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When only 30 leopards remained, a single illegal kill equaled a measurable percentage of the species."},{"title":"Zoological Breeding Programs Maintain a Global Insurance Population of Amur Leopards","slug":"zoological-breeding-programs-maintain-a-global-insurance-population-of-amur-leopards","url":"/categories/endangered-predators/amur-leopard/zoological-breeding-programs-maintain-a-global-insurance-population-of-amur-leopards.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even if every wild Amur leopard vanished tomorrow, captive populations would still exist in secured facilities worldwide."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

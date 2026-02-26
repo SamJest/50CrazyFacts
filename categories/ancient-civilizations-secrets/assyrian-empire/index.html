@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assyrian Empire</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Assyrian Empire</h1>
+  <p>Explore all facts in "Assyrian Empire".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Assyrian Empire</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Babylon Revolt of 689 BCE Triggered Assyrian Urban Destruction Policy","slug":"babylon-revolt-of-689-bce-triggered-assyrian-urban-destruction-policy","url":"/categories/ancient-civilizations-secrets/assyrian-empire/babylon-revolt-of-689-bce-triggered-assyrian-urban-destruction-policy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 689 BCE, King Sennacherib responded to Babylonian rebellion by ordering the systematic destruction of one of Mesopotamia's most revered cities."},{"title":"Kalhu Administrative Archives of 800 BCE Revealed Early Intelligence Networks","slug":"kalhu-administrative-archives-of-800-bce-revealed-early-intelligence-networks","url":"/categories/ancient-civilizations-secrets/assyrian-empire/kalhu-administrative-archives-of-800-bce-revealed-early-intelligence-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 800 BCE, Assyrian governors were sending regular written intelligence reports to the royal court, creating one of the ancient world's earliest surveillance systems."},{"title":"Kalhu Banquet of 879 BCE Hosted 69,574 Guests According to Royal Inscription","slug":"kalhu-banquet-of-879-bce-hosted-69-574-guests-according-to-royal-inscription","url":"/categories/ancient-civilizations-secrets/assyrian-empire/kalhu-banquet-of-879-bce-hosted-69-574-guests-according-to-royal-inscription.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One Assyrian king claimed to have fed 69,574 guests at a single inauguration banquet in 879 BCE, turning a city dedication into a logistical spectacle."},{"title":"Kalhu Ivory Hoard Discovered in 1845 Revealed Vast Assyrian Luxury Trade","slug":"kalhu-ivory-hoard-discovered-in-1845-revealed-vast-assyrian-luxury-trade","url":"/categories/ancient-civilizations-secrets/assyrian-empire/kalhu-ivory-hoard-discovered-in-1845-revealed-vast-assyrian-luxury-trade.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When excavators uncovered carved ivory panels at Kalhu in 1845, they exposed a luxury trade network stretching from the Levant to Mesopotamia."},{"title":"Kalhu Relief Workshops Produced Thousands of Carved Panels by 860 BCE","slug":"kalhu-relief-workshops-produced-thousands-of-carved-panels-by-860-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/kalhu-relief-workshops-produced-thousands-of-carved-panels-by-860-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 860 BCE, palace workshops at Kalhu were producing carved stone panels on an industrial scale to narrate imperial dominance."},{"title":"Karkar Inscription of 853 BCE Preserved One of the Longest Assyrian Military Annals","slug":"karkar-inscription-of-853-bce-preserved-one-of-the-longest-assyrian-military-annals","url":"/categories/ancient-civilizations-secrets/assyrian-empire/karkar-inscription-of-853-bce-preserved-one-of-the-longest-assyrian-military-annals.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single stone monolith carved in 853 BCE compresses an entire campaigning season into a triumphal narrative meant to outlast the battlefield itself."},{"title":"Khorsabad Palace Reliefs Documented 720 BCE Military Engineering Campaigns","slug":"khorsabad-palace-reliefs-documented-720-bce-military-engineering-campaigns","url":"/categories/ancient-civilizations-secrets/assyrian-empire/khorsabad-palace-reliefs-documented-720-bce-military-engineering-campaigns.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone walls stretching over 24,000 square meters once displayed carved scenes of siege towers, deportations, and river crossings with the precision of a military operations manual."},{"title":"Kudurru Boundary Stones Influenced Assyrian Legal Enforcement Practices","slug":"kudurru-boundary-stones-influenced-assyrian-legal-enforcement-practices","url":"/categories/ancient-civilizations-secrets/assyrian-empire/kudurru-boundary-stones-influenced-assyrian-legal-enforcement-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone markers carved with curses and land grants reveal how property rights in Mesopotamia were defended with theology as much as law."},{"title":"Kutha Reconstruction Edicts of 670 BCE Showed Assyrian Post-War Urban Investment","slug":"kutha-reconstruction-edicts-of-670-bce-showed-assyrian-post-war-urban-investment","url":"/categories/ancient-civilizations-secrets/assyrian-empire/kutha-reconstruction-edicts-of-670-bce-showed-assyrian-post-war-urban-investment.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 670 BCE, an Assyrian king ordered the rebuilding of a Babylonian city his empire had previously destabilized, redirecting imperial resources from destruction to reconstruction."},{"title":"Nineveh Library Archive Contained 30,000 Clay Tablets by 650 BCE","slug":"nineveh-library-archive-contained-30-000-clay-tablets-by-650-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/nineveh-library-archive-contained-30-000-clay-tablets-by-650-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thirty thousand clay tablets lay buried under a burned palace for over two millennia before modern archaeologists realized they were standing inside the ancient world's most ambitious information project."},{"title":"Qal'at Sherqat Stratigraphy Revealed 3,000 Years of Assyrian Political Evolution","slug":"qal-at-sherqat-stratigraphy-revealed-3-000-years-of-assyrian-political-evolution","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qal-at-sherqat-stratigraphy-revealed-3-000-years-of-assyrian-political-evolution.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Qal'at Sherqat uncovered layered ruins spanning roughly three millennia, compressing the entire political evolution of Assyria into one archaeological mound."},{"title":"Qalat Nimrud Excavations of 1845 Reshaped Modern Understanding of Assyrian Art","slug":"qalat-nimrud-excavations-of-1845-reshaped-modern-understanding-of-assyrian-art","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qalat-nimrud-excavations-of-1845-reshaped-modern-understanding-of-assyrian-art.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When 19th century excavators uncovered colossal winged bulls at Nimrud in 1845, they transformed Western perceptions of ancient Near Eastern civilization."},{"title":"Qalat Sherqat Excavations Revealed Assur's 2,000 Year Religious Continuity","slug":"qalat-sherqat-excavations-revealed-assur-s-2-000-year-religious-continuity","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qalat-sherqat-excavations-revealed-assur-s-2-000-year-religious-continuity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For nearly two thousand years, the city of Assur functioned as both a trading hub and sacred capital before being methodically dismantled by the very empire it helped create."},{"title":"Qarqar Battle of 853 BCE Forced Assyria into First Recorded Anti-Coalition War","slug":"qarqar-battle-of-853-bce-forced-assyria-into-first-recorded-anti-coalition-war","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qarqar-battle-of-853-bce-forced-assyria-into-first-recorded-anti-coalition-war.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 853 BCE, Assyria confronted a coalition of at least 11 kings fielding thousands of chariots in one of the earliest documented multi-state alliances against a superpower."},{"title":"Qasr Shamshi-Adad Foundations Reveal 18th Century BCE Administrative Planning","slug":"qasr-shamshi-adad-foundations-reveal-18th-century-bce-administrative-planning","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qasr-shamshi-adad-foundations-reveal-18th-century-bce-administrative-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nearly a millennium before Assyria's imperial peak, an 18th century BCE palace complex demonstrated advanced bureaucratic organization in northern Mesopotamia."},{"title":"Qizqapan Rock Relief Context Illuminates Assyrian Influence in the Zagros by 700 BCE","slug":"qizqapan-rock-relief-context-illuminates-assyrian-influence-in-the-zagros-by-700-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qizqapan-rock-relief-context-illuminates-assyrian-influence-in-the-zagros-by-700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A rock-cut tomb faÃ§ade in the Zagros Mountains reflects architectural traditions shaped by centuries of Assyrian frontier presence."},{"title":"Qudshu Iconography in Assyrian Contexts Reveals Religious Syncretism by 700 BCE","slug":"qudshu-iconography-in-assyrian-contexts-reveals-religious-syncretism-by-700-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qudshu-iconography-in-assyrian-contexts-reveals-religious-syncretism-by-700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 700 BCE, Assyrian art incorporated foreign deities into its visual language, revealing calculated religious flexibility beneath imperial authority."},{"title":"Qurdi-Nergal Treaty Fragment of 672 BCE Documented Assyrian Succession Safeguards","slug":"qurdi-nergal-treaty-fragment-of-672-bce-documented-assyrian-succession-safeguards","url":"/categories/ancient-civilizations-secrets/assyrian-empire/qurdi-nergal-treaty-fragment-of-672-bce-documented-assyrian-succession-safeguards.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 672 BCE, Assyrian officials distributed treaty tablets across the empire to guarantee a teenage prince's future accession."},{"title":"Ubaid Cultural Layers Beneath Assyrian Cities Reveal 5,000 Years of Urban Continuity","slug":"ubaid-cultural-layers-beneath-assyrian-cities-reveal-5-000-years-of-urban-continuity","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ubaid-cultural-layers-beneath-assyrian-cities-reveal-5-000-years-of-urban-continuity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beneath Assyrian palaces lie archaeological layers dating back more than five millennia, proving that imperial capitals were built atop far older civilizations."},{"title":"Umm al-Marra Tablets Documented Assyrian Trade Networks by 1800 BCE","slug":"umm-al-marra-tablets-documented-assyrian-trade-networks-by-1800-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/umm-al-marra-tablets-documented-assyrian-trade-networks-by-1800-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nearly four thousand years ago, Assyrian merchants were managing long-distance credit systems sophisticated enough to bankrupt partners hundreds of miles away."},{"title":"Ur III Administrative Legacy Influenced Assyrian Provincial Accounting by 900 BCE","slug":"ur-iii-administrative-legacy-influenced-assyrian-provincial-accounting-by-900-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ur-iii-administrative-legacy-influenced-assyrian-provincial-accounting-by-900-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before Assyria's expansion, the accounting systems of the Ur III dynasty laid groundwork that later empires adapted for provincial governance."},{"title":"Urartian Frontier Treaties of 735 BCE Revealed Assyrian Diplomatic Flexibility","slug":"urartian-frontier-treaties-of-735-bce-revealed-assyrian-diplomatic-flexibility","url":"/categories/ancient-civilizations-secrets/assyrian-empire/urartian-frontier-treaties-of-735-bce-revealed-assyrian-diplomatic-flexibility.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 735 BCE, Assyria alternated between warfare and negotiated settlements along its Urartian frontier, blending force with formal agreement."},{"title":"Urartu Collapse in 7th Century BCE Shifted Eastern Power Balance in Assyria's Favor","slug":"urartu-collapse-in-7th-century-bce-shifted-eastern-power-balance-in-assyria-s-favor","url":"/categories/ancient-civilizations-secrets/assyrian-empire/urartu-collapse-in-7th-century-bce-shifted-eastern-power-balance-in-assyria-s-favor.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Urartu declined in the late 7th century BCE, Assyria briefly secured its eastern frontier before its own rapid collapse."},{"title":"Urartu-Assyria Wars Shaped 9th Century BCE Iron Weapon Production","slug":"urartu-assyria-wars-shaped-9th-century-bce-iron-weapon-production","url":"/categories/ancient-civilizations-secrets/assyrian-empire/urartu-assyria-wars-shaped-9th-century-bce-iron-weapon-production.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 9th century BCE, Assyria was scaling iron weapon production in response to a rival kingdom that controlled mountain fortresses and metal routes."},{"title":"Urfa Lion Reliefs of 900 BCE Demonstrated Assyrian Symbolic Authority","slug":"urfa-lion-reliefs-of-900-bce-demonstrated-assyrian-symbolic-authority","url":"/categories/ancient-civilizations-secrets/assyrian-empire/urfa-lion-reliefs-of-900-bce-demonstrated-assyrian-symbolic-authority.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved lion reliefs from the 9th century BCE projected Assyrian royal dominance through carefully staged hunting imagery."},{"title":"Uruatri Campaign Records of 1114 BCE Reveal Early Northern Expansion","slug":"uruatri-campaign-records-of-1114-bce-reveal-early-northern-expansion","url":"/categories/ancient-civilizations-secrets/assyrian-empire/uruatri-campaign-records-of-1114-bce-reveal-early-northern-expansion.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than two centuries before Assyria became a superpower, campaign records from 1114 BCE show a king pushing north into rugged highlands for strategic leverage."},{"title":"Uruk Revival Policies Under Assyrian Control Preserved Temple Economies in 700 BCE","slug":"uruk-revival-policies-under-assyrian-control-preserved-temple-economies-in-700-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/uruk-revival-policies-under-assyrian-control-preserved-temple-economies-in-700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Despite its reputation for conquest, Assyria invested in restoring temple economies in cities like Uruk around 700 BCE to secure fiscal stability."},{"title":"Utnapishtim Flood Tablet from Nineveh Linked Assyrian Archives to Earlier Epic Traditions","slug":"utnapishtim-flood-tablet-from-nineveh-linked-assyrian-archives-to-earlier-epic-traditions","url":"/categories/ancient-civilizations-secrets/assyrian-empire/utnapishtim-flood-tablet-from-nineveh-linked-assyrian-archives-to-earlier-epic-traditions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A clay tablet discovered in 19th century excavations at Nineveh revealed a flood narrative written more than a millennium before biblical accounts."},{"title":"Xenial Hostage Exchanges of 720 BCE Secured Assyrian Provincial Loyalty","slug":"xenial-hostage-exchanges-of-720-bce-secured-assyrian-provincial-loyalty","url":"/categories/ancient-civilizations-secrets/assyrian-empire/xenial-hostage-exchanges-of-720-bce-secured-assyrian-provincial-loyalty.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 720 BCE, Assyria reinforced provincial loyalty by requiring elite families to send hostages to the imperial court."},{"title":"Xenial Tribute Lists of 738 BCE Quantified Assyrian Resource Extraction","slug":"xenial-tribute-lists-of-738-bce-quantified-assyrian-resource-extraction","url":"/categories/ancient-civilizations-secrets/assyrian-empire/xenial-tribute-lists-of-738-bce-quantified-assyrian-resource-extraction.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 738 BCE, tribute lists recorded by Assyrian scribes converted entire regional economies into columns of silver, livestock, and textiles."},{"title":"Xenophon Recorded 401 BCE Encounter with Assyrian Ruins","slug":"xenophon-recorded-401-bce-encounter-with-assyrian-ruins","url":"/categories/ancient-civilizations-secrets/assyrian-empire/xenophon-recorded-401-bce-encounter-with-assyrian-ruins.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Greek mercenaries marched through Mesopotamia in 401 BCE, they passed colossal abandoned cities whose builders they no longer recognized."},{"title":"Xeric Irrigation Channels in 750 BCE Expanded Assyrian Agricultural Output","slug":"xeric-irrigation-channels-in-750-bce-expanded-assyrian-agricultural-output","url":"/categories/ancient-civilizations-secrets/assyrian-empire/xeric-irrigation-channels-in-750-bce-expanded-assyrian-agricultural-output.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 750 BCE, Assyrian engineers were extending irrigation canals into semi-arid zones, converting marginal land into taxable farmland."},{"title":"Xerxes Inherited Administrative Systems Built by Assyrian Predecessors","slug":"xerxes-inherited-administrative-systems-built-by-assyrian-predecessors","url":"/categories/ancient-civilizations-secrets/assyrian-empire/xerxes-inherited-administrative-systems-built-by-assyrian-predecessors.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Persian king Xerxes ruled in the 5th century BCE, many of the administrative mechanisms sustaining his empire traced back to Assyrian innovations centuries earlier."},{"title":"Yakhmur Treaty Tablets Preserved Assyrian Diplomatic Language from 674 BCE","slug":"yakhmur-treaty-tablets-preserved-assyrian-diplomatic-language-from-674-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/yakhmur-treaty-tablets-preserved-assyrian-diplomatic-language-from-674-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A set of clay tablets from 674 BCE reveals that Assyrian foreign policy relied as much on legal contracts as on siege engines."},{"title":"Yarmouk Deportation Policies Relocated Thousands Under Assyrian Rule","slug":"yarmouk-deportation-policies-relocated-thousands-under-assyrian-rule","url":"/categories/ancient-civilizations-secrets/assyrian-empire/yarmouk-deportation-policies-relocated-thousands-under-assyrian-rule.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Assyrian kings moved entire populations across hundreds of kilometers, transforming forced migration into a calculated tool of statecraft."},{"title":"Zab River Campaign of 744 BCE Marked Tiglath-Pileser III's Military Reforms","slug":"zab-river-campaign-of-744-bce-marked-tiglath-pileser-iii-s-military-reforms","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zab-river-campaign-of-744-bce-marked-tiglath-pileser-iii-s-military-reforms.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 744 BCE, a campaign along the Zab River signaled the beginning of sweeping military reforms that transformed Assyria into a standing army state."},{"title":"Zabala Administrative Tablets of 700 BCE Tracked Grain Taxation in Precise Measures","slug":"zabala-administrative-tablets-of-700-bce-tracked-grain-taxation-in-precise-measures","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zabala-administrative-tablets-of-700-bce-tracked-grain-taxation-in-precise-measures.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 700 BCE, Assyrian officials recorded grain deliveries down to exact capacity units, turning agriculture into audited data."},{"title":"Zagros Alliance of 612 BCE Ended Assyrian Imperial Dominance","slug":"zagros-alliance-of-612-bce-ended-assyrian-imperial-dominance","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zagros-alliance-of-612-bce-ended-assyrian-imperial-dominance.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 612 BCE, a coalition emerging from the Zagros region joined Babylon to capture Nineveh, bringing the Neo-Assyrian Empire to a decisive end."},{"title":"Zagros Mountain Fortification Network Secured Assyrian Eastern Frontier by 700 BCE","slug":"zagros-mountain-fortification-network-secured-assyrian-eastern-frontier-by-700-bce","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zagros-mountain-fortification-network-secured-assyrian-eastern-frontier-by-700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 700 BCE, Assyria maintained fortified outposts across the Zagros Mountains to monitor trade routes and deter eastern incursions."},{"title":"Zagros Tribute Routes of 710 BCE Linked Highland Timber to Assyrian Palaces","slug":"zagros-tribute-routes-of-710-bce-linked-highland-timber-to-assyrian-palaces","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zagros-tribute-routes-of-710-bce-linked-highland-timber-to-assyrian-palaces.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 710 BCE, timber from the Zagros Mountains was being transported to Assyrian capitals to support palace construction and shipbuilding."},{"title":"Zamua Campaign Accounts of 881 BCE Illustrated Early Use of Psychological Warfare","slug":"zamua-campaign-accounts-of-881-bce-illustrated-early-use-of-psychological-warfare","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zamua-campaign-accounts-of-881-bce-illustrated-early-use-of-psychological-warfare.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 881 BCE, Assyrian inscriptions describing the Zamua campaign emphasized terror as deliberately as troop numbers."},{"title":"Ziggurat Engineering Techniques in 800 BCE Employed Layered Mudbrick Core Design","slug":"ziggurat-engineering-techniques-in-800-bce-employed-layered-mudbrick-core-design","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ziggurat-engineering-techniques-in-800-bce-employed-layered-mudbrick-core-design.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Assyrian builders in 800 BCE stacked millions of mudbricks in layered cores to create temple towers that could withstand centuries of erosion."},{"title":"Ziggurat Maintenance Accounts of 650 BCE Recorded Long-Term Structural Upkeep","slug":"ziggurat-maintenance-accounts-of-650-bce-recorded-long-term-structural-upkeep","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ziggurat-maintenance-accounts-of-650-bce-recorded-long-term-structural-upkeep.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 650 BCE, Assyrian administrators were budgeting for temple tower maintenance, proving that monumentality required constant repair."},{"title":"Ziggurat of Dur-Sharrukin Construction Records from 717 BCE Quantified Royal Labor Mobilization","slug":"ziggurat-of-dur-sharrukin-construction-records-from-717-bce-quantified-royal-labor-mobilization","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ziggurat-of-dur-sharrukin-construction-records-from-717-bce-quantified-royal-labor-mobilization.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 717 BCE, Sargon II began constructing an entirely new capital, documenting the labor and materials required to raise a monumental ziggurat from bare ground."},{"title":"Ziggurat of Kalhu Reached 43 Meters as Ritual Power Symbol","slug":"ziggurat-of-kalhu-reached-43-meters-as-ritual-power-symbol","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ziggurat-of-kalhu-reached-43-meters-as-ritual-power-symbol.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stepped tower rising roughly 43 meters once dominated the skyline of Kalhu, projecting divine authority across the Assyrian heartland."},{"title":"Ziggurat Restoration Inscriptions of 681 BCE Exposed Royal Legitimacy Strategy","slug":"ziggurat-restoration-inscriptions-of-681-bce-exposed-royal-legitimacy-strategy","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ziggurat-restoration-inscriptions-of-681-bce-exposed-royal-legitimacy-strategy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 681 BCE, rebuilding a temple tower became a calculated act of political survival for a new Assyrian king."},{"title":"Ziggurat Symbolism in 700 BCE Reinforced Assyrian Cosmic Hierarchy","slug":"ziggurat-symbolism-in-700-bce-reinforced-assyrian-cosmic-hierarchy","url":"/categories/ancient-civilizations-secrets/assyrian-empire/ziggurat-symbolism-in-700-bce-reinforced-assyrian-cosmic-hierarchy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 700 BCE, Assyrian temple towers were designed not only as architecture but as visual models of a universe ordered beneath royal authority."},{"title":"Zimri-Lim Correspondence of 1770 BCE Illuminated Early Assyrian Diplomatic Culture","slug":"zimri-lim-correspondence-of-1770-bce-illuminated-early-assyrian-diplomatic-culture","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zimri-lim-correspondence-of-1770-bce-illuminated-early-assyrian-diplomatic-culture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Letters from around 1770 BCE reveal that northern Mesopotamian rulers were negotiating alliances and rivalries with bureaucratic precision centuries before Assyria's imperial peak."},{"title":"Zinc Alloy Artifacts from Assyrian Sites Indicate Early Metallurgical Experimentation","slug":"zinc-alloy-artifacts-from-assyrian-sites-indicate-early-metallurgical-experimentation","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zinc-alloy-artifacts-from-assyrian-sites-indicate-early-metallurgical-experimentation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before controlled brass production became common, Assyrian craftsmen were experimenting with complex metal alloys whose exact compositions still surprise analysts."},{"title":"Zinc Traces in 9th Century BCE Weaponry Indicate Expanding Assyrian Trade Routes","slug":"zinc-traces-in-9th-century-bce-weaponry-indicate-expanding-assyrian-trade-routes","url":"/categories/ancient-civilizations-secrets/assyrian-empire/zinc-traces-in-9th-century-bce-weaponry-indicate-expanding-assyrian-trade-routes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chemical analysis of 9th century BCE Assyrian weapons reveals trace elements pointing to metal sources far beyond the Tigris valley."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

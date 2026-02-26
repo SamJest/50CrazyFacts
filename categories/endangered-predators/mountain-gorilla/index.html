@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mountain Gorilla</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Mountain Gorilla</h1>
+  <p>Explore all facts in "Mountain Gorilla".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Mountain Gorilla</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Single Silverback Controls a Territory Larger Than 10 Football Fields","slug":"a-single-silverback-controls-a-territory-larger-than-10-football-fields","url":"/categories/endangered-predators/mountain-gorilla/a-single-silverback-controls-a-territory-larger-than-10-football-fields.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One gorilla can dominate forest territory the size of a small village."},{"title":"Active Volcanoes Loom Over Several Mountain Gorilla Territories","slug":"active-volcanoes-loom-over-several-mountain-gorilla-territories","url":"/categories/endangered-predators/mountain-gorilla/active-volcanoes-loom-over-several-mountain-gorilla-territories.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These endangered apes forage beneath mountains that can erupt without warning."},{"title":"Average Mountain Gorilla Density Is Measured in Fewer Than 5 Individuals per Square Kilometer","slug":"average-mountain-gorilla-density-is-measured-in-fewer-than-5-individuals-per-square-kilometer","url":"/categories/endangered-predators/mountain-gorilla/average-mountain-gorilla-density-is-measured-in-fewer-than-5-individuals-per-square-kilometer.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire mountains hold fewer gorillas than a city block holds people."},{"title":"Behavioral Habituation of Mountain Gorillas Can Take Over a Year per Troop","slug":"behavioral-habituation-of-mountain-gorillas-can-take-over-a-year-per-troop","url":"/categories/endangered-predators/mountain-gorilla/behavioral-habituation-of-mountain-gorillas-can-take-over-a-year-per-troop.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Researchers spend months earning the trust of a single gorilla family."},{"title":"Bwindi’s Mountain Gorillas Survive in a Forest Older Than the Last Ice Age","slug":"bwindi-s-mountain-gorillas-survive-in-a-forest-older-than-the-last-ice-age","url":"/categories/endangered-predators/mountain-gorilla/bwindi-s-mountain-gorillas-survive-in-a-forest-older-than-the-last-ice-age.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some mountain gorillas live inside a forest that predates modern humanity."},{"title":"Chest Beats From a Silverback Can Be Heard Nearly a Kilometer Away","slug":"chest-beats-from-a-silverback-can-be-heard-nearly-a-kilometer-away","url":"/categories/endangered-predators/mountain-gorilla/chest-beats-from-a-silverback-can-be-heard-nearly-a-kilometer-away.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A gorilla’s bare hands can send shockwaves through a rainforest valley."},{"title":"Climate Change Could Push Mountain Gorillas Higher Until No Habitat Remains","slug":"climate-change-could-push-mountain-gorillas-higher-until-no-habitat-remains","url":"/categories/endangered-predators/mountain-gorilla/climate-change-could-push-mountain-gorillas-higher-until-no-habitat-remains.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Warming temperatures may force these apes upward into shrinking mountaintops."},{"title":"Disease From Humans Is Now One of the Greatest Threats to Mountain Gorillas","slug":"disease-from-humans-is-now-one-of-the-greatest-threats-to-mountain-gorillas","url":"/categories/endangered-predators/mountain-gorilla/disease-from-humans-is-now-one-of-the-greatest-threats-to-mountain-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A tourist’s mild cold can become a fatal outbreak in a gorilla troop."},{"title":"Dominant Silverbacks Can Weigh More Than Twice an Adult Female","slug":"dominant-silverbacks-can-weigh-more-than-twice-an-adult-female","url":"/categories/endangered-predators/mountain-gorilla/dominant-silverbacks-can-weigh-more-than-twice-an-adult-female.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In one troop, the leader may outweigh females by over 200 pounds."},{"title":"Entire Gorilla Censuses Require Months of Trekking Through Impenetrable Forest","slug":"entire-gorilla-censuses-require-months-of-trekking-through-impenetrable-forest","url":"/categories/endangered-predators/mountain-gorilla/entire-gorilla-censuses-require-months-of-trekking-through-impenetrable-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Counting barely 1,000 animals can take hundreds of humans months to complete."},{"title":"Even Minor Snares Set for Antelope Can Shatter a Gorilla’s Hand","slug":"even-minor-snares-set-for-antelope-can-shatter-a-gorilla-s-hand","url":"/categories/endangered-predators/mountain-gorilla/even-minor-snares-set-for-antelope-can-shatter-a-gorilla-s-hand.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A simple wire loop meant for small game can cripple a giant primate."},{"title":"Fewer Than 1,100 Mountain Gorillas Exist in the Wild Today","slug":"fewer-than-1-100-mountain-gorillas-exist-in-the-wild-today","url":"/categories/endangered-predators/mountain-gorilla/fewer-than-1-100-mountain-gorillas-exist-in-the-wild-today.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The entire global population could fit inside a large sports arena."},{"title":"Forest Edges Around Gorilla Habitat Can Have Human Population Densities Exceeding 500 per Square Kilometer","slug":"forest-edges-around-gorilla-habitat-can-have-human-population-densities-exceeding-500-per-square-kilometer","url":"/categories/endangered-predators/mountain-gorilla/forest-edges-around-gorilla-habitat-can-have-human-population-densities-exceeding-500-per-square-kilometer.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Dense human settlements press directly against forests holding fewer than five gorillas per square kilometer."},{"title":"Gorilla Gestation Lasts About 8.5 Months, Similar to Humans","slug":"gorilla-gestation-lasts-about-8-5-months-similar-to-humans","url":"/categories/endangered-predators/mountain-gorilla/gorilla-gestation-lasts-about-8-5-months-similar-to-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These endangered apes carry pregnancies nearly as long as we do."},{"title":"Gorilla Infants Cling to Mothers for Nearly Four Years","slug":"gorilla-infants-cling-to-mothers-for-nearly-four-years","url":"/categories/endangered-predators/mountain-gorilla/gorilla-infants-cling-to-mothers-for-nearly-four-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A baby gorilla depends on its mother longer than many human toddlers."},{"title":"High-Altitude Sun Exposure Darkens Mountain Gorilla Skin Beneath Thick Fur","slug":"high-altitude-sun-exposure-darkens-mountain-gorilla-skin-beneath-thick-fur","url":"/categories/endangered-predators/mountain-gorilla/high-altitude-sun-exposure-darkens-mountain-gorilla-skin-beneath-thick-fur.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Under dense black fur lies skin adapted to intense mountain sunlight."},{"title":"High-Fiber Diet Requires Enlarged Gut Chambers for Fermentation","slug":"high-fiber-diet-requires-enlarged-gut-chambers-for-fermentation","url":"/categories/endangered-predators/mountain-gorilla/high-fiber-diet-requires-enlarged-gut-chambers-for-fermentation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Gorillas digest leaves using internal fermentation vats larger than ours."},{"title":"Infant Mortality Has a Disproportionate Impact in Such a Small Population","slug":"infant-mortality-has-a-disproportionate-impact-in-such-a-small-population","url":"/categories/endangered-predators/mountain-gorilla/infant-mortality-has-a-disproportionate-impact-in-such-a-small-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Losing a single baby shifts survival math for the entire subspecies."},{"title":"Infanticide Can Follow a Silverback’s Death in Mountain Gorilla Troops","slug":"infanticide-can-follow-a-silverback-s-death-in-mountain-gorilla-troops","url":"/categories/endangered-predators/mountain-gorilla/infanticide-can-follow-a-silverback-s-death-in-mountain-gorilla-troops.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When a dominant male dies, infants can become immediate targets."},{"title":"Juvenile Mountain Gorillas Engage in Rough Play That Mimics Combat","slug":"juvenile-mountain-gorillas-engage-in-rough-play-that-mimics-combat","url":"/categories/endangered-predators/mountain-gorilla/juvenile-mountain-gorillas-engage-in-rough-play-that-mimics-combat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young gorillas rehearse battle years before facing a rival silverback."},{"title":"Karisoke Research Center Was Built at 9,800 Feet to Protect Mountain Gorillas","slug":"karisoke-research-center-was-built-at-9-800-feet-to-protect-mountain-gorillas","url":"/categories/endangered-predators/mountain-gorilla/karisoke-research-center-was-built-at-9-800-feet-to-protect-mountain-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Researchers moved nearly 10,000 feet above sea level to live beside endangered giants."},{"title":"Mountain Gorilla Populations Once Dropped Below 700 Individuals","slug":"mountain-gorilla-populations-once-dropped-below-700-individuals","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorilla-populations-once-dropped-below-700-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire subspecies nearly vanished within a single human lifetime."},{"title":"Mountain Gorillas Build New Nests Every Single Night","slug":"mountain-gorillas-build-new-nests-every-single-night","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-build-new-nests-every-single-night.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every evening, these giants construct a fresh bed from scratch."},{"title":"Mountain Gorillas Can Lift Nearly 10 Times the Weight of a Trained Human","slug":"mountain-gorillas-can-lift-nearly-10-times-the-weight-of-a-trained-human","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-can-lift-nearly-10-times-the-weight-of-a-trained-human.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A mountain gorilla can rip apart bamboo thicker than your wrist."},{"title":"Mountain Gorillas Eat Up to 75 Pounds of Vegetation Per Day","slug":"mountain-gorillas-eat-up-to-75-pounds-of-vegetation-per-day","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-eat-up-to-75-pounds-of-vegetation-per-day.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single gorilla consumes the weight of a large suitcase in leaves daily."},{"title":"Mountain Gorillas Lack a Natural Predator Except Humans","slug":"mountain-gorillas-lack-a-natural-predator-except-humans","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-lack-a-natural-predator-except-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In their mountain forests, almost nothing hunts an adult gorilla."},{"title":"Mountain Gorillas Live on Volcano Slopes Above 13,000 Feet","slug":"mountain-gorillas-live-on-volcano-slopes-above-13-000-feet","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-live-on-volcano-slopes-above-13-000-feet.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These massive primates survive where oxygen is thin and frost forms nightly."},{"title":"Mountain Gorillas Rarely Need to Drink Water","slug":"mountain-gorillas-rarely-need-to-drink-water","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-rarely-need-to-drink-water.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These massive primates survive without regularly drinking from rivers."},{"title":"Mountain Gorillas Share Over 98 Percent of Human DNA","slug":"mountain-gorillas-share-over-98-percent-of-human-dna","url":"/categories/endangered-predators/mountain-gorilla/mountain-gorillas-share-over-98-percent-of-human-dna.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"You share nearly all your genetic code with a 400-pound wild primate."},{"title":"Nearly Half of All Mountain Gorillas Live in Just One Forest","slug":"nearly-half-of-all-mountain-gorillas-live-in-just-one-forest","url":"/categories/endangered-predators/mountain-gorilla/nearly-half-of-all-mountain-gorillas-live-in-just-one-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Almost 50 percent of the world’s population survives inside a single park."},{"title":"One Poaching Event in the 2000s Wiped Out an Entire Gorilla Family","slug":"one-poaching-event-in-the-2000s-wiped-out-an-entire-gorilla-family","url":"/categories/endangered-predators/mountain-gorilla/one-poaching-event-in-the-2000s-wiped-out-an-entire-gorilla-family.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single violent incident erased years of reproduction overnight."},{"title":"One Ranger Patrol Can Remove Dozens of Snares in a Single Day","slug":"one-ranger-patrol-can-remove-dozens-of-snares-in-a-single-day","url":"/categories/endangered-predators/mountain-gorilla/one-ranger-patrol-can-remove-dozens-of-snares-in-a-single-day.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Thin wires hidden in foliage outnumber the gorillas they threaten."},{"title":"Population Growth in Mountain Gorillas Took Decades of Continuous Protection","slug":"population-growth-in-mountain-gorillas-took-decades-of-continuous-protection","url":"/categories/endangered-predators/mountain-gorilla/population-growth-in-mountain-gorillas-took-decades-of-continuous-protection.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It required over 30 years of nonstop patrols to reverse near-extinction."},{"title":"Queen Elizabeth National Park Serves as a Critical Corridor for Mountain Gorillas","slug":"queen-elizabeth-national-park-serves-as-a-critical-corridor-for-mountain-gorillas","url":"/categories/endangered-predators/mountain-gorilla/queen-elizabeth-national-park-serves-as-a-critical-corridor-for-mountain-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A narrow stretch of protected land prevents genetic isolation of an entire subspecies."},{"title":"Respiratory Illness Has Caused Documented Mass Mortality in Gorilla Troops","slug":"respiratory-illness-has-caused-documented-mass-mortality-in-gorilla-troops","url":"/categories/endangered-predators/mountain-gorilla/respiratory-illness-has-caused-documented-mass-mortality-in-gorilla-troops.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A microscopic virus can silence an entire forest clearing."},{"title":"Rwanda’s Gorilla Permits Rank Among the Most Expensive Wildlife Experiences on Earth","slug":"rwanda-s-gorilla-permits-rank-among-the-most-expensive-wildlife-experiences-on-earth","url":"/categories/endangered-predators/mountain-gorilla/rwanda-s-gorilla-permits-rank-among-the-most-expensive-wildlife-experiences-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Seeing one gorilla for an hour can cost more than a transatlantic flight."},{"title":"Silverbacks Develop the Iconic Back Patch Only After Age 12","slug":"silverbacks-develop-the-iconic-back-patch-only-after-age-12","url":"/categories/endangered-predators/mountain-gorilla/silverbacks-develop-the-iconic-back-patch-only-after-age-12.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The legendary silver stripe appears years after physical maturity begins."},{"title":"Some Mountain Gorilla Groups Contain Over 30 Individuals","slug":"some-mountain-gorilla-groups-contain-over-30-individuals","url":"/categories/endangered-predators/mountain-gorilla/some-mountain-gorilla-groups-contain-over-30-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single silverback can command a troop the size of a small classroom."},{"title":"Some Mountain Gorilla Groups Span International Borders Daily","slug":"some-mountain-gorilla-groups-span-international-borders-daily","url":"/categories/endangered-predators/mountain-gorilla/some-mountain-gorilla-groups-span-international-borders-daily.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These apes cross national frontiers without ever seeing a checkpoint."},{"title":"Territory Overlap Between Neighboring Troops Increases as Habitat Shrinks","slug":"territory-overlap-between-neighboring-troops-increases-as-habitat-shrinks","url":"/categories/endangered-predators/mountain-gorilla/territory-overlap-between-neighboring-troops-increases-as-habitat-shrinks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When forests narrow, rival gorillas collide more often."},{"title":"Tourism Revenue From Mountain Gorillas Funds Armed Anti-Poaching Units","slug":"tourism-revenue-from-mountain-gorillas-funds-armed-anti-poaching-units","url":"/categories/endangered-predators/mountain-gorilla/tourism-revenue-from-mountain-gorillas-funds-armed-anti-poaching-units.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Photographing a gorilla helps finance rifles protecting it."},{"title":"Ulcerated Snare Wounds Have Required Emergency Field Surgery on Gorillas","slug":"ulcerated-snare-wounds-have-required-emergency-field-surgery-on-gorillas","url":"/categories/endangered-predators/mountain-gorilla/ulcerated-snare-wounds-have-required-emergency-field-surgery-on-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Veterinarians have operated on wild gorillas in dense jungle clearings."},{"title":"Up to 98 Percent of a Gorilla’s Day Can Be Spent Within 1 Kilometer","slug":"up-to-98-percent-of-a-gorilla-s-day-can-be-spent-within-1-kilometer","url":"/categories/endangered-predators/mountain-gorilla/up-to-98-percent-of-a-gorilla-s-day-can-be-spent-within-1-kilometer.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 400-pound primate may roam less than a mile in 24 hours."},{"title":"Volcanic Soil in the Virunga Mountains Feeds Entire Gorilla Troops","slug":"volcanic-soil-in-the-virunga-mountains-feeds-entire-gorilla-troops","url":"/categories/endangered-predators/mountain-gorilla/volcanic-soil-in-the-virunga-mountains-feeds-entire-gorilla-troops.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Ancient lava flows now fuel the diet of Earth’s rarest great ape."},{"title":"Water Content in Mountain Vegetation Can Exceed 80 Percent","slug":"water-content-in-mountain-vegetation-can-exceed-80-percent","url":"/categories/endangered-predators/mountain-gorilla/water-content-in-mountain-vegetation-can-exceed-80-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Gorillas hydrate by eating plants that are mostly water."},{"title":"Wild Mountain Gorillas Have Lifespans Reaching Over 35 Years","slug":"wild-mountain-gorillas-have-lifespans-reaching-over-35-years","url":"/categories/endangered-predators/mountain-gorilla/wild-mountain-gorillas-have-lifespans-reaching-over-35-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In harsh mountain forests, some gorillas live longer than many wild carnivores."},{"title":"Xenophobia Between Rival Silverbacks Can Determine Troop Survival","slug":"xenophobia-between-rival-silverbacks-can-determine-troop-survival","url":"/categories/endangered-predators/mountain-gorilla/xenophobia-between-rival-silverbacks-can-determine-troop-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Hostile encounters between males can decide the fate of entire families."},{"title":"Yellow Bamboo Shoots Trigger Seasonal Feeding Surges in Mountain Gorillas","slug":"yellow-bamboo-shoots-trigger-seasonal-feeding-surges-in-mountain-gorillas","url":"/categories/endangered-predators/mountain-gorilla/yellow-bamboo-shoots-trigger-seasonal-feeding-surges-in-mountain-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When bamboo erupts in growth, entire gorilla troops shift behavior overnight."},{"title":"Young Male Gorillas Must Eventually Leave Their Birth Troop to Reproduce","slug":"young-male-gorillas-must-eventually-leave-their-birth-troop-to-reproduce","url":"/categories/endangered-predators/mountain-gorilla/young-male-gorillas-must-eventually-leave-their-birth-troop-to-reproduce.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"To become a silverback, a male must abandon the only family he knows."},{"title":"Zero Mountain Gorillas Exist Outside Central Africa’s Two Isolated Regions","slug":"zero-mountain-gorillas-exist-outside-central-africa-s-two-isolated-regions","url":"/categories/endangered-predators/mountain-gorilla/zero-mountain-gorillas-exist-outside-central-africa-s-two-isolated-regions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This entire subspecies survives in just two mountain clusters on Earth."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

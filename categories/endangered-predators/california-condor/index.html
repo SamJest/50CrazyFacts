@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>California Condor</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>California Condor</h1>
+  <p>Explore all facts in "California Condor".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>California Condor</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Avian Power: California Condors Can Smell Carcasses From Miles Away","slug":"avian-power-california-condors-can-smell-carcasses-from-miles-away","url":"/categories/endangered-predators/california-condor/avian-power-california-condors-can-smell-carcasses-from-miles-away.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A bird cruising thousands of feet high can detect death below."},{"title":"Bone-Crushing Digestion Allows California Condors to Neutralize Dangerous Pathogens","slug":"bone-crushing-digestion-allows-california-condors-to-neutralize-dangerous-pathogens","url":"/categories/endangered-predators/california-condor/bone-crushing-digestion-allows-california-condors-to-neutralize-dangerous-pathogens.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered bird can safely eat meat that would hospitalize humans."},{"title":"California Condor Eggs Were Once Artificially Doubled to Speed Recovery","slug":"california-condor-eggs-were-once-artificially-doubled-to-speed-recovery","url":"/categories/endangered-predators/california-condor/california-condor-eggs-were-once-artificially-doubled-to-speed-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Conservationists tricked nature to make one egg become two chicks."},{"title":"California Condor Nests Are Hidden Inside Remote Cliff Cavities","slug":"california-condor-nests-are-hidden-inside-remote-cliff-cavities","url":"/categories/endangered-predators/california-condor/california-condor-nests-are-hidden-inside-remote-cliff-cavities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This sky giant raises its single chick inside rock walls."},{"title":"California Condors Can Fly at Altitudes Over 15,000 Feet","slug":"california-condors-can-fly-at-altitudes-over-15-000-feet","url":"/categories/endangered-predators/california-condor/california-condors-can-fly-at-altitudes-over-15-000-feet.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered scavenger can soar higher than many small aircraft."},{"title":"California Condors Can Live Over 60 Years","slug":"california-condors-can-live-over-60-years","url":"/categories/endangered-predators/california-condor/california-condors-can-live-over-60-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered bird can outlive many of its human caretakers."},{"title":"California Condors Do Not Reach Breeding Age Until About Six Years Old","slug":"california-condors-do-not-reach-breeding-age-until-about-six-years-old","url":"/categories/endangered-predators/california-condor/california-condors-do-not-reach-breeding-age-until-about-six-years-old.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This giant bird waits longer to reproduce than many mammals."},{"title":"California Condors Have a Bald Head to Survive Rotting Flesh","slug":"california-condors-have-a-bald-head-to-survive-rotting-flesh","url":"/categories/endangered-predators/california-condor/california-condors-have-a-bald-head-to-survive-rotting-flesh.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This bird's bare head is a sanitation tool against decay."},{"title":"California Condors Have Nearly 10-Foot Wingspans","slug":"california-condors-have-nearly-10-foot-wingspans","url":"/categories/endangered-predators/california-condor/california-condors-have-nearly-10-foot-wingspans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A bird with a wingspan wider than a small car still almost vanished."},{"title":"California Condors Once Fell to Just 22 Birds on Earth","slug":"california-condors-once-fell-to-just-22-birds-on-earth","url":"/categories/endangered-predators/california-condor/california-condors-once-fell-to-just-22-birds-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In 1987, an entire species fit inside a single room."},{"title":"California Condors Once Ranged Across Most of North America","slug":"california-condors-once-ranged-across-most-of-north-america","url":"/categories/endangered-predators/california-condor/california-condors-once-ranged-across-most-of-north-america.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This near-extinct bird once ruled skies from coast to coast."},{"title":"California Condors Require Ongoing Human Feeding Stations to Survive","slug":"california-condors-require-ongoing-human-feeding-stations-to-survive","url":"/categories/endangered-predators/california-condor/california-condors-require-ongoing-human-feeding-stations-to-survive.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wild giant still depends on scheduled human meals."},{"title":"California Condors Use Updraft Highways Along Mountain Ridges","slug":"california-condors-use-updraft-highways-along-mountain-ridges","url":"/categories/endangered-predators/california-condor/california-condors-use-updraft-highways-along-mountain-ridges.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Invisible rivers of air carry this endangered giant across states."},{"title":"Climate Change Could Reshape the Future Range of the California Condor","slug":"climate-change-could-reshape-the-future-range-of-the-california-condor","url":"/categories/endangered-predators/california-condor/climate-change-could-reshape-the-future-range-of-the-california-condor.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rising temperatures may redraw the flight map of this giant bird."},{"title":"Dark-Skinned Heads on California Condors Flush Bright Red With Emotion","slug":"dark-skinned-heads-on-california-condors-flush-bright-red-with-emotion","url":"/categories/endangered-predators/california-condor/dark-skinned-heads-on-california-condors-flush-bright-red-with-emotion.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered bird's head changes color in seconds."},{"title":"Extremely Low Genetic Diversity Threatens California Condor Resilience","slug":"extremely-low-genetic-diversity-threatens-california-condor-resilience","url":"/categories/endangered-predators/california-condor/extremely-low-genetic-diversity-threatens-california-condor-resilience.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every living condor descends from just 22 survivors."},{"title":"Flight Collisions With Power Lines Have Killed California Condors","slug":"flight-collisions-with-power-lines-have-killed-california-condors","url":"/categories/endangered-predators/california-condor/flight-collisions-with-power-lines-have-killed-california-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 10-foot wingspan can collide with invisible wires midair."},{"title":"GPS Data Shows California Condors Traveling Over 150 Miles in a Day","slug":"gps-data-shows-california-condors-traveling-over-150-miles-in-a-day","url":"/categories/endangered-predators/california-condor/gps-data-shows-california-condors-traveling-over-150-miles-in-a-day.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered scavenger can cross multiple counties before sunset."},{"title":"Heavy Metal Exposure Can Cause Neurological Collapse in California Condors","slug":"heavy-metal-exposure-can-cause-neurological-collapse-in-california-condors","url":"/categories/endangered-predators/california-condor/heavy-metal-exposure-can-cause-neurological-collapse-in-california-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Invisible metal can shut down a giant bird's nervous system."},{"title":"Human Handling Protocols Use Condor Puppets to Prevent Fatal Imprinting","slug":"human-handling-protocols-use-condor-puppets-to-prevent-fatal-imprinting","url":"/categories/endangered-predators/california-condor/human-handling-protocols-use-condor-puppets-to-prevent-fatal-imprinting.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Caretakers disguise themselves to save a species."},{"title":"Human Trash Has Caused Chick Deaths in California Condors","slug":"human-trash-has-caused-chick-deaths-in-california-condors","url":"/categories/endangered-predators/california-condor/human-trash-has-caused-chick-deaths-in-california-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Bottle caps and shards have killed chicks inside cliff nests."},{"title":"Illegal Shooting Historically Decimated California Condor Populations","slug":"illegal-shooting-historically-decimated-california-condor-populations","url":"/categories/endangered-predators/california-condor/illegal-shooting-historically-decimated-california-condor-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This giant bird was once targeted simply for existing."},{"title":"Juvenile California Condors Take Years to Develop Adult Plumage","slug":"juvenile-california-condors-take-years-to-develop-adult-plumage","url":"/categories/endangered-predators/california-condor/juvenile-california-condors-take-years-to-develop-adult-plumage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered giant spends years looking unfinished."},{"title":"Keystone Scavenger: California Condors Prevent Disease Spread at Massive Scale","slug":"keystone-scavenger-california-condors-prevent-disease-spread-at-massive-scale","url":"/categories/endangered-predators/california-condor/keystone-scavenger-california-condors-prevent-disease-spread-at-massive-scale.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Removing one carcass can stop a chain reaction of infection."},{"title":"Large Mammal Die-Offs Once Sustained California Condors Across a Continent","slug":"large-mammal-die-offs-once-sustained-california-condors-across-a-continent","url":"/categories/endangered-predators/california-condor/large-mammal-die-offs-once-sustained-california-condors-across-a-continent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Ice Age megafauna fed this bird on a continental scale."},{"title":"Lead Ammunition Fragments Are a Primary Killer of California Condors","slug":"lead-ammunition-fragments-are-a-primary-killer-of-california-condors","url":"/categories/endangered-predators/california-condor/lead-ammunition-fragments-are-a-primary-killer-of-california-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A fragment smaller than a grain of rice can kill a 20-pound bird."},{"title":"Long-Term Captive Breeding Prevented Total Extinction of the California Condor","slug":"long-term-captive-breeding-prevented-total-extinction-of-the-california-condor","url":"/categories/endangered-predators/california-condor/long-term-captive-breeding-prevented-total-extinction-of-the-california-condor.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every living condor descends from birds once held in captivity."},{"title":"Massive Beaks Allow California Condors to Tear Through Thick Hide","slug":"massive-beaks-allow-california-condors-to-tear-through-thick-hide","url":"/categories/endangered-predators/california-condor/massive-beaks-allow-california-condors-to-tear-through-thick-hide.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered bird can rip open carcasses larger than itself."},{"title":"Massive Wing Loading Allows California Condors to Glide With Minimal Energy","slug":"massive-wing-loading-allows-california-condors-to-glide-with-minimal-energy","url":"/categories/endangered-predators/california-condor/massive-wing-loading-allows-california-condors-to-glide-with-minimal-energy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Physics lets this giant stay airborne almost effortlessly."},{"title":"Mortality From Even One Adult Condor Can Shift Population Projections","slug":"mortality-from-even-one-adult-condor-can-shift-population-projections","url":"/categories/endangered-predators/california-condor/mortality-from-even-one-adult-condor-can-shift-population-projections.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Losing a single bird can alter decades of recovery math."},{"title":"Non-Lead Ammunition Laws Significantly Improved California Condor Survival","slug":"non-lead-ammunition-laws-significantly-improved-california-condor-survival","url":"/categories/endangered-predators/california-condor/non-lead-ammunition-laws-significantly-improved-california-condor-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Changing bullet composition saved one of Earth's rarest birds."},{"title":"One California Condor Chick Can Represent Years of Conservation Investment","slug":"one-california-condor-chick-can-represent-years-of-conservation-investment","url":"/categories/endangered-predators/california-condor/one-california-condor-chick-can-represent-years-of-conservation-investment.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single egg can embody decades of scientific effort."},{"title":"Population Growth of California Condors Remains Slower Than Many Endangered Species","slug":"population-growth-of-california-condors-remains-slower-than-many-endangered-species","url":"/categories/endangered-predators/california-condor/population-growth-of-california-condors-remains-slower-than-many-endangered-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Decades of effort still produce only gradual increases."},{"title":"Powerful Thermal Soaring Lets California Condors Fly for Hours Without Flapping","slug":"powerful-thermal-soaring-lets-california-condors-fly-for-hours-without-flapping","url":"/categories/endangered-predators/california-condor/powerful-thermal-soaring-lets-california-condors-fly-for-hours-without-flapping.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This giant bird can glide for hours without a single wingbeat."},{"title":"Quiet Communication: California Condors Lack a Syrinx for True Song","slug":"quiet-communication-california-condors-lack-a-syrinx-for-true-song","url":"/categories/endangered-predators/california-condor/quiet-communication-california-condors-lack-a-syrinx-for-true-song.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This massive bird cannot sing at all."},{"title":"Radio and GPS Tracking Monitor Nearly Every Wild California Condor","slug":"radio-and-gps-tracking-monitor-nearly-every-wild-california-condor","url":"/categories/endangered-predators/california-condor/radio-and-gps-tracking-monitor-nearly-every-wild-california-condor.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Few wild animals are watched as closely as this bird."},{"title":"Scavenger Competition Shapes California Condor Feeding Hierarchies","slug":"scavenger-competition-shapes-california-condor-feeding-hierarchies","url":"/categories/endangered-predators/california-condor/scavenger-competition-shapes-california-condor-feeding-hierarchies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even giants must negotiate for access to carcasses."},{"title":"Some California Condors Cross International Borders During Migration","slug":"some-california-condors-cross-international-borders-during-migration","url":"/categories/endangered-predators/california-condor/some-california-condors-cross-international-borders-during-migration.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered bird ignores political boundaries entirely."},{"title":"Steep Cliff Roosts Protect California Condors From Ground Disturbance","slug":"steep-cliff-roosts-protect-california-condors-from-ground-disturbance","url":"/categories/endangered-predators/california-condor/steep-cliff-roosts-protect-california-condors-from-ground-disturbance.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These giants sleep on vertical rock walls beyond easy reach."},{"title":"Subadult Mortality Rates Remain a Critical Variable in Condor Recovery","slug":"subadult-mortality-rates-remain-a-critical-variable-in-condor-recovery","url":"/categories/endangered-predators/california-condor/subadult-mortality-rates-remain-a-critical-variable-in-condor-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The years before adulthood are statistically dangerous."},{"title":"Toxic Microtrash Has Forced Emergency Veterinary Interventions in Wild Condors","slug":"toxic-microtrash-has-forced-emergency-veterinary-interventions-in-wild-condors","url":"/categories/endangered-predators/california-condor/toxic-microtrash-has-forced-emergency-veterinary-interventions-in-wild-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Tiny fragments can trigger full-scale wildlife rescues."},{"title":"Unique Cultural Significance Elevates the California Condor Beyond Biology","slug":"unique-cultural-significance-elevates-the-california-condor-beyond-biology","url":"/categories/endangered-predators/california-condor/unique-cultural-significance-elevates-the-california-condor-beyond-biology.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"For some Indigenous nations, this bird is sacred."},{"title":"Voluntary Hunter Programs Help Reduce Lead Exposure in California Condors","slug":"voluntary-hunter-programs-help-reduce-lead-exposure-in-california-condors","url":"/categories/endangered-predators/california-condor/voluntary-hunter-programs-help-reduce-lead-exposure-in-california-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Grassroots action is shielding a 10-foot-winged bird from poison."},{"title":"Weather Extremes Can Threaten California Condor Nesting Success","slug":"weather-extremes-can-threaten-california-condor-nesting-success","url":"/categories/endangered-predators/california-condor/weather-extremes-can-threaten-california-condor-nesting-success.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single storm can erase a year of reproduction."},{"title":"Wildfire Smoke Can Disrupt California Condor Foraging Patterns","slug":"wildfire-smoke-can-disrupt-california-condor-foraging-patterns","url":"/categories/endangered-predators/california-condor/wildfire-smoke-can-disrupt-california-condor-foraging-patterns.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rising smoke columns can ground a master of thermals."},{"title":"X-Ray Screening Revealed Hundreds of Lead Fragments in Single Carcasses","slug":"x-ray-screening-revealed-hundreds-of-lead-fragments-in-single-carcasses","url":"/categories/endangered-predators/california-condor/x-ray-screening-revealed-hundreds-of-lead-fragments-in-single-carcasses.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One bullet can explode into invisible shrapnel inside a carcass."},{"title":"Young California Condors Learn Feeding Behavior by Watching Adults","slug":"young-california-condors-learn-feeding-behavior-by-watching-adults","url":"/categories/endangered-predators/california-condor/young-california-condors-learn-feeding-behavior-by-watching-adults.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This endangered scavenger must be taught how to eat safely."},{"title":"Young Condors Undergo Chelation Therapy to Survive Lead Poisoning","slug":"young-condors-undergo-chelation-therapy-to-survive-lead-poisoning","url":"/categories/endangered-predators/california-condor/young-condors-undergo-chelation-therapy-to-survive-lead-poisoning.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Wild birds are rushed to hospitals for metal detox treatments."},{"title":"Zero Natural Predators Threaten Adult California Condors","slug":"zero-natural-predators-threaten-adult-california-condors","url":"/categories/endangered-predators/california-condor/zero-natural-predators-threaten-adult-california-condors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Almost nothing hunts this 10-foot-winged bird."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

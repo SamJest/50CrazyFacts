@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alphafold</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Alphafold</h1>
+  <p>Explore all facts in "Alphafold".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Alphafold</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"AI-Predicted Structures Aid Enzyme Engineering","slug":"ai-predicted-structures-aid-enzyme-engineering","url":"/categories/artificial-intelligence-breakthroughs/alphafold/ai-predicted-structures-aid-enzyme-engineering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold predictions enable scientists to design synthetic enzymes for industrial and medical applications with greater precision."},{"title":"AlphaFold Accelerates Antibiotic Discovery","slug":"alphafold-accelerates-antibiotic-discovery","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-accelerates-antibiotic-discovery.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers use AlphaFold predictions to identify novel bacterial protein targets, expediting the search for antibiotics."},{"title":"AlphaFold Accelerates COVID-19 Research in 2020","slug":"alphafold-accelerates-covid-19-research-in-2020","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-accelerates-covid-19-research-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"During the COVID-19 pandemic, AlphaFold quickly predicted the 3D structures of SARS-CoV-2 proteins, aiding vaccine and drug development."},{"title":"AlphaFold Accelerates Enzyme Engineering in Biotechnology","slug":"alphafold-accelerates-enzyme-engineering-in-biotechnology","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-accelerates-enzyme-engineering-in-biotechnology.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold enables design of synthetic enzymes with enhanced activity, stability, and specificity for industrial processes."},{"title":"AlphaFold Accelerates Structural Genomics Initiatives","slug":"alphafold-accelerates-structural-genomics-initiatives","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-accelerates-structural-genomics-initiatives.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Large-scale structural genomics projects leverage AlphaFold to predict thousands of protein structures efficiently."},{"title":"AlphaFold Enables Vaccine Epitope Mapping","slug":"alphafold-enables-vaccine-epitope-mapping","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-enables-vaccine-epitope-mapping.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AI-predicted protein structures accelerate identification of epitopes for vaccine development against viral pathogens."},{"title":"AlphaFold Facilitates Structural Analysis of Membrane Proteins","slug":"alphafold-facilitates-structural-analysis-of-membrane-proteins","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-facilitates-structural-analysis-of-membrane-proteins.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Membrane proteins, notoriously difficult to study experimentally, can now be modeled with high accuracy using AlphaFold."},{"title":"AlphaFold Facilitates Structural Mapping of Rare Human Proteins","slug":"alphafold-facilitates-structural-mapping-of-rare-human-proteins","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-facilitates-structural-mapping-of-rare-human-proteins.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Proteins with little experimental data, including rare disease-associated proteins, can be modeled using AlphaFold predictions."},{"title":"AlphaFold Integration into High-Throughput Drug Screening","slug":"alphafold-integration-into-high-throughput-drug-screening","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-integration-into-high-throughput-drug-screening.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AI-predicted protein structures allow virtual screening of thousands of compounds efficiently, guiding experimental drug discovery."},{"title":"AlphaFold Predicts Structures of Rare and Orphan Proteins","slug":"alphafold-predicts-structures-of-rare-and-orphan-proteins","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-predicts-structures-of-rare-and-orphan-proteins.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold enables modeling of proteins with little experimental data, opening new avenues for rare disease research."},{"title":"AlphaFold Predicts Structures of Rare and Orphan Proteins","slug":"alphafold-predicts-structures-of-rare-and-orphan-proteins","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-predicts-structures-of-rare-and-orphan-proteins.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold enables modeling of proteins with little experimental data, opening new avenues for rare disease research."},{"title":"AlphaFold Protein Structure Database Launch in 2021","slug":"alphafold-protein-structure-database-launch-in-2021","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-protein-structure-database-launch-in-2021.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, DeepMind released a comprehensive AlphaFold database with over 350,000 protein structures freely accessible to researchers worldwide."},{"title":"AlphaFold Revolutionizes Protein Structure Prediction in 2020","slug":"alphafold-revolutionizes-protein-structure-prediction-in-2020","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-revolutionizes-protein-structure-prediction-in-2020.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2020, DeepMind’s AlphaFold achieved near-experimental accuracy in predicting 3D protein structures, solving a 50-year-old biological challenge."},{"title":"AlphaFold Supports Computational Antibody Design","slug":"alphafold-supports-computational-antibody-design","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-supports-computational-antibody-design.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Predicted protein structures inform design of antibodies for therapeutic and diagnostic applications."},{"title":"AlphaFold Supports Structural Virology Research","slug":"alphafold-supports-structural-virology-research","url":"/categories/artificial-intelligence-breakthroughs/alphafold/alphafold-supports-structural-virology-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"During viral outbreaks, AlphaFold models viral proteins to accelerate vaccine and therapeutic development."},{"title":"BetaFold Enhances Structural Biology Validation","slug":"betafold-enhances-structural-biology-validation","url":"/categories/artificial-intelligence-breakthroughs/alphafold/betafold-enhances-structural-biology-validation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Building on AlphaFold, BetaFold integrates experimental feedback to improve prediction confidence and accuracy."},{"title":"CASP14 Competition Validates AlphaFold Accuracy","slug":"casp14-competition-validates-alphafold-accuracy","url":"/categories/artificial-intelligence-breakthroughs/alphafold/casp14-competition-validates-alphafold-accuracy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold’s performance in CASP14 outperformed all other computational methods, achieving near-experimental accuracy in 2020."},{"title":"CASP15 Confirms Improved AI Protein Predictions","slug":"casp15-confirms-improved-ai-protein-predictions","url":"/categories/artificial-intelligence-breakthroughs/alphafold/casp15-confirms-improved-ai-protein-predictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, AlphaFold2 and derivative models maintained top performance in CASP15, demonstrating sustained accuracy improvements."},{"title":"DeepMind Uses AlphaFold to Map Entire Human Proteome","slug":"deepmind-uses-alphafold-to-map-entire-human-proteome","url":"/categories/artificial-intelligence-breakthroughs/alphafold/deepmind-uses-alphafold-to-map-entire-human-proteome.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2021, DeepMind predicted structures for nearly all human proteins, offering a complete structural blueprint."},{"title":"GenBank Integration with AlphaFold Predictions","slug":"genbank-integration-with-alphafold-predictions","url":"/categories/artificial-intelligence-breakthroughs/alphafold/genbank-integration-with-alphafold-predictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold models are cross-referenced with GenBank sequences to streamline functional annotation and comparative genomics."},{"title":"Hydrogen Bond Analysis in AlphaFold Predicted Structures","slug":"hydrogen-bond-analysis-in-alphafold-predicted-structures","url":"/categories/artificial-intelligence-breakthroughs/alphafold/hydrogen-bond-analysis-in-alphafold-predicted-structures.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers use AlphaFold models to study hydrogen bonding networks, revealing insights into protein stability and dynamics."},{"title":"Impact of AlphaFold on Enzyme Active Site Engineering","slug":"impact-of-alphafold-on-enzyme-active-site-engineering","url":"/categories/artificial-intelligence-breakthroughs/alphafold/impact-of-alphafold-on-enzyme-active-site-engineering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold predictions allow precise modeling of catalytic residues, enabling design of enzymes with improved activity or specificity."},{"title":"Integration of AlphaFold in Variant Pathogenicity Analysis","slug":"integration-of-alphafold-in-variant-pathogenicity-analysis","url":"/categories/artificial-intelligence-breakthroughs/alphafold/integration-of-alphafold-in-variant-pathogenicity-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold allows researchers to predict structural effects of human genetic variants, aiding interpretation of disease-causing mutations."},{"title":"Integration of AlphaFold into Drug Discovery Pipelines","slug":"integration-of-alphafold-into-drug-discovery-pipelines","url":"/categories/artificial-intelligence-breakthroughs/alphafold/integration-of-alphafold-into-drug-discovery-pipelines.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Pharmaceutical companies now incorporate AlphaFold predictions to reduce costs and accelerate preclinical development."},{"title":"Integration of AlphaFold with Cryo-EM and X-Ray Validation","slug":"integration-of-alphafold-with-cryo-em-and-x-ray-validation","url":"/categories/artificial-intelligence-breakthroughs/alphafold/integration-of-alphafold-with-cryo-em-and-x-ray-validation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold predictions are used alongside experimental methods to validate and refine protein structures quickly."},{"title":"Interactive Molecular Visualization with AlphaFold Models","slug":"interactive-molecular-visualization-with-alphafold-models","url":"/categories/artificial-intelligence-breakthroughs/alphafold/interactive-molecular-visualization-with-alphafold-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold predictions can be explored interactively using tools like PyMOL and Chimera, accelerating structural analysis."},{"title":"Job-Specific AlphaFold Applications in Pharmaceutical Research","slug":"job-specific-alphafold-applications-in-pharmaceutical-research","url":"/categories/artificial-intelligence-breakthroughs/alphafold/job-specific-alphafold-applications-in-pharmaceutical-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Pharmaceutical companies now deploy AlphaFold to rapidly screen drug targets and optimize compound interactions."},{"title":"Predicting Protein-Protein Interfaces with AlphaFold-Multimer","slug":"predicting-protein-protein-interfaces-with-alphafold-multimer","url":"/categories/artificial-intelligence-breakthroughs/alphafold/predicting-protein-protein-interfaces-with-alphafold-multimer.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold-Multimer enables researchers to model interactions between proteins, revealing potential therapeutic targets."},{"title":"Protein Folding Disorder Analysis with AlphaFold","slug":"protein-folding-disorder-analysis-with-alphafold","url":"/categories/artificial-intelligence-breakthroughs/alphafold/protein-folding-disorder-analysis-with-alphafold.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold models help predict intrinsically disordered regions, aiding studies of misfolding diseases like Alzheimer’s."},{"title":"Quantum-Inspired Models Improve AlphaFold Efficiency","slug":"quantum-inspired-models-improve-alphafold-efficiency","url":"/categories/artificial-intelligence-breakthroughs/alphafold/quantum-inspired-models-improve-alphafold-efficiency.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers apply quantum-inspired optimization algorithms to enhance AlphaFold’s protein folding predictions."},{"title":"Quantum-Inspired Models Improve AlphaFold Efficiency","slug":"quantum-inspired-models-improve-alphafold-efficiency","url":"/categories/artificial-intelligence-breakthroughs/alphafold/quantum-inspired-models-improve-alphafold-efficiency.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers apply quantum-inspired optimization algorithms to enhance AlphaFold’s protein folding predictions."},{"title":"Robustness of AlphaFold in Predicting Transmembrane Proteins","slug":"robustness-of-alphafold-in-predicting-transmembrane-proteins","url":"/categories/artificial-intelligence-breakthroughs/alphafold/robustness-of-alphafold-in-predicting-transmembrane-proteins.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold achieves high accuracy for transmembrane and other difficult-to-crystallize proteins, previously a major bottleneck in structural biology."},{"title":"Robustness of AlphaFold in Predicting Transmembrane Proteins","slug":"robustness-of-alphafold-in-predicting-transmembrane-proteins","url":"/categories/artificial-intelligence-breakthroughs/alphafold/robustness-of-alphafold-in-predicting-transmembrane-proteins.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold achieves high accuracy for transmembrane and other difficult-to-crystallize proteins, previously a major bottleneck in structural biology."},{"title":"Structure-Based Drug Repurposing with AlphaFold","slug":"structure-based-drug-repurposing-with-alphafold","url":"/categories/artificial-intelligence-breakthroughs/alphafold/structure-based-drug-repurposing-with-alphafold.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold enables identification of existing drugs that can bind newly characterized protein targets rapidly."},{"title":"Structure-Based Drug Repurposing with AlphaFold","slug":"structure-based-drug-repurposing-with-alphafold","url":"/categories/artificial-intelligence-breakthroughs/alphafold/structure-based-drug-repurposing-with-alphafold.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold enables identification of existing drugs that can bind newly characterized protein targets rapidly."},{"title":"Visualization Tools Complementing AlphaFold Predictions","slug":"visualization-tools-complementing-alphafold-predictions","url":"/categories/artificial-intelligence-breakthroughs/alphafold/visualization-tools-complementing-alphafold-predictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Molecular visualization software like PyMOL and Chimera allows interactive exploration of AI-predicted protein structures."},{"title":"Visualization Tools Complementing AlphaFold Predictions","slug":"visualization-tools-complementing-alphafold-predictions","url":"/categories/artificial-intelligence-breakthroughs/alphafold/visualization-tools-complementing-alphafold-predictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Molecular visualization software like PyMOL and Chimera allows interactive exploration of AI-predicted protein structures."},{"title":"X-Ray and Cryo-EM Validation of AlphaFold Predictions","slug":"x-ray-and-cryo-em-validation-of-alphafold-predictions","url":"/categories/artificial-intelligence-breakthroughs/alphafold/x-ray-and-cryo-em-validation-of-alphafold-predictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Experimental techniques confirm that AlphaFold predictions match high-resolution protein structures, validating AI accuracy."},{"title":"Yeast Proteome Coverage by AlphaFold Predictions","slug":"yeast-proteome-coverage-by-alphafold-predictions","url":"/categories/artificial-intelligence-breakthroughs/alphafold/yeast-proteome-coverage-by-alphafold-predictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaFold provides 3D structures for nearly the entire Saccharomyces cerevisiae proteome, enabling functional genomics studies."},{"title":"Zika Virus Protein Modeling with AlphaFold","slug":"zika-virus-protein-modeling-with-alphafold","url":"/categories/artificial-intelligence-breakthroughs/alphafold/zika-virus-protein-modeling-with-alphafold.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"During viral outbreaks, AlphaFold models Zika virus proteins to identify potential therapeutic and vaccine targets rapidly."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

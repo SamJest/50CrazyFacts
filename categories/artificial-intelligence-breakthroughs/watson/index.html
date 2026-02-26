@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watson</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Watson</h1>
+  <p>Explore all facts in "Watson".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Watson</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"IBM Watson Defeated Jeopardy Champions in 2011","slug":"ibm-watson-defeated-jeopardy-champions-in-2011","url":"/categories/artificial-intelligence-breakthroughs/watson/ibm-watson-defeated-jeopardy-champions-in-2011.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2011, IBM Watson competed on Jeopardy! and defeated top human champions Ken Jennings and Brad Rutter."},{"title":"Learning Algorithms Enable Watson to Adapt Across Domains","slug":"learning-algorithms-enable-watson-to-adapt-across-domains","url":"/categories/artificial-intelligence-breakthroughs/watson/learning-algorithms-enable-watson-to-adapt-across-domains.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson’s machine learning capabilities allow it to perform effectively in diverse fields, from healthcare to finance."},{"title":"Watson Accelerates Clinical Trial Design and Analysis","slug":"watson-accelerates-clinical-trial-design-and-analysis","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-accelerates-clinical-trial-design-and-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson helps researchers optimize clinical trial protocols using AI-driven insights."},{"title":"Watson Accelerates Drug Discovery Using AI-Powered Research","slug":"watson-accelerates-drug-discovery-using-ai-powered-research","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-accelerates-drug-discovery-using-ai-powered-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson helps pharmaceutical companies identify potential drug candidates by analyzing molecular data and literature."},{"title":"Watson Accelerates Medical Research Through Literature Analysis","slug":"watson-accelerates-medical-research-through-literature-analysis","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-accelerates-medical-research-through-literature-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson rapidly synthesizes scientific publications to aid researchers in identifying actionable insights."},{"title":"Watson Analyzes Climate Data to Inform Environmental Policy","slug":"watson-analyzes-climate-data-to-inform-environmental-policy","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-analyzes-climate-data-to-inform-environmental-policy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson integrates vast environmental datasets to guide sustainable decision-making."},{"title":"Watson Analyzes Legal Precedents to Enhance Case Strategy","slug":"watson-analyzes-legal-precedents-to-enhance-case-strategy","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-analyzes-legal-precedents-to-enhance-case-strategy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson can process and interpret vast legal archives to inform litigation and contract review."},{"title":"Watson Applies AI to Optimize Supply Chain Management","slug":"watson-applies-ai-to-optimize-supply-chain-management","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-applies-ai-to-optimize-supply-chain-management.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Businesses use Watson to predict demand, manage inventory, and optimize logistics."},{"title":"Watson Assists in Financial Risk Modeling and Compliance","slug":"watson-assists-in-financial-risk-modeling-and-compliance","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-assists-in-financial-risk-modeling-and-compliance.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson analyzes regulatory, transactional, and market data to evaluate financial risks."},{"title":"Watson Assists in Personalized Healthcare Recommendations","slug":"watson-assists-in-personalized-healthcare-recommendations","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-assists-in-personalized-healthcare-recommendations.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson Health provides patient-specific insights by analyzing medical records and scientific literature."},{"title":"Watson Combines Machine Learning and Statistical Analysis","slug":"watson-combines-machine-learning-and-statistical-analysis","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-combines-machine-learning-and-statistical-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM Watson integrates multiple AI techniques to evaluate complex questions and provide accurate answers."},{"title":"Watson Enables Automated Risk Assessment in Insurance","slug":"watson-enables-automated-risk-assessment-in-insurance","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enables-automated-risk-assessment-in-insurance.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Insurance companies use Watson to evaluate claims, detect fraud, and optimize underwriting decisions."},{"title":"Watson Enables Personalized Learning in Education Platforms","slug":"watson-enables-personalized-learning-in-education-platforms","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enables-personalized-learning-in-education-platforms.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson powers adaptive educational systems that tailor content and feedback to individual learners."},{"title":"Watson Enhances Fraud Detection in Financial Services","slug":"watson-enhances-fraud-detection-in-financial-services","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enhances-fraud-detection-in-financial-services.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Banks use Watson’s AI to detect anomalies and prevent fraudulent transactions in real-time."},{"title":"Watson Enhances Fraud Prevention in Insurance and Banking","slug":"watson-enhances-fraud-prevention-in-insurance-and-banking","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enhances-fraud-prevention-in-insurance-and-banking.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AI-powered analysis helps financial institutions detect anomalies and prevent fraud efficiently."},{"title":"Watson Enhances Legal Document Review and Compliance Analysis","slug":"watson-enhances-legal-document-review-and-compliance-analysis","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enhances-legal-document-review-and-compliance-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Law firms use Watson to analyze contracts, identify risks, and ensure regulatory compliance efficiently."},{"title":"Watson Enhances Retail Customer Experience with AI Insights","slug":"watson-enhances-retail-customer-experience-with-ai-insights","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enhances-retail-customer-experience-with-ai-insights.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Retailers use Watson to personalize shopping experiences and predict customer behavior."},{"title":"Watson Enhances Retail Demand Forecasting","slug":"watson-enhances-retail-demand-forecasting","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-enhances-retail-demand-forecasting.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson predicts consumer demand patterns to optimize inventory and reduce waste."},{"title":"Watson Facilitates Evidence-Based Policy Making","slug":"watson-facilitates-evidence-based-policy-making","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-facilitates-evidence-based-policy-making.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Governments and NGOs use Watson to analyze large datasets and inform policy decisions."},{"title":"Watson Health Applies AI to Medical Diagnostics and Research","slug":"watson-health-applies-ai-to-medical-diagnostics-and-research","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-health-applies-ai-to-medical-diagnostics-and-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson’s technology has been adapted to assist clinicians in diagnosis, treatment recommendations, and research analysis."},{"title":"Watson Improves Customer Support with AI Chatbots","slug":"watson-improves-customer-support-with-ai-chatbots","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-improves-customer-support-with-ai-chatbots.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson Assistant enables businesses to provide 24/7 automated customer service with contextual understanding."},{"title":"Watson Improves Energy Efficiency in Smart Buildings","slug":"watson-improves-energy-efficiency-in-smart-buildings","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-improves-energy-efficiency-in-smart-buildings.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson IoT analyzes building data to optimize energy use and reduce environmental impact."},{"title":"Watson Integrates Big Data Analytics for Scalable Intelligence","slug":"watson-integrates-big-data-analytics-for-scalable-intelligence","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-integrates-big-data-analytics-for-scalable-intelligence.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson can analyze massive datasets to uncover patterns and insights impossible for humans to detect manually."},{"title":"Watson Integrates IoT Data for Smart Infrastructure Management","slug":"watson-integrates-iot-data-for-smart-infrastructure-management","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-integrates-iot-data-for-smart-infrastructure-management.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson IoT analyzes sensor data to optimize performance, maintenance, and safety in industrial systems."},{"title":"Watson Powers Virtual Assistants for Customer Engagement","slug":"watson-powers-virtual-assistants-for-customer-engagement","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-powers-virtual-assistants-for-customer-engagement.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson Assistant enables businesses to interact with customers through AI-driven chatbots and voice interfaces."},{"title":"Watson Processes Natural Language Using Deep Learning Models","slug":"watson-processes-natural-language-using-deep-learning-models","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-processes-natural-language-using-deep-learning-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep learning enables Watson to understand, interpret, and generate responses in human language effectively."},{"title":"Watson Processes Structured and Unstructured Data Simultaneously","slug":"watson-processes-structured-and-unstructured-data-simultaneously","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-processes-structured-and-unstructured-data-simultaneously.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM Watson can analyze vast amounts of both structured databases and unstructured text for informed decision-making."},{"title":"Watson Supports Genomic Analysis for Precision Medicine","slug":"watson-supports-genomic-analysis-for-precision-medicine","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-supports-genomic-analysis-for-precision-medicine.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson Health analyzes genomic data to identify personalized treatment options for patients."},{"title":"Watson Supports Pharmaceutical Research by Identifying Drug Targets","slug":"watson-supports-pharmaceutical-research-by-identifying-drug-targets","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-supports-pharmaceutical-research-by-identifying-drug-targets.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson Health analyzes biological data and scientific literature to suggest potential drug targets."},{"title":"Watson Supports Predictive Analytics Across Business Sectors","slug":"watson-supports-predictive-analytics-across-business-sectors","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-supports-predictive-analytics-across-business-sectors.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson applies machine learning to forecast trends, risks, and opportunities in finance, marketing, and operations."},{"title":"Watson Supports Predictive Maintenance in Industrial Applications","slug":"watson-supports-predictive-maintenance-in-industrial-applications","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-supports-predictive-maintenance-in-industrial-applications.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson analyzes sensor data and operational logs to predict equipment failures and optimize maintenance schedules."},{"title":"Watson Supports Public Health Analytics for Disease Prevention","slug":"watson-supports-public-health-analytics-for-disease-prevention","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-supports-public-health-analytics-for-disease-prevention.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson analyzes health data to track trends, predict outbreaks, and inform interventions."},{"title":"Watson Uses AI to Accelerate Drug Repurposing Research","slug":"watson-uses-ai-to-accelerate-drug-repurposing-research","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-uses-ai-to-accelerate-drug-repurposing-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson identifies existing drugs that may be effective for new medical conditions."},{"title":"Watson Uses Deep Learning to Interpret Complex Queries","slug":"watson-uses-deep-learning-to-interpret-complex-queries","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-uses-deep-learning-to-interpret-complex-queries.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson’s deep learning models enable nuanced understanding of language and context."},{"title":"Watson Uses Evidence-Based Learning to Validate Answers","slug":"watson-uses-evidence-based-learning-to-validate-answers","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-uses-evidence-based-learning-to-validate-answers.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson cross-references data sources and uses evidence weighting to ensure answer reliability."},{"title":"Watson Uses Evidence-Based Scoring to Prioritize Answers","slug":"watson-uses-evidence-based-scoring-to-prioritize-answers","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-uses-evidence-based-scoring-to-prioritize-answers.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson evaluates candidate answers using confidence scores derived from supporting evidence."},{"title":"Watson Uses Hypothesis Generation for Complex Question Answering","slug":"watson-uses-hypothesis-generation-for-complex-question-answering","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-uses-hypothesis-generation-for-complex-question-answering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM Watson creates multiple hypotheses for each query and evaluates them to determine the most likely answer."},{"title":"Watson Uses Predictive Maintenance to Prevent Industrial Failures","slug":"watson-uses-predictive-maintenance-to-prevent-industrial-failures","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-uses-predictive-maintenance-to-prevent-industrial-failures.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson IoT analyzes sensor and operational data to forecast equipment breakdowns before they occur."},{"title":"Watson Utilizes Deep Question-Answering Architecture","slug":"watson-utilizes-deep-question-answering-architecture","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-utilizes-deep-question-answering-architecture.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM Watson’s deep question-answering system allows it to understand, interpret, and respond to complex human language."},{"title":"Watson’s AI Enhances Clinical Decision Support in Healthcare","slug":"watson-s-ai-enhances-clinical-decision-support-in-healthcare","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-s-ai-enhances-clinical-decision-support-in-healthcare.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson Health assists clinicians by analyzing medical literature and patient data to suggest diagnoses and treatment options."},{"title":"Watson’s Cognitive Computing Mimics Human Problem-Solving Patterns","slug":"watson-s-cognitive-computing-mimics-human-problem-solving-patterns","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-s-cognitive-computing-mimics-human-problem-solving-patterns.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM Watson was designed to emulate aspects of human thought, integrating reasoning, language, and learning."},{"title":"Watson’s Machine Learning Improves Over Time With Feedback","slug":"watson-s-machine-learning-improves-over-time-with-feedback","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-s-machine-learning-improves-over-time-with-feedback.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Watson adapts and refines its performance based on outcomes, increasing accuracy and efficiency."},{"title":"Watson’s Natural Language Processing Enables Contextual Understanding","slug":"watson-s-natural-language-processing-enables-contextual-understanding","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-s-natural-language-processing-enables-contextual-understanding.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM Watson interprets complex sentences, context, and ambiguity to generate accurate responses."},{"title":"Watson’s NLP Enables Legal Research and Contract Analysis","slug":"watson-s-nlp-enables-legal-research-and-contract-analysis","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-s-nlp-enables-legal-research-and-contract-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Law firms use Watson to analyze contracts, case law, and legal documents efficiently."},{"title":"Watson’s Technology Supports Enterprise Knowledge Management","slug":"watson-s-technology-supports-enterprise-knowledge-management","url":"/categories/artificial-intelligence-breakthroughs/watson/watson-s-technology-supports-enterprise-knowledge-management.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Companies use Watson to analyze large datasets, extracting insights for decision-making and operational optimization."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

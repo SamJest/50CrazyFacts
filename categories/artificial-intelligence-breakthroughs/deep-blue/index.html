@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Blue</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Deep Blue</h1>
+  <p>Explore all facts in "Deep Blue".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Deep Blue</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Algorithmic Search in Deep Blue Built on Decades of Minimax Theory","slug":"algorithmic-search-in-deep-blue-built-on-decades-of-minimax-theory","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/algorithmic-search-in-deep-blue-built-on-decades-of-minimax-theory.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s core decision-making traced back to minimax algorithms first formalized in mid-20th-century game theory."},{"title":"AlphaZero Later Proved a Different Path Than Deep Blue’s Brute-Force Strategy","slug":"alphazero-later-proved-a-different-path-than-deep-blue-s-brute-force-strategy","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/alphazero-later-proved-a-different-path-than-deep-blue-s-brute-force-strategy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Two decades after Deep Blue, AlphaZero showed that chess mastery could emerge from self-learning rather than handcrafted evaluation rules."},{"title":"Architectural Cooling Systems Were Essential to Deep Blue’s Stability","slug":"architectural-cooling-systems-were-essential-to-deep-blue-s-stability","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/architectural-cooling-systems-were-essential-to-deep-blue-s-stability.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s immense computational output generated enough heat that specialized cooling systems were critical to match performance."},{"title":"Benchmark Status of Chess Made Deep Blue’s Victory Scientifically Significant","slug":"benchmark-status-of-chess-made-deep-blue-s-victory-scientifically-significant","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/benchmark-status-of-chess-made-deep-blue-s-victory-scientifically-significant.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Chess had long been a benchmark problem in artificial intelligence, making Deep Blue’s victory a measurable research milestone."},{"title":"Brand Recognition for IBM Increased After the Deep Blue Match","slug":"brand-recognition-for-ibm-increased-after-the-deep-blue-match","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/brand-recognition-for-ibm-increased-after-the-deep-blue-match.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM reported heightened global brand visibility following Deep Blue’s high-profile victory in 1997."},{"title":"Computational Limits Prevented Deep Blue From Exploring Every Possible Move","slug":"computational-limits-prevented-deep-blue-from-exploring-every-possible-move","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/computational-limits-prevented-deep-blue-from-exploring-every-possible-move.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Despite evaluating millions of positions per second, Deep Blue still relied on pruning because exhaustive search of chess is mathematically impossible."},{"title":"Corporate Branding Strategy Elevated Deep Blue Beyond a Research Prototype","slug":"corporate-branding-strategy-elevated-deep-blue-beyond-a-research-prototype","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/corporate-branding-strategy-elevated-deep-blue-beyond-a-research-prototype.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM leveraged Deep Blue’s success as a global branding statement about its technological leadership."},{"title":"Custom Chess Chips Made Deep Blue Unlike Any Previous Supercomputer","slug":"custom-chess-chips-made-deep-blue-unlike-any-previous-supercomputer","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/custom-chess-chips-made-deep-blue-unlike-any-previous-supercomputer.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s power did not come from software alone but from 480 custom-built chess chips designed specifically for move evaluation."},{"title":"Deep Blue Could Evaluate 200 Million Chess Positions Per Second","slug":"deep-blue-could-evaluate-200-million-chess-positions-per-second","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-could-evaluate-200-million-chess-positions-per-second.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"At peak performance, Deep Blue analyzed up to 200 million possible chess positions every second."},{"title":"Deep Blue Defeated Garry Kasparov in 1997 in a Historic AI Breakthrough","slug":"deep-blue-defeated-garry-kasparov-in-1997-in-a-historic-ai-breakthrough","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-defeated-garry-kasparov-in-1997-in-a-historic-ai-breakthrough.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In May 1997, IBM’s Deep Blue became the first computer to defeat a reigning world chess champion in a match under standard tournament conditions."},{"title":"Deep Blue Demonstrated That Narrow AI Could Surpass Human Experts","slug":"deep-blue-demonstrated-that-narrow-ai-could-surpass-human-experts","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-demonstrated-that-narrow-ai-could-surpass-human-experts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s win showed that a highly specialized AI system could outperform the world’s best human in a constrained domain."},{"title":"Deep Blue Operated Under Strict Tournament Time Controls","slug":"deep-blue-operated-under-strict-tournament-time-controls","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-operated-under-strict-tournament-time-controls.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue defeated Kasparov under the same classical time controls that govern world championship chess."},{"title":"Deep Blue Relied on Parallel Computing Across 30 IBM RS/6000 SP Nodes","slug":"deep-blue-relied-on-parallel-computing-across-30-ibm-rs-6000-sp-nodes","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-relied-on-parallel-computing-across-30-ibm-rs-6000-sp-nodes.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s strength came from distributing calculations across 30 parallel processing nodes working simultaneously."},{"title":"Deep Blue Used Alpha-Beta Pruning to Reduce Search Complexity","slug":"deep-blue-used-alpha-beta-pruning-to-reduce-search-complexity","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-used-alpha-beta-pruning-to-reduce-search-complexity.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Behind its massive speed, Deep Blue relied on a classic algorithm called alpha-beta pruning to eliminate billions of irrelevant chess variations."},{"title":"Deep Blue’s 1996 Loss to Kasparov Accelerated Its Redesign","slug":"deep-blue-s-1996-loss-to-kasparov-accelerated-its-redesign","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-s-1996-loss-to-kasparov-accelerated-its-redesign.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After losing to Garry Kasparov in 1996, IBM engineers redesigned Deep Blue in less than a year to prepare for a rematch."},{"title":"Deep Blue’s Endgame Databases Enhanced Precision in Simplified Positions","slug":"deep-blue-s-endgame-databases-enhanced-precision-in-simplified-positions","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-s-endgame-databases-enhanced-precision-in-simplified-positions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In certain late-game scenarios, Deep Blue relied on precomputed endgame databases to guarantee optimal play."},{"title":"Deep Blue’s Evaluation Function Contained Over 8,000 Parameters","slug":"deep-blue-s-evaluation-function-contained-over-8-000-parameters","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-s-evaluation-function-contained-over-8-000-parameters.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s playing strength depended on an evaluation function that incorporated more than 8,000 finely tuned parameters."},{"title":"Deep Blue’s Victory Sparked Debate About Artificial General Intelligence","slug":"deep-blue-s-victory-sparked-debate-about-artificial-general-intelligence","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deep-blue-s-victory-sparked-debate-about-artificial-general-intelligence.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s 1997 triumph triggered widespread public debate about whether machines were approaching human-like intelligence."},{"title":"Deterministic Rule-Based Design Made Deep Blue Predictable Under Identical Conditions","slug":"deterministic-rule-based-design-made-deep-blue-predictable-under-identical-conditions","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/deterministic-rule-based-design-made-deep-blue-predictable-under-identical-conditions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Because Deep Blue used deterministic algorithms, it would choose the same move every time when given the identical position and parameters."},{"title":"Early Computer Chess Champions Like Deep Thought Paved the Way for Deep Blue","slug":"early-computer-chess-champions-like-deep-thought-paved-the-way-for-deep-blue","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/early-computer-chess-champions-like-deep-thought-paved-the-way-for-deep-blue.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Before Deep Blue, a predecessor called Deep Thought won major computer chess titles and demonstrated the promise of hardware acceleration."},{"title":"Enduring Museum Exhibits Preserve Deep Blue as a Technological Artifact","slug":"enduring-museum-exhibits-preserve-deep-blue-as-a-technological-artifact","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/enduring-museum-exhibits-preserve-deep-blue-as-a-technological-artifact.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Parts of Deep Blue now reside in museums, transforming a competitive machine into a historical artifact."},{"title":"Engineers Tuned Deep Blue’s Opening Book Using Grandmaster Databases","slug":"engineers-tuned-deep-blue-s-opening-book-using-grandmaster-databases","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/engineers-tuned-deep-blue-s-opening-book-using-grandmaster-databases.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue entered the 1997 match armed with an opening library built from thousands of historical grandmaster games."},{"title":"Feng-hsiung Hsu Designed the Custom Chips That Powered Deep Blue","slug":"feng-hsiung-hsu-designed-the-custom-chips-that-powered-deep-blue","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/feng-hsiung-hsu-designed-the-custom-chips-that-powered-deep-blue.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The architect behind Deep Blue’s specialized chess chips began his work as a graduate student experimenting with hardware acceleration."},{"title":"Game 2 of the 1997 Match Marked a Psychological Turning Point for Deep Blue","slug":"game-2-of-the-1997-match-marked-a-psychological-turning-point-for-deep-blue","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/game-2-of-the-1997-match-marked-a-psychological-turning-point-for-deep-blue.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s Game 2 victory in 1997 stunned Garry Kasparov and shifted the psychological balance of the match."},{"title":"Game Logs From 1997 Became Study Material for AI and Chess Communities","slug":"game-logs-from-1997-became-study-material-for-ai-and-chess-communities","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/game-logs-from-1997-became-study-material-for-ai-and-chess-communities.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The six games of the 1997 match were analyzed in depth by both computer scientists and grandmasters for decades."},{"title":"Hardware Scaling Between 1996 and 1997 Doubled Deep Blue’s Processing Power","slug":"hardware-scaling-between-1996-and-1997-doubled-deep-blue-s-processing-power","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/hardware-scaling-between-1996-and-1997-doubled-deep-blue-s-processing-power.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In less than a year, IBM engineers dramatically increased Deep Blue’s computational capacity before the 1997 rematch."},{"title":"High-Stakes Prize Fund Elevated the Match’s Competitive Legitimacy","slug":"high-stakes-prize-fund-elevated-the-match-s-competitive-legitimacy","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/high-stakes-prize-fund-elevated-the-match-s-competitive-legitimacy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"A $1.1 million prize fund underscored that Deep Blue’s contest with Kasparov was not merely symbolic but professionally competitive."},{"title":"IBM Engineers Logged Millions of Practice Positions Before the 1997 Match","slug":"ibm-engineers-logged-millions-of-practice-positions-before-the-1997-match","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/ibm-engineers-logged-millions-of-practice-positions-before-the-1997-match.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In preparation for Kasparov, Deep Blue’s team tested the system across millions of simulated and real-game positions."},{"title":"IBM Framed Deep Blue as a Grand Challenge Engineering Project","slug":"ibm-framed-deep-blue-as-a-grand-challenge-engineering-project","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/ibm-framed-deep-blue-as-a-grand-challenge-engineering-project.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"IBM publicly described Deep Blue as a \"grand challenge\" project designed to push the limits of computing performance."},{"title":"IBM Retired Deep Blue Immediately After Its 1997 Victory","slug":"ibm-retired-deep-blue-immediately-after-its-1997-victory","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/ibm-retired-deep-blue-immediately-after-its-1997-victory.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Despite its historic win, IBM dismantled Deep Blue shortly after the 1997 match ended."},{"title":"Industrial-Scale Power Consumption Reflected Deep Blue’s Physical Demands","slug":"industrial-scale-power-consumption-reflected-deep-blue-s-physical-demands","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/industrial-scale-power-consumption-reflected-deep-blue-s-physical-demands.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue required industrial-level electrical power to sustain its high-speed processors during tournament play."},{"title":"Iterative Testing Against Grandmasters Strengthened Deep Blue Before 1997","slug":"iterative-testing-against-grandmasters-strengthened-deep-blue-before-1997","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/iterative-testing-against-grandmasters-strengthened-deep-blue-before-1997.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Before facing Kasparov, Deep Blue was tested extensively against elite grandmasters to expose strategic weaknesses."},{"title":"Just One Year of Development Separated Defeat in 1996 From Victory in 1997","slug":"just-one-year-of-development-separated-defeat-in-1996-from-victory-in-1997","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/just-one-year-of-development-separated-defeat-in-1996-from-victory-in-1997.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Between 1996 and 1997, Deep Blue transformed from a losing challenger into a world champion-defeating machine."},{"title":"Just One Year of Development Separated Defeat in 1996 From Victory in 1997","slug":"just-one-year-of-development-separated-defeat-in-1996-from-victory-in-1997","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/just-one-year-of-development-separated-defeat-in-1996-from-victory-in-1997.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Between 1996 and 1997, Deep Blue transformed from a losing challenger into a world champion-defeating machine."},{"title":"Kasparov Accused IBM of Limited Transparency After Deep Blue Match","slug":"kasparov-accused-ibm-of-limited-transparency-after-deep-blue-match","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/kasparov-accused-ibm-of-limited-transparency-after-deep-blue-match.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After his 1997 defeat, Garry Kasparov publicly criticized IBM for restricting access to Deep Blue’s internal logs and decision data."},{"title":"Kasparov Won Game 1 in 1997 Before Deep Blue Recovered","slug":"kasparov-won-game-1-in-1997-before-deep-blue-recovered","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/kasparov-won-game-1-in-1997-before-deep-blue-recovered.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Despite losing the match overall, Garry Kasparov won the first game of the 1997 rematch against Deep Blue."},{"title":"Legacy Debates Framed Deep Blue as Triumph of Calculation Over Intuition","slug":"legacy-debates-framed-deep-blue-as-triumph-of-calculation-over-intuition","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/legacy-debates-framed-deep-blue-as-triumph-of-calculation-over-intuition.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s victory sparked enduring debate over whether calculation alone could rival human intuition."},{"title":"Long-Term Legacy Positioned Deep Blue as a Precursor to Modern AI Milestones","slug":"long-term-legacy-positioned-deep-blue-as-a-precursor-to-modern-ai-milestones","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/long-term-legacy-positioned-deep-blue-as-a-precursor-to-modern-ai-milestones.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s 1997 victory became a reference benchmark for later AI achievements in Go, poker, and language modeling."},{"title":"Machine Evaluation Speed Outpaced Human Calculation by Millions of Times","slug":"machine-evaluation-speed-outpaced-human-calculation-by-millions-of-times","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/machine-evaluation-speed-outpaced-human-calculation-by-millions-of-times.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s ability to process millions of positions per second dwarfed even the fastest human grandmaster calculation speed."},{"title":"Memory Architecture Allowed Deep Blue to Cache Previously Evaluated Positions","slug":"memory-architecture-allowed-deep-blue-to-cache-previously-evaluated-positions","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/memory-architecture-allowed-deep-blue-to-cache-previously-evaluated-positions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue reduced redundant calculation by storing previously analyzed positions in high-speed memory tables."},{"title":"National Media Coverage Turned Deep Blue Into a Cultural Icon in 1997","slug":"national-media-coverage-turned-deep-blue-into-a-cultural-icon-in-1997","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/national-media-coverage-turned-deep-blue-into-a-cultural-icon-in-1997.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s victory was broadcast worldwide, transforming a technical achievement into a global cultural moment."},{"title":"Non-Learning Architecture Distinguished Deep Blue from Modern AI Systems","slug":"non-learning-architecture-distinguished-deep-blue-from-modern-ai-systems","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/non-learning-architecture-distinguished-deep-blue-from-modern-ai-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Unlike contemporary neural networks, Deep Blue did not learn from experience during its matches."},{"title":"Opening Preparation Against Kasparov Required Tailored Anti-Kasparov Lines","slug":"opening-preparation-against-kasparov-required-tailored-anti-kasparov-lines","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/opening-preparation-against-kasparov-required-tailored-anti-kasparov-lines.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s team customized its opening repertoire specifically to counter Garry Kasparov’s known preferences."},{"title":"Optimization of Evaluation Parameters Required Manual Tuning by Experts","slug":"optimization-of-evaluation-parameters-required-manual-tuning-by-experts","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/optimization-of-evaluation-parameters-required-manual-tuning-by-experts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s strength depended on thousands of evaluation weights that engineers manually adjusted through iterative testing."},{"title":"Optimization of Evaluation Parameters Required Manual Tuning by Experts","slug":"optimization-of-evaluation-parameters-required-manual-tuning-by-experts","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/optimization-of-evaluation-parameters-required-manual-tuning-by-experts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s strength depended on thousands of evaluation weights that engineers manually adjusted through iterative testing."},{"title":"Parallel Search Extensions Allowed Deep Blue to Analyze Tactical Forcing Lines","slug":"parallel-search-extensions-allowed-deep-blue-to-analyze-tactical-forcing-lines","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/parallel-search-extensions-allowed-deep-blue-to-analyze-tactical-forcing-lines.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In critical tactical moments, Deep Blue selectively extended its search depth beyond normal limits to examine forcing variations."},{"title":"Pioneering Work on Deep Blue Originated at Carnegie Mellon University","slug":"pioneering-work-on-deep-blue-originated-at-carnegie-mellon-university","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/pioneering-work-on-deep-blue-originated-at-carnegie-mellon-university.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s technological lineage traces back to academic research at Carnegie Mellon University in the 1980s."},{"title":"Pioneering Work on Deep Blue Originated at Carnegie Mellon University","slug":"pioneering-work-on-deep-blue-originated-at-carnegie-mellon-university","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/pioneering-work-on-deep-blue-originated-at-carnegie-mellon-university.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s technological lineage traces back to academic research at Carnegie Mellon University in the 1980s."},{"title":"Public Rematch Requests From Kasparov Were Declined by IBM","slug":"public-rematch-requests-from-kasparov-were-declined-by-ibm","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/public-rematch-requests-from-kasparov-were-declined-by-ibm.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After losing in 1997, Garry Kasparov repeatedly requested a rematch against Deep Blue, but IBM refused."},{"title":"Public Rematch Requests From Kasparov Were Declined by IBM","slug":"public-rematch-requests-from-kasparov-were-declined-by-ibm","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/public-rematch-requests-from-kasparov-were-declined-by-ibm.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After losing in 1997, Garry Kasparov repeatedly requested a rematch against Deep Blue, but IBM refused."},{"title":"Quantum of Public Investment in AI Rose After Deep Blue’s Win","slug":"quantum-of-public-investment-in-ai-rose-after-deep-blue-s-win","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/quantum-of-public-investment-in-ai-rose-after-deep-blue-s-win.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s victory helped catalyze increased corporate and academic investment in artificial intelligence research."},{"title":"Reevaluation of Game 6 Suggested Kasparov Resigned in a Losing Position","slug":"reevaluation-of-game-6-suggested-kasparov-resigned-in-a-losing-position","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/reevaluation-of-game-6-suggested-kasparov-resigned-in-a-losing-position.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In the final game of the 1997 match, Kasparov resigned after only 19 moves in a position analysts later judged difficult but not immediately lost."},{"title":"Research Team Included Computer Scientists and Chess Grandmasters","slug":"research-team-included-computer-scientists-and-chess-grandmasters","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/research-team-included-computer-scientists-and-chess-grandmasters.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue’s success depended on collaboration between elite chess players and computer engineers."},{"title":"Time Management Algorithms Determined How Deep Blue Allocated Computation Per Move","slug":"time-management-algorithms-determined-how-deep-blue-allocated-computation-per-move","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/time-management-algorithms-determined-how-deep-blue-allocated-computation-per-move.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue had to decide not only which move to play, but how much time to spend calculating each position."},{"title":"Time Management Algorithms Determined How Deep Blue Allocated Computation Per Move","slug":"time-management-algorithms-determined-how-deep-blue-allocated-computation-per-move","url":"/categories/artificial-intelligence-breakthroughs/deep-blue/time-management-algorithms-determined-how-deep-blue-allocated-computation-per-move.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Deep Blue had to decide not only which move to play, but how much time to spend calculating each position."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

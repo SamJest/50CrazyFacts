@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sei Whale</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sei Whale</h1>
+  <p>Explore all facts in "Sei Whale".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sei Whale</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Acoustic Calls Help Sei Whales Communicate Across Vast Ocean Distances","slug":"acoustic-calls-help-sei-whales-communicate-across-vast-ocean-distances","url":"/categories/deep-sea-giants/sei-whale/acoustic-calls-help-sei-whales-communicate-across-vast-ocean-distances.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Even in the open ocean, sei whales stay connected through powerful low-frequency sounds."},{"title":"Age at Sexual Maturity Influences Sei Whale Population Recovery","slug":"age-at-sexual-maturity-influences-sei-whale-population-recovery","url":"/categories/deep-sea-giants/sei-whale/age-at-sexual-maturity-influences-sei-whale-population-recovery.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sei whales do not reproduce quickly, slowing the rebound from past exploitation."},{"title":"Baleen Plates Allow Sei Whales to Filter Thousands of Prey in a Single Lunge","slug":"baleen-plates-allow-sei-whales-to-filter-thousands-of-prey-in-a-single-lunge","url":"/categories/deep-sea-giants/sei-whale/baleen-plates-allow-sei-whales-to-filter-thousands-of-prey-in-a-single-lunge.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Instead of teeth, sei whales use hundreds of flexible plates to strain tiny prey from seawater."},{"title":"Breathing Intervals Reveal Sei Whale Diving Patterns","slug":"breathing-intervals-reveal-sei-whale-diving-patterns","url":"/categories/deep-sea-giants/sei-whale/breathing-intervals-reveal-sei-whale-diving-patterns.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"By timing the gap between blows, researchers can estimate how long a sei whale remains underwater."},{"title":"Coloration Patterns Help Distinguish Sei Whales at Sea","slug":"coloration-patterns-help-distinguish-sei-whales-at-sea","url":"/categories/deep-sea-giants/sei-whale/coloration-patterns-help-distinguish-sei-whales-at-sea.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Subtle shading differences across the body assist trained observers in identifying sei whales offshore."},{"title":"Commercial Whaling Pushed Sei Whales to the Brink in the 20th Century","slug":"commercial-whaling-pushed-sei-whales-to-the-brink-in-the-20th-century","url":"/categories/deep-sea-giants/sei-whale/commercial-whaling-pushed-sei-whales-to-the-brink-in-the-20th-century.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Industrial whaling once targeted sei whales so heavily that entire regional populations collapsed."},{"title":"Deep Ocean Fronts Concentrate Prey for Feeding Sei Whales","slug":"deep-ocean-fronts-concentrate-prey-for-feeding-sei-whales","url":"/categories/deep-sea-giants/sei-whale/deep-ocean-fronts-concentrate-prey-for-feeding-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Invisible boundaries in the ocean act like underwater buffets for sei whales."},{"title":"Distinctive Dorsal Fin Helps Scientists Identify Individual Sei Whales","slug":"distinctive-dorsal-fin-helps-scientists-identify-individual-sei-whales","url":"/categories/deep-sea-giants/sei-whale/distinctive-dorsal-fin-helps-scientists-identify-individual-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A tall, falcate dorsal fin distinguishes the sei whale from other rorquals at sea."},{"title":"Endangered Status Reflects Ongoing Conservation Concerns for Sei Whales","slug":"endangered-status-reflects-ongoing-conservation-concerns-for-sei-whales","url":"/categories/deep-sea-giants/sei-whale/endangered-status-reflects-ongoing-conservation-concerns-for-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Despite decades of protection, sei whales remain classified as endangered in several jurisdictions."},{"title":"Extensive Migration Routes Connect Sei Whale Feeding and Breeding Grounds","slug":"extensive-migration-routes-connect-sei-whale-feeding-and-breeding-grounds","url":"/categories/deep-sea-giants/sei-whale/extensive-migration-routes-connect-sei-whale-feeding-and-breeding-grounds.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sei whales travel thousands of kilometers each year between cold feeding zones and warmer breeding waters."},{"title":"Fast Surface Feeding Sets Sei Whales Apart From Other Rorquals","slug":"fast-surface-feeding-sets-sei-whales-apart-from-other-rorquals","url":"/categories/deep-sea-giants/sei-whale/fast-surface-feeding-sets-sei-whales-apart-from-other-rorquals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sei whales often feed at the surface with rapid, skimming motions rather than deep lunges."},{"title":"Fin Shape and Placement Aid Rapid Acceleration in Sei Whales","slug":"fin-shape-and-placement-aid-rapid-acceleration-in-sei-whales","url":"/categories/deep-sea-giants/sei-whale/fin-shape-and-placement-aid-rapid-acceleration-in-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The powerful tail flukes of a sei whale generate thrust strong enough to propel a 20-meter body at remarkable speed."},{"title":"Genetic Diversity Studies Help Assess Sei Whale Recovery Potential","slug":"genetic-diversity-studies-help-assess-sei-whale-recovery-potential","url":"/categories/deep-sea-giants/sei-whale/genetic-diversity-studies-help-assess-sei-whale-recovery-potential.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"DNA sampling reveals how much genetic resilience remains after heavy whaling."},{"title":"Global Distribution Makes the Sei Whale One of the Most Widespread Baleen Whales","slug":"global-distribution-makes-the-sei-whale-one-of-the-most-widespread-baleen-whales","url":"/categories/deep-sea-giants/sei-whale/global-distribution-makes-the-sei-whale-one-of-the-most-widespread-baleen-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Few great whales occupy as many ocean basins as the sei whale."},{"title":"High-Speed Escapes Help Sei Whales Avoid Predators","slug":"high-speed-escapes-help-sei-whales-avoid-predators","url":"/categories/deep-sea-giants/sei-whale/high-speed-escapes-help-sei-whales-avoid-predators.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Speed is not just for migration, it may also be a defensive strategy."},{"title":"Hydrodynamic Body Design Minimizes Drag During Sei Whale Migration","slug":"hydrodynamic-body-design-minimizes-drag-during-sei-whale-migration","url":"/categories/deep-sea-giants/sei-whale/hydrodynamic-body-design-minimizes-drag-during-sei-whale-migration.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The sleek profile of the sei whale is engineered by evolution for long-distance travel."},{"title":"Individual Identification Reveals Slow Population Recovery Trends","slug":"individual-identification-reveals-slow-population-recovery-trends","url":"/categories/deep-sea-giants/sei-whale/individual-identification-reveals-slow-population-recovery-trends.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Tracking individual sei whales over decades shows recovery is gradual but measurable."},{"title":"International Whaling Moratorium Marked a Turning Point for Sei Whales","slug":"international-whaling-moratorium-marked-a-turning-point-for-sei-whales","url":"/categories/deep-sea-giants/sei-whale/international-whaling-moratorium-marked-a-turning-point-for-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single global decision in 1986 dramatically changed the future of sei whales."},{"title":"Juvenile Mortality Rates Influence Sei Whale Population Trends","slug":"juvenile-mortality-rates-influence-sei-whale-population-trends","url":"/categories/deep-sea-giants/sei-whale/juvenile-mortality-rates-influence-sei-whale-population-trends.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The survival of young sei whales plays a decisive role in long-term recovery."},{"title":"Juvenile Sei Whales Grow Rapidly During Their First Year of Life","slug":"juvenile-sei-whales-grow-rapidly-during-their-first-year-of-life","url":"/categories/deep-sea-giants/sei-whale/juvenile-sei-whales-grow-rapidly-during-their-first-year-of-life.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A newborn sei whale can double in size within months of birth."},{"title":"Keel-Shaped Rostrum Gives Sei Whales a Sleek Hydrodynamic Profile","slug":"keel-shaped-rostrum-gives-sei-whales-a-sleek-hydrodynamic-profile","url":"/categories/deep-sea-giants/sei-whale/keel-shaped-rostrum-gives-sei-whales-a-sleek-hydrodynamic-profile.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single prominent ridge runs along the top of a sei whale's snout."},{"title":"Krill Availability Can Supplement the Sei Whale Diet in Some Regions","slug":"krill-availability-can-supplement-the-sei-whale-diet-in-some-regions","url":"/categories/deep-sea-giants/sei-whale/krill-availability-can-supplement-the-sei-whale-diet-in-some-regions.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Although copepods dominate their diet, sei whales can adjust to feast on krill when conditions allow."},{"title":"Large Body Size Allows Sei Whales to Store Energy for Long Migrations","slug":"large-body-size-allows-sei-whales-to-store-energy-for-long-migrations","url":"/categories/deep-sea-giants/sei-whale/large-body-size-allows-sei-whales-to-store-energy-for-long-migrations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Blubber is more than insulation, it is a biological fuel tank for sei whales."},{"title":"Long, Slender Bodies Differentiate Sei Whales From Bulkier Rorquals","slug":"long-slender-bodies-differentiate-sei-whales-from-bulkier-rorquals","url":"/categories/deep-sea-giants/sei-whale/long-slender-bodies-differentiate-sei-whales-from-bulkier-rorquals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The sei whale's comparatively slender build contributes to its speed and agility."},{"title":"Migration Corridors Cross Multiple National Jurisdictions","slug":"migration-corridors-cross-multiple-national-jurisdictions","url":"/categories/deep-sea-giants/sei-whale/migration-corridors-cross-multiple-national-jurisdictions.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single sei whale migration may span waters governed by several countries."},{"title":"Modern Ship Traffic Poses Ongoing Risks to Sei Whales","slug":"modern-ship-traffic-poses-ongoing-risks-to-sei-whales","url":"/categories/deep-sea-giants/sei-whale/modern-ship-traffic-poses-ongoing-risks-to-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Even after commercial whaling ended, human activity at sea continues to threaten sei whales."},{"title":"North Atlantic Sei Whales Were Among the Most Intensively Exploited Populations","slug":"north-atlantic-sei-whales-were-among-the-most-intensively-exploited-populations","url":"/categories/deep-sea-giants/sei-whale/north-atlantic-sei-whales-were-among-the-most-intensively-exploited-populations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The North Atlantic once saw dramatic declines in sei whale numbers during peak whaling decades."},{"title":"Nutrient-Rich Upwelling Zones Attract Feeding Sei Whales","slug":"nutrient-rich-upwelling-zones-attract-feeding-sei-whales","url":"/categories/deep-sea-giants/sei-whale/nutrient-rich-upwelling-zones-attract-feeding-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Where cold, nutrient-dense water rises from the deep, sei whales often follow."},{"title":"Offshore Habitats Make Sei Whales Difficult to Study","slug":"offshore-habitats-make-sei-whales-difficult-to-study","url":"/categories/deep-sea-giants/sei-whale/offshore-habitats-make-sei-whales-difficult-to-study.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Unlike some whales that frequent coastlines, sei whales prefer the open ocean far from shore."},{"title":"Offspring Dependency Period Extends Several Months After Birth","slug":"offspring-dependency-period-extends-several-months-after-birth","url":"/categories/deep-sea-giants/sei-whale/offspring-dependency-period-extends-several-months-after-birth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A sei whale calf remains closely bonded to its mother long after its first swim."},{"title":"Photo-Identification Catalogs Track Individual Sei Whales Over Time","slug":"photo-identification-catalogs-track-individual-sei-whales-over-time","url":"/categories/deep-sea-giants/sei-whale/photo-identification-catalogs-track-individual-sei-whales-over-time.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single scar on a dorsal fin can help scientists recognize a whale years later."},{"title":"Pregnancy in Sei Whales Lasts Nearly a Full Year","slug":"pregnancy-in-sei-whales-lasts-nearly-a-full-year","url":"/categories/deep-sea-giants/sei-whale/pregnancy-in-sei-whales-lasts-nearly-a-full-year.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A sei whale mother carries her calf for about 11 to 12 months before giving birth."},{"title":"Quiet Surfacing Behavior Makes Sei Whales Hard to Detect","slug":"quiet-surfacing-behavior-makes-sei-whales-hard-to-detect","url":"/categories/deep-sea-giants/sei-whale/quiet-surfacing-behavior-makes-sei-whales-hard-to-detect.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sei whales surface with minimal splash, often appearing suddenly before slipping back below."},{"title":"Quiet, Elusive Behavior Delayed Scientific Understanding of Sei Whales","slug":"quiet-elusive-behavior-delayed-scientific-understanding-of-sei-whales","url":"/categories/deep-sea-giants/sei-whale/quiet-elusive-behavior-delayed-scientific-understanding-of-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"For decades, sei whales were among the least studied of the great whales."},{"title":"Reproductive Interval of Two to Three Years Slows Population Growth","slug":"reproductive-interval-of-two-to-three-years-slows-population-growth","url":"/categories/deep-sea-giants/sei-whale/reproductive-interval-of-two-to-three-years-slows-population-growth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A sei whale mother typically gives birth only once every few years."},{"title":"Rorqual Throat Pleats Expand to Accommodate Massive Water Intake","slug":"rorqual-throat-pleats-expand-to-accommodate-massive-water-intake","url":"/categories/deep-sea-giants/sei-whale/rorqual-throat-pleats-expand-to-accommodate-massive-water-intake.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Expandable throat grooves allow sei whales to engulf enormous volumes of seawater in seconds."},{"title":"Seasonal Migration Timing Is Closely Linked to Ocean Temperature Patterns","slug":"seasonal-migration-timing-is-closely-linked-to-ocean-temperature-patterns","url":"/categories/deep-sea-giants/sei-whale/seasonal-migration-timing-is-closely-linked-to-ocean-temperature-patterns.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sei whales move not just with the seasons, but with shifting bands of ocean temperature."},{"title":"Seasonal Plankton Blooms Determine Sei Whale Feeding Success","slug":"seasonal-plankton-blooms-determine-sei-whale-feeding-success","url":"/categories/deep-sea-giants/sei-whale/seasonal-plankton-blooms-determine-sei-whale-feeding-success.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The rise and fall of microscopic plankton can shape the fate of a 20-meter giant."},{"title":"Sei Whales Can Reach Highway Speeds That Rival Fast Ships","slug":"sei-whales-can-reach-highway-speeds-that-rival-fast-ships","url":"/categories/deep-sea-giants/sei-whale/sei-whales-can-reach-highway-speeds-that-rival-fast-ships.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Among the largest animals on Earth, the sei whale is also one of the fastest."},{"title":"Tall Columnar Blows Help Researchers Spot Sei Whales at Distance","slug":"tall-columnar-blows-help-researchers-spot-sei-whales-at-distance","url":"/categories/deep-sea-giants/sei-whale/tall-columnar-blows-help-researchers-spot-sei-whales-at-distance.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A vertical plume of mist rising several meters above the sea can signal a sei whale's presence."},{"title":"Thermoregulation Through Blubber Keeps Sei Whales Warm in Cold Seas","slug":"thermoregulation-through-blubber-keeps-sei-whales-warm-in-cold-seas","url":"/categories/deep-sea-giants/sei-whale/thermoregulation-through-blubber-keeps-sei-whales-warm-in-cold-seas.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A thick layer of blubber allows sei whales to thrive in chilly temperate and subpolar waters."},{"title":"Underwater Noise Pollution Interferes With Sei Whale Communication","slug":"underwater-noise-pollution-interferes-with-sei-whale-communication","url":"/categories/deep-sea-giants/sei-whale/underwater-noise-pollution-interferes-with-sei-whale-communication.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Modern shipping lanes create a wall of sound in habitats once dominated by whale calls."},{"title":"Upper Jaw Baleen Density Reflects Sei Whale Feeding Specialization","slug":"upper-jaw-baleen-density-reflects-sei-whale-feeding-specialization","url":"/categories/deep-sea-giants/sei-whale/upper-jaw-baleen-density-reflects-sei-whale-feeding-specialization.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The fine fringes of a sei whale's baleen reveal what it eats."},{"title":"Ventral Grooves Enable Efficient Lunge Feeding in Sei Whales","slug":"ventral-grooves-enable-efficient-lunge-feeding-in-sei-whales","url":"/categories/deep-sea-giants/sei-whale/ventral-grooves-enable-efficient-lunge-feeding-in-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Expandable throat pleats transform the sei whale's body into a temporary net."},{"title":"Vessel Speed Restrictions Can Reduce Fatal Collisions With Sei Whales","slug":"vessel-speed-restrictions-can-reduce-fatal-collisions-with-sei-whales","url":"/categories/deep-sea-giants/sei-whale/vessel-speed-restrictions-can-reduce-fatal-collisions-with-sei-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Slowing ships by just a few knots can dramatically lower the risk of whale mortality."},{"title":"Wide-Ranging Habitat Preference Reflects Sei Whale Ecological Flexibility","slug":"wide-ranging-habitat-preference-reflects-sei-whale-ecological-flexibility","url":"/categories/deep-sea-giants/sei-whale/wide-ranging-habitat-preference-reflects-sei-whale-ecological-flexibility.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"From the North Pacific to the Southern Ocean, sei whales adapt to diverse marine conditions."},{"title":"Wide-Ranging Ocean Surveys Continue to Refine Sei Whale Population Estimates","slug":"wide-ranging-ocean-surveys-continue-to-refine-sei-whale-population-estimates","url":"/categories/deep-sea-giants/sei-whale/wide-ranging-ocean-surveys-continue-to-refine-sei-whale-population-estimates.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Modern aerial and acoustic surveys are reshaping what scientists know about sei whale numbers."},{"title":"Xenobiotic Contaminants Accumulate in Sei Whale Tissues","slug":"xenobiotic-contaminants-accumulate-in-sei-whale-tissues","url":"/categories/deep-sea-giants/sei-whale/xenobiotic-contaminants-accumulate-in-sei-whale-tissues.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Industrial pollutants can travel thousands of kilometers before entering the body of a sei whale."},{"title":"Year-Round Offshore Presence Keeps Sei Whales Largely Out of Public View","slug":"year-round-offshore-presence-keeps-sei-whales-largely-out-of-public-view","url":"/categories/deep-sea-giants/sei-whale/year-round-offshore-presence-keeps-sei-whales-largely-out-of-public-view.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Even in regions where they are common, sei whales are rarely seen from shore."},{"title":"Zooplankton Specialization Makes Sei Whales Sensitive to Ocean Change","slug":"zooplankton-specialization-makes-sei-whales-sensitive-to-ocean-change","url":"/categories/deep-sea-giants/sei-whale/zooplankton-specialization-makes-sei-whales-sensitive-to-ocean-change.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A diet focused heavily on copepods ties the sei whale's fate to microscopic ocean life."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

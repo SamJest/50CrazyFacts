@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greenland Shark</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Greenland Shark</h1>
+  <p>Explore all facts in "Greenland Shark".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Greenland Shark</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Greenland Shark Lifespan Exceeds 400 Years in Arctic Waters","slug":"greenland-shark-lifespan-exceeds-400-years-in-arctic-waters","url":"/categories/deep-sea-giants/greenland-shark/greenland-shark-lifespan-exceeds-400-years-in-arctic-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This Arctic shark was already alive when Shakespeare was born."},{"title":"Greenland Shark Meat Is Toxic Due to High Urea Concentration","slug":"greenland-shark-meat-is-toxic-due-to-high-urea-concentration","url":"/categories/deep-sea-giants/greenland-shark/greenland-shark-meat-is-toxic-due-to-high-urea-concentration.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Eating this shark fresh can cause drunken delirium and paralysis."},{"title":"Greenland Shark Reproduction May Produce Dozens of Large Pups at Once","slug":"greenland-shark-reproduction-may-produce-dozens-of-large-pups-at-once","url":"/categories/deep-sea-giants/greenland-shark/greenland-shark-reproduction-may-produce-dozens-of-large-pups-at-once.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This century-old shark gives birth to litters larger than most mammals."},{"title":"Greenland Sharks Are Among the Largest Fish in the North Atlantic","slug":"greenland-sharks-are-among-the-largest-fish-in-the-north-atlantic","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-are-among-the-largest-fish-in-the-north-atlantic.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Few Atlantic fish rival this shark's massive bulk."},{"title":"Greenland Sharks Are Among the Largest Predators in the Arctic Food Web","slug":"greenland-sharks-are-among-the-largest-predators-in-the-arctic-food-web","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-are-among-the-largest-predators-in-the-arctic-food-web.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Few Arctic animals grow larger than this silent hunter."},{"title":"Greenland Sharks Are Among the Slowest Reproducing Large Marine Predators","slug":"greenland-sharks-are-among-the-slowest-reproducing-large-marine-predators","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-are-among-the-slowest-reproducing-large-marine-predators.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This apex predator replaces itself over centuries, not years."},{"title":"Greenland Sharks Are Classified as Near Threatened Due to Slow Recovery","slug":"greenland-sharks-are-classified-as-near-threatened-due-to-slow-recovery","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-are-classified-as-near-threatened-due-to-slow-recovery.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Removing one shark can erase centuries of life."},{"title":"Greenland Sharks Are the Longest-Lived Known Sharks on Earth","slug":"greenland-sharks-are-the-longest-lived-known-sharks-on-earth","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-are-the-longest-lived-known-sharks-on-earth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"No other shark outlives this Arctic giant."},{"title":"Greenland Sharks Are the Only Known Vertebrates With Confirmed 400-Year Lifespans","slug":"greenland-sharks-are-the-only-known-vertebrates-with-confirmed-400-year-lifespans","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-are-the-only-known-vertebrates-with-confirmed-400-year-lifespans.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"No other backbone-bearing animal lives this long."},{"title":"Greenland Sharks Can Grow Larger Than Most Great White Sharks","slug":"greenland-sharks-can-grow-larger-than-most-great-white-sharks","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-can-grow-larger-than-most-great-white-sharks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Some individuals rival the size of the ocean's most famous predator."},{"title":"Greenland Sharks Can Reach Ages Older Than the Printing Press","slug":"greenland-sharks-can-reach-ages-older-than-the-printing-press","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-can-reach-ages-older-than-the-printing-press.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Some living sharks were born before books were mass produced."},{"title":"Greenland Sharks Can Survive With Severely Damaged Vision","slug":"greenland-sharks-can-survive-with-severely-damaged-vision","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-can-survive-with-severely-damaged-vision.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This near-blind giant still hunts successfully in darkness."},{"title":"Greenland Sharks Can Take 150 Years to Reach Reproductive Size","slug":"greenland-sharks-can-take-150-years-to-reach-reproductive-size","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-can-take-150-years-to-reach-reproductive-size.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark may spend a century just growing up."},{"title":"Greenland Sharks Can Weigh Over 1,400 Kilograms","slug":"greenland-sharks-can-weigh-over-1-400-kilograms","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-can-weigh-over-1-400-kilograms.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This Arctic fish outweighs a small family car."},{"title":"Greenland Sharks Carry Parasitic Copepods That Damage Their Eyes","slug":"greenland-sharks-carry-parasitic-copepods-that-damage-their-eyes","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-carry-parasitic-copepods-that-damage-their-eyes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Many of these ancient sharks swim nearly blind in total darkness."},{"title":"Greenland Sharks Contain Extremely High Levels of Urea in Their Tissues","slug":"greenland-sharks-contain-extremely-high-levels-of-urea-in-their-tissues","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-contain-extremely-high-levels-of-urea-in-their-tissues.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark's flesh carries chemical levels toxic to humans."},{"title":"Greenland Sharks Dive Beyond 2,200 Meters Under Crushing Pressure","slug":"greenland-sharks-dive-beyond-2-200-meters-under-crushing-pressure","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-dive-beyond-2-200-meters-under-crushing-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark survives pressure that would crush a submarine hull."},{"title":"Greenland Sharks Exhibit the Slowest Documented Growth Rate Among Sharks","slug":"greenland-sharks-exhibit-the-slowest-documented-growth-rate-among-sharks","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-exhibit-the-slowest-documented-growth-rate-among-sharks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator adds less than a centimeter per year."},{"title":"Greenland Sharks Experience Pressure Equivalent to Hundreds of Atmospheres","slug":"greenland-sharks-experience-pressure-equivalent-to-hundreds-of-atmospheres","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-experience-pressure-equivalent-to-hundreds-of-atmospheres.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This vertebrate endures water weight that would crush steel tanks."},{"title":"Greenland Sharks Grow Less Than One Centimeter Per Year","slug":"greenland-sharks-grow-less-than-one-centimeter-per-year","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-grow-less-than-one-centimeter-per-year.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This six-meter predator grows slower than your fingernails."},{"title":"Greenland Sharks Have Been Found in Both Arctic and Subarctic Regions","slug":"greenland-sharks-have-been-found-in-both-arctic-and-subarctic-regions","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-been-found-in-both-arctic-and-subarctic-regions.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This polar giant roams across international ocean boundaries."},{"title":"Greenland Sharks Have Been Found With Entire Reindeer in Their Stomachs","slug":"greenland-sharks-have-been-found-with-entire-reindeer-in-their-stomachs","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-been-found-with-entire-reindeer-in-their-stomachs.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One of these sharks swallowed an Arctic deer whole."},{"title":"Greenland Sharks Have Been Recorded Under Arctic Sea Ice for Months","slug":"greenland-sharks-have-been-recorded-under-arctic-sea-ice-for-months","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-been-recorded-under-arctic-sea-ice-for-months.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant hunts beneath total winter darkness for half the year."},{"title":"Greenland Sharks Have Cartilaginous Skeletons That Resist Deep Sea Pressure","slug":"greenland-sharks-have-cartilaginous-skeletons-that-resist-deep-sea-pressure","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-cartilaginous-skeletons-that-resist-deep-sea-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark's skeleton bends where bone would shatter."},{"title":"Greenland Sharks Have Extremely Low Metabolic Rates","slug":"greenland-sharks-have-extremely-low-metabolic-rates","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-extremely-low-metabolic-rates.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark burns energy slower than almost any vertebrate its size."},{"title":"Greenland Sharks Have One of the Slowest Recorded Swimming Speeds of Any Shark","slug":"greenland-sharks-have-one-of-the-slowest-recorded-swimming-speeds-of-any-shark","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-one-of-the-slowest-recorded-swimming-speeds-of-any-shark.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This apex predator moves slower than a drifting kayak."},{"title":"Greenland Sharks Have Skin Covered in Tiny Tooth-Like Denticles","slug":"greenland-sharks-have-skin-covered-in-tiny-tooth-like-denticles","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-skin-covered-in-tiny-tooth-like-denticles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark's skin feels like sandpaper under your hand."},{"title":"Greenland Sharks Have the Coldest Known Habitat of Any Large Predatory Shark","slug":"greenland-sharks-have-the-coldest-known-habitat-of-any-large-predatory-shark","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-the-coldest-known-habitat-of-any-large-predatory-shark.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This apex predator thrives below the freezing point of fresh water."},{"title":"Greenland Sharks Have the Slowest Swimming Speed Ever Recorded for a Shark","slug":"greenland-sharks-have-the-slowest-swimming-speed-ever-recorded-for-a-shark","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-have-the-slowest-swimming-speed-ever-recorded-for-a-shark.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This apex predator moves slower than a strolling human."},{"title":"Greenland Sharks Inhabit Waters From Surface Ice to Abyssal Depths","slug":"greenland-sharks-inhabit-waters-from-surface-ice-to-abyssal-depths","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-inhabit-waters-from-surface-ice-to-abyssal-depths.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark patrols from frozen surface to crushing abyss."},{"title":"Greenland Sharks Lack the Speed of Typical Apex Predators Yet Eat Seals","slug":"greenland-sharks-lack-the-speed-of-typical-apex-predators-yet-eat-seals","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-lack-the-speed-of-typical-apex-predators-yet-eat-seals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This slow-moving shark somehow captures fast Arctic seals."},{"title":"Greenland Sharks Likely Have Gestation Periods Lasting Several Years","slug":"greenland-sharks-likely-have-gestation-periods-lasting-several-years","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-likely-have-gestation-periods-lasting-several-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark may carry its young longer than an elephant."},{"title":"Greenland Sharks Live in Near-Freezing Waters Below 2°C","slug":"greenland-sharks-live-in-near-freezing-waters-below-2-c","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-live-in-near-freezing-waters-below-2-c.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator hunts in water colder than a household refrigerator."},{"title":"Greenland Sharks Maintain Activity in Perpetual Deep Sea Darkness","slug":"greenland-sharks-maintain-activity-in-perpetual-deep-sea-darkness","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-maintain-activity-in-perpetual-deep-sea-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator hunts where sunlight never reaches."},{"title":"Greenland Sharks Mature Later Than Any Other Known Vertebrate","slug":"greenland-sharks-mature-later-than-any-other-known-vertebrate","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-mature-later-than-any-other-known-vertebrate.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark does not reach adulthood for over a century."},{"title":"Greenland Sharks May Already Be Older Than Modern Democracies","slug":"greenland-sharks-may-already-be-older-than-modern-democracies","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-may-already-be-older-than-modern-democracies.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single shark can outlast entire political systems."},{"title":"Greenland Sharks May Consume Carrion That Sinks to Abyssal Plains","slug":"greenland-sharks-may-consume-carrion-that-sinks-to-abyssal-plains","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-may-consume-carrion-that-sinks-to-abyssal-plains.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark recycles entire carcasses from the surface world."},{"title":"Greenland Sharks May Live Long Enough to Witness Arctic Climate Transformation","slug":"greenland-sharks-may-live-long-enough-to-witness-arctic-climate-transformation","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-may-live-long-enough-to-witness-arctic-climate-transformation.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One shark can experience centuries of climate change firsthand."},{"title":"Greenland Sharks May Outlive Entire Human Nations","slug":"greenland-sharks-may-outlive-entire-human-nations","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-may-outlive-entire-human-nations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One shark can survive longer than a modern country has existed."},{"title":"Greenland Sharks Often Appear Scarred From Deep Sea Encounters","slug":"greenland-sharks-often-appear-scarred-from-deep-sea-encounters","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-often-appear-scarred-from-deep-sea-encounters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Centuries of life leave this shark covered in battle scars."},{"title":"Greenland Sharks Possess Anti-Freeze Biochemistry in Their Blood","slug":"greenland-sharks-possess-anti-freeze-biochemistry-in-their-blood","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-possess-anti-freeze-biochemistry-in-their-blood.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator circulates blood that resists freezing solid."},{"title":"Greenland Sharks Possess One of the Highest Urea Concentrations Among Vertebrates","slug":"greenland-sharks-possess-one-of-the-highest-urea-concentrations-among-vertebrates","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-possess-one-of-the-highest-urea-concentrations-among-vertebrates.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark carries internal chemistry that would poison most animals."},{"title":"Greenland Sharks Reach Lengths Over 7 Meters in Arctic Seas","slug":"greenland-sharks-reach-lengths-over-7-meters-in-arctic-seas","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-reach-lengths-over-7-meters-in-arctic-seas.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This Arctic shark grows longer than a London bus."},{"title":"Greenland Sharks Represent One of the Oldest Continuously Living Vertebrate Lineages Today","slug":"greenland-sharks-represent-one-of-the-oldest-continuously-living-vertebrate-lineages-today","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-represent-one-of-the-oldest-continuously-living-vertebrate-lineages-today.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Some of these sharks were alive before modern science existed."},{"title":"Greenland Sharks Scavenge Polar Bear and Reindeer Carcasses","slug":"greenland-sharks-scavenge-polar-bear-and-reindeer-carcasses","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-scavenge-polar-bear-and-reindeer-carcasses.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep sea shark has eaten polar bears."},{"title":"Greenland Sharks Store Massive Oil-Rich Livers for Buoyancy Control","slug":"greenland-sharks-store-massive-oil-rich-livers-for-buoyancy-control","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-store-massive-oil-rich-livers-for-buoyancy-control.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark floats using a liver the size of a small engine."},{"title":"Greenland Sharks Tolerate Oxygen-Poor Deep Waters","slug":"greenland-sharks-tolerate-oxygen-poor-deep-waters","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-tolerate-oxygen-poor-deep-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant survives where oxygen levels drop dangerously low."},{"title":"Greenland Sharks Were Accidentally Caught in Deep Sea Trawl Fisheries","slug":"greenland-sharks-were-accidentally-caught-in-deep-sea-trawl-fisheries","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-were-accidentally-caught-in-deep-sea-trawl-fisheries.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Centuries-old sharks were hauled up as bycatch."},{"title":"Greenland Sharks Were Exploited Before Their Age Was Understood","slug":"greenland-sharks-were-exploited-before-their-age-was-understood","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-were-exploited-before-their-age-was-understood.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fisheries removed animals older than entire countries."},{"title":"Greenland Sharks Were Once Harvested for Lamp Oil in Massive Numbers","slug":"greenland-sharks-were-once-harvested-for-lamp-oil-in-massive-numbers","url":"/categories/deep-sea-giants/greenland-shark/greenland-sharks-were-once-harvested-for-lamp-oil-in-massive-numbers.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Thousands of centuries-old sharks were boiled for street lighting."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

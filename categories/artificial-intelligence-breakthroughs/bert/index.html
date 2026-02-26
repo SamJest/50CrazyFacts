@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bert</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Bert</h1>
+  <p>Explore all facts in "Bert".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Bert</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"BERT Achieved State-of-the-Art Results on Multiple NLP Benchmarks","slug":"bert-achieved-state-of-the-art-results-on-multiple-nlp-benchmarks","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-achieved-state-of-the-art-results-on-multiple-nlp-benchmarks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT set new performance records on SQuAD, GLUE, and other NLP evaluation datasets."},{"title":"BERT Can Be Combined With Retrieval Systems for Enhanced QA","slug":"bert-can-be-combined-with-retrieval-systems-for-enhanced-qa","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-be-combined-with-retrieval-systems-for-enhanced-qa.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model works with search or retrieval systems to provide precise answers from large document collections."},{"title":"BERT Can Be Fine-Tuned for Domain-Specific Tasks","slug":"bert-can-be-fine-tuned-for-domain-specific-tasks","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-be-fine-tuned-for-domain-specific-tasks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can adapt to specialized domains like biomedical or legal text with limited labeled data."},{"title":"BERT Can Detect Duplicate or Paraphrased Questions","slug":"bert-can-detect-duplicate-or-paraphrased-questions","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-detect-duplicate-or-paraphrased-questions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model identifies questions with the same meaning despite different wording."},{"title":"BERT Can Detect Textual Contradictions","slug":"bert-can-detect-textual-contradictions","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-detect-textual-contradictions.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model identifies when one sentence contradicts another in meaning."},{"title":"BERT Can Enhance Chatbot Dialogue Context Awareness","slug":"bert-can-enhance-chatbot-dialogue-context-awareness","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-enhance-chatbot-dialogue-context-awareness.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model helps chatbots maintain topic coherence across multiple conversational turns."},{"title":"BERT Can Enhance Chatbots with Intent Recognition","slug":"bert-can-enhance-chatbots-with-intent-recognition","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-enhance-chatbots-with-intent-recognition.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model classifies user inputs into intents for better conversational flow."},{"title":"BERT Can Extract Information From Unstructured Text","slug":"bert-can-extract-information-from-unstructured-text","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-extract-information-from-unstructured-text.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model identifies entities, relationships, and key facts from raw text."},{"title":"BERT Can Handle Multilingual Text Understanding","slug":"bert-can-handle-multilingual-text-understanding","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-handle-multilingual-text-understanding.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can process and understand text in multiple languages effectively."},{"title":"BERT Can Improve Content Recommendation Systems","slug":"bert-can-improve-content-recommendation-systems","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-improve-content-recommendation-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model identifies semantic similarity between user queries and content for recommendations."},{"title":"BERT Can Improve Text Generation Coherence","slug":"bert-can-improve-text-generation-coherence","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-improve-text-generation-coherence.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model ensures that generated text maintains logical flow and context relevance."},{"title":"BERT Can Perform Paraphrase Detection","slug":"bert-can-perform-paraphrase-detection","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-perform-paraphrase-detection.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model identifies when two sentences convey the same meaning despite different wording."},{"title":"BERT Can Perform Question Answering Over Documents","slug":"bert-can-perform-question-answering-over-documents","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-perform-question-answering-over-documents.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model extracts precise answers from passages of text based on user queries."},{"title":"BERT Can Perform Sentiment Analysis Effectively","slug":"bert-can-perform-sentiment-analysis-effectively","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-perform-sentiment-analysis-effectively.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model determines positive, negative, or neutral sentiment in sentences and reviews."},{"title":"BERT Can Perform Text Classification Across Multiple Categories","slug":"bert-can-perform-text-classification-across-multiple-categories","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-can-perform-text-classification-across-multiple-categories.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can assign categories to text, such as topics, genres, or intents."},{"title":"BERT Captures Contextual Word Meaning for Polysemy","slug":"bert-captures-contextual-word-meaning-for-polysemy","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-captures-contextual-word-meaning-for-polysemy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model distinguishes multiple meanings of a word based on surrounding context."},{"title":"BERT Enabled State-of-the-Art Natural Language Inference","slug":"bert-enabled-state-of-the-art-natural-language-inference","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enabled-state-of-the-art-natural-language-inference.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT improved models’ ability to determine entailment, contradiction, or neutrality between sentences."},{"title":"BERT Enables Automated Headline Generation","slug":"bert-enables-automated-headline-generation","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-automated-headline-generation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can create concise, contextually relevant headlines from article content."},{"title":"BERT Enables Automatic Text Summarization","slug":"bert-enables-automatic-text-summarization","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-automatic-text-summarization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model condenses long documents into concise, coherent summaries."},{"title":"BERT Enables Context-Aware Text Summarization","slug":"bert-enables-context-aware-text-summarization","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-context-aware-text-summarization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model condenses long passages into concise summaries while preserving meaning."},{"title":"BERT Enables Entity Linking Across Large Text Corpora","slug":"bert-enables-entity-linking-across-large-text-corpora","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-entity-linking-across-large-text-corpora.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can connect mentions in text to corresponding entities in knowledge bases."},{"title":"BERT Enables Passage Ranking for Information Retrieval","slug":"bert-enables-passage-ranking-for-information-retrieval","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-passage-ranking-for-information-retrieval.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model ranks relevant passages based on semantic similarity to a query."},{"title":"BERT Enables Semantic Role Labeling in Sentences","slug":"bert-enables-semantic-role-labeling-in-sentences","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-semantic-role-labeling-in-sentences.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can identify predicate-argument structures in text to understand 'who did what to whom.'"},{"title":"BERT Enables Semantic Search by Understanding Query Context","slug":"bert-enables-semantic-search-by-understanding-query-context","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-semantic-search-by-understanding-query-context.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model improves search results by interpreting the meaning behind user queries."},{"title":"BERT Enables Sentence Pair Classification","slug":"bert-enables-sentence-pair-classification","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-enables-sentence-pair-classification.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model classifies relationships between two sentences, such as entailment or contradiction."},{"title":"BERT Facilitates Textual Entailment in NLP Applications","slug":"bert-facilitates-textual-entailment-in-nlp-applications","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-facilitates-textual-entailment-in-nlp-applications.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model determines if a hypothesis logically follows from a premise, contradicts it, or is neutral."},{"title":"BERT Facilitates Textual Entailment Tasks","slug":"bert-facilitates-textual-entailment-tasks","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-facilitates-textual-entailment-tasks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model determines if one sentence logically follows from another."},{"title":"BERT Fine-Tuning Enables Task-Specific NLP Performance","slug":"bert-fine-tuning-enables-task-specific-nlp-performance","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-fine-tuning-enables-task-specific-nlp-performance.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT can be adapted to specific NLP tasks using relatively small labeled datasets."},{"title":"BERT Handles Ambiguous Language Using Context","slug":"bert-handles-ambiguous-language-using-context","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-handles-ambiguous-language-using-context.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model disambiguates words with multiple meanings based on surrounding text."},{"title":"BERT Handles Long-Range Dependencies in Text","slug":"bert-handles-long-range-dependencies-in-text","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-handles-long-range-dependencies-in-text.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can understand relationships between words separated by long distances in a sentence or document."},{"title":"BERT Improved Question Answering Systems Significantly","slug":"bert-improved-question-answering-systems-significantly","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-improved-question-answering-systems-significantly.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model set new benchmarks in tasks like SQuAD for machine reading comprehension."},{"title":"BERT Improves Conversational AI Coherence","slug":"bert-improves-conversational-ai-coherence","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-improves-conversational-ai-coherence.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model enables dialogue systems to maintain context and respond appropriately."},{"title":"BERT Improves Machine Reading Comprehension","slug":"bert-improves-machine-reading-comprehension","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-improves-machine-reading-comprehension.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can extract answers from text passages accurately and efficiently."},{"title":"BERT Improves Named Entity Disambiguation","slug":"bert-improves-named-entity-disambiguation","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-improves-named-entity-disambiguation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can determine the correct entity among multiple candidates in context."},{"title":"BERT Improves Natural Language Inference Accuracy","slug":"bert-improves-natural-language-inference-accuracy","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-improves-natural-language-inference-accuracy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model determines entailment, contradiction, or neutrality between sentence pairs."},{"title":"BERT Improves Sentiment Analysis in Customer Feedback","slug":"bert-improves-sentiment-analysis-in-customer-feedback","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-improves-sentiment-analysis-in-customer-feedback.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can detect nuanced sentiment in reviews, messages, and social media text."},{"title":"BERT Introduced Bidirectional Contextual Understanding in NLP","slug":"bert-introduced-bidirectional-contextual-understanding-in-nlp","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-introduced-bidirectional-contextual-understanding-in-nlp.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT reads text in both directions to understand the full context of words in a sentence."},{"title":"BERT Powers Contextual Question Answering Systems","slug":"bert-powers-contextual-question-answering-systems","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-powers-contextual-question-answering-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model retrieves and answers questions using surrounding context effectively."},{"title":"BERT Pretraining Involves Masked Language Modeling","slug":"bert-pretraining-involves-masked-language-modeling","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-pretraining-involves-masked-language-modeling.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT learns language representations by predicting missing words in sentences during training."},{"title":"BERT Revolutionized Search Engine Query Understanding","slug":"bert-revolutionized-search-engine-query-understanding","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-revolutionized-search-engine-query-understanding.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT improves search relevance by understanding the context of search queries."},{"title":"BERT Supports Contextual Question Answering in Virtual Assistants","slug":"bert-supports-contextual-question-answering-in-virtual-assistants","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-contextual-question-answering-in-virtual-assistants.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model helps AI assistants answer questions using document or conversation context."},{"title":"BERT Supports Coreference Resolution in NLP","slug":"bert-supports-coreference-resolution-in-nlp","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-coreference-resolution-in-nlp.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can link pronouns to the entities they refer to in text."},{"title":"BERT Supports Coreference Resolution in Text","slug":"bert-supports-coreference-resolution-in-text","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-coreference-resolution-in-text.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can link pronouns to their corresponding entities within documents."},{"title":"BERT Supports Document-Level Classification","slug":"bert-supports-document-level-classification","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-document-level-classification.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can classify entire documents into categories based on content and context."},{"title":"BERT Supports Fine-Grained Emotion Detection","slug":"bert-supports-fine-grained-emotion-detection","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-fine-grained-emotion-detection.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can identify nuanced emotions like joy, anger, or surprise in text."},{"title":"BERT Supports Intent Detection in Conversational AI","slug":"bert-supports-intent-detection-in-conversational-ai","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-intent-detection-in-conversational-ai.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model identifies user intent in queries for chatbots and virtual assistants."},{"title":"BERT Supports Knowledge Graph Construction","slug":"bert-supports-knowledge-graph-construction","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-knowledge-graph-construction.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model extracts entities and relationships to populate structured knowledge bases."},{"title":"BERT Supports Multi-Label Text Classification","slug":"bert-supports-multi-label-text-classification","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-multi-label-text-classification.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can assign multiple categories or labels to a single text input."},{"title":"BERT Supports Named Entity Recognition Across Domains","slug":"bert-supports-named-entity-recognition-across-domains","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-named-entity-recognition-across-domains.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can identify and classify entities like names, organizations, and locations in text."},{"title":"BERT Supports Next Sentence Prediction for Text Understanding","slug":"bert-supports-next-sentence-prediction-for-text-understanding","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-next-sentence-prediction-for-text-understanding.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT learns relationships between sentences using a pretraining task called next sentence prediction (NSP)."},{"title":"BERT Supports Question Paraphrasing for QA Systems","slug":"bert-supports-question-paraphrasing-for-qa-systems","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-question-paraphrasing-for-qa-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model can rephrase questions while preserving their meaning for improved retrieval and understanding."},{"title":"BERT Supports Semantic Search in Enterprise Applications","slug":"bert-supports-semantic-search-in-enterprise-applications","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-semantic-search-in-enterprise-applications.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model improves document retrieval by understanding query and content meaning."},{"title":"BERT Supports Textual Similarity Measurement","slug":"bert-supports-textual-similarity-measurement","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-supports-textual-similarity-measurement.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The model evaluates semantic similarity between sentences or documents."},{"title":"BERT Uses Attention Mechanisms to Focus on Relevant Words","slug":"bert-uses-attention-mechanisms-to-focus-on-relevant-words","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-uses-attention-mechanisms-to-focus-on-relevant-words.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Self-attention allows the model to weigh important words in a sentence for accurate understanding."},{"title":"BERT Uses Transformer Encoders to Capture Complex Language Patterns","slug":"bert-uses-transformer-encoders-to-capture-complex-language-patterns","url":"/categories/artificial-intelligence-breakthroughs/bert/bert-uses-transformer-encoders-to-capture-complex-language-patterns.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT relies on transformers to model relationships between words at multiple layers of abstraction."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

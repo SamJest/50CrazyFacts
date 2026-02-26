@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blue Whale</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Blue Whale</h1>
+  <p>Explore all facts in "Blue Whale".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Blue Whale</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Blue Whale 1904 Steamship Collisions Triggered Modern Maritime Speed Limits","slug":"blue-whale-1904-steamship-collisions-triggered-modern-maritime-speed-limits","url":"/categories/deep-sea-giants/blue-whale/blue-whale-1904-steamship-collisions-triggered-modern-maritime-speed-limits.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1904, multiple North Atlantic steamships struck blue whales so frequently that insurance underwriters began classifying them as navigational hazards."},{"title":"Kelp Forest Productivity Indirectly Supports Blue Whale Food Webs","slug":"kelp-forest-productivity-indirectly-supports-blue-whale-food-webs","url":"/categories/deep-sea-giants/blue-whale/kelp-forest-productivity-indirectly-supports-blue-whale-food-webs.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Coastal kelp forest productivity contributes nutrients that ultimately support offshore krill populations consumed by blue whales."},{"title":"Kerguelen Plateau Supports Southern Ocean Blue Whale Feeding Grounds","slug":"kerguelen-plateau-supports-southern-ocean-blue-whale-feeding-grounds","url":"/categories/deep-sea-giants/blue-whale/kerguelen-plateau-supports-southern-ocean-blue-whale-feeding-grounds.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The remote Kerguelen Plateau in the Southern Ocean supports dense krill swarms that attract feeding blue whales."},{"title":"Kermadec Trench Acoustic Recordings Captured Blue Whale Calls at Extreme Depth","slug":"kermadec-trench-acoustic-recordings-captured-blue-whale-calls-at-extreme-depth","url":"/categories/deep-sea-giants/blue-whale/kermadec-trench-acoustic-recordings-captured-blue-whale-calls-at-extreme-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Acoustic instruments deployed near the Kermadec Trench have recorded blue whale calls traveling through some of the deepest waters on Earth."},{"title":"Killer Whale Attacks Recorded in 2019 Targeted Blue Whale Calves in Indian Ocean","slug":"killer-whale-attacks-recorded-in-2019-targeted-blue-whale-calves-in-indian-ocean","url":"/categories/deep-sea-giants/blue-whale/killer-whale-attacks-recorded-in-2019-targeted-blue-whale-calves-in-indian-ocean.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2019, researchers documented coordinated killer whale attacks on blue whale calves in the Indian Ocean."},{"title":"Killer Whale Predation Documented Against Blue Whale Calves","slug":"killer-whale-predation-documented-against-blue-whale-calves","url":"/categories/deep-sea-giants/blue-whale/killer-whale-predation-documented-against-blue-whale-calves.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientific observations confirm that killer whales have attacked and killed blue whale calves despite the species’ immense size."},{"title":"Kinematic Tagging Devices Measure Blue Whale Dive Speeds and Acceleration","slug":"kinematic-tagging-devices-measure-blue-whale-dive-speeds-and-acceleration","url":"/categories/deep-sea-giants/blue-whale/kinematic-tagging-devices-measure-blue-whale-dive-speeds-and-acceleration.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"High-resolution kinematic tags reveal that blue whales adjust dive speed and body angle to maximize krill intake efficiency."},{"title":"Knot Speed Threshold of 10 Knots Reduces Blue Whale Collision Fatality Risk","slug":"knot-speed-threshold-of-10-knots-reduces-blue-whale-collision-fatality-risk","url":"/categories/deep-sea-giants/blue-whale/knot-speed-threshold-of-10-knots-reduces-blue-whale-collision-fatality-risk.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientific modeling shows that keeping vessel speeds at or below 10 knots significantly reduces the fatality risk for blue whales during collisions."},{"title":"Knot-to-Meter Conversion Errors Once Complicated Early Whale Catch Reporting","slug":"knot-to-meter-conversion-errors-once-complicated-early-whale-catch-reporting","url":"/categories/deep-sea-giants/blue-whale/knot-to-meter-conversion-errors-once-complicated-early-whale-catch-reporting.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Early 20th century whaling records sometimes contained measurement inconsistencies, including errors in length conversions between imperial and metric systems."},{"title":"Korea 1978 Illegal Whaling Case Exposed Continued Blue Whale Harvest After Ban","slug":"korea-1978-illegal-whaling-case-exposed-continued-blue-whale-harvest-after-ban","url":"/categories/deep-sea-giants/blue-whale/korea-1978-illegal-whaling-case-exposed-continued-blue-whale-harvest-after-ban.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"More than a decade after the global ban, illegal whaling investigations in the late 1970s revealed continued exploitation of protected species, including blue whales."},{"title":"Krakatoa 1883 Tsunami Records Included Reports of Displaced Blue Whales","slug":"krakatoa-1883-tsunami-records-included-reports-of-displaced-blue-whales","url":"/categories/deep-sea-giants/blue-whale/krakatoa-1883-tsunami-records-included-reports-of-displaced-blue-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Following the 1883 Krakatoa eruption and tsunami, maritime reports described large whales appearing in unusual coastal locations."},{"title":"Krill Harvest Expansion Threatens Blue Whale Recovery in the Southern Ocean","slug":"krill-harvest-expansion-threatens-blue-whale-recovery-in-the-southern-ocean","url":"/categories/deep-sea-giants/blue-whale/krill-harvest-expansion-threatens-blue-whale-recovery-in-the-southern-ocean.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Industrial krill fishing in the Southern Ocean now targets the primary food source of the world’s largest animal."},{"title":"Kuroshio Current Influences Blue Whale Migration in Western Pacific","slug":"kuroshio-current-influences-blue-whale-migration-in-western-pacific","url":"/categories/deep-sea-giants/blue-whale/kuroshio-current-influences-blue-whale-migration-in-western-pacific.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The powerful Kuroshio Current shapes temperature gradients that influence blue whale migration routes in the western Pacific."},{"title":"Quantified 1966 International Whaling Commission Ban Marked Blue Whale Turning Point","slug":"quantified-1966-international-whaling-commission-ban-marked-blue-whale-turning-point","url":"/categories/deep-sea-giants/blue-whale/quantified-1966-international-whaling-commission-ban-marked-blue-whale-turning-point.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The International Whaling Commission’s 1966 decision to fully protect blue whales came after global populations had collapsed to a fraction of their original size."},{"title":"Quantitative Photo-Identification Methods Track Individual Blue Whales Over Decades","slug":"quantitative-photo-identification-methods-track-individual-blue-whales-over-decades","url":"/categories/deep-sea-giants/blue-whale/quantitative-photo-identification-methods-track-individual-blue-whales-over-decades.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Long-term photo-identification catalogs allow researchers to recognize individual blue whales decades after first documentation."},{"title":"Quarantine Protocols Govern Blue Whale Tissue Transport for International Research","slug":"quarantine-protocols-govern-blue-whale-tissue-transport-for-international-research","url":"/categories/deep-sea-giants/blue-whale/quarantine-protocols-govern-blue-whale-tissue-transport-for-international-research.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Strict quarantine and permitting protocols regulate the international transport of blue whale tissue samples for scientific study."},{"title":"Quaternary Ice Age Shifts Shaped Blue Whale Evolutionary Expansion","slug":"quaternary-ice-age-shifts-shaped-blue-whale-evolutionary-expansion","url":"/categories/deep-sea-giants/blue-whale/quaternary-ice-age-shifts-shaped-blue-whale-evolutionary-expansion.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Repeated glacial cycles during the Quaternary period reshaped ocean productivity and influenced the evolutionary expansion of blue whales."},{"title":"Queen Charlotte Sound 2021 Data Revealed Blue Whale Feeding Hotspot Off New Zealand","slug":"queen-charlotte-sound-2021-data-revealed-blue-whale-feeding-hotspot-off-new-zealand","url":"/categories/deep-sea-giants/blue-whale/queen-charlotte-sound-2021-data-revealed-blue-whale-feeding-hotspot-off-new-zealand.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Satellite tracking in 2021 confirmed that waters near Queen Charlotte Sound host one of the South Pacific’s most persistent blue whale feeding zones."},{"title":"Queensland 2022 Aerial Surveys Confirm Blue Whale Presence Along Eastern Australia","slug":"queensland-2022-aerial-surveys-confirm-blue-whale-presence-along-eastern-australia","url":"/categories/deep-sea-giants/blue-whale/queensland-2022-aerial-surveys-confirm-blue-whale-presence-along-eastern-australia.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Aerial surveys conducted in 2022 confirmed endangered blue whales moving along Queensland’s eastern coastline."},{"title":"Quotas and Factory Ships Drove 1931 Blue Whale Slaughter to Record Levels","slug":"quotas-and-factory-ships-drove-1931-blue-whale-slaughter-to-record-levels","url":"/categories/deep-sea-giants/blue-whale/quotas-and-factory-ships-drove-1931-blue-whale-slaughter-to-record-levels.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1931 alone, more than 29,000 blue whales were killed in the Antarctic as factory ships industrialized the hunt."},{"title":"U.N. Law of the Sea Treaty Shapes Blue Whale Protection in International Waters","slug":"u-n-law-of-the-sea-treaty-shapes-blue-whale-protection-in-international-waters","url":"/categories/deep-sea-giants/blue-whale/u-n-law-of-the-sea-treaty-shapes-blue-whale-protection-in-international-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The United Nations Convention on the Law of the Sea provides the legal framework governing blue whale protection beyond national jurisdictions."},{"title":"U.S. 1994 High Seas Driftnet Ban Reduced Entanglement Risk for Blue Whales","slug":"u-s-1994-high-seas-driftnet-ban-reduced-entanglement-risk-for-blue-whales","url":"/categories/deep-sea-giants/blue-whale/u-s-1994-high-seas-driftnet-ban-reduced-entanglement-risk-for-blue-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1994, a global high seas driftnet ban took effect, reducing large-scale entanglement threats to migratory species including blue whales."},{"title":"U.S. 2007 Critical Habitat Designation Included Blue Whale Foraging Areas","slug":"u-s-2007-critical-habitat-designation-included-blue-whale-foraging-areas","url":"/categories/deep-sea-giants/blue-whale/u-s-2007-critical-habitat-designation-included-blue-whale-foraging-areas.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2007, U.S. regulators designated critical habitat zones that included important blue whale foraging regions."},{"title":"U.S. Endangered Species Act Listing Strengthened Blue Whale Legal Protections","slug":"u-s-endangered-species-act-listing-strengthened-blue-whale-legal-protections","url":"/categories/deep-sea-giants/blue-whale/u-s-endangered-species-act-listing-strengthened-blue-whale-legal-protections.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The United States listed blue whales under the Endangered Species Act, triggering mandatory federal protection measures."},{"title":"U.S. West Coast 2015–2016 Marine Heatwave Altered Blue Whale Distribution","slug":"u-s-west-coast-2015-2016-marine-heatwave-altered-blue-whale-distribution","url":"/categories/deep-sea-giants/blue-whale/u-s-west-coast-2015-2016-marine-heatwave-altered-blue-whale-distribution.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The 2015–2016 Pacific marine heatwave disrupted krill availability and shifted blue whale distribution along the U.S. West Coast."},{"title":"Underwater Noise Pollution Reduced Blue Whale Communication Range by 90 Percent","slug":"underwater-noise-pollution-reduced-blue-whale-communication-range-by-90-percent","url":"/categories/deep-sea-giants/blue-whale/underwater-noise-pollution-reduced-blue-whale-communication-range-by-90-percent.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Modern shipping noise has reduced blue whale communication range in some regions by up to 90 percent compared to pre-industrial oceans."},{"title":"United Kingdom 1937 Whaling Regulations Failed to Halt Blue Whale Decline","slug":"united-kingdom-1937-whaling-regulations-failed-to-halt-blue-whale-decline","url":"/categories/deep-sea-giants/blue-whale/united-kingdom-1937-whaling-regulations-failed-to-halt-blue-whale-decline.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Despite 1937 regulatory attempts, blue whale catches continued at unsustainable levels before full international protection."},{"title":"United States 1972 Marine Mammal Protection Act Shielded Blue Whales from Harassment","slug":"united-states-1972-marine-mammal-protection-act-shielded-blue-whales-from-harassment","url":"/categories/deep-sea-giants/blue-whale/united-states-1972-marine-mammal-protection-act-shielded-blue-whales-from-harassment.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The 1972 Marine Mammal Protection Act made it illegal in the United States to harass, hunt, capture, or kill blue whales."},{"title":"United States 2018 Vessel Speed Rule Protected Endangered Blue Whales","slug":"united-states-2018-vessel-speed-rule-protected-endangered-blue-whales","url":"/categories/deep-sea-giants/blue-whale/united-states-2018-vessel-speed-rule-protected-endangered-blue-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2018 United States federal rule imposed mandatory vessel speed limits to reduce lethal collisions with endangered large whales."},{"title":"X-Ray Imaging of Blue Whale Vertebrae Reveals Structural Adaptations for Buoyancy","slug":"x-ray-imaging-of-blue-whale-vertebrae-reveals-structural-adaptations-for-buoyancy","url":"/categories/deep-sea-giants/blue-whale/x-ray-imaging-of-blue-whale-vertebrae-reveals-structural-adaptations-for-buoyancy.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"High-resolution imaging of blue whale vertebrae shows internal structures adapted to support immense mass while maintaining buoyancy."},{"title":"XBT Ocean Temperature Records Help Scientists Predict Blue Whale Feeding Zones","slug":"xbt-ocean-temperature-records-help-scientists-predict-blue-whale-feeding-zones","url":"/categories/deep-sea-giants/blue-whale/xbt-ocean-temperature-records-help-scientists-predict-blue-whale-feeding-zones.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Expendable Bathythermograph temperature profiles now help researchers predict where blue whales are most likely to find krill."},{"title":"Xenobiotic Pollutants Detected in Blue Whale Blubber Samples","slug":"xenobiotic-pollutants-detected-in-blue-whale-blubber-samples","url":"/categories/deep-sea-giants/blue-whale/xenobiotic-pollutants-detected-in-blue-whale-blubber-samples.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Laboratory analysis has detected persistent industrial pollutants embedded in blue whale blubber thousands of kilometers from their source."},{"title":"Xenophon Expedition Archives Help Reconstruct Early Blue Whale Distribution","slug":"xenophon-expedition-archives-help-reconstruct-early-blue-whale-distribution","url":"/categories/deep-sea-giants/blue-whale/xenophon-expedition-archives-help-reconstruct-early-blue-whale-distribution.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Archival naval expedition logs from the early 20th century now help scientists reconstruct historical blue whale distribution patterns."},{"title":"Xiphias gladius Fisheries Share Oceanic Fronts with Blue Whale Feeding Zones","slug":"xiphias-gladius-fisheries-share-oceanic-fronts-with-blue-whale-feeding-zones","url":"/categories/deep-sea-giants/blue-whale/xiphias-gladius-fisheries-share-oceanic-fronts-with-blue-whale-feeding-zones.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Swordfish fisheries targeting Xiphias gladius often operate along oceanic fronts that also attract blue whales."},{"title":"Yankee Whaling Logs from 1850 Recorded Blue Whale Oil Yields Exceeding 100 Barrels","slug":"yankee-whaling-logs-from-1850-recorded-blue-whale-oil-yields-exceeding-100-barrels","url":"/categories/deep-sea-giants/blue-whale/yankee-whaling-logs-from-1850-recorded-blue-whale-oil-yields-exceeding-100-barrels.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Mid-19th century American whalers documented individual blue whales yielding over 100 barrels of oil per animal."},{"title":"Yellow Sea 2020 Acoustic Monitoring Confirmed Blue Whale Seasonal Passage","slug":"yellow-sea-2020-acoustic-monitoring-confirmed-blue-whale-seasonal-passage","url":"/categories/deep-sea-giants/blue-whale/yellow-sea-2020-acoustic-monitoring-confirmed-blue-whale-seasonal-passage.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2020, passive acoustic monitors in the Yellow Sea recorded low-frequency calls confirming seasonal blue whale passage through heavily industrialized waters."},{"title":"Yellow Sea Surveys Identified Endangered Blue Whale Migration Corridor","slug":"yellow-sea-surveys-identified-endangered-blue-whale-migration-corridor","url":"/categories/deep-sea-giants/blue-whale/yellow-sea-surveys-identified-endangered-blue-whale-migration-corridor.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientific surveys have confirmed that parts of the Yellow Sea serve as migratory routes for endangered blue whales despite intense coastal development."},{"title":"Yellowfin Tuna Fisheries Overlap with Blue Whale Foraging Grounds","slug":"yellowfin-tuna-fisheries-overlap-with-blue-whale-foraging-grounds","url":"/categories/deep-sea-giants/blue-whale/yellowfin-tuna-fisheries-overlap-with-blue-whale-foraging-grounds.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Commercial yellowfin tuna fisheries operate in some regions that overlap with blue whale foraging zones."},{"title":"Yellowstone Climate Data Linked Warming Trends to Blue Whale Krill Habitat Shifts","slug":"yellowstone-climate-data-linked-warming-trends-to-blue-whale-krill-habitat-shifts","url":"/categories/deep-sea-giants/blue-whale/yellowstone-climate-data-linked-warming-trends-to-blue-whale-krill-habitat-shifts.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Climate datasets show that ocean warming is altering krill distribution patterns that sustain blue whale feeding cycles."},{"title":"Yokohama 1946 Postwar Whaling Expansion Accelerated Blue Whale Decline","slug":"yokohama-1946-postwar-whaling-expansion-accelerated-blue-whale-decline","url":"/categories/deep-sea-giants/blue-whale/yokohama-1946-postwar-whaling-expansion-accelerated-blue-whale-decline.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In the years immediately following 1946, postwar factory fleets operating from ports such as Yokohama intensified Antarctic whaling despite collapsing blue whale numbers."},{"title":"Zanzibar 1896 Whaling Records Document Blue Whale Sightings in Western Indian Ocean","slug":"zanzibar-1896-whaling-records-document-blue-whale-sightings-in-western-indian-ocean","url":"/categories/deep-sea-giants/blue-whale/zanzibar-1896-whaling-records-document-blue-whale-sightings-in-western-indian-ocean.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Colonial-era records from 1896 near Zanzibar documented blue whale sightings in waters later dominated by industrial shipping lanes."},{"title":"Zealandia Submerged Continent Influences Blue Whale Migration Routes","slug":"zealandia-submerged-continent-influences-blue-whale-migration-routes","url":"/categories/deep-sea-giants/blue-whale/zealandia-submerged-continent-influences-blue-whale-migration-routes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The largely submerged continent of Zealandia shapes ocean currents that guide blue whale migration in the South Pacific."},{"title":"Zero Catch Quotas in 1966 Marked First Global Protection for Blue Whales","slug":"zero-catch-quotas-in-1966-marked-first-global-protection-for-blue-whales","url":"/categories/deep-sea-giants/blue-whale/zero-catch-quotas-in-1966-marked-first-global-protection-for-blue-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1966, international regulators set a zero catch quota for blue whales worldwide after decades of industrial harvest."},{"title":"Zero Visibility Fog Increases Blue Whale Collision Risk in Coastal Shipping Lanes","slug":"zero-visibility-fog-increases-blue-whale-collision-risk-in-coastal-shipping-lanes","url":"/categories/deep-sea-giants/blue-whale/zero-visibility-fog-increases-blue-whale-collision-risk-in-coastal-shipping-lanes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Dense coastal fog reduces visual detection and increases collision risk between ships and surfacing blue whales."},{"title":"Zero-Emission Shipping Proposals Aim to Reduce Blue Whale Noise Exposure","slug":"zero-emission-shipping-proposals-aim-to-reduce-blue-whale-noise-exposure","url":"/categories/deep-sea-giants/blue-whale/zero-emission-shipping-proposals-aim-to-reduce-blue-whale-noise-exposure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Proposals for zero-emission shipping technologies could simultaneously reduce underwater noise affecting blue whale communication."},{"title":"Zero-Sum Energy Budgets Limit Blue Whale Reproductive Frequency","slug":"zero-sum-energy-budgets-limit-blue-whale-reproductive-frequency","url":"/categories/deep-sea-giants/blue-whale/zero-sum-energy-budgets-limit-blue-whale-reproductive-frequency.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Blue whales typically give birth every two to three years because their reproductive cycle is constrained by energy availability."},{"title":"Zonal Upwelling Systems Create Predictable Blue Whale Feeding Aggregations","slug":"zonal-upwelling-systems-create-predictable-blue-whale-feeding-aggregations","url":"/categories/deep-sea-giants/blue-whale/zonal-upwelling-systems-create-predictable-blue-whale-feeding-aggregations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Large-scale zonal upwelling systems concentrate krill so reliably that blue whales return to the same feeding regions year after year."},{"title":"Zoological Genomics 2018 Study Mapped Blue Whale DNA for Conservation Planning","slug":"zoological-genomics-2018-study-mapped-blue-whale-dna-for-conservation-planning","url":"/categories/deep-sea-giants/blue-whale/zoological-genomics-2018-study-mapped-blue-whale-dna-for-conservation-planning.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2018 genomic study mapped large portions of the blue whale genome to improve conservation accuracy."},{"title":"Zoological Records Confirm Blue Whale Hearts Weigh Over 180 Kilograms","slug":"zoological-records-confirm-blue-whale-hearts-weigh-over-180-kilograms","url":"/categories/deep-sea-giants/blue-whale/zoological-records-confirm-blue-whale-hearts-weigh-over-180-kilograms.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The heart of a blue whale can weigh more than 180 kilograms, roughly the mass of a concert grand piano."},{"title":"Zoonotic Pathogen Surveillance Includes Blue Whale Health Monitoring Programs","slug":"zoonotic-pathogen-surveillance-includes-blue-whale-health-monitoring-programs","url":"/categories/deep-sea-giants/blue-whale/zoonotic-pathogen-surveillance-includes-blue-whale-health-monitoring-programs.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Marine health surveillance programs monitor blue whales for pathogens to assess ecosystem-wide disease risk."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

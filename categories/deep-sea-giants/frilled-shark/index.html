@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frilled Shark</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Frilled Shark</h1>
+  <p>Explore all facts in "Frilled Shark".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Frilled Shark</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Frilled Shark Embryo Can Develop for Over 40 Months","slug":"a-frilled-shark-embryo-can-develop-for-over-40-months","url":"/categories/deep-sea-giants/frilled-shark/a-frilled-shark-embryo-can-develop-for-over-40-months.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark’s unborn young can develop longer than three full years."},{"title":"A Frilled Shark Was Once Mistaken for a Sea Serpent","slug":"a-frilled-shark-was-once-mistaken-for-a-sea-serpent","url":"/categories/deep-sea-giants/frilled-shark/a-frilled-shark-was-once-mistaken-for-a-sea-serpent.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When this shark surfaced, witnesses thought a sea serpent had risen."},{"title":"A Live Frilled Shark Filmed in Shallow Water Shocked Marine Biologists","slug":"a-live-frilled-shark-filmed-in-shallow-water-shocked-marine-biologists","url":"/categories/deep-sea-giants/frilled-shark/a-live-frilled-shark-filmed-in-shallow-water-shocked-marine-biologists.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A deep-sea relic appeared alive in water barely 30 meters deep."},{"title":"Below 1,500 Meters, Frilled Sharks Enter a Zone Humans Visit for Minutes","slug":"below-1-500-meters-frilled-sharks-enter-a-zone-humans-visit-for-minutes","url":"/categories/deep-sea-giants/frilled-shark/below-1-500-meters-frilled-sharks-enter-a-zone-humans-visit-for-minutes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark hunts where humans survive only inside metal spheres."},{"title":"Cold Deep-Sea Temperatures Slow the Frilled Shark’s Metabolism Dramatically","slug":"cold-deep-sea-temperatures-slow-the-frilled-shark-s-metabolism-dramatically","url":"/categories/deep-sea-giants/frilled-shark/cold-deep-sea-temperatures-slow-the-frilled-shark-s-metabolism-dramatically.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator lives in water colder than most refrigerators."},{"title":"Deep-Sea Bycatch Has Revealed More About Frilled Sharks Than Direct Study","slug":"deep-sea-bycatch-has-revealed-more-about-frilled-sharks-than-direct-study","url":"/categories/deep-sea-giants/frilled-shark/deep-sea-bycatch-has-revealed-more-about-frilled-sharks-than-direct-study.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Most knowledge of this predator comes from accidental capture."},{"title":"Despite Growing Over 2 Meters, Frilled Sharks Avoid Most Predators","slug":"despite-growing-over-2-meters-frilled-sharks-avoid-most-predators","url":"/categories/deep-sea-giants/frilled-shark/despite-growing-over-2-meters-frilled-sharks-avoid-most-predators.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A two-meter shark survives in darkness without dominating speed or armor."},{"title":"Each Frilled Shark Tooth Has Three Needle-Sharp Cusps","slug":"each-frilled-shark-tooth-has-three-needle-sharp-cusps","url":"/categories/deep-sea-giants/frilled-shark/each-frilled-shark-tooth-has-three-needle-sharp-cusps.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Every tooth splits into three razor-like points."},{"title":"Frilled Sharks Are Caught So Rarely That Scientists Know Little About Them","slug":"frilled-sharks-are-caught-so-rarely-that-scientists-know-little-about-them","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-are-caught-so-rarely-that-scientists-know-little-about-them.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"An apex predator can exist almost entirely outside human study."},{"title":"Frilled Sharks Can Survive Pressures That Would Crush a Submarine Hull","slug":"frilled-sharks-can-survive-pressures-that-would-crush-a-submarine-hull","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-can-survive-pressures-that-would-crush-a-submarine-hull.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark endures pressure that would implode most unreinforced vessels."},{"title":"Frilled Sharks Carry Pregnancies That May Last Over Three Years","slug":"frilled-sharks-carry-pregnancies-that-may-last-over-three-years","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-carry-pregnancies-that-may-last-over-three-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark may remain pregnant longer than some elephants live in the wild."},{"title":"Frilled Sharks Feed on Large Squid in the Midnight Zone","slug":"frilled-sharks-feed-on-large-squid-in-the-midnight-zone","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-feed-on-large-squid-in-the-midnight-zone.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark swallows deep-sea squid nearly half its own length."},{"title":"Frilled Sharks Grow Slowly in Near-Freezing Darkness","slug":"frilled-sharks-grow-slowly-in-near-freezing-darkness","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-grow-slowly-in-near-freezing-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator matures in water barely above freezing and never sees daylight."},{"title":"Frilled Sharks Have 300 Teeth But Rarely Lose Prey","slug":"frilled-sharks-have-300-teeth-but-rarely-lose-prey","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-have-300-teeth-but-rarely-lose-prey.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Nearly 300 needle-like teeth lock inward, forming a biological cage."},{"title":"Frilled Sharks Have Remained Morphologically Stable for Millions of Years","slug":"frilled-sharks-have-remained-morphologically-stable-for-millions-of-years","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-have-remained-morphologically-stable-for-millions-of-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark’s body plan predates many modern mammal groups."},{"title":"Frilled Sharks Hunt in Complete Darkness Without Ever Seeing Sunlight","slug":"frilled-sharks-hunt-in-complete-darkness-without-ever-seeing-sunlight","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-hunt-in-complete-darkness-without-ever-seeing-sunlight.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator has never experienced daylight in its lifetime."},{"title":"Frilled Sharks Inhabit a Zone Where Pressure Exceeds 100 Times Surface Levels","slug":"frilled-sharks-inhabit-a-zone-where-pressure-exceeds-100-times-surface-levels","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-inhabit-a-zone-where-pressure-exceeds-100-times-surface-levels.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At its hunting depth, pressure multiplies more than one hundredfold."},{"title":"Frilled Sharks Lack the Streamlined Shape of Most Modern Sharks","slug":"frilled-sharks-lack-the-streamlined-shape-of-most-modern-sharks","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-lack-the-streamlined-shape-of-most-modern-sharks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark abandons the torpedo design almost every other shark follows."},{"title":"Frilled Sharks Live More Than 1,000 Meters Below Sunlight","slug":"frilled-sharks-live-more-than-1-000-meters-below-sunlight","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-live-more-than-1-000-meters-below-sunlight.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark hunts where sunlight has never reached in human history."},{"title":"Frilled Sharks Surface So Rarely That Most Are Seen Dead","slug":"frilled-sharks-surface-so-rarely-that-most-are-seen-dead","url":"/categories/deep-sea-giants/frilled-shark/frilled-sharks-surface-so-rarely-that-most-are-seen-dead.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When this shark reaches the surface, it is usually dying."},{"title":"Gigantic Squid Beaks Have Been Found Inside Frilled Sharks","slug":"gigantic-squid-beaks-have-been-found-inside-frilled-sharks","url":"/categories/deep-sea-giants/frilled-shark/gigantic-squid-beaks-have-been-found-inside-frilled-sharks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark swallows prey armed with hooks and barbs."},{"title":"Hidden for Decades, the Frilled Shark Was First Described in 1884","slug":"hidden-for-decades-the-frilled-shark-was-first-described-in-1884","url":"/categories/deep-sea-giants/frilled-shark/hidden-for-decades-the-frilled-shark-was-first-described-in-1884.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A living deep-sea predator entered science shockingly late."},{"title":"In Total Darkness, the Frilled Shark Relies on Sensory Detection Over Sight","slug":"in-total-darkness-the-frilled-shark-relies-on-sensory-detection-over-sight","url":"/categories/deep-sea-giants/frilled-shark/in-total-darkness-the-frilled-shark-relies-on-sensory-detection-over-sight.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark hunts without depending on vision at all."},{"title":"Juvenile Frilled Sharks Are Born Fully Formed and Ready to Hunt","slug":"juvenile-frilled-sharks-are-born-fully-formed-and-ready-to-hunt","url":"/categories/deep-sea-giants/frilled-shark/juvenile-frilled-sharks-are-born-fully-formed-and-ready-to-hunt.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Newborns enter crushing darkness already equipped with rows of teeth."},{"title":"Keenly Flexible Jaws Allow the Frilled Shark to Lunge Like a Snake","slug":"keenly-flexible-jaws-allow-the-frilled-shark-to-lunge-like-a-snake","url":"/categories/deep-sea-giants/frilled-shark/keenly-flexible-jaws-allow-the-frilled-shark-to-lunge-like-a-snake.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark strikes forward instead of slicing sideways."},{"title":"Low Oxygen Levels in the Deep Sea Do Not Stop Frilled Sharks From Hunting","slug":"low-oxygen-levels-in-the-deep-sea-do-not-stop-frilled-sharks-from-hunting","url":"/categories/deep-sea-giants/frilled-shark/low-oxygen-levels-in-the-deep-sea-do-not-stop-frilled-sharks-from-hunting.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator operates where oxygen levels drop below coastal norms."},{"title":"Many Frilled Sharks Are Discovered Only After Rapid Decompression","slug":"many-frilled-sharks-are-discovered-only-after-rapid-decompression","url":"/categories/deep-sea-giants/frilled-shark/many-frilled-sharks-are-discovered-only-after-rapid-decompression.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Bringing this shark upward can trigger fatal pressure shock."},{"title":"Nearly All Confirmed Frilled Shark Sightings Occur in the Pacific and Atlantic","slug":"nearly-all-confirmed-frilled-shark-sightings-occur-in-the-pacific-and-atlantic","url":"/categories/deep-sea-giants/frilled-shark/nearly-all-confirmed-frilled-shark-sightings-occur-in-the-pacific-and-atlantic.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This prehistoric predator spans two major oceans yet remains rarely seen."},{"title":"Over 100 Atmospheres of Pressure Shape the Frilled Shark’s Anatomy","slug":"over-100-atmospheres-of-pressure-shape-the-frilled-shark-s-anatomy","url":"/categories/deep-sea-giants/frilled-shark/over-100-atmospheres-of-pressure-shape-the-frilled-shark-s-anatomy.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark’s entire body is engineered for crushing compression."},{"title":"Over 80 Million Years of Lineage Separate the Frilled Shark From Many Modern Species","slug":"over-80-million-years-of-lineage-separate-the-frilled-shark-from-many-modern-species","url":"/categories/deep-sea-giants/frilled-shark/over-80-million-years-of-lineage-separate-the-frilled-shark-from-many-modern-species.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark’s ancestry stretches back to the late Cretaceous period."},{"title":"Pressure at 1,000 Meters Would Instantly Crush Human Lungs, But Not a Frilled Shark","slug":"pressure-at-1-000-meters-would-instantly-crush-human-lungs-but-not-a-frilled-shark","url":"/categories/deep-sea-giants/frilled-shark/pressure-at-1-000-meters-would-instantly-crush-human-lungs-but-not-a-frilled-shark.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At its hunting depth, human lungs would collapse in seconds."},{"title":"Prolonged Gestation Makes Frilled Shark Population Recovery Extremely Slow","slug":"prolonged-gestation-makes-frilled-shark-population-recovery-extremely-slow","url":"/categories/deep-sea-giants/frilled-shark/prolonged-gestation-makes-frilled-shark-population-recovery-extremely-slow.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One pregnancy can last longer than three calendar years."},{"title":"Quasi-Snake Locomotion Lets the Frilled Shark Strike in Total Darkness","slug":"quasi-snake-locomotion-lets-the-frilled-shark-strike-in-total-darkness","url":"/categories/deep-sea-giants/frilled-shark/quasi-snake-locomotion-lets-the-frilled-shark-strike-in-total-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark coils and lunges like a serpent in pitch black water."},{"title":"Rare Surface Sightings Have Turned the Frilled Shark Into Viral News","slug":"rare-surface-sightings-have-turned-the-frilled-shark-into-viral-news","url":"/categories/deep-sea-giants/frilled-shark/rare-surface-sightings-have-turned-the-frilled-shark-into-viral-news.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When this deep-sea relic appears near shore, global headlines follow."},{"title":"Reaching Sexual Maturity Takes Years in the Frilled Shark","slug":"reaching-sexual-maturity-takes-years-in-the-frilled-shark","url":"/categories/deep-sea-giants/frilled-shark/reaching-sexual-maturity-takes-years-in-the-frilled-shark.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator delays adulthood far longer than most fish."},{"title":"Some Frilled Sharks Have Been Caught at Depths Exceeding 1,500 Meters","slug":"some-frilled-sharks-have-been-caught-at-depths-exceeding-1-500-meters","url":"/categories/deep-sea-giants/frilled-shark/some-frilled-sharks-have-been-caught-at-depths-exceeding-1-500-meters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark operates deeper than most scuba divers will ever descend by over a mile."},{"title":"The Frilled Shark Has Six Gill Slits Instead of Five","slug":"the-frilled-shark-has-six-gill-slits-instead-of-five","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-has-six-gill-slits-instead-of-five.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark breaks a rule nearly all other sharks follow."},{"title":"The Frilled Shark: A 20-Foot Deep-Sea Predator With 300 Backward-Facing Teeth","slug":"the-frilled-shark-a-20-foot-deep-sea-predator-with-300-backward-facing-teeth","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-a-20-foot-deep-sea-predator-with-300-backward-facing-teeth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This eel-like shark attacks with nearly 300 backward-facing teeth arranged like rows of white needles."},{"title":"The Frilled Shark’s Bite Is Designed to Prevent Any Escape","slug":"the-frilled-shark-s-bite-is-designed-to-prevent-any-escape","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-s-bite-is-designed-to-prevent-any-escape.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Once this shark bites, retreat becomes mechanically impossible."},{"title":"The Frilled Shark’s Body Is Built More Like a Snake Than a Shark","slug":"the-frilled-shark-s-body-is-built-more-like-a-snake-than-a-shark","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-s-body-is-built-more-like-a-snake-than-a-shark.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark undulates like a serpent instead of slicing like a torpedo."},{"title":"The Frilled Shark’s First Gill Slit Wraps Across Its Throat","slug":"the-frilled-shark-s-first-gill-slit-wraps-across-its-throat","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-s-first-gill-slit-wraps-across-its-throat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark’s gill opening forms a collar around its neck."},{"title":"The Frilled Shark’s Jaw Can Unhinge to Swallow Prey Half Its Size","slug":"the-frilled-shark-s-jaw-can-unhinge-to-swallow-prey-half-its-size","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-s-jaw-can-unhinge-to-swallow-prey-half-its-size.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-sea shark lunges forward and swallows prey nearly half its own length."},{"title":"The Frilled Shark’s Lineage Dates Back 80 Million Years","slug":"the-frilled-shark-s-lineage-dates-back-80-million-years","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-s-lineage-dates-back-80-million-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This living shark lineage predates the extinction of the dinosaurs."},{"title":"The Frilled Shark’s Prehistoric Appearance Has Earned It the Nickname Living Fossil","slug":"the-frilled-shark-s-prehistoric-appearance-has-earned-it-the-nickname-living-fossil","url":"/categories/deep-sea-giants/frilled-shark/the-frilled-shark-s-prehistoric-appearance-has-earned-it-the-nickname-living-fossil.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark looks like it swam straight out of the Cretaceous."},{"title":"Underwater Temperatures Near 4°C Slow the Frilled Shark’s Entire Life Cycle","slug":"underwater-temperatures-near-4-c-slow-the-frilled-shark-s-entire-life-cycle","url":"/categories/deep-sea-giants/frilled-shark/underwater-temperatures-near-4-c-slow-the-frilled-shark-s-entire-life-cycle.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator lives in water barely warmer than melting ice."},{"title":"Vertical Isolation Keeps the Frilled Shark Hidden From Most Marine Traffic","slug":"vertical-isolation-keeps-the-frilled-shark-hidden-from-most-marine-traffic","url":"/categories/deep-sea-giants/frilled-shark/vertical-isolation-keeps-the-frilled-shark-hidden-from-most-marine-traffic.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Ships cross oceans daily above predators they never detect."},{"title":"Worldwide Distribution Suggests Frilled Sharks Span Multiple Ocean Basins","slug":"worldwide-distribution-suggests-frilled-sharks-span-multiple-ocean-basins","url":"/categories/deep-sea-giants/frilled-shark/worldwide-distribution-suggests-frilled-sharks-span-multiple-ocean-basins.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This ancient predator occupies oceans separated by thousands of kilometers."},{"title":"X-Rays Reveal a Cartilaginous Skeleton Built for Compression","slug":"x-rays-reveal-a-cartilaginous-skeleton-built-for-compression","url":"/categories/deep-sea-giants/frilled-shark/x-rays-reveal-a-cartilaginous-skeleton-built-for-compression.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Inside this shark is no bone strong enough to snap."},{"title":"Young Frilled Sharks Are Born Into a World of Crushing Pressure","slug":"young-frilled-sharks-are-born-into-a-world-of-crushing-pressure","url":"/categories/deep-sea-giants/frilled-shark/young-frilled-sharks-are-born-into-a-world-of-crushing-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Newborns enter an environment lethal to most surface life."},{"title":"Zero Sunlight Defines the Frilled Shark’s Entire Ecosystem","slug":"zero-sunlight-defines-the-frilled-shark-s-entire-ecosystem","url":"/categories/deep-sea-giants/frilled-shark/zero-sunlight-defines-the-frilled-shark-s-entire-ecosystem.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark lives its whole life without a single sunrise."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

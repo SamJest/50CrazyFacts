@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gharial</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Gharial</h1>
+  <p>Explore all facts in "Gharial".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Gharial</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Gharial’s Jaw Can Snap Sideways Faster Than Most Fish Can Flee","slug":"a-gharial-s-jaw-can-snap-sideways-faster-than-most-fish-can-flee","url":"/categories/endangered-predators/gharial/a-gharial-s-jaw-can-snap-sideways-faster-than-most-fish-can-flee.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its jaws whip sideways in water with almost no drag."},{"title":"Adult Male Gharials Can Control River Stretches During Breeding Season","slug":"adult-male-gharials-can-control-river-stretches-during-breeding-season","url":"/categories/endangered-predators/gharial/adult-male-gharials-can-control-river-stretches-during-breeding-season.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One dominant male can monopolize kilometers of flowing water."},{"title":"Ancient River Fossils Show Gharial Relatives Once Lived Outside Asia","slug":"ancient-river-fossils-show-gharial-relatives-once-lived-outside-asia","url":"/categories/endangered-predators/gharial/ancient-river-fossils-show-gharial-relatives-once-lived-outside-asia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Long-snouted crocodiles once roamed continents where none survive today."},{"title":"Beneath the Surface, Gharials Can Stay Submerged for Over an Hour","slug":"beneath-the-surface-gharials-can-stay-submerged-for-over-an-hour","url":"/categories/endangered-predators/gharial/beneath-the-surface-gharials-can-stay-submerged-for-over-an-hour.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This massive reptile can vanish underwater longer than many whales surface between breaths."},{"title":"Body Fat Reserves Help Gharials Survive Seasonal Fish Shortages","slug":"body-fat-reserves-help-gharials-survive-seasonal-fish-shortages","url":"/categories/endangered-predators/gharial/body-fat-reserves-help-gharials-survive-seasonal-fish-shortages.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A river predator can endure weeks when prey nearly disappears."},{"title":"Climate Change Could Shift Entire Gharial Generations to One Sex","slug":"climate-change-could-shift-entire-gharial-generations-to-one-sex","url":"/categories/endangered-predators/gharial/climate-change-could-shift-entire-gharial-generations-to-one-sex.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A warming riverbank can silently erase half a population."},{"title":"Conservation Surveys Rely on Counting Basking Gharials From Boats","slug":"conservation-surveys-rely-on-counting-basking-gharials-from-boats","url":"/categories/endangered-predators/gharial/conservation-surveys-rely-on-counting-basking-gharials-from-boats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists tally six-meter predators sunning silently on sandbanks."},{"title":"Dams Have Turned Historic Gharial Rivers Into Ecological Dead Ends","slug":"dams-have-turned-historic-gharial-rivers-into-ecological-dead-ends","url":"/categories/endangered-predators/gharial/dams-have-turned-historic-gharial-rivers-into-ecological-dead-ends.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Concrete walls now block a predator older than the dinosaurs."},{"title":"During Monsoons, Gharials Can Be Swept Hundreds of Kilometers Downstream","slug":"during-monsoons-gharials-can-be-swept-hundreds-of-kilometers-downstream","url":"/categories/endangered-predators/gharial/during-monsoons-gharials-can-be-swept-hundreds-of-kilometers-downstream.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Seasonal floods can carry a giant predator across entire river basins."},{"title":"Eggshell Thickness in Gharials Protects Embryos From Sand Pressure","slug":"eggshell-thickness-in-gharials-protects-embryos-from-sand-pressure","url":"/categories/endangered-predators/gharial/eggshell-thickness-in-gharials-protects-embryos-from-sand-pressure.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Buried nearly a meter deep, each egg withstands tons of overlying sand."},{"title":"Even as Apex Predators, Gharials Compete With Mugger Crocodiles","slug":"even-as-apex-predators-gharials-compete-with-mugger-crocodiles","url":"/categories/endangered-predators/gharial/even-as-apex-predators-gharials-compete-with-mugger-crocodiles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two massive crocodiles share rivers, but only one can crush bones."},{"title":"Fish Diversity Directly Predicts Gharial Population Stability","slug":"fish-diversity-directly-predicts-gharial-population-stability","url":"/categories/endangered-predators/gharial/fish-diversity-directly-predicts-gharial-population-stability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When fish vanish, a six-meter predator collapses behind them."},{"title":"Fishing Nets Are Now the Deadliest Predator of Gharials","slug":"fishing-nets-are-now-the-deadliest-predator-of-gharials","url":"/categories/endangered-predators/gharial/fishing-nets-are-now-the-deadliest-predator-of-gharials.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This apex river predator is most threatened by nylon threads."},{"title":"Genetic Studies Show Severe Bottlenecks in Modern Gharial Populations","slug":"genetic-studies-show-severe-bottlenecks-in-modern-gharial-populations","url":"/categories/endangered-predators/gharial/genetic-studies-show-severe-bottlenecks-in-modern-gharial-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"DNA reveals how close this predator came to disappearing forever."},{"title":"Gharial Eggs Incubate for Nearly Three Months in Open Sand","slug":"gharial-eggs-incubate-for-nearly-three-months-in-open-sand","url":"/categories/endangered-predators/gharial/gharial-eggs-incubate-for-nearly-three-months-in-open-sand.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"For 90 exposed days, an entire generation bakes beneath river sand."},{"title":"Gharial Hatchlings Face 99 Percent Mortality in the Wild","slug":"gharial-hatchlings-face-99-percent-mortality-in-the-wild","url":"/categories/endangered-predators/gharial/gharial-hatchlings-face-99-percent-mortality-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Almost every baby gharial dies before reaching adulthood."},{"title":"Gharial Nests Depend on Exact Sandbank Temperatures","slug":"gharial-nests-depend-on-exact-sandbank-temperatures","url":"/categories/endangered-predators/gharial/gharial-nests-depend-on-exact-sandbank-temperatures.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A few degrees can decide whether an entire generation survives."},{"title":"Gharials Can Reach Over 6 Meters but Rarely Attack Humans","slug":"gharials-can-reach-over-6-meters-but-rarely-attack-humans","url":"/categories/endangered-predators/gharial/gharials-can-reach-over-6-meters-but-rarely-attack-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A reptile longer than a small bus almost never targets people."},{"title":"Gharials Cannot Walk High Like Other Crocodiles","slug":"gharials-cannot-walk-high-like-other-crocodiles","url":"/categories/endangered-predators/gharial/gharials-cannot-walk-high-like-other-crocodiles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This giant crocodile struggles to lift its body off the ground."},{"title":"Gharials Once Ranged Across Pakistan to Myanmar","slug":"gharials-once-ranged-across-pakistan-to-myanmar","url":"/categories/endangered-predators/gharial/gharials-once-ranged-across-pakistan-to-myanmar.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator vanished from entire countries within decades."},{"title":"Gharials Once Shared Rivers With Dinosaurs and Barely Changed","slug":"gharials-once-shared-rivers-with-dinosaurs-and-barely-changed","url":"/categories/endangered-predators/gharial/gharials-once-shared-rivers-with-dinosaurs-and-barely-changed.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This living reptile still wears a body plan older than the Himalayas."},{"title":"Gharials Rely on Sun-Basking to Regulate Body Temperature Precisely","slug":"gharials-rely-on-sun-basking-to-regulate-body-temperature-precisely","url":"/categories/endangered-predators/gharial/gharials-rely-on-sun-basking-to-regulate-body-temperature-precisely.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This river giant must climb onto sand just to survive the night."},{"title":"Hatchlings Emit High-Pitched Calls From Inside Their Eggs","slug":"hatchlings-emit-high-pitched-calls-from-inside-their-eggs","url":"/categories/endangered-predators/gharial/hatchlings-emit-high-pitched-calls-from-inside-their-eggs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Unborn predators signal for help before they even break the shell."},{"title":"Hydrological Changes Can Drown Entire Gharial Nesting Seasons Overnight","slug":"hydrological-changes-can-drown-entire-gharial-nesting-seasons-overnight","url":"/categories/endangered-predators/gharial/hydrological-changes-can-drown-entire-gharial-nesting-seasons-overnight.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single dam release can erase dozens of unborn predators."},{"title":"In the Wild, Gharials May Live for Several Decades","slug":"in-the-wild-gharials-may-live-for-several-decades","url":"/categories/endangered-predators/gharial/in-the-wild-gharials-may-live-for-several-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This river predator can outlive entire human generations."},{"title":"India’s Chambal River Hosts the World’s Largest Gharial Population","slug":"india-s-chambal-river-hosts-the-world-s-largest-gharial-population","url":"/categories/endangered-predators/gharial/india-s-chambal-river-hosts-the-world-s-largest-gharial-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One river now holds the last stronghold of a 200-million-year lineage."},{"title":"Juvenile Gharials Grow Over a Meter in Just a Few Years","slug":"juvenile-gharials-grow-over-a-meter-in-just-a-few-years","url":"/categories/endangered-predators/gharial/juvenile-gharials-grow-over-a-meter-in-just-a-few-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A hatchling the length of a ruler can become longer than a person in record time."},{"title":"Juvenile Mortality Can Exceed 95 Percent Without Intervention","slug":"juvenile-mortality-can-exceed-95-percent-without-intervention","url":"/categories/endangered-predators/gharial/juvenile-mortality-can-exceed-95-percent-without-intervention.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Out of dozens born, only a handful may survive their first year."},{"title":"Killing for Skins Once Pushed Gharials to the Brink","slug":"killing-for-skins-once-pushed-gharials-to-the-brink","url":"/categories/endangered-predators/gharial/killing-for-skins-once-pushed-gharials-to-the-brink.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fashion nearly erased a predator that survived mass extinction."},{"title":"Largest Recorded Male Gharials Exceeded 6.5 Meters in Length","slug":"largest-recorded-male-gharials-exceeded-6-5-meters-in-length","url":"/categories/endangered-predators/gharial/largest-recorded-male-gharials-exceeded-6-5-meters-in-length.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some males grew longer than a London double-decker bus."},{"title":"Long Tails Provide the Primary Propulsion for Gharial Swimming","slug":"long-tails-provide-the-primary-propulsion-for-gharial-swimming","url":"/categories/endangered-predators/gharial/long-tails-provide-the-primary-propulsion-for-gharial-swimming.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Nearly half its body length acts like a muscular river engine."},{"title":"Male Gharials Grow a Hollow Nasal Bulb That Amplifies Roars","slug":"male-gharials-grow-a-hollow-nasal-bulb-that-amplifies-roars","url":"/categories/endangered-predators/gharial/male-gharials-grow-a-hollow-nasal-bulb-that-amplifies-roars.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This crocodile grows a built-in resonating chamber on its face."},{"title":"Modern Satellite Mapping Helps Identify Remaining Gharial Nesting Banks","slug":"modern-satellite-mapping-helps-identify-remaining-gharial-nesting-banks","url":"/categories/endangered-predators/gharial/modern-satellite-mapping-helps-identify-remaining-gharial-nesting-banks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Space technology now tracks the last nurseries of a prehistoric predator."},{"title":"Nearly the Entire Global Gharial Population Exists in Fewer Than 10 Rivers","slug":"nearly-the-entire-global-gharial-population-exists-in-fewer-than-10-rivers","url":"/categories/endangered-predators/gharial/nearly-the-entire-global-gharial-population-exists-in-fewer-than-10-rivers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A species older than the Himalayas now survives in single-digit waterways."},{"title":"Only Male Gharials Develop the Iconic Ghara Bulb","slug":"only-male-gharials-develop-the-iconic-ghara-bulb","url":"/categories/endangered-predators/gharial/only-male-gharials-develop-the-iconic-ghara-bulb.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Half the species never grows the feature that defines it."},{"title":"Pollution Can Bioaccumulate in Gharials at the Top of River Food Webs","slug":"pollution-can-bioaccumulate-in-gharials-at-the-top-of-river-food-webs","url":"/categories/endangered-predators/gharial/pollution-can-bioaccumulate-in-gharials-at-the-top-of-river-food-webs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Toxins climb the food chain until they reach a six-meter predator."},{"title":"Protected River Sanctuaries Have Reintroduced Hundreds of Captive-Bred Gharials","slug":"protected-river-sanctuaries-have-reintroduced-hundreds-of-captive-bred-gharials","url":"/categories/endangered-predators/gharial/protected-river-sanctuaries-have-reintroduced-hundreds-of-captive-bred-gharials.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Humans are now releasing hatchlings to rebuild a prehistoric predator."},{"title":"Queens of the Sandbank: Female Gharials Guard Massive Nests","slug":"queens-of-the-sandbank-female-gharials-guard-massive-nests","url":"/categories/endangered-predators/gharial/queens-of-the-sandbank-female-gharials-guard-massive-nests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single mother can defend up to 60 buried eggs."},{"title":"River Dolphins and Gharials Share Some of the Same Last Strongholds","slug":"river-dolphins-and-gharials-share-some-of-the-same-last-strongholds","url":"/categories/endangered-predators/gharial/river-dolphins-and-gharials-share-some-of-the-same-last-strongholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two ancient aquatic predators now survive in the same shrinking rivers."},{"title":"River Sand Mining Removes the Very Ground Gharials Nest On","slug":"river-sand-mining-removes-the-very-ground-gharials-nest-on","url":"/categories/endangered-predators/gharial/river-sand-mining-removes-the-very-ground-gharials-nest-on.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Heavy machinery now scoops away the nurseries of a living fossil."},{"title":"Riverbank Agriculture Compresses Gharial Habitat to Narrow Margins","slug":"riverbank-agriculture-compresses-gharial-habitat-to-narrow-margins","url":"/categories/endangered-predators/gharial/riverbank-agriculture-compresses-gharial-habitat-to-narrow-margins.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Farms now press against the last nesting beaches of an ancient predator."},{"title":"Some Gharials Travel Dozens of Kilometers Along a Single River","slug":"some-gharials-travel-dozens-of-kilometers-along-a-single-river","url":"/categories/endangered-predators/gharial/some-gharials-travel-dozens-of-kilometers-along-a-single-river.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This river-bound predator can patrol distances rivaling a marathon."},{"title":"The Gharial’s Needle-Thin Snout Is Built to Snap Fish at Lightning Speed","slug":"the-gharial-s-needle-thin-snout-is-built-to-snap-fish-at-lightning-speed","url":"/categories/endangered-predators/gharial/the-gharial-s-needle-thin-snout-is-built-to-snap-fish-at-lightning-speed.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This crocodile’s snout is so thin it looks breakable, yet it slices water faster than most fish can react."},{"title":"Underwater Vision Helps Gharials Track Flashing Fish in Turbid Rivers","slug":"underwater-vision-helps-gharials-track-flashing-fish-in-turbid-rivers","url":"/categories/endangered-predators/gharial/underwater-vision-helps-gharials-track-flashing-fish-in-turbid-rivers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In murky water, this reptile can still lock onto shimmering prey."},{"title":"Very Few Gharials Reach Full Sexual Maturity in the Wild","slug":"very-few-gharials-reach-full-sexual-maturity-in-the-wild","url":"/categories/endangered-predators/gharial/very-few-gharials-reach-full-sexual-maturity-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Most never live long enough to grow the feature that defines them."},{"title":"Water Extraction for Cities Reduces Gharial Hunting Depth","slug":"water-extraction-for-cities-reduces-gharial-hunting-depth","url":"/categories/endangered-predators/gharial/water-extraction-for-cities-reduces-gharial-hunting-depth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Urban thirst can lower rivers enough to starve a giant predator."},{"title":"X-Ray Studies Reveal the Gharial’s Skull Is Reinforced Like a Truss Bridge","slug":"x-ray-studies-reveal-the-gharial-s-skull-is-reinforced-like-a-truss-bridge","url":"/categories/endangered-predators/gharial/x-ray-studies-reveal-the-gharial-s-skull-is-reinforced-like-a-truss-bridge.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its pencil-thin snout hides internal struts that stop it from snapping."},{"title":"Young Gharials Form Loose Groups in Shallow Nursery Areas","slug":"young-gharials-form-loose-groups-in-shallow-nursery-areas","url":"/categories/endangered-predators/gharial/young-gharials-form-loose-groups-in-shallow-nursery-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Dozens of hatchlings gather in exposed shallows despite constant danger."},{"title":"Zero Recorded Human Predation Cases Contrast With Its Massive Size","slug":"zero-recorded-human-predation-cases-contrast-with-its-massive-size","url":"/categories/endangered-predators/gharial/zero-recorded-human-predation-cases-contrast-with-its-massive-size.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A six-meter crocodile that almost never hunts humans defies instinct."},{"title":"Zonal Protection Laws Have Reduced Direct Hunting of Gharials","slug":"zonal-protection-laws-have-reduced-direct-hunting-of-gharials","url":"/categories/endangered-predators/gharial/zonal-protection-laws-have-reduced-direct-hunting-of-gharials.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Legal boundaries now shield a predator that once faced rifles."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

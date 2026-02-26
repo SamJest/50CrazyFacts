@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Philippine Eagle</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Philippine Eagle</h1>
+  <p>Explore all facts in "Philippine Eagle".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Philippine Eagle</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Lineage of the Philippine Eagle Dates Back Millions of Years","slug":"ancient-lineage-of-the-philippine-eagle-dates-back-millions-of-years","url":"/categories/endangered-predators/philippine-eagle/ancient-lineage-of-the-philippine-eagle-dates-back-millions-of-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator carries a lineage older than human civilization itself."},{"title":"Billion-Peso Conservation Efforts Aim to Save the Philippine Eagle","slug":"billion-peso-conservation-efforts-aim-to-save-the-philippine-eagle","url":"/categories/endangered-predators/philippine-eagle/billion-peso-conservation-efforts-aim-to-save-the-philippine-eagle.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Saving this predator now costs millions every year."},{"title":"Dangerous Diet of the Philippine Eagle Includes Venomous Snakes","slug":"dangerous-diet-of-the-philippine-eagle-includes-venomous-snakes","url":"/categories/endangered-predators/philippine-eagle/dangerous-diet-of-the-philippine-eagle-includes-venomous-snakes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It hunts creatures capable of killing other predators."},{"title":"Extreme Low Density Means Philippine Eagles Rarely See Each Other","slug":"extreme-low-density-means-philippine-eagles-rarely-see-each-other","url":"/categories/endangered-predators/philippine-eagle/extreme-low-density-means-philippine-eagles-rarely-see-each-other.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two apex predators can live kilometers apart without meeting."},{"title":"High Nest Placement of the Philippine Eagle Exceeds 40 Meters","slug":"high-nest-placement-of-the-philippine-eagle-exceeds-40-meters","url":"/categories/endangered-predators/philippine-eagle/high-nest-placement-of-the-philippine-eagle-exceeds-40-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its nursery can sit higher than a 12-story building."},{"title":"Juvenile Philippine Eagles Take Years to Master Hunting","slug":"juvenile-philippine-eagles-take-years-to-master-hunting","url":"/categories/endangered-predators/philippine-eagle/juvenile-philippine-eagles-take-years-to-master-hunting.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It spends years training before ruling the canopy."},{"title":"Kilometer-High Mountain Forests Shelter Remaining Philippine Eagles","slug":"kilometer-high-mountain-forests-shelter-remaining-philippine-eagles","url":"/categories/endangered-predators/philippine-eagle/kilometer-high-mountain-forests-shelter-remaining-philippine-eagles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some survive in forests perched above the clouds."},{"title":"Lightning Strikes Threaten Philippine Eagle Nest Trees","slug":"lightning-strikes-threaten-philippine-eagle-nest-trees","url":"/categories/endangered-predators/philippine-eagle/lightning-strikes-threaten-philippine-eagle-nest-trees.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single bolt can erase an entire generation."},{"title":"Monogamous Bonds of the Philippine Eagle Can Last Decades","slug":"monogamous-bonds-of-the-philippine-eagle-can-last-decades","url":"/categories/endangered-predators/philippine-eagle/monogamous-bonds-of-the-philippine-eagle-can-last-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This apex predator may stay with one partner for life."},{"title":"Mountainous Terrain Complicates Philippine Eagle Conservation Patrols","slug":"mountainous-terrain-complicates-philippine-eagle-conservation-patrols","url":"/categories/endangered-predators/philippine-eagle/mountainous-terrain-complicates-philippine-eagle-conservation-patrols.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Protecting it means trekking through some of Asia’s toughest forests."},{"title":"Narrow Global Range Makes the Philippine Eagle Highly Vulnerable","slug":"narrow-global-range-makes-the-philippine-eagle-highly-vulnerable","url":"/categories/endangered-predators/philippine-eagle/narrow-global-range-makes-the-philippine-eagle-highly-vulnerable.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its entire world fits within one island nation."},{"title":"Old-Growth Dependency Makes Philippine Eagle a Forest Health Indicator","slug":"old-growth-dependency-makes-philippine-eagle-a-forest-health-indicator","url":"/categories/endangered-predators/philippine-eagle/old-growth-dependency-makes-philippine-eagle-a-forest-health-indicator.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"If this predator thrives, the forest is intact."},{"title":"Philippine Eagle Among the Rarest Raptors on Earth","slug":"philippine-eagle-among-the-rarest-raptors-on-earth","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-among-the-rarest-raptors-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer individuals exist than seats in a single large stadium."},{"title":"Philippine Eagle Body Length Rivals a Young Child","slug":"philippine-eagle-body-length-rivals-a-young-child","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-body-length-rivals-a-young-child.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Standing upright, it approaches the height of a toddler."},{"title":"Philippine Eagle Brain Size Signals Exceptional Forest Intelligence","slug":"philippine-eagle-brain-size-signals-exceptional-forest-intelligence","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-brain-size-signals-exceptional-forest-intelligence.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This eagle solves three-dimensional problems inside a living maze."},{"title":"Philippine Eagle Breeds Slower Than Most Large Mammals","slug":"philippine-eagle-breeds-slower-than-most-large-mammals","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-breeds-slower-than-most-large-mammals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This apex predator raises just one chick every two years."},{"title":"Philippine Eagle Calls Echo Across Kilometers of Rainforest","slug":"philippine-eagle-calls-echo-across-kilometers-of-rainforest","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-calls-echo-across-kilometers-of-rainforest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its scream carries through jungle like a warning siren."},{"title":"Philippine Eagle Can Take Years to Form a Breeding Pair","slug":"philippine-eagle-can-take-years-to-form-a-breeding-pair","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-can-take-years-to-form-a-breeding-pair.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator may search for years before choosing a mate."},{"title":"Philippine Eagle Captive Breeding Took Decades to Succeed","slug":"philippine-eagle-captive-breeding-took-decades-to-succeed","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-captive-breeding-took-decades-to-succeed.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It resisted reproduction in captivity for years."},{"title":"Philippine Eagle Classified as Critically Endangered","slug":"philippine-eagle-classified-as-critically-endangered","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-classified-as-critically-endangered.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One step closer to extinction than most wildlife you know."},{"title":"Philippine Eagle Crest Feathers Longer Than a Human Hand","slug":"philippine-eagle-crest-feathers-longer-than-a-human-hand","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-crest-feathers-longer-than-a-human-hand.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator wears a crown taller than your palm."},{"title":"Philippine Eagle Egg Larger Than a Goose Egg","slug":"philippine-eagle-egg-larger-than-a-goose-egg","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-egg-larger-than-a-goose-egg.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It lays a single egg nearly the size of your fist."},{"title":"Philippine Eagle Feet Wider Than a Human Handspan","slug":"philippine-eagle-feet-wider-than-a-human-handspan","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-feet-wider-than-a-human-handspan.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its grip can wrap around prey like a steel trap."},{"title":"Philippine Eagle Forest Range Shrunk by More Than Half","slug":"philippine-eagle-forest-range-shrunk-by-more-than-half","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-forest-range-shrunk-by-more-than-half.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its kingdom of trees has been cut down within decades."},{"title":"Philippine Eagle Genetic Isolation Increases Extinction Risk","slug":"philippine-eagle-genetic-isolation-increases-extinction-risk","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-genetic-isolation-increases-extinction-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Small island populations carry hidden genetic danger."},{"title":"Philippine Eagle Hunting Includes Flying Lemurs","slug":"philippine-eagle-hunting-includes-flying-lemurs","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-hunting-includes-flying-lemurs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It captures mammals that glide between trees."},{"title":"Philippine Eagle Hunting Speed Explodes from Stillness","slug":"philippine-eagle-hunting-speed-explodes-from-stillness","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-hunting-speed-explodes-from-stillness.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It launches from silence into lethal acceleration in seconds."},{"title":"Philippine Eagle Hunting Success Depends on Vertical Forest Layers","slug":"philippine-eagle-hunting-success-depends-on-vertical-forest-layers","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-hunting-success-depends-on-vertical-forest-layers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove one canopy layer, and its strategy collapses."},{"title":"Philippine Eagle Hunts at Canopy Heights Above 30 Meters","slug":"philippine-eagle-hunts-at-canopy-heights-above-30-meters","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-hunts-at-canopy-heights-above-30-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It kills in treetops higher than a ten-story building."},{"title":"Philippine Eagle Juveniles Wander for Years Before Settling","slug":"philippine-eagle-juveniles-wander-for-years-before-settling","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-juveniles-wander-for-years-before-settling.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young eagles roam vast forests alone for years."},{"title":"Philippine Eagle Lifespan Exceeds Two Decades in the Wild","slug":"philippine-eagle-lifespan-exceeds-two-decades-in-the-wild","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-lifespan-exceeds-two-decades-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This forest hunter can live longer than many dogs."},{"title":"Philippine Eagle Mortality Often Linked to Human Conflict","slug":"philippine-eagle-mortality-often-linked-to-human-conflict","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-mortality-often-linked-to-human-conflict.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some of its greatest threats come from a single gunshot."},{"title":"Philippine Eagle Named National Bird to Prevent Extinction","slug":"philippine-eagle-named-national-bird-to-prevent-extinction","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-named-national-bird-to-prevent-extinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A country declared this predator a living national treasure."},{"title":"Philippine Eagle Nests Larger Than a King-Size Bed","slug":"philippine-eagle-nests-larger-than-a-king-size-bed","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-nests-larger-than-a-king-size-bed.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This bird builds a nest wider than most dining tables."},{"title":"Philippine Eagle Once Misidentified as a Different Species","slug":"philippine-eagle-once-misidentified-as-a-different-species","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-once-misidentified-as-a-different-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists originally mistook this giant predator for another eagle."},{"title":"Philippine Eagle Population Confined to Four Major Islands","slug":"philippine-eagle-population-confined-to-four-major-islands","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-population-confined-to-four-major-islands.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This apex predator survives only on isolated fragments of land."},{"title":"Philippine Eagle Requires Old-Growth Forest to Survive","slug":"philippine-eagle-requires-old-growth-forest-to-survive","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-requires-old-growth-forest-to-survive.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cut the ancient trees, and this predator disappears."},{"title":"Philippine Eagle Storm Exposure Threatens Nest Survival","slug":"philippine-eagle-storm-exposure-threatens-nest-survival","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-storm-exposure-threatens-nest-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Typhoons can destroy years of breeding effort overnight."},{"title":"Philippine Eagle Talons Strong Enough to Crush Monkey Bones","slug":"philippine-eagle-talons-strong-enough-to-crush-monkey-bones","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-talons-strong-enough-to-crush-monkey-bones.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This eagle can snap a monkey’s arm like dry wood."},{"title":"Philippine Eagle Territories Larger Than Major Cities","slug":"philippine-eagle-territories-larger-than-major-cities","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-territories-larger-than-major-cities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One breeding pair can command a forest bigger than Manhattan."},{"title":"Philippine Eagle Vision Detects Prey Through Dense Foliage","slug":"philippine-eagle-vision-detects-prey-through-dense-foliage","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-vision-detects-prey-through-dense-foliage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It spots movement where humans see only leaves."},{"title":"Philippine Eagle Wingspan Rivaling a Small Airplane","slug":"philippine-eagle-wingspan-rivaling-a-small-airplane","url":"/categories/endangered-predators/philippine-eagle/philippine-eagle-wingspan-rivaling-a-small-airplane.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its wings stretch wider than a standard doorway."},{"title":"Rare Sightings Make the Philippine Eagle One of Asia’s Least Seen Raptors","slug":"rare-sightings-make-the-philippine-eagle-one-of-asia-s-least-seen-raptors","url":"/categories/endangered-predators/philippine-eagle/rare-sightings-make-the-philippine-eagle-one-of-asia-s-least-seen-raptors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"You could trek for months and never glimpse one."},{"title":"Storm Frequency in the Philippines Increases Nest Failure Risk","slug":"storm-frequency-in-the-philippines-increases-nest-failure-risk","url":"/categories/endangered-predators/philippine-eagle/storm-frequency-in-the-philippines-increases-nest-failure-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Tropical cyclones can reset its breeding clock instantly."},{"title":"Territorial Displays of the Philippine Eagle Include Aerial Spirals","slug":"territorial-displays-of-the-philippine-eagle-include-aerial-spirals","url":"/categories/endangered-predators/philippine-eagle/territorial-displays-of-the-philippine-eagle-include-aerial-spirals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It performs skyward spirals above forests it defends."},{"title":"Unbroken Canopy Corridors Are Critical for Philippine Eagle Survival","slug":"unbroken-canopy-corridors-are-critical-for-philippine-eagle-survival","url":"/categories/endangered-predators/philippine-eagle/unbroken-canopy-corridors-are-critical-for-philippine-eagle-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single road can fracture an entire hunting empire."},{"title":"Vast Caloric Demands Force the Philippine Eagle to Hunt Regularly","slug":"vast-caloric-demands-force-the-philippine-eagle-to-hunt-regularly","url":"/categories/endangered-predators/philippine-eagle/vast-caloric-demands-force-the-philippine-eagle-to-hunt-regularly.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This forest giant must kill frequently to stay airborne."},{"title":"Wing Loading Allows the Philippine Eagle to Maneuver in Dense Forest","slug":"wing-loading-allows-the-philippine-eagle-to-maneuver-in-dense-forest","url":"/categories/endangered-predators/philippine-eagle/wing-loading-allows-the-philippine-eagle-to-maneuver-in-dense-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Its massive wings still pivot between tight tree gaps."},{"title":"Young Philippine Eagles Face High Mortality Before Breeding Age","slug":"young-philippine-eagles-face-high-mortality-before-breeding-age","url":"/categories/endangered-predators/philippine-eagle/young-philippine-eagles-face-high-mortality-before-breeding-age.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Many never survive long enough to claim a territory."},{"title":"Zero Buffer Against Extinction Leaves the Philippine Eagle at Risk","slug":"zero-buffer-against-extinction-leaves-the-philippine-eagle-at-risk","url":"/categories/endangered-predators/philippine-eagle/zero-buffer-against-extinction-leaves-the-philippine-eagle-at-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One catastrophic event could wipe out entire regions."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

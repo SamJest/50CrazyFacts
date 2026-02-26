@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancient Egypt</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Ancient Egypt</h1>
+  <p>Explore all facts in "Ancient Egypt".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ancient Egypt</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Abusir Papyri Administrative Archive of the Fifth Dynasty","slug":"abusir-papyri-administrative-archive-of-the-fifth-dynasty","url":"/categories/ancient-civilizations-secrets/ancient-egypt/abusir-papyri-administrative-archive-of-the-fifth-dynasty.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fragments of papyrus found at Abusir preserve the oldest surviving state archives from pyramid-era Egypt."},{"title":"Abydos King List Inscription and Dynastic Memory Control","slug":"abydos-king-list-inscription-and-dynastic-memory-control","url":"/categories/ancient-civilizations-secrets/ancient-egypt/abydos-king-list-inscription-and-dynastic-memory-control.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1250 BCE, a temple wall at Abydos deliberately omitted entire pharaohs from Egypt's official history."},{"title":"Akhenaten's Aten Revolution in 1346 BCE","slug":"akhenaten-s-aten-revolution-in-1346-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/akhenaten-s-aten-revolution-in-1346-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1346 BCE, a pharaoh shut down Egypt's most powerful temples and attempted to replace a 2,000-year-old religious system with the worship of a single sun disk."},{"title":"Beni Hasan Tomb Paintings and Provincial Life circa 1900 BCE","slug":"beni-hasan-tomb-paintings-and-provincial-life-circa-1900-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/beni-hasan-tomb-paintings-and-provincial-life-circa-1900-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Colorful wall paintings at Beni Hasan capture wrestling matches, caravans, and daily life from nearly 4,000 years ago."},{"title":"Bubastis Cat Cult Economy in the First Millennium BCE","slug":"bubastis-cat-cult-economy-in-the-first-millennium-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/bubastis-cat-cult-economy-in-the-first-millennium-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 500 BCE, temples at Bubastis were breeding thousands of cats annually to meet religious demand for votive mummies."},{"title":"Cairo Geniza Papyri and Everyday Egyptian Jewish Life circa 1000 CE","slug":"cairo-geniza-papyri-and-everyday-egyptian-jewish-life-circa-1000-ce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/cairo-geniza-papyri-and-everyday-egyptian-jewish-life-circa-1000-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nearly 200,000 manuscript fragments preserved in a Cairo synagogue revealed intimate details of medieval Egyptian commerce and family life."},{"title":"Cleopatra VII Naval Strategy at Actium in 31 BCE","slug":"cleopatra-vii-naval-strategy-at-actium-in-31-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/cleopatra-vii-naval-strategy-at-actium-in-31-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 31 BCE, Cleopatra VII commanded a fleet at the Battle of Actium in a final attempt to preserve Egypt's independence."},{"title":"Dahshur Bent Pyramid Angle Adjustment circa 2600 BCE","slug":"dahshur-bent-pyramid-angle-adjustment-circa-2600-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/dahshur-bent-pyramid-angle-adjustment-circa-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineers abruptly changed the angle of a massive pyramid midway through construction, leaving a visible bend that still puzzles observers."},{"title":"Deir el-Medina Workers Strike of 1159 BCE","slug":"deir-el-medina-workers-strike-of-1159-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/deir-el-medina-workers-strike-of-1159-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1159 BCE, state-paid tomb builders walked off the job when their grain rations failed to arrive, creating history's first recorded labor strike."},{"title":"Dendera Zodiac Ceiling Relief and Greco-Egyptian Astronomy","slug":"dendera-zodiac-ceiling-relief-and-greco-egyptian-astronomy","url":"/categories/ancient-civilizations-secrets/ancient-egypt/dendera-zodiac-ceiling-relief-and-greco-egyptian-astronomy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 50 BCE, artisans carved a detailed zodiac map onto a temple ceiling in Dendera blending Egyptian theology with Greek astronomy."},{"title":"Ebers Papyrus Medical Prescriptions circa 1550 BCE","slug":"ebers-papyrus-medical-prescriptions-circa-1550-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/ebers-papyrus-medical-prescriptions-circa-1550-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1550 BCE, Egyptian physicians compiled over 700 medical remedies onto a 20-meter-long papyrus scroll."},{"title":"Esna Temple Astronomical Ceiling Reliefs","slug":"esna-temple-astronomical-ceiling-reliefs","url":"/categories/ancient-civilizations-secrets/ancient-egypt/esna-temple-astronomical-ceiling-reliefs.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ceiling carvings at Esna map constellations and decans used to structure the Egyptian calendar."},{"title":"Famine Stela Inscription and Seven-Year Drought Legend","slug":"famine-stela-inscription-and-seven-year-drought-legend","url":"/categories/ancient-civilizations-secrets/ancient-egypt/famine-stela-inscription-and-seven-year-drought-legend.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A granite inscription on Sehel Island claims a seven-year Nile failure once pushed ancient Egypt to the edge of collapse."},{"title":"Giza Solar Boat Discovery of 1954","slug":"giza-solar-boat-discovery-of-1954","url":"/categories/ancient-civilizations-secrets/ancient-egypt/giza-solar-boat-discovery-of-1954.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1954, archaeologists dismantled and reassembled a 43-meter cedar boat buried beside the Great Pyramid for over 4,500 years."},{"title":"Hatshepsut's Mortuary Temple Engineering at Deir el-Bahri","slug":"hatshepsut-s-mortuary-temple-engineering-at-deir-el-bahri","url":"/categories/ancient-civilizations-secrets/ancient-egypt/hatshepsut-s-mortuary-temple-engineering-at-deir-el-bahri.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1470 BCE, a female pharaoh built a terraced stone complex so precisely aligned with cliffs that it appears carved from the mountain itself."},{"title":"Hieratic Script Administrative Revolution circa 2600 BCE","slug":"hieratic-script-administrative-revolution-circa-2600-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/hieratic-script-administrative-revolution-circa-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2600 BCE, Egyptian officials were simplifying hieroglyphs into a faster cursive script to manage taxation and state records."},{"title":"Ipuwer Papyrus Social Collapse Narrative","slug":"ipuwer-papyrus-social-collapse-narrative","url":"/categories/ancient-civilizations-secrets/ancient-egypt/ipuwer-papyrus-social-collapse-narrative.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An Egyptian manuscript describes a society where the poor become rich, tombs are violated, and order collapses into chaos."},{"title":"Jebel Barkal Campaigns and Kushite Integration circa 730 BCE","slug":"jebel-barkal-campaigns-and-kushite-integration-circa-730-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/jebel-barkal-campaigns-and-kushite-integration-circa-730-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 730 BCE, Nubian rulers from Kush conquered Egypt and ruled as its 25th Dynasty pharaohs."},{"title":"Kadesh Treaty of 1259 BCE and the World's First Recorded Peace Accord","slug":"kadesh-treaty-of-1259-bce-and-the-world-s-first-recorded-peace-accord","url":"/categories/ancient-civilizations-secrets/ancient-egypt/kadesh-treaty-of-1259-bce-and-the-world-s-first-recorded-peace-accord.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1259 BCE, two rival superpowers carved a bilingual peace treaty into silver tablets after nearly destroying each other at Kadesh."},{"title":"Karnak Hypostyle Hall Construction in 1290 BCE","slug":"karnak-hypostyle-hall-construction-in-1290-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/karnak-hypostyle-hall-construction-in-1290-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 130 colossal columns arranged in a forest of stone transformed Karnak into one of the largest temple complexes ever built."},{"title":"Khufu's Great Pyramid Labor Organization in 2600 BCE","slug":"khufu-s-great-pyramid-labor-organization-in-2600-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/khufu-s-great-pyramid-labor-organization-in-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2600 BCE, a workforce of thousands organized into rotating crews constructed the largest stone pyramid ever built without slave chains."},{"title":"Kom Ombo Double Temple Design circa 180 BCE","slug":"kom-ombo-double-temple-design-circa-180-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/kom-ombo-double-temple-design-circa-180-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 180 BCE, Egyptian architects built a perfectly symmetrical temple with two parallel sanctuaries to serve rival gods under one roof."},{"title":"Luxor Temple Opet Festival and Political Legitimacy Ritual","slug":"luxor-temple-opet-festival-and-political-legitimacy-ritual","url":"/categories/ancient-civilizations-secrets/ancient-egypt/luxor-temple-opet-festival-and-political-legitimacy-ritual.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For nearly 1,500 years, Egyptian rulers reenacted a ceremonial river procession at Luxor to renew their right to govern."},{"title":"Meidum Pyramid Structural Collapse in the Old Kingdom","slug":"meidum-pyramid-structural-collapse-in-the-old-kingdom","url":"/categories/ancient-civilizations-secrets/ancient-egypt/meidum-pyramid-structural-collapse-in-the-old-kingdom.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An early Egyptian pyramid partially collapsed in antiquity, leaving behind a towering core surrounded by rubble that puzzled engineers for centuries."},{"title":"Mummification Brain Removal Procedure Documented by Herodotus","slug":"mummification-brain-removal-procedure-documented-by-herodotus","url":"/categories/ancient-civilizations-secrets/ancient-egypt/mummification-brain-removal-procedure-documented-by-herodotus.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 5th century BCE, Egyptian embalmers were inserting metal hooks through the nose to extract the brain before burial."},{"title":"Narmer Palette Political Unification circa 3100 BCE","slug":"narmer-palette-political-unification-circa-3100-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/narmer-palette-political-unification-circa-3100-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 3100 BCE, a carved stone palette recorded the violent consolidation of Upper and Lower Egypt into a single kingdom."},{"title":"Nile Nilometer Taxation System and Flood Measurement","slug":"nile-nilometer-taxation-system-and-flood-measurement","url":"/categories/ancient-civilizations-secrets/ancient-egypt/nile-nilometer-taxation-system-and-flood-measurement.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For over a millennium, stone stairwells carved along the Nile determined how much tax Egyptians would pay each year."},{"title":"Oxyrhynchus Papyri Discovery of 1897 and Lost Literature","slug":"oxyrhynchus-papyri-discovery-of-1897-and-lost-literature","url":"/categories/ancient-civilizations-secrets/ancient-egypt/oxyrhynchus-papyri-discovery-of-1897-and-lost-literature.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1897, archaeologists excavating an Egyptian rubbish mound uncovered tens of thousands of papyrus fragments preserving forgotten ancient texts."},{"title":"Pi-Ramesses Capital Relocation and Nile Shift circa 1060 BCE","slug":"pi-ramesses-capital-relocation-and-nile-shift-circa-1060-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/pi-ramesses-capital-relocation-and-nile-shift-circa-1060-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A thriving royal capital built by Ramesses II was gradually abandoned after the Nile shifted its course, stranding the city away from major trade routes."},{"title":"Qar Tomb Autobiography Reveals Sixth Dynasty Power Networks","slug":"qar-tomb-autobiography-reveals-sixth-dynasty-power-networks","url":"/categories/ancient-civilizations-secrets/ancient-egypt/qar-tomb-autobiography-reveals-sixth-dynasty-power-networks.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2300 BCE, a provincial governor carved his own career achievements into limestone, quietly exposing how Egypt's Old Kingdom actually functioned beyond the pharaoh."},{"title":"Qubbet el-Hawa Tombs and Aswan Frontier Diplomacy","slug":"qubbet-el-hawa-tombs-and-aswan-frontier-diplomacy","url":"/categories/ancient-civilizations-secrets/ancient-egypt/qubbet-el-hawa-tombs-and-aswan-frontier-diplomacy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cliffside tombs overlooking the Nile at Aswan record how Egyptian governors negotiated with Nubia instead of simply conquering it."},{"title":"Ramesseum Grain Storage Complex and Economic Planning","slug":"ramesseum-grain-storage-complex-and-economic-planning","url":"/categories/ancient-civilizations-secrets/ancient-egypt/ramesseum-grain-storage-complex-and-economic-planning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The mortuary temple of Ramesses II doubled as a massive grain storage facility capable of supporting thousands during shortages."},{"title":"Rosetta Stone Decree of 196 BCE and Language Decipherment","slug":"rosetta-stone-decree-of-196-bce-and-language-decipherment","url":"/categories/ancient-civilizations-secrets/ancient-egypt/rosetta-stone-decree-of-196-bce-and-language-decipherment.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 196 BCE, a single granite slab recorded the same royal decree in three scripts, unknowingly creating the key to unlocking hieroglyphs."},{"title":"Saqqara Serapeum Bull Burial Chambers","slug":"saqqara-serapeum-bull-burial-chambers","url":"/categories/ancient-civilizations-secrets/ancient-egypt/saqqara-serapeum-bull-burial-chambers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Underground galleries at Saqqara housed massive granite sarcophagi weighing up to 70 tons for sacred Apis bulls."},{"title":"Tanis Royal Tombs Discovery in 1939","slug":"tanis-royal-tombs-discovery-in-1939","url":"/categories/ancient-civilizations-secrets/ancient-egypt/tanis-royal-tombs-discovery-in-1939.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1939, archaeologists uncovered largely intact royal tombs in Tanis filled with silver coffins and gold funerary masks."},{"title":"Umm el-Qaab Royal Cemetery and Early Dynastic Burials","slug":"umm-el-qaab-royal-cemetery-and-early-dynastic-burials","url":"/categories/ancient-civilizations-secrets/ancient-egypt/umm-el-qaab-royal-cemetery-and-early-dynastic-burials.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A desert necropolis at Abydos contains some of the earliest royal tombs in Egyptian history, predating the pyramids by centuries."},{"title":"Unas Pyramid Texts Inscription circa 2350 BCE","slug":"unas-pyramid-texts-inscription-circa-2350-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/unas-pyramid-texts-inscription-circa-2350-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2350 BCE, an Egyptian pharaoh filled the interior walls of his pyramid with thousands of carved spells to guide his soul after death."},{"title":"Uraeus Cobra Symbol and Royal Authority","slug":"uraeus-cobra-symbol-and-royal-authority","url":"/categories/ancient-civilizations-secrets/ancient-egypt/uraeus-cobra-symbol-and-royal-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A rearing cobra mounted on a pharaoh's crown symbolized lethal protection sanctioned by divine power."},{"title":"Ushabti Figurines and Afterlife Labor Contracts","slug":"ushabti-figurines-and-afterlife-labor-contracts","url":"/categories/ancient-civilizations-secrets/ancient-egypt/ushabti-figurines-and-afterlife-labor-contracts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 1550 BCE, Egyptians were placing small worker statues in tombs to perform agricultural labor for them in the afterlife."},{"title":"Valley of the Kings Tomb Security Failures in 1100 BCE","slug":"valley-of-the-kings-tomb-security-failures-in-1100-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/valley-of-the-kings-tomb-security-failures-in-1100-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 1100 BCE, royal tombs carved deep into desert cliffs were being systematically looted by the very workers tasked with protecting them."},{"title":"Wadi al-Jarf Harbor Papyri and Red Sea Trade circa 2600 BCE","slug":"wadi-al-jarf-harbor-papyri-and-red-sea-trade-circa-2600-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/wadi-al-jarf-harbor-papyri-and-red-sea-trade-circa-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Papyri discovered in a Red Sea cave documented pyramid-era officials coordinating maritime supply missions more than 4,500 years ago."},{"title":"Xerxes I Invasion of Egypt in 484 BCE","slug":"xerxes-i-invasion-of-egypt-in-484-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/xerxes-i-invasion-of-egypt-in-484-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 484 BCE, Persian King Xerxes I crushed an Egyptian revolt and tightened imperial control over the Nile Valley."},{"title":"Xois Delta Capital and Third Intermediate Power Shift","slug":"xois-delta-capital-and-third-intermediate-power-shift","url":"/categories/ancient-civilizations-secrets/ancient-egypt/xois-delta-capital-and-third-intermediate-power-shift.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1070 BCE, political authority in Egypt fractured so severely that rival capitals emerged in the Nile Delta and Thebes simultaneously."},{"title":"Yam Trade Expeditions of Harkhuf circa 2250 BCE","slug":"yam-trade-expeditions-of-harkhuf-circa-2250-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/yam-trade-expeditions-of-harkhuf-circa-2250-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An Egyptian official once returned from central Africa with a dancing dwarf presented directly to the pharaoh."},{"title":"Yavne-Yam Papyrus Evidence of Mediterranean Contact","slug":"yavne-yam-papyrus-evidence-of-mediterranean-contact","url":"/categories/ancient-civilizations-secrets/ancient-egypt/yavne-yam-papyrus-evidence-of-mediterranean-contact.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fragments of correspondence linked to Egypt reveal maritime connections stretching across the eastern Mediterranean in antiquity."},{"title":"Yebu Elephantine Fortress and Nubian Trade Control","slug":"yebu-elephantine-fortress-and-nubian-trade-control","url":"/categories/ancient-civilizations-secrets/ancient-egypt/yebu-elephantine-fortress-and-nubian-trade-control.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2000 BCE, Egypt maintained a fortified island garrison at Elephantine to regulate trade and military movement along the southern Nile."},{"title":"Zahi Hawass 2005 Valley of the Kings Radar Survey","slug":"zahi-hawass-2005-valley-of-the-kings-radar-survey","url":"/categories/ancient-civilizations-secrets/ancient-egypt/zahi-hawass-2005-valley-of-the-kings-radar-survey.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 2005, ground-penetrating radar scans in the Valley of the Kings identified previously unknown chambers beneath ancient burial sites."},{"title":"Zawyet el-Aryan Unfinished Pyramid Enigma","slug":"zawyet-el-aryan-unfinished-pyramid-enigma","url":"/categories/ancient-civilizations-secrets/ancient-egypt/zawyet-el-aryan-unfinished-pyramid-enigma.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An abandoned pyramid core at Zawyet el-Aryan preserves a massive granite sarcophagus never used for burial."},{"title":"Zawyet el-Maiyitin Rock Tombs and Amarna Period Art","slug":"zawyet-el-maiyitin-rock-tombs-and-amarna-period-art","url":"/categories/ancient-civilizations-secrets/ancient-egypt/zawyet-el-maiyitin-rock-tombs-and-amarna-period-art.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cliff tombs near el-Minya preserve artistic traces from the turbulent reign of Akhenaten."},{"title":"Zoser Step Pyramid Construction Breakthrough circa 2630 BCE","slug":"zoser-step-pyramid-construction-breakthrough-circa-2630-bce","url":"/categories/ancient-civilizations-secrets/ancient-egypt/zoser-step-pyramid-construction-breakthrough-circa-2630-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2630 BCE, a royal architect transformed a flat mastaba tomb into the first large-scale stone pyramid, permanently altering architectural ambition."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

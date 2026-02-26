@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iberian Lynx</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Iberian Lynx</h1>
+  <p>Explore all facts in "Iberian Lynx".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Iberian Lynx</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"2013 Iberian Lynx Census Recorded Fewer Than 100 Breeding Females","slug":"2013-iberian-lynx-census-recorded-fewer-than-100-breeding-females","url":"/categories/endangered-predators/iberian-lynx/2013-iberian-lynx-census-recorded-fewer-than-100-breeding-females.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In 2013, Europe’s rarest wild cat was down to fewer than 100 breeding females."},{"title":"Doñana National Park Roads Killed Dozens of Iberian Lynx in a Single Decade","slug":"do-ana-national-park-roads-killed-dozens-of-iberian-lynx-in-a-single-decade","url":"/categories/endangered-predators/iberian-lynx/do-ana-national-park-roads-killed-dozens-of-iberian-lynx-in-a-single-decade.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A protected national park became one of the deadliest places for Europe’s rarest cat."},{"title":"Genetic Bottleneck in Sierra Morena Iberian Lynx Reduced Diversity to Critical Levels","slug":"genetic-bottleneck-in-sierra-morena-iberian-lynx-reduced-diversity-to-critical-levels","url":"/categories/endangered-predators/iberian-lynx/genetic-bottleneck-in-sierra-morena-iberian-lynx-reduced-diversity-to-critical-levels.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire predator population was compressed into a genetic echo chamber."},{"title":"Habitat Fragmentation Reduced Iberian Lynx Range by More Than 80 Percent in the 20th Century","slug":"habitat-fragmentation-reduced-iberian-lynx-range-by-more-than-80-percent-in-the-20th-century","url":"/categories/endangered-predators/iberian-lynx/habitat-fragmentation-reduced-iberian-lynx-range-by-more-than-80-percent-in-the-20th-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Within one century, a predator lost over four-fifths of its historical range."},{"title":"High Rabbit Density Directly Correlates With Larger Iberian Lynx Litter Sizes","slug":"high-rabbit-density-directly-correlates-with-larger-iberian-lynx-litter-sizes","url":"/categories/endangered-predators/iberian-lynx/high-rabbit-density-directly-correlates-with-larger-iberian-lynx-litter-sizes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When rabbits surge, lynx families multiply almost immediately."},{"title":"Human-Land Use Agreements Secured Private Estates for Iberian Lynx Recovery","slug":"human-land-use-agreements-secured-private-estates-for-iberian-lynx-recovery","url":"/categories/endangered-predators/iberian-lynx/human-land-use-agreements-secured-private-estates-for-iberian-lynx-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Private hunting estates became unexpected lifelines for a collapsing predator."},{"title":"Jerez Reintroduction Zone Expanded Iberian Lynx Territory Beyond Historic Strongholds","slug":"jerez-reintroduction-zone-expanded-iberian-lynx-territory-beyond-historic-strongholds","url":"/categories/endangered-predators/iberian-lynx/jerez-reintroduction-zone-expanded-iberian-lynx-territory-beyond-historic-strongholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator once trapped in two pockets now hunts across landscapes it abandoned decades ago."},{"title":"Keystone Predator Status of Iberian Lynx Shapes Mediterranean Trophic Balance","slug":"keystone-predator-status-of-iberian-lynx-shapes-mediterranean-trophic-balance","url":"/categories/endangered-predators/iberian-lynx/keystone-predator-status-of-iberian-lynx-shapes-mediterranean-trophic-balance.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove this single feline and entire prey dynamics begin to tilt."},{"title":"Killer Rabbit Viruses Triggered Iberian Lynx Population Collapse in the 20th Century","slug":"killer-rabbit-viruses-triggered-iberian-lynx-population-collapse-in-the-20th-century","url":"/categories/endangered-predators/iberian-lynx/killer-rabbit-viruses-triggered-iberian-lynx-population-collapse-in-the-20th-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A microscopic virus nearly erased Europe’s top feline predator."},{"title":"Kilometer-Scale Wildlife Corridors Reduced Iberian Lynx Road Mortality Hotspots","slug":"kilometer-scale-wildlife-corridors-reduced-iberian-lynx-road-mortality-hotspots","url":"/categories/endangered-predators/iberian-lynx/kilometer-scale-wildlife-corridors-reduced-iberian-lynx-road-mortality-hotspots.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Concrete barriers once killed lynx; engineered passages now guide them safely underneath."},{"title":"Kinetic Fencing Designs Reduced Iberian Lynx Highway Crossings in Hotspot Areas","slug":"kinetic-fencing-designs-reduced-iberian-lynx-highway-crossings-in-hotspot-areas","url":"/categories/endangered-predators/iberian-lynx/kinetic-fencing-designs-reduced-iberian-lynx-highway-crossings-in-hotspot-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Strategically placed fencing redirected a predator away from lethal asphalt corridors."},{"title":"LIFE Lynx Program Invested Millions to Prevent Iberian Extinction","slug":"life-lynx-program-invested-millions-to-prevent-iberian-extinction","url":"/categories/endangered-predators/iberian-lynx/life-lynx-program-invested-millions-to-prevent-iberian-extinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Millions of euros were mobilized to rescue fewer than 200 wild cats."},{"title":"Male Iberian Lynx Territories Can Span Over 10 Square Kilometers in Low Prey Areas","slug":"male-iberian-lynx-territories-can-span-over-10-square-kilometers-in-low-prey-areas","url":"/categories/endangered-predators/iberian-lynx/male-iberian-lynx-territories-can-span-over-10-square-kilometers-in-low-prey-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When rabbits vanish, a single lynx roams territories larger than small towns."},{"title":"Mediterranean Wildfire Events Threaten Concentrated Iberian Lynx Populations","slug":"mediterranean-wildfire-events-threaten-concentrated-iberian-lynx-populations","url":"/categories/endangered-predators/iberian-lynx/mediterranean-wildfire-events-threaten-concentrated-iberian-lynx-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single wildfire season could engulf a significant fraction of the global population."},{"title":"Metapopulation Strategy Linked Isolated Iberian Lynx Groups Through Managed Dispersal","slug":"metapopulation-strategy-linked-isolated-iberian-lynx-groups-through-managed-dispersal","url":"/categories/endangered-predators/iberian-lynx/metapopulation-strategy-linked-isolated-iberian-lynx-groups-through-managed-dispersal.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A species once stranded in isolation now survives through planned movement corridors."},{"title":"Mortality Analysis Showed Juvenile Iberian Lynx Face Highest Dispersal Risk","slug":"mortality-analysis-showed-juvenile-iberian-lynx-face-highest-dispersal-risk","url":"/categories/endangered-predators/iberian-lynx/mortality-analysis-showed-juvenile-iberian-lynx-face-highest-dispersal-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The most dangerous journey in a lynx’s life begins the moment it leaves its mother."},{"title":"National Action Plans in Spain Institutionalized Iberian Lynx Recovery Strategy","slug":"national-action-plans-in-spain-institutionalized-iberian-lynx-recovery-strategy","url":"/categories/endangered-predators/iberian-lynx/national-action-plans-in-spain-institutionalized-iberian-lynx-recovery-strategy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A near-extinct predator now operates under a formal national policy framework."},{"title":"Northern Range Reintroduction Marked First Iberian Lynx Expansion in Decades","slug":"northern-range-reintroduction-marked-first-iberian-lynx-expansion-in-decades","url":"/categories/endangered-predators/iberian-lynx/northern-range-reintroduction-marked-first-iberian-lynx-expansion-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator absent from northern habitats for decades now breeds there again."},{"title":"Observed Dispersal Distances Exceeded 150 Kilometers for Some Iberian Lynx","slug":"observed-dispersal-distances-exceeded-150-kilometers-for-some-iberian-lynx","url":"/categories/endangered-predators/iberian-lynx/observed-dispersal-distances-exceeded-150-kilometers-for-some-iberian-lynx.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator once thought regionally confined has crossed distances longer than some national borders."},{"title":"Over 1,000 Iberian Lynx in 2023 Marked Largest Population in Decades","slug":"over-1-000-iberian-lynx-in-2023-marked-largest-population-in-decades","url":"/categories/endangered-predators/iberian-lynx/over-1-000-iberian-lynx-in-2023-marked-largest-population-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"From fewer than 100 to over 1,000, the rebound defied early extinction forecasts."},{"title":"Over 80 Percent Historical Iberian Lynx Habitat Now Lies Outside Protected Areas","slug":"over-80-percent-historical-iberian-lynx-habitat-now-lies-outside-protected-areas","url":"/categories/endangered-predators/iberian-lynx/over-80-percent-historical-iberian-lynx-habitat-now-lies-outside-protected-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Most of this predator’s former range exists beyond park boundaries."},{"title":"Overconcentration in Doñana Once Placed Majority of Iberian Lynx in Single Region","slug":"overconcentration-in-do-ana-once-placed-majority-of-iberian-lynx-in-single-region","url":"/categories/endangered-predators/iberian-lynx/overconcentration-in-do-ana-once-placed-majority-of-iberian-lynx-in-single-region.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"At one point, most of the species lived inside a single geographic pocket."},{"title":"Population Density Thresholds Determine Iberian Lynx Reintroduction Site Selection","slug":"population-density-thresholds-determine-iberian-lynx-reintroduction-site-selection","url":"/categories/endangered-predators/iberian-lynx/population-density-thresholds-determine-iberian-lynx-reintroduction-site-selection.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Release a lynx into the wrong density zone and recovery statistics collapse."},{"title":"Population Modeling in 2002 Predicted Imminent Iberian Lynx Extinction Without Intervention","slug":"population-modeling-in-2002-predicted-imminent-iberian-lynx-extinction-without-intervention","url":"/categories/endangered-predators/iberian-lynx/population-modeling-in-2002-predicted-imminent-iberian-lynx-extinction-without-intervention.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Mathematical models once projected this predator’s disappearance within decades."},{"title":"Portugal Reestablished Wild Iberian Lynx Breeding After Local Extinction","slug":"portugal-reestablished-wild-iberian-lynx-breeding-after-local-extinction","url":"/categories/endangered-predators/iberian-lynx/portugal-reestablished-wild-iberian-lynx-breeding-after-local-extinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A country that lost its native lynx now hosts breeding pairs again."},{"title":"Prey Disease Surveillance Now Operates as Early Warning System for Iberian Lynx","slug":"prey-disease-surveillance-now-operates-as-early-warning-system-for-iberian-lynx","url":"/categories/endangered-predators/iberian-lynx/prey-disease-surveillance-now-operates-as-early-warning-system-for-iberian-lynx.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Monitoring rabbit viruses has become a frontline defense for a top predator."},{"title":"Quantified Recovery Raised Iberian Lynx Numbers Above 1,000 by 2023","slug":"quantified-recovery-raised-iberian-lynx-numbers-above-1-000-by-2023","url":"/categories/endangered-predators/iberian-lynx/quantified-recovery-raised-iberian-lynx-numbers-above-1-000-by-2023.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A species once counted in double digits now exceeds one thousand individuals."},{"title":"Quarantine Protocols in Breeding Centers Prevented Disease Spread Among Iberian Lynx Cubs","slug":"quarantine-protocols-in-breeding-centers-prevented-disease-spread-among-iberian-lynx-cubs","url":"/categories/endangered-predators/iberian-lynx/quarantine-protocols-in-breeding-centers-prevented-disease-spread-among-iberian-lynx-cubs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single infection inside a breeding facility could have erased years of recovery."},{"title":"Quasi-Extinction Threshold in 2002 Left Iberian Lynx Below 100 Individuals","slug":"quasi-extinction-threshold-in-2002-left-iberian-lynx-below-100-individuals","url":"/categories/endangered-predators/iberian-lynx/quasi-extinction-threshold-in-2002-left-iberian-lynx-below-100-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In 2002, fewer than 100 wild cats separated survival from disappearance."},{"title":"Roadkill Data Showed Iberian Lynx Mortality Could Erase Entire Cohorts","slug":"roadkill-data-showed-iberian-lynx-mortality-could-erase-entire-cohorts","url":"/categories/endangered-predators/iberian-lynx/roadkill-data-showed-iberian-lynx-mortality-could-erase-entire-cohorts.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One stretch of highway threatened an entire generation of Europe’s rarest feline."},{"title":"Satellite Telemetry Revealed Iberian Lynx Dispersal Patterns Across Fragmented Landscapes","slug":"satellite-telemetry-revealed-iberian-lynx-dispersal-patterns-across-fragmented-landscapes","url":"/categories/endangered-predators/iberian-lynx/satellite-telemetry-revealed-iberian-lynx-dispersal-patterns-across-fragmented-landscapes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator once thought sedentary has crossed entire provinces under satellite watch."},{"title":"Underpass Construction Costs Were Justified by Value of Breeding Iberian Lynx Females","slug":"underpass-construction-costs-were-justified-by-value-of-breeding-iberian-lynx-females","url":"/categories/endangered-predators/iberian-lynx/underpass-construction-costs-were-justified-by-value-of-breeding-iberian-lynx-females.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single breeding female became economically more valuable than a stretch of highway."},{"title":"Unique Spot Pattern Databases Enabled Individual Iberian Lynx Life Histories","slug":"unique-spot-pattern-databases-enabled-individual-iberian-lynx-life-histories","url":"/categories/endangered-predators/iberian-lynx/unique-spot-pattern-databases-enabled-individual-iberian-lynx-life-histories.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every surviving lynx can be recognized by a pattern no other animal shares."},{"title":"Unique Spot Patterns Allow Individual Iberian Lynx Identification in the Wild","slug":"unique-spot-patterns-allow-individual-iberian-lynx-identification-in-the-wild","url":"/categories/endangered-predators/iberian-lynx/unique-spot-patterns-allow-individual-iberian-lynx-identification-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every surviving Iberian lynx carries a biometric pattern as distinct as a fingerprint."},{"title":"Urban Expansion in Andalusia Constrained Iberian Lynx Habitat to Isolated Patches","slug":"urban-expansion-in-andalusia-constrained-iberian-lynx-habitat-to-isolated-patches","url":"/categories/endangered-predators/iberian-lynx/urban-expansion-in-andalusia-constrained-iberian-lynx-habitat-to-isolated-patches.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Modern suburbs squeezed a continental predator into ecological fragments."},{"title":"Vehicle Collision Data in 2014 Accounted for Significant Iberian Lynx Mortality","slug":"vehicle-collision-data-in-2014-accounted-for-significant-iberian-lynx-mortality","url":"/categories/endangered-predators/iberian-lynx/vehicle-collision-data-in-2014-accounted-for-significant-iberian-lynx-mortality.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In one year, car strikes removed a measurable fraction of the global population."},{"title":"Vulnerability to Stochastic Events Defined Iberian Lynx Extinction Risk Models","slug":"vulnerability-to-stochastic-events-defined-iberian-lynx-extinction-risk-models","url":"/categories/endangered-predators/iberian-lynx/vulnerability-to-stochastic-events-defined-iberian-lynx-extinction-risk-models.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One drought, one fire, one outbreak once threatened to erase an entire species."},{"title":"Wild Rabbit Recovery Programs Directly Influenced Iberian Lynx Population Growth","slug":"wild-rabbit-recovery-programs-directly-influenced-iberian-lynx-population-growth","url":"/categories/endangered-predators/iberian-lynx/wild-rabbit-recovery-programs-directly-influenced-iberian-lynx-population-growth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Restoring a small burrowing herbivore triggered a rebound in a top predator."},{"title":"Wildfire Risk Modeling Now Included in Iberian Lynx Conservation Planning","slug":"wildfire-risk-modeling-now-included-in-iberian-lynx-conservation-planning","url":"/categories/endangered-predators/iberian-lynx/wildfire-risk-modeling-now-included-in-iberian-lynx-conservation-planning.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fire probability maps influence where a predator is allowed to return."},{"title":"X-Linked Genetic Markers Helped Track Inbreeding in Iberian Lynx Populations","slug":"x-linked-genetic-markers-helped-track-inbreeding-in-iberian-lynx-populations","url":"/categories/endangered-predators/iberian-lynx/x-linked-genetic-markers-helped-track-inbreeding-in-iberian-lynx-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"DNA markers on a single chromosome exposed hidden risks inside a recovering species."},{"title":"Xeric Mediterranean Climate Variability Influences Iberian Lynx Prey Stability","slug":"xeric-mediterranean-climate-variability-influences-iberian-lynx-prey-stability","url":"/categories/endangered-predators/iberian-lynx/xeric-mediterranean-climate-variability-influences-iberian-lynx-prey-stability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rainfall patterns ripple upward to determine predator survival rates."},{"title":"Xeric Mediterranean Scrublands Support 90 Percent Rabbit Diet of Iberian Lynx","slug":"xeric-mediterranean-scrublands-support-90-percent-rabbit-diet-of-iberian-lynx","url":"/categories/endangered-predators/iberian-lynx/xeric-mediterranean-scrublands-support-90-percent-rabbit-diet-of-iberian-lynx.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator survives on a single prey species for up to 90 percent of its diet."},{"title":"Xerophytic Shrub Density Determines Core Iberian Lynx Denning Sites","slug":"xerophytic-shrub-density-determines-core-iberian-lynx-denning-sites","url":"/categories/endangered-predators/iberian-lynx/xerophytic-shrub-density-determines-core-iberian-lynx-denning-sites.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator’s survival hinges on dense thorny shrubs few people notice."},{"title":"Y Chromosome Bottleneck Amplified Genetic Risk in Iberian Lynx Recovery","slug":"y-chromosome-bottleneck-amplified-genetic-risk-in-iberian-lynx-recovery","url":"/categories/endangered-predators/iberian-lynx/y-chromosome-bottleneck-amplified-genetic-risk-in-iberian-lynx-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single paternal line once carried disproportionate weight in saving an entire species."},{"title":"Year 2015 Marked Record Iberian Lynx Population Growth Since Monitoring Began","slug":"year-2015-marked-record-iberian-lynx-population-growth-since-monitoring-began","url":"/categories/endangered-predators/iberian-lynx/year-2015-marked-record-iberian-lynx-population-growth-since-monitoring-began.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"After decades of decline, one monitoring year recorded unprecedented growth."},{"title":"Yellow-Eyed Iberian Lynx Became Conservation Icon Across the Iberian Peninsula","slug":"yellow-eyed-iberian-lynx-became-conservation-icon-across-the-iberian-peninsula","url":"/categories/endangered-predators/iberian-lynx/yellow-eyed-iberian-lynx-became-conservation-icon-across-the-iberian-peninsula.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator once nearly invisible now appears on billboards and policy documents."},{"title":"Young Dispersing Iberian Lynx Account for Disproportionate Road Fatalities","slug":"young-dispersing-iberian-lynx-account-for-disproportionate-road-fatalities","url":"/categories/endangered-predators/iberian-lynx/young-dispersing-iberian-lynx-account-for-disproportionate-road-fatalities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The moment a lynx leaves home is statistically its most dangerous."},{"title":"Zoning Reforms in Southern Spain Integrated Iberian Lynx Corridors Into Regional Planning","slug":"zoning-reforms-in-southern-spain-integrated-iberian-lynx-corridors-into-regional-planning","url":"/categories/endangered-predators/iberian-lynx/zoning-reforms-in-southern-spain-integrated-iberian-lynx-corridors-into-regional-planning.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Urban planning documents now contain clauses written for a wild predator."},{"title":"Zoonotic Disease Monitoring Became Central to Iberian Lynx Survival Planning","slug":"zoonotic-disease-monitoring-became-central-to-iberian-lynx-survival-planning","url":"/categories/endangered-predators/iberian-lynx/zoonotic-disease-monitoring-became-central-to-iberian-lynx-survival-planning.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator’s future now depends on disease surveillance normally reserved for livestock."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

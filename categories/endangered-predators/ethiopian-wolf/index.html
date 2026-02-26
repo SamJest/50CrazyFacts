@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ethiopian Wolf</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Ethiopian Wolf</h1>
+  <p>Explore all facts in "Ethiopian Wolf".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Ethiopian Wolf</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Arsi Bale Corridor Loss Severed Ethiopian Wolf Gene Flow in the 20th Century","slug":"arsi-bale-corridor-loss-severed-ethiopian-wolf-gene-flow-in-the-20th-century","url":"/categories/endangered-predators/ethiopian-wolf/arsi-bale-corridor-loss-severed-ethiopian-wolf-gene-flow-in-the-20th-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A strip of farmland broke genetic exchange between two mountain wolves."},{"title":"Arsi Mountains Fragmentation: Ethiopian Wolves Survive on Ecological Islands","slug":"arsi-mountains-fragmentation-ethiopian-wolves-survive-on-ecological-islands","url":"/categories/endangered-predators/ethiopian-wolf/arsi-mountains-fragmentation-ethiopian-wolves-survive-on-ecological-islands.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire wolf populations now live on mountaintops cut off by farmland."},{"title":"Bale Mountains Hold Over 50 Percent of All Ethiopian Wolves Alive Today","slug":"bale-mountains-hold-over-50-percent-of-all-ethiopian-wolves-alive-today","url":"/categories/endangered-predators/ethiopian-wolf/bale-mountains-hold-over-50-percent-of-all-ethiopian-wolves-alive-today.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than half the species survives in one vulnerable mountain range."},{"title":"Bale Mountains Rabies Outbreak 2003: 75 Percent of Ethiopian Wolves Lost","slug":"bale-mountains-rabies-outbreak-2003-75-percent-of-ethiopian-wolves-lost","url":"/categories/endangered-predators/ethiopian-wolf/bale-mountains-rabies-outbreak-2003-75-percent-of-ethiopian-wolves-lost.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One virus erased three quarters of a wolf population in months."},{"title":"Canine Distemper 2010 Outbreak Halved Bale Mountains Wolf Numbers","slug":"canine-distemper-2010-outbreak-halved-bale-mountains-wolf-numbers","url":"/categories/endangered-predators/ethiopian-wolf/canine-distemper-2010-outbreak-halved-bale-mountains-wolf-numbers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A respiratory virus cut an entire predator population in half."},{"title":"Climate Models Project Afroalpine Habitat Shrinkage by Mid-21st Century","slug":"climate-models-project-afroalpine-habitat-shrinkage-by-mid-21st-century","url":"/categories/endangered-predators/ethiopian-wolf/climate-models-project-afroalpine-habitat-shrinkage-by-mid-21st-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rising temperatures are squeezing this wolf against mountaintops."},{"title":"Dessie Highlands Survey Recorded Fewer Than 20 Ethiopian Wolves in 2015","slug":"dessie-highlands-survey-recorded-fewer-than-20-ethiopian-wolves-in-2015","url":"/categories/endangered-predators/ethiopian-wolf/dessie-highlands-survey-recorded-fewer-than-20-ethiopian-wolves-in-2015.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire mountain range now holds fewer wolves than a city bus."},{"title":"Drought Cycles in the 1980s Reduced Ethiopian Wolf Prey Base Dramatically","slug":"drought-cycles-in-the-1980s-reduced-ethiopian-wolf-prey-base-dramatically","url":"/categories/endangered-predators/ethiopian-wolf/drought-cycles-in-the-1980s-reduced-ethiopian-wolf-prey-base-dramatically.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single dry season can starve an entire wolf population."},{"title":"Ethiopian Highlands Dog Population Outnumbers Wolves by Thousands to One","slug":"ethiopian-highlands-dog-population-outnumbers-wolves-by-thousands-to-one","url":"/categories/endangered-predators/ethiopian-wolf/ethiopian-highlands-dog-population-outnumbers-wolves-by-thousands-to-one.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In wolf territory, domestic dogs outnumber the wild predator by thousands."},{"title":"Ethiopian Wolf Genome Studies Reveal Distinct African Wolf Lineage","slug":"ethiopian-wolf-genome-studies-reveal-distinct-african-wolf-lineage","url":"/categories/endangered-predators/ethiopian-wolf/ethiopian-wolf-genome-studies-reveal-distinct-african-wolf-lineage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Genetic sequencing confirms this wolf is unlike any other in Africa."},{"title":"Frost-Line Agriculture Expansion Pushed Ethiopian Wolves Above 3,000 Meters","slug":"frost-line-agriculture-expansion-pushed-ethiopian-wolves-above-3-000-meters","url":"/categories/endangered-predators/ethiopian-wolf/frost-line-agriculture-expansion-pushed-ethiopian-wolves-above-3-000-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Farming climbed the mountains and forced a wolf uphill."},{"title":"Gelada Plateau Altitudes: Ethiopian Wolves Hunt Above 4,300 Meters","slug":"gelada-plateau-altitudes-ethiopian-wolves-hunt-above-4-300-meters","url":"/categories/endangered-predators/ethiopian-wolf/gelada-plateau-altitudes-ethiopian-wolves-hunt-above-4-300-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These wolves live higher than most commercial airplanes climb after takeoff."},{"title":"Grazing Livestock Introduce Pathogens into Ethiopian Wolf Territories","slug":"grazing-livestock-introduce-pathogens-into-ethiopian-wolf-territories","url":"/categories/endangered-predators/ethiopian-wolf/grazing-livestock-introduce-pathogens-into-ethiopian-wolf-territories.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cattle and sheep quietly carry disease into a predator’s refuge."},{"title":"Heterozygosity Decline Signals Immune Vulnerability in Ethiopian Wolves","slug":"heterozygosity-decline-signals-immune-vulnerability-in-ethiopian-wolves","url":"/categories/endangered-predators/ethiopian-wolf/heterozygosity-decline-signals-immune-vulnerability-in-ethiopian-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Genetic uniformity leaves this predator exposed to a single pathogen."},{"title":"Human Population Growth Doubled Highland Pressure Since 1990","slug":"human-population-growth-doubled-highland-pressure-since-1990","url":"/categories/endangered-predators/ethiopian-wolf/human-population-growth-doubled-highland-pressure-since-1990.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"As human numbers doubled, wolf habitat shrank uphill."},{"title":"Isolation by Elevation Leaves Ethiopian Wolves with No Downhill Refuge","slug":"isolation-by-elevation-leaves-ethiopian-wolves-with-no-downhill-refuge","url":"/categories/endangered-predators/ethiopian-wolf/isolation-by-elevation-leaves-ethiopian-wolves-with-no-downhill-refuge.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf cannot escape downward without entering farmland."},{"title":"IUCN Endangered Status Confirms Ethiopian Wolf Faces High Extinction Risk","slug":"iucn-endangered-status-confirms-ethiopian-wolf-faces-high-extinction-risk","url":"/categories/endangered-predators/ethiopian-wolf/iucn-endangered-status-confirms-ethiopian-wolf-faces-high-extinction-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Africa’s only wolf species is officially classified as Endangered."},{"title":"Junction of Bale and Arsi Populations Shows Limited Natural Dispersal","slug":"junction-of-bale-and-arsi-populations-shows-limited-natural-dispersal","url":"/categories/endangered-predators/ethiopian-wolf/junction-of-bale-and-arsi-populations-shows-limited-natural-dispersal.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two wolf strongholds sit within reach yet rarely exchange members."},{"title":"Kinetic Pounce Hunting Style Defines Ethiopian Wolf Rodent Capture Strategy","slug":"kinetic-pounce-hunting-style-defines-ethiopian-wolf-rodent-capture-strategy","url":"/categories/endangered-predators/ethiopian-wolf/kinetic-pounce-hunting-style-defines-ethiopian-wolf-rodent-capture-strategy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf hunts by leaping vertically onto prey it cannot see."},{"title":"Knock-Down Farming Expansion Reduced Ethiopian Wolf Range by Over 60 Percent","slug":"knock-down-farming-expansion-reduced-ethiopian-wolf-range-by-over-60-percent","url":"/categories/endangered-predators/ethiopian-wolf/knock-down-farming-expansion-reduced-ethiopian-wolf-range-by-over-60-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Farmland climbed the mountains and erased most of a predator’s world."},{"title":"Local Extinction Events in the 20th Century Permanently Reduced Wolf Range","slug":"local-extinction-events-in-the-20th-century-permanently-reduced-wolf-range","url":"/categories/endangered-predators/ethiopian-wolf/local-extinction-events-in-the-20th-century-permanently-reduced-wolf-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire mountain populations vanished within decades."},{"title":"Lone Breeding Female Dynamics Limit Ethiopian Wolf Recovery Rates","slug":"lone-breeding-female-dynamics-limit-ethiopian-wolf-recovery-rates","url":"/categories/endangered-predators/ethiopian-wolf/lone-breeding-female-dynamics-limit-ethiopian-wolf-recovery-rates.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In many packs, only one female is allowed to reproduce."},{"title":"Menz Highlands Territory Density: Ethiopian Wolves Form Africa’s Smallest Wolf Packs","slug":"menz-highlands-territory-density-ethiopian-wolves-form-africa-s-smallest-wolf-packs","url":"/categories/endangered-predators/ethiopian-wolf/menz-highlands-territory-density-ethiopian-wolves-form-africa-s-smallest-wolf-packs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some wolf packs survive with fewer members than a football squad."},{"title":"Molecular Evidence Links Ethiopian Wolves Closer to Gray Wolves Than Jackals","slug":"molecular-evidence-links-ethiopian-wolves-closer-to-gray-wolves-than-jackals","url":"/categories/endangered-predators/ethiopian-wolf/molecular-evidence-links-ethiopian-wolves-closer-to-gray-wolves-than-jackals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Africa’s rarest wolf is genetically closer to Arctic predators than to local jackals."},{"title":"Narrow Afroalpine Belt Restricts Ethiopian Wolf Range to Less Than 1 Percent of Africa","slug":"narrow-afroalpine-belt-restricts-ethiopian-wolf-range-to-less-than-1-percent-of-africa","url":"/categories/endangered-predators/ethiopian-wolf/narrow-afroalpine-belt-restricts-ethiopian-wolf-range-to-less-than-1-percent-of-africa.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator survives in a sliver of land smaller than many cities."},{"title":"Near-100 Percent Rabies Fatality Leaves Ethiopian Wolves Dependent on Vaccination","slug":"near-100-percent-rabies-fatality-leaves-ethiopian-wolves-dependent-on-vaccination","url":"/categories/endangered-predators/ethiopian-wolf/near-100-percent-rabies-fatality-leaves-ethiopian-wolves-dependent-on-vaccination.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Without vaccines, a single infected dog can wipe out a wolf pack."},{"title":"Near-Total Rabies Mortality Rate Leaves Ethiopian Wolves No Natural Immunity Buffer","slug":"near-total-rabies-mortality-rate-leaves-ethiopian-wolves-no-natural-immunity-buffer","url":"/categories/endangered-predators/ethiopian-wolf/near-total-rabies-mortality-rate-leaves-ethiopian-wolves-no-natural-immunity-buffer.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rabies kills nearly every infected wolf without exception."},{"title":"Oromia Region Vaccination Campaigns Shield Fewer Than 500 Remaining Wolves","slug":"oromia-region-vaccination-campaigns-shield-fewer-than-500-remaining-wolves","url":"/categories/endangered-predators/ethiopian-wolf/oromia-region-vaccination-campaigns-shield-fewer-than-500-remaining-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Tens of thousands of vaccines protect fewer than 500 predators."},{"title":"Over 90 Percent Rodent Diet Makes Ethiopian Wolf Africa’s Most Specialized Canid","slug":"over-90-percent-rodent-diet-makes-ethiopian-wolf-africa-s-most-specialized-canid","url":"/categories/endangered-predators/ethiopian-wolf/over-90-percent-rodent-diet-makes-ethiopian-wolf-africa-s-most-specialized-canid.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This apex predator survives on prey smaller than a household cat."},{"title":"Pleistocene Lineage Evidence Shows Ethiopian Wolves Diverged Over 100,000 Years Ago","slug":"pleistocene-lineage-evidence-shows-ethiopian-wolves-diverged-over-100-000-years-ago","url":"/categories/endangered-predators/ethiopian-wolf/pleistocene-lineage-evidence-shows-ethiopian-wolves-diverged-over-100-000-years-ago.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf lineage has survived since the Ice Age yet may not survive this century."},{"title":"Population Viability Models Warn Ethiopian Wolves Could Decline Below 250","slug":"population-viability-models-warn-ethiopian-wolves-could-decline-below-250","url":"/categories/endangered-predators/ethiopian-wolf/population-viability-models-warn-ethiopian-wolves-could-decline-below-250.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Mathematical projections show this predator hovering near collapse thresholds."},{"title":"Qenoa Range Isolation: Ethiopian Wolf Population Under 500 in 2023","slug":"qenoa-range-isolation-ethiopian-wolf-population-under-500-in-2023","url":"/categories/endangered-predators/ethiopian-wolf/qenoa-range-isolation-ethiopian-wolf-population-under-500-in-2023.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 500 wolves survive on a continent of 1.4 billion people."},{"title":"Quantitative Surveys Place Global Ethiopian Wolf Population Below 500","slug":"quantitative-surveys-place-global-ethiopian-wolf-population-below-500","url":"/categories/endangered-predators/ethiopian-wolf/quantitative-surveys-place-global-ethiopian-wolf-population-below-500.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The world holds fewer of these wolves than many small villages hold people."},{"title":"Rift Valley Highlands Hold Over Half of Remaining Ethiopian Wolves","slug":"rift-valley-highlands-hold-over-half-of-remaining-ethiopian-wolves","url":"/categories/endangered-predators/ethiopian-wolf/rift-valley-highlands-hold-over-half-of-remaining-ethiopian-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than half of the world’s population survives in one mountain complex."},{"title":"Rodent Burrow Density Directly Predicts Ethiopian Wolf Territory Size","slug":"rodent-burrow-density-directly-predicts-ethiopian-wolf-territory-size","url":"/categories/endangered-predators/ethiopian-wolf/rodent-burrow-density-directly-predicts-ethiopian-wolf-territory-size.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The number of underground tunnels determines how far a wolf must roam."},{"title":"Rodent Density Fluctuations Directly Control Ethiopian Wolf Survival Rates","slug":"rodent-density-fluctuations-directly-control-ethiopian-wolf-survival-rates","url":"/categories/endangered-predators/ethiopian-wolf/rodent-density-fluctuations-directly-control-ethiopian-wolf-survival-rates.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When mole rat numbers dip, an apex predator starves."},{"title":"Simien Mountains Subpopulation Counts Fewer Than 30 Ethiopian Wolves","slug":"simien-mountains-subpopulation-counts-fewer-than-30-ethiopian-wolves","url":"/categories/endangered-predators/ethiopian-wolf/simien-mountains-subpopulation-counts-fewer-than-30-ethiopian-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One of Africa’s rarest predators survives there in numbers smaller than a classroom."},{"title":"Tight Social Hierarchy Slows Ethiopian Wolf Population Recovery","slug":"tight-social-hierarchy-slows-ethiopian-wolf-population-recovery","url":"/categories/endangered-predators/ethiopian-wolf/tight-social-hierarchy-slows-ethiopian-wolf-population-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Only one breeding female per pack limits rapid rebound."},{"title":"Tullu Dimtu Summit Range Caps Ethiopian Wolf Habitat at 4,377 Meters","slug":"tullu-dimtu-summit-range-caps-ethiopian-wolf-habitat-at-4-377-meters","url":"/categories/endangered-predators/ethiopian-wolf/tullu-dimtu-summit-range-caps-ethiopian-wolf-habitat-at-4-377-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator lives so high that the mountain peak sets its ceiling."},{"title":"Upland Climate Shift Models Predict Ethiopian Wolf Habitat Compression by 2050","slug":"upland-climate-shift-models-predict-ethiopian-wolf-habitat-compression-by-2050","url":"/categories/endangered-predators/ethiopian-wolf/upland-climate-shift-models-predict-ethiopian-wolf-habitat-compression-by-2050.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Warming temperatures are pushing this wolf toward the top of the mountain."},{"title":"Urban Expansion Toward Highland Edges Increases Human-Wolf Contact Zones","slug":"urban-expansion-toward-highland-edges-increases-human-wolf-contact-zones","url":"/categories/endangered-predators/ethiopian-wolf/urban-expansion-toward-highland-edges-increases-human-wolf-contact-zones.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Growing towns are pushing the boundary between wolves and villages closer."},{"title":"Volcanic Plateau Soils Support the Rodent Base Feeding Ethiopian Wolves","slug":"volcanic-plateau-soils-support-the-rodent-base-feeding-ethiopian-wolves","url":"/categories/endangered-predators/ethiopian-wolf/volcanic-plateau-soils-support-the-rodent-base-feeding-ethiopian-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator’s survival depends on ancient volcanic soil chemistry."},{"title":"Vulnerability to Stochastic Events Remains High with Fewer Than 500 Wolves","slug":"vulnerability-to-stochastic-events-remains-high-with-fewer-than-500-wolves","url":"/categories/endangered-predators/ethiopian-wolf/vulnerability-to-stochastic-events-remains-high-with-fewer-than-500-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Random chance alone could erase a significant fraction of the species."},{"title":"Walia Ibex Overlap Zones Reveal Ethiopian Wolf’s Rodent-Only Strategy","slug":"walia-ibex-overlap-zones-reveal-ethiopian-wolf-s-rodent-only-strategy","url":"/categories/endangered-predators/ethiopian-wolf/walia-ibex-overlap-zones-reveal-ethiopian-wolf-s-rodent-only-strategy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This wolf ignores large prey and survives almost entirely on rodents."},{"title":"Xeric Afroalpine Frost Cycles Kill Ethiopian Wolf Pups Within Days","slug":"xeric-afroalpine-frost-cycles-kill-ethiopian-wolf-pups-within-days","url":"/categories/endangered-predators/ethiopian-wolf/xeric-afroalpine-frost-cycles-kill-ethiopian-wolf-pups-within-days.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Night temperatures on these mountains freeze newborn wolves to death."},{"title":"Yabello Region Genetic Bottleneck: Ethiopian Wolves Show Critically Low Diversity","slug":"yabello-region-genetic-bottleneck-ethiopian-wolves-show-critically-low-diversity","url":"/categories/endangered-predators/ethiopian-wolf/yabello-region-genetic-bottleneck-ethiopian-wolves-show-critically-low-diversity.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire predator lineage now shares dangerously similar DNA."},{"title":"Yabello Subpopulation Isolation Highlights Extreme Fragmentation Risk","slug":"yabello-subpopulation-isolation-highlights-extreme-fragmentation-risk","url":"/categories/endangered-predators/ethiopian-wolf/yabello-subpopulation-isolation-highlights-extreme-fragmentation-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One mountain group survives almost entirely cut off from the rest."},{"title":"Zonal Afroalpine Meadows Function as Last Refuge for Ethiopian Wolves","slug":"zonal-afroalpine-meadows-function-as-last-refuge-for-ethiopian-wolves","url":"/categories/endangered-predators/ethiopian-wolf/zonal-afroalpine-meadows-function-as-last-refuge-for-ethiopian-wolves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Only a thin ring of highland meadow now sustains Africa’s sole wolf."},{"title":"Zoonotic Spillover Risk: Domestic Dogs Drive Ethiopian Wolf Extinction Threat","slug":"zoonotic-spillover-risk-domestic-dogs-drive-ethiopian-wolf-extinction-threat","url":"/categories/endangered-predators/ethiopian-wolf/zoonotic-spillover-risk-domestic-dogs-drive-ethiopian-wolf-extinction-threat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A household pet carries the pathogen that could erase Africa’s rarest predator."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

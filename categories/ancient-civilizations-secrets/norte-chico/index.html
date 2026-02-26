@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Norte Chico</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Norte Chico</h1>
+  <p>Explore all facts in "Norte Chico".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Norte Chico</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aspero Coastal Center Demonstrates 4,000-Year-Old Maritime Economic Foundations","slug":"aspero-coastal-center-demonstrates-4-000-year-old-maritime-economic-foundations","url":"/categories/ancient-civilizations-secrets/norte-chico/aspero-coastal-center-demonstrates-4-000-year-old-maritime-economic-foundations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A major Norte Chico settlement thrived on marine resources rather than staple agriculture around 2500 BCE."},{"title":"Caral-Supe Pyramids Built Around 2600 BCE Predate Egyptian Giza by Centuries","slug":"caral-supe-pyramids-built-around-2600-bce-predate-egyptian-giza-by-centuries","url":"/categories/ancient-civilizations-secrets/norte-chico/caral-supe-pyramids-built-around-2600-bce-predate-egyptian-giza-by-centuries.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive platform pyramids rose in Peru around 2600 BCE, centuries before the Great Pyramid of Giza."},{"title":"Kelp and Marine Protein Isotopes Confirm Ocean-Based Diet in Norte Chico Population","slug":"kelp-and-marine-protein-isotopes-confirm-ocean-based-diet-in-norte-chico-population","url":"/categories/ancient-civilizations-secrets/norte-chico/kelp-and-marine-protein-isotopes-confirm-ocean-based-diet-in-norte-chico-population.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stable isotope analysis of human remains indicates heavy reliance on marine protein in Norte Chico communities."},{"title":"Kelp and Marine Protein Isotopes Confirm Ocean-Based Diet in Norte Chico Population","slug":"kelp-and-marine-protein-isotopes-confirm-ocean-based-diet-in-norte-chico-population","url":"/categories/ancient-civilizations-secrets/norte-chico/kelp-and-marine-protein-isotopes-confirm-ocean-based-diet-in-norte-chico-population.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stable isotope analysis of human remains indicates heavy reliance on marine protein in Norte Chico communities."},{"title":"Khipu Continuity Suggests 4,000-Year Administrative Tradition in Andean Governance","slug":"khipu-continuity-suggests-4-000-year-administrative-tradition-in-andean-governance","url":"/categories/ancient-civilizations-secrets/norte-chico/khipu-continuity-suggests-4-000-year-administrative-tradition-in-andean-governance.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fiber-based record systems discovered at Caral predate the Inca Empire by nearly four millennia."},{"title":"Khipu Precursors in Caral Suggest Administrative Innovation Before 2000 BCE","slug":"khipu-precursors-in-caral-suggest-administrative-innovation-before-2000-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/khipu-precursors-in-caral-suggest-administrative-innovation-before-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fiber cord systems discovered at Caral may represent the earliest known precursors to Andean khipu record-keeping."},{"title":"Khipu Precursors in Caral Suggest Administrative Innovation Before 2000 BCE","slug":"khipu-precursors-in-caral-suggest-administrative-innovation-before-2000-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/khipu-precursors-in-caral-suggest-administrative-innovation-before-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fiber cord systems discovered at Caral may represent the earliest known precursors to Andean khipu record-keeping."},{"title":"Kinetic Acoustic Design of Sunken Circular Plazas Amplified Ritual Sound Around 2300 BCE","slug":"kinetic-acoustic-design-of-sunken-circular-plazas-amplified-ritual-sound-around-2300-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/kinetic-acoustic-design-of-sunken-circular-plazas-amplified-ritual-sound-around-2300-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caral’s sunken circular plazas were engineered to enhance acoustics during ceremonial gatherings."},{"title":"Kinetic Labor Organization at Caral Enabled Monument Construction Without Draft Animals","slug":"kinetic-labor-organization-at-caral-enabled-monument-construction-without-draft-animals","url":"/categories/ancient-civilizations-secrets/norte-chico/kinetic-labor-organization-at-caral-enabled-monument-construction-without-draft-animals.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Norte Chico builders moved vast quantities of material without horses, oxen, or wheeled carts around 2600 BCE."},{"title":"Knot-Based Textile Production Anchored Norte Chico Craft Specialization by 2400 BCE","slug":"knot-based-textile-production-anchored-norte-chico-craft-specialization-by-2400-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/knot-based-textile-production-anchored-norte-chico-craft-specialization-by-2400-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Textile fragments and cordage at Norte Chico sites reveal organized craft production over 4,000 years ago."},{"title":"Knot-Encoded Textile Bundles at Caral Prefigure Later Inca Bureaucracy by Millennia","slug":"knot-encoded-textile-bundles-at-caral-prefigure-later-inca-bureaucracy-by-millennia","url":"/categories/ancient-civilizations-secrets/norte-chico/knot-encoded-textile-bundles-at-caral-prefigure-later-inca-bureaucracy-by-millennia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bundles of knotted fiber found at Caral suggest administrative experimentation nearly 4,000 years before the Inca Empire."},{"title":"Kotosh Religious Parallels Suggest Early Andean Ritual Continuity Before 2000 BCE","slug":"kotosh-religious-parallels-suggest-early-andean-ritual-continuity-before-2000-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/kotosh-religious-parallels-suggest-early-andean-ritual-continuity-before-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ritual architectural patterns seen in later highland temples echo ceremonial forms first organized in Norte Chico valleys."},{"title":"Quarry-Free Monument Construction at Caral Relied on River Cobble Engineering","slug":"quarry-free-monument-construction-at-caral-relied-on-river-cobble-engineering","url":"/categories/ancient-civilizations-secrets/norte-chico/quarry-free-monument-construction-at-caral-relied-on-river-cobble-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Unlike stone-cutting civilizations, Norte Chico pyramids were built largely from river cobbles and packed earth around 2600 BCE."},{"title":"Quarryless Engineering at Aspero Demonstrates Monument Building Without Cut Stone","slug":"quarryless-engineering-at-aspero-demonstrates-monument-building-without-cut-stone","url":"/categories/ancient-civilizations-secrets/norte-chico/quarryless-engineering-at-aspero-demonstrates-monument-building-without-cut-stone.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Aspero, monumental structures rose around 2500 BCE using fieldstone and earth rather than carved masonry."},{"title":"Quasi-Civic Planning at Caral Organized Residential Zones Around Monumental Cores","slug":"quasi-civic-planning-at-caral-organized-residential-zones-around-monumental-cores","url":"/categories/ancient-civilizations-secrets/norte-chico/quasi-civic-planning-at-caral-organized-residential-zones-around-monumental-cores.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Residential compounds at Caral were arranged in relation to pyramids and plazas, revealing early urban zoning around 2500 BCE."},{"title":"Quasi-Peaceful Development of Norte Chico Lacked Evidence of Defensive Warfare","slug":"quasi-peaceful-development-of-norte-chico-lacked-evidence-of-defensive-warfare","url":"/categories/ancient-civilizations-secrets/norte-chico/quasi-peaceful-development-of-norte-chico-lacked-evidence-of-defensive-warfare.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Unlike many early civilizations, Norte Chico shows minimal signs of large-scale warfare around 3000 to 1800 BCE."},{"title":"Quasi-Redistributive Economy Linked Coastal Fisheries and Inland Cotton Fields by 2400 BCE","slug":"quasi-redistributive-economy-linked-coastal-fisheries-and-inland-cotton-fields-by-2400-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/quasi-redistributive-economy-linked-coastal-fisheries-and-inland-cotton-fields-by-2400-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Norte Chico’s economic system redistributed fish and cotton across valley settlements without coinage."},{"title":"Quasi-Theocratic Governance Structured Norte Chico Authority Without Written Law","slug":"quasi-theocratic-governance-structured-norte-chico-authority-without-written-law","url":"/categories/ancient-civilizations-secrets/norte-chico/quasi-theocratic-governance-structured-norte-chico-authority-without-written-law.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Norte Chico rulers governed monumental cities without evidence of writing, coinage, or codified legal texts."},{"title":"Quaternary River Shifts in Supe Valley Altered Norte Chico Agricultural Output After 2000 BCE","slug":"quaternary-river-shifts-in-supe-valley-altered-norte-chico-agricultural-output-after-2000-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/quaternary-river-shifts-in-supe-valley-altered-norte-chico-agricultural-output-after-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Geological evidence suggests river course changes in the Supe Valley disrupted irrigation patterns near the end of Norte Chico dominance."},{"title":"Quinoa Absence in Early Norte Chico Layers Highlights Non-Grain Urban Model","slug":"quinoa-absence-in-early-norte-chico-layers-highlights-non-grain-urban-model","url":"/categories/ancient-civilizations-secrets/norte-chico/quinoa-absence-in-early-norte-chico-layers-highlights-non-grain-urban-model.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Unlike many early civilizations, Norte Chico urban centers show limited evidence of staple grain dependence around 2600 BCE."},{"title":"Quinoa and Squash Remains Reveal Diverse Crop Base in Norte Chico Fields","slug":"quinoa-and-squash-remains-reveal-diverse-crop-base-in-norte-chico-fields","url":"/categories/ancient-civilizations-secrets/norte-chico/quinoa-and-squash-remains-reveal-diverse-crop-base-in-norte-chico-fields.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Plant remains from Norte Chico sites show cultivation of squash and other crops alongside cotton by 2500 BCE."},{"title":"Quipu-Like Fiber Artifacts Suggest Early Record-Keeping in Norte Chico Society","slug":"quipu-like-fiber-artifacts-suggest-early-record-keeping-in-norte-chico-society","url":"/categories/ancient-civilizations-secrets/norte-chico/quipu-like-fiber-artifacts-suggest-early-record-keeping-in-norte-chico-society.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bundles of knotted fibers found at Caral hint at record-keeping nearly 4,000 years before the Inca Empire."},{"title":"Supe Valley Irrigation Networks Supported Early Urban Growth by 3000 BCE","slug":"supe-valley-irrigation-networks-supported-early-urban-growth-by-3000-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/supe-valley-irrigation-networks-supported-early-urban-growth-by-3000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineered irrigation channels in Peru’s Supe Valley sustained organized communities as early as 3000 BCE."},{"title":"U-Shaped Platform Complexes Defined Urban Planning in Supe Valley Settlements","slug":"u-shaped-platform-complexes-defined-urban-planning-in-supe-valley-settlements","url":"/categories/ancient-civilizations-secrets/norte-chico/u-shaped-platform-complexes-defined-urban-planning-in-supe-valley-settlements.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Monumental U-shaped architectural layouts structured ceremonial life in Norte Chico cities nearly 5,000 years ago."},{"title":"Valley Decline After 1800 BCE Marked Transition from Norte Chico to Later Andean Cultures","slug":"valley-decline-after-1800-bce-marked-transition-from-norte-chico-to-later-andean-cultures","url":"/categories/ancient-civilizations-secrets/norte-chico/valley-decline-after-1800-bce-marked-transition-from-norte-chico-to-later-andean-cultures.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By around 1800 BCE, major Norte Chico centers experienced reduced construction and gradual transformation."},{"title":"Valley Intervisibility Between Caral and Neighboring Sites Reinforced Regional Unity","slug":"valley-intervisibility-between-caral-and-neighboring-sites-reinforced-regional-unity","url":"/categories/ancient-civilizations-secrets/norte-chico/valley-intervisibility-between-caral-and-neighboring-sites-reinforced-regional-unity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Major Norte Chico centers were positioned within visual range of one another across the Supe Valley landscape."},{"title":"Valley Ritual Architecture at Caral Formed One of the Oldest Sacred Landscapes in the Americas","slug":"valley-ritual-architecture-at-caral-formed-one-of-the-oldest-sacred-landscapes-in-the-americas","url":"/categories/ancient-civilizations-secrets/norte-chico/valley-ritual-architecture-at-caral-formed-one-of-the-oldest-sacred-landscapes-in-the-americas.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2600 BCE, multiple ceremonial centers across the Supe Valley created a coordinated sacred geography."},{"title":"Valley Ritual Feasting Evidence Suggests Centralized Surplus Redistribution Around 2300 BCE","slug":"valley-ritual-feasting-evidence-suggests-centralized-surplus-redistribution-around-2300-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/valley-ritual-feasting-evidence-suggests-centralized-surplus-redistribution-around-2300-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Large refuse deposits at Norte Chico sites indicate organized communal feasting supported by centralized surplus."},{"title":"Valley-Wide Sacred Architecture Network United Supe Settlements by 2600 BCE","slug":"valley-wide-sacred-architecture-network-united-supe-settlements-by-2600-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/valley-wide-sacred-architecture-network-united-supe-settlements-by-2600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Multiple ceremonial centers across the Supe Valley rose simultaneously around 2600 BCE, forming a coordinated ritual landscape."},{"title":"Ventral Flute Discoveries at Caral Indicate Organized Musical Performance by 2200 BCE","slug":"ventral-flute-discoveries-at-caral-indicate-organized-musical-performance-by-2200-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/ventral-flute-discoveries-at-caral-indicate-organized-musical-performance-by-2200-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists uncovered 32 bone flutes at Caral, suggesting structured musical ceremonies nearly 4,200 years ago."},{"title":"Vessel Absence in Norte Chico Layers Confirms Preceramic Urban Development Before 1800 BCE","slug":"vessel-absence-in-norte-chico-layers-confirms-preceramic-urban-development-before-1800-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/vessel-absence-in-norte-chico-layers-confirms-preceramic-urban-development-before-1800-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Norte Chico cities thrived for centuries without pottery, placing them in the Andean Preceramic period."},{"title":"Vichama Monumental Reliefs Depict Climatic Crisis Around 1800 BCE","slug":"vichama-monumental-reliefs-depict-climatic-crisis-around-1800-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/vichama-monumental-reliefs-depict-climatic-crisis-around-1800-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved panels at Vichama show skeletal figures interpreted as responses to environmental stress near the end of Norte Chico."},{"title":"Vichama Reliefs Reveal Early Social Conflict Imagery Around 1800 BCE","slug":"vichama-reliefs-reveal-early-social-conflict-imagery-around-1800-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/vichama-reliefs-reveal-early-social-conflict-imagery-around-1800-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone reliefs at Vichama depict emaciated figures, suggesting social stress near the end of Norte Chico dominance."},{"title":"Viru Valley Survey Data Revealed Regional Settlement Hierarchies in Early Peru","slug":"viru-valley-survey-data-revealed-regional-settlement-hierarchies-in-early-peru","url":"/categories/ancient-civilizations-secrets/norte-chico/viru-valley-survey-data-revealed-regional-settlement-hierarchies-in-early-peru.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological surveys across coastal Peru show tiered settlement systems emerging by the third millennium BCE."},{"title":"X-Pattern Urban Orientation at Caral Aligns Major Structures with Cardinal Directions","slug":"x-pattern-urban-orientation-at-caral-aligns-major-structures-with-cardinal-directions","url":"/categories/ancient-civilizations-secrets/norte-chico/x-pattern-urban-orientation-at-caral-aligns-major-structures-with-cardinal-directions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Architectural surveys show Caral’s principal monuments oriented along cardinal axes around 2600 BCE."},{"title":"Xauxa Exchange Corridors Connected Inland Highlands to Coastal Norte Chico Cities","slug":"xauxa-exchange-corridors-connected-inland-highlands-to-coastal-norte-chico-cities","url":"/categories/ancient-civilizations-secrets/norte-chico/xauxa-exchange-corridors-connected-inland-highlands-to-coastal-norte-chico-cities.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Trade routes linking highland valleys and coastal settlements sustained Norte Chico integration by 2500 BCE."},{"title":"Xeric Cotton Cultivation Sustained Fishing Economies in Norte Chico by 2500 BCE","slug":"xeric-cotton-cultivation-sustained-fishing-economies-in-norte-chico-by-2500-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/xeric-cotton-cultivation-sustained-fishing-economies-in-norte-chico-by-2500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cotton grown in arid coastal valleys powered a maritime economy that supported early urbanization."},{"title":"Xerophytic Valley Adaptation Enabled Cotton Irrigation in Desert Peru by 2500 BCE","slug":"xerophytic-valley-adaptation-enabled-cotton-irrigation-in-desert-peru-by-2500-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/xerophytic-valley-adaptation-enabled-cotton-irrigation-in-desert-peru-by-2500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cotton thrived in desert valleys where annual rainfall was nearly nonexistent, sustained entirely by river-fed irrigation."},{"title":"Xerothermic Climate Stability Supported 1,000 Years of Norte Chico Urban Continuity","slug":"xerothermic-climate-stability-supported-1-000-years-of-norte-chico-urban-continuity","url":"/categories/ancient-civilizations-secrets/norte-chico/xerothermic-climate-stability-supported-1-000-years-of-norte-chico-urban-continuity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A prolonged period of relative climate stability along Peru’s coast enabled Norte Chico cities to flourish for nearly a millennium."},{"title":"Y-Shaped Staircases in Supe Valley Platforms Directed Ritual Movement Around 2400 BCE","slug":"y-shaped-staircases-in-supe-valley-platforms-directed-ritual-movement-around-2400-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/y-shaped-staircases-in-supe-valley-platforms-directed-ritual-movement-around-2400-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Distinctive staircase orientations in Norte Chico platforms structured ceremonial access nearly 4,500 years ago."},{"title":"Y-Shaped Staircases in Supe Valley Platforms Directed Ritual Movement Around 2400 BCE","slug":"y-shaped-staircases-in-supe-valley-platforms-directed-ritual-movement-around-2400-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/y-shaped-staircases-in-supe-valley-platforms-directed-ritual-movement-around-2400-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Distinctive staircase orientations in Norte Chico platforms structured ceremonial access nearly 4,500 years ago."},{"title":"Y-Shaped Valley Networks Concentrated Norte Chico Population Along Andean Runoff Corridors","slug":"y-shaped-valley-networks-concentrated-norte-chico-population-along-andean-runoff-corridors","url":"/categories/ancient-civilizations-secrets/norte-chico/y-shaped-valley-networks-concentrated-norte-chico-population-along-andean-runoff-corridors.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Urban settlements clustered along branching river valleys that funneled Andean meltwater into desert plains."},{"title":"Yunga Coastal Desert Adaptation Enabled One of the World’s Earliest Urban Experiments","slug":"yunga-coastal-desert-adaptation-enabled-one-of-the-world-s-earliest-urban-experiments","url":"/categories/ancient-civilizations-secrets/norte-chico/yunga-coastal-desert-adaptation-enabled-one-of-the-world-s-earliest-urban-experiments.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In one of the driest deserts on Earth, organized cities emerged around 3000 BCE without reliance on heavy rainfall."},{"title":"Yunga Fog Oasis Ecosystems Supplemented Norte Chico Agriculture in Coastal Peru","slug":"yunga-fog-oasis-ecosystems-supplemented-norte-chico-agriculture-in-coastal-peru","url":"/categories/ancient-civilizations-secrets/norte-chico/yunga-fog-oasis-ecosystems-supplemented-norte-chico-agriculture-in-coastal-peru.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Moisture from Pacific coastal fog created micro-oases that supported early Andean communities in otherwise arid zones."},{"title":"Yunga Trade Corridors Linked Desert Valleys to Highland Resources Before 2000 BCE","slug":"yunga-trade-corridors-linked-desert-valleys-to-highland-resources-before-2000-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/yunga-trade-corridors-linked-desert-valleys-to-highland-resources-before-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Exchange routes connected Norte Chico settlements with Andean highlands centuries before later Andean empires emerged."},{"title":"Zarate Valley Satellite Sites Indicate Dense Settlement Web Around Caral by 2400 BCE","slug":"zarate-valley-satellite-sites-indicate-dense-settlement-web-around-caral-by-2400-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/zarate-valley-satellite-sites-indicate-dense-settlement-web-around-caral-by-2400-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Smaller satellite communities clustered around Caral by 2400 BCE, forming one of the Americas’ earliest urban networks."},{"title":"Zeroth-Millennium BCE Urban Planning in Peru Challenges Old World-Centric Timelines","slug":"zeroth-millennium-bce-urban-planning-in-peru-challenges-old-world-centric-timelines","url":"/categories/ancient-civilizations-secrets/norte-chico/zeroth-millennium-bce-urban-planning-in-peru-challenges-old-world-centric-timelines.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Organized cities appeared in Peru around 3000 BCE without influence from Mesopotamia or Egypt."},{"title":"Zeroth-Millennium BCE Urban Planning in Peru Challenges Old World-Centric Timelines","slug":"zeroth-millennium-bce-urban-planning-in-peru-challenges-old-world-centric-timelines","url":"/categories/ancient-civilizations-secrets/norte-chico/zeroth-millennium-bce-urban-planning-in-peru-challenges-old-world-centric-timelines.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Organized cities appeared in Peru around 3000 BCE without influence from Mesopotamia or Egypt."},{"title":"Ziggurat-Scale Labor Investment at Caral Required Moving Thousands of Tons Without Metal Tools","slug":"ziggurat-scale-labor-investment-at-caral-required-moving-thousands-of-tons-without-metal-tools","url":"/categories/ancient-civilizations-secrets/norte-chico/ziggurat-scale-labor-investment-at-caral-required-moving-thousands-of-tons-without-metal-tools.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caral’s platform pyramids required relocating thousands of tons of stone and earth around 2600 BCE without metal implements."},{"title":"Ziggurat-Scale Platform Mounds at Caral Reached 28 Meters in Height by 2500 BCE","slug":"ziggurat-scale-platform-mounds-at-caral-reached-28-meters-in-height-by-2500-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/ziggurat-scale-platform-mounds-at-caral-reached-28-meters-in-height-by-2500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caral’s largest platform mound rises approximately 28 meters, built without metal tools nearly 4,500 years ago."},{"title":"Zigzag Seismic-Resistant Architecture at Caral Used Shicra Bags Around 2600 BCE","slug":"zigzag-seismic-resistant-architecture-at-caral-used-shicra-bags-around-2600-bce","url":"/categories/ancient-civilizations-secrets/norte-chico/zigzag-seismic-resistant-architecture-at-caral-used-shicra-bags-around-2600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caral’s pyramids were stabilized with woven reed bags filled with stones to withstand earthquakes nearly 4,500 years ago."},{"title":"Zonal Craft Specialization in Norte Chico Produced Distinctive Textile and Musical Industries","slug":"zonal-craft-specialization-in-norte-chico-produced-distinctive-textile-and-musical-industries","url":"/categories/ancient-civilizations-secrets/norte-chico/zonal-craft-specialization-in-norte-chico-produced-distinctive-textile-and-musical-industries.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological finds show organized craft sectors producing textiles and musical instruments around 2400 BCE."},{"title":"Zonal Labor Mobilization Systems Coordinated Monument Construction Without Currency","slug":"zonal-labor-mobilization-systems-coordinated-monument-construction-without-currency","url":"/categories/ancient-civilizations-secrets/norte-chico/zonal-labor-mobilization-systems-coordinated-monument-construction-without-currency.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of laborers built Norte Chico monuments without coinage, metal tools, or written contracts."},{"title":"Zonal Pyramid Construction Phases at Caral Reveal 600 Years of Urban Continuity","slug":"zonal-pyramid-construction-phases-at-caral-reveal-600-years-of-urban-continuity","url":"/categories/ancient-civilizations-secrets/norte-chico/zonal-pyramid-construction-phases-at-caral-reveal-600-years-of-urban-continuity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Layered construction at Caral shows pyramids were expanded repeatedly over nearly 600 years between 2600 and 2000 BCE."},{"title":"Zonal Pyramid Construction Phases at Caral Reveal 600 Years of Urban Continuity","slug":"zonal-pyramid-construction-phases-at-caral-reveal-600-years-of-urban-continuity","url":"/categories/ancient-civilizations-secrets/norte-chico/zonal-pyramid-construction-phases-at-caral-reveal-600-years-of-urban-continuity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Layered construction at Caral shows pyramids were expanded repeatedly over nearly 600 years between 2600 and 2000 BCE."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

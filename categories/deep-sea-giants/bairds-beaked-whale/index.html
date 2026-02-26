@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bairds Beaked Whale</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Bairds Beaked Whale</h1>
+  <p>Explore all facts in "Bairds Beaked Whale".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Bairds Beaked Whale</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Baird’s Beaked Whale Surfaces With Scars From Battles No Human Has Ever Seen","slug":"a-baird-s-beaked-whale-surfaces-with-scars-from-battles-no-human-has-ever-seen","url":"/categories/deep-sea-giants/bairds-beaked-whale/a-baird-s-beaked-whale-surfaces-with-scars-from-battles-no-human-has-ever-seen.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Entire underwater wars leave scars we only discover at the surface."},{"title":"Baird’s Beaked Whale Can Dive Nearly 2 Miles Into Crushing Ocean Darkness","slug":"baird-s-beaked-whale-can-dive-nearly-2-miles-into-crushing-ocean-darkness","url":"/categories/deep-sea-giants/bairds-beaked-whale/baird-s-beaked-whale-can-dive-nearly-2-miles-into-crushing-ocean-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This whale plunges almost two miles into pitch-black water where steel would crumple."},{"title":"Baird’s Beaked Whale Collapses Its Lungs on Purpose to Survive Extreme Pressure","slug":"baird-s-beaked-whale-collapses-its-lungs-on-purpose-to-survive-extreme-pressure","url":"/categories/deep-sea-giants/bairds-beaked-whale/baird-s-beaked-whale-collapses-its-lungs-on-purpose-to-survive-extreme-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This whale survives crushing depth by letting its lungs collapse."},{"title":"Baird’s Beaked Whale Has Teeth That Only Males Fully Erupt for Combat","slug":"baird-s-beaked-whale-has-teeth-that-only-males-fully-erupt-for-combat","url":"/categories/deep-sea-giants/bairds-beaked-whale/baird-s-beaked-whale-has-teeth-that-only-males-fully-erupt-for-combat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Adult males grow visible teeth solely for fighting rivals."},{"title":"Baird’s Beaked Whale Holds Its Breath for Over an Hour in Near-Freezing Abyss","slug":"baird-s-beaked-whale-holds-its-breath-for-over-an-hour-in-near-freezing-abyss","url":"/categories/deep-sea-giants/bairds-beaked-whale/baird-s-beaked-whale-holds-its-breath-for-over-an-hour-in-near-freezing-abyss.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This whale disappears for over an hour into water colder than a refrigerator."},{"title":"Baird’s Beaked Whale Lives in Offshore Waters Few Humans Ever Enter","slug":"baird-s-beaked-whale-lives-in-offshore-waters-few-humans-ever-enter","url":"/categories/deep-sea-giants/bairds-beaked-whale/baird-s-beaked-whale-lives-in-offshore-waters-few-humans-ever-enter.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant whale spends its life in waters deeper than most submarines travel."},{"title":"Baird’s Beaked Whale Weighs as Much as a School Bus Yet Hunts Invisible Prey in Total Darkness","slug":"baird-s-beaked-whale-weighs-as-much-as-a-school-bus-yet-hunts-invisible-prey-in-total-darkness","url":"/categories/deep-sea-giants/bairds-beaked-whale/baird-s-beaked-whale-weighs-as-much-as-a-school-bus-yet-hunts-invisible-prey-in-total-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This 12-ton predator hunts prey it cannot see in absolute darkness."},{"title":"Cold Abyssal Water Surrounds Baird’s Beaked Whale at Temperatures Near Freezing","slug":"cold-abyssal-water-surrounds-baird-s-beaked-whale-at-temperatures-near-freezing","url":"/categories/deep-sea-giants/bairds-beaked-whale/cold-abyssal-water-surrounds-baird-s-beaked-whale-at-temperatures-near-freezing.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It dives into water colder than most household freezers."},{"title":"Decompression Resistance Lets Baird’s Beaked Whale Avoid the Bends at Extreme Depth","slug":"decompression-resistance-lets-baird-s-beaked-whale-avoid-the-bends-at-extreme-depth","url":"/categories/deep-sea-giants/bairds-beaked-whale/decompression-resistance-lets-baird-s-beaked-whale-avoid-the-bends-at-extreme-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It dives two miles down without suffering the bends."},{"title":"Deep Offshore Habitat Shields Baird’s Beaked Whale From Frequent Human Observation","slug":"deep-offshore-habitat-shields-baird-s-beaked-whale-from-frequent-human-observation","url":"/categories/deep-sea-giants/bairds-beaked-whale/deep-offshore-habitat-shields-baird-s-beaked-whale-from-frequent-human-observation.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-sized whale thrives where few people ever look."},{"title":"Deep-Sea Noise Can Disorient Baird’s Beaked Whale in Its Own Hunting Zone","slug":"deep-sea-noise-can-disorient-baird-s-beaked-whale-in-its-own-hunting-zone","url":"/categories/deep-sea-giants/bairds-beaked-whale/deep-sea-noise-can-disorient-baird-s-beaked-whale-in-its-own-hunting-zone.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Man-made sound can overwhelm a whale built for abyssal silence."},{"title":"Deep-Sea Specialization Makes Baird’s Beaked Whale One of the Ocean’s Most Extreme Mammals","slug":"deep-sea-specialization-makes-baird-s-beaked-whale-one-of-the-ocean-s-most-extreme-mammals","url":"/categories/deep-sea-giants/bairds-beaked-whale/deep-sea-specialization-makes-baird-s-beaked-whale-one-of-the-ocean-s-most-extreme-mammals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Few mammals operate routinely under 300 atmospheres of pressure."},{"title":"Enormous Baird’s Beaked Whale Calves Must Learn to Dive Into the Abyss Within Months","slug":"enormous-baird-s-beaked-whale-calves-must-learn-to-dive-into-the-abyss-within-months","url":"/categories/deep-sea-giants/bairds-beaked-whale/enormous-baird-s-beaked-whale-calves-must-learn-to-dive-into-the-abyss-within-months.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A newborn must master mile-deep dives before its first year ends."},{"title":"Enormous Energy Demands Force Baird’s Beaked Whale to Consume Thousands of Deep-Sea Squid","slug":"enormous-energy-demands-force-baird-s-beaked-whale-to-consume-thousands-of-deep-sea-squid","url":"/categories/deep-sea-giants/bairds-beaked-whale/enormous-energy-demands-force-baird-s-beaked-whale-to-consume-thousands-of-deep-sea-squid.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single whale devours a hidden army of abyssal squid."},{"title":"Extreme Dive Durations of Baird’s Beaked Whale Push Mammalian Limits","slug":"extreme-dive-durations-of-baird-s-beaked-whale-push-mammalian-limits","url":"/categories/deep-sea-giants/bairds-beaked-whale/extreme-dive-durations-of-baird-s-beaked-whale-push-mammalian-limits.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It remains underwater longer than most humans can stay awake."},{"title":"Flexible Rib Cages Help Baird’s Beaked Whale Survive Extreme Compression","slug":"flexible-rib-cages-help-baird-s-beaked-whale-survive-extreme-compression","url":"/categories/deep-sea-giants/bairds-beaked-whale/flexible-rib-cages-help-baird-s-beaked-whale-survive-extreme-compression.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its rib cage bends under pressure that would crush metal."},{"title":"Gigantic Baird’s Beaked Whale Can Exceed 11 Meters in Length","slug":"gigantic-baird-s-beaked-whale-can-exceed-11-meters-in-length","url":"/categories/deep-sea-giants/bairds-beaked-whale/gigantic-baird-s-beaked-whale-can-exceed-11-meters-in-length.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-diving predator grows longer than a city bus."},{"title":"Gigantic Baird’s Beaked Whale Lives in Ocean Trenches Colder Than Ice Water","slug":"gigantic-baird-s-beaked-whale-lives-in-ocean-trenches-colder-than-ice-water","url":"/categories/deep-sea-giants/bairds-beaked-whale/gigantic-baird-s-beaked-whale-lives-in-ocean-trenches-colder-than-ice-water.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant hunts in water barely above freezing for hours."},{"title":"Hidden For Centuries, Baird’s Beaked Whale Was Unknown to Science Until 1873","slug":"hidden-for-centuries-baird-s-beaked-whale-was-unknown-to-science-until-1873","url":"/categories/deep-sea-giants/bairds-beaked-whale/hidden-for-centuries-baird-s-beaked-whale-was-unknown-to-science-until-1873.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 12-ton whale evaded scientific recognition until the late 1800s."},{"title":"High-Pressure Dives of Baird’s Beaked Whale Rival Engineered Submersibles","slug":"high-pressure-dives-of-baird-s-beaked-whale-rival-engineered-submersibles","url":"/categories/deep-sea-giants/bairds-beaked-whale/high-pressure-dives-of-baird-s-beaked-whale-rival-engineered-submersibles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It tolerates pressures that challenge human-built submarines."},{"title":"Immense Baird’s Beaked Whale Has One of the Largest Brains Among Deep-Diving Cetaceans","slug":"immense-baird-s-beaked-whale-has-one-of-the-largest-brains-among-deep-diving-cetaceans","url":"/categories/deep-sea-giants/bairds-beaked-whale/immense-baird-s-beaked-whale-has-one-of-the-largest-brains-among-deep-diving-cetaceans.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This abyss-diving whale carries a brain weighing several kilograms."},{"title":"Intense Offshore Habitat Keeps Baird’s Beaked Whale Far From Coastal Study","slug":"intense-offshore-habitat-keeps-baird-s-beaked-whale-far-from-coastal-study","url":"/categories/deep-sea-giants/bairds-beaked-whale/intense-offshore-habitat-keeps-baird-s-beaked-whale-far-from-coastal-study.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 10-ton whale lives where research ships rarely linger."},{"title":"Jaw Structure of Baird’s Beaked Whale Is Built to Withstand Violent Male Combat","slug":"jaw-structure-of-baird-s-beaked-whale-is-built-to-withstand-violent-male-combat","url":"/categories/deep-sea-giants/bairds-beaked-whale/jaw-structure-of-baird-s-beaked-whale-is-built-to-withstand-violent-male-combat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its lower jaw doubles as both sonar tool and battle weapon."},{"title":"Juvenile Baird’s Beaked Whales Must Rapidly Develop Deep-Diving Skills","slug":"juvenile-baird-s-beaked-whales-must-rapidly-develop-deep-diving-skills","url":"/categories/deep-sea-giants/bairds-beaked-whale/juvenile-baird-s-beaked-whales-must-rapidly-develop-deep-diving-skills.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Young whales must master abyssal dives within their first years."},{"title":"Killer Whales Rarely Hunt Baird’s Beaked Whale Despite Its Massive Size","slug":"killer-whales-rarely-hunt-baird-s-beaked-whale-despite-its-massive-size","url":"/categories/deep-sea-giants/bairds-beaked-whale/killer-whales-rarely-hunt-baird-s-beaked-whale-despite-its-massive-size.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Even apex predators avoid attacking this deep-diving giant."},{"title":"Kinetic Echolocation Allows Baird’s Beaked Whale to Map Total Darkness","slug":"kinetic-echolocation-allows-baird-s-beaked-whale-to-map-total-darkness","url":"/categories/deep-sea-giants/bairds-beaked-whale/kinetic-echolocation-allows-baird-s-beaked-whale-to-map-total-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It builds a three-dimensional world from pure sound."},{"title":"Largely Undisturbed Pelagic Range Once Kept Baird’s Beaked Whale Scientifically Obscure","slug":"largely-undisturbed-pelagic-range-once-kept-baird-s-beaked-whale-scientifically-obscure","url":"/categories/deep-sea-giants/bairds-beaked-whale/largely-undisturbed-pelagic-range-once-kept-baird-s-beaked-whale-scientifically-obscure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its vast habitat kept it hidden from science for centuries."},{"title":"Long-Lived Baird’s Beaked Whale May Survive for Decades in Extreme Offshore Waters","slug":"long-lived-baird-s-beaked-whale-may-survive-for-decades-in-extreme-offshore-waters","url":"/categories/deep-sea-giants/bairds-beaked-whale/long-lived-baird-s-beaked-whale-may-survive-for-decades-in-extreme-offshore-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-sea giant can endure decades in crushing ocean wilderness."},{"title":"Long, Tapered Beak of Baird’s Beaked Whale Enhances Precision in Abyssal Hunting","slug":"long-tapered-beak-of-baird-s-beaked-whale-enhances-precision-in-abyssal-hunting","url":"/categories/deep-sea-giants/bairds-beaked-whale/long-tapered-beak-of-baird-s-beaked-whale-enhances-precision-in-abyssal-hunting.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its narrow beak guides sonar through total darkness."},{"title":"Mass Strandings of Beaked Whales Have Been Linked to Intense Sonar Events","slug":"mass-strandings-of-beaked-whales-have-been-linked-to-intense-sonar-events","url":"/categories/deep-sea-giants/bairds-beaked-whale/mass-strandings-of-beaked-whales-have-been-linked-to-intense-sonar-events.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Powerful sonar pulses can drive deep divers toward fatal surfacing."},{"title":"Massive Baird’s Beaked Whale Uses Sound Louder Than a Jet Engine Underwater","slug":"massive-baird-s-beaked-whale-uses-sound-louder-than-a-jet-engine-underwater","url":"/categories/deep-sea-giants/bairds-beaked-whale/massive-baird-s-beaked-whale-uses-sound-louder-than-a-jet-engine-underwater.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its hunting clicks rival jet engines in acoustic intensity."},{"title":"North Pacific Canyons Act as Vertical Highways for Baird’s Beaked Whale","slug":"north-pacific-canyons-act-as-vertical-highways-for-baird-s-beaked-whale","url":"/categories/deep-sea-giants/bairds-beaked-whale/north-pacific-canyons-act-as-vertical-highways-for-baird-s-beaked-whale.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This whale hunts along underwater cliffs deeper than skyscrapers are tall."},{"title":"North Pacific Distribution of Baird’s Beaked Whale Spans International Waters","slug":"north-pacific-distribution-of-baird-s-beaked-whale-spans-international-waters","url":"/categories/deep-sea-giants/bairds-beaked-whale/north-pacific-distribution-of-baird-s-beaked-whale-spans-international-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its range crosses borders humans cannot patrol easily."},{"title":"Oxygen Storage in Baird’s Beaked Whale Muscles Exceeds That of Elite Human Athletes","slug":"oxygen-storage-in-baird-s-beaked-whale-muscles-exceeds-that-of-elite-human-athletes","url":"/categories/deep-sea-giants/bairds-beaked-whale/oxygen-storage-in-baird-s-beaked-whale-muscles-exceeds-that-of-elite-human-athletes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its muscles hoard oxygen at levels humans cannot approach."},{"title":"Pressure at Baird’s Beaked Whale Hunting Depth Equals Hundreds of Atmospheres","slug":"pressure-at-baird-s-beaked-whale-hunting-depth-equals-hundreds-of-atmospheres","url":"/categories/deep-sea-giants/bairds-beaked-whale/pressure-at-baird-s-beaked-whale-hunting-depth-equals-hundreds-of-atmospheres.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At its hunting depth, water pressure would crush most submarines."},{"title":"Quiet Surface Behavior Keeps Baird’s Beaked Whale Largely Undocumented","slug":"quiet-surface-behavior-keeps-baird-s-beaked-whale-largely-undocumented","url":"/categories/deep-sea-giants/bairds-beaked-whale/quiet-surface-behavior-keeps-baird-s-beaked-whale-largely-undocumented.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It surfaces briefly, then disappears without spectacle."},{"title":"Rare Surface Sightings Make Baird’s Beaked Whale One of the Ocean’s Least Observed Giants","slug":"rare-surface-sightings-make-baird-s-beaked-whale-one-of-the-ocean-s-least-observed-giants","url":"/categories/deep-sea-giants/bairds-beaked-whale/rare-surface-sightings-make-baird-s-beaked-whale-one-of-the-ocean-s-least-observed-giants.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 12-ton whale can live largely unseen by humanity."},{"title":"Silent Surfacing Behavior Makes Baird’s Beaked Whale Difficult to Detect","slug":"silent-surfacing-behavior-makes-baird-s-beaked-whale-difficult-to-detect","url":"/categories/deep-sea-giants/bairds-beaked-whale/silent-surfacing-behavior-makes-baird-s-beaked-whale-difficult-to-detect.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It surfaces quietly, then vanishes without spectacle."},{"title":"Squid Beaks Accumulate in Baird’s Beaked Whale Stomachs Like a Deep-Sea Archive","slug":"squid-beaks-accumulate-in-baird-s-beaked-whale-stomachs-like-a-deep-sea-archive","url":"/categories/deep-sea-giants/bairds-beaked-whale/squid-beaks-accumulate-in-baird-s-beaked-whale-stomachs-like-a-deep-sea-archive.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its stomach can hold a graveyard of razor-sharp squid beaks."},{"title":"Tectonic Submarine Canyons Shape the Hunting Grounds of Baird’s Beaked Whale","slug":"tectonic-submarine-canyons-shape-the-hunting-grounds-of-baird-s-beaked-whale","url":"/categories/deep-sea-giants/bairds-beaked-whale/tectonic-submarine-canyons-shape-the-hunting-grounds-of-baird-s-beaked-whale.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Underwater cliffs thousands of meters tall guide its dives."},{"title":"Teeth of Male Baird’s Beaked Whale Serve Combat More Than Feeding","slug":"teeth-of-male-baird-s-beaked-whale-serve-combat-more-than-feeding","url":"/categories/deep-sea-giants/bairds-beaked-whale/teeth-of-male-baird-s-beaked-whale-serve-combat-more-than-feeding.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its visible teeth are built for rivals, not prey."},{"title":"Thermal Insulation Allows Baird’s Beaked Whale to Maintain Warm Blood in Icy Depths","slug":"thermal-insulation-allows-baird-s-beaked-whale-to-maintain-warm-blood-in-icy-depths","url":"/categories/deep-sea-giants/bairds-beaked-whale/thermal-insulation-allows-baird-s-beaked-whale-to-maintain-warm-blood-in-icy-depths.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It keeps mammalian body heat in near-freezing abyssal water."},{"title":"Ultra-Deep Foraging by Baird’s Beaked Whale Pushes Mammalian Limits","slug":"ultra-deep-foraging-by-baird-s-beaked-whale-pushes-mammalian-limits","url":"/categories/deep-sea-giants/bairds-beaked-whale/ultra-deep-foraging-by-baird-s-beaked-whale-pushes-mammalian-limits.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Few mammals on Earth dive deeper than this whale."},{"title":"Underwater Clicks of Baird’s Beaked Whale Travel Across Vast Ocean Distances","slug":"underwater-clicks-of-baird-s-beaked-whale-travel-across-vast-ocean-distances","url":"/categories/deep-sea-giants/bairds-beaked-whale/underwater-clicks-of-baird-s-beaked-whale-travel-across-vast-ocean-distances.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its hunting signals slice through miles of black water."},{"title":"Vertical Migration of Prey Forces Baird’s Beaked Whale Into Extreme Depth Swings","slug":"vertical-migration-of-prey-forces-baird-s-beaked-whale-into-extreme-depth-swings","url":"/categories/deep-sea-giants/bairds-beaked-whale/vertical-migration-of-prey-forces-baird-s-beaked-whale-into-extreme-depth-swings.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It chases prey that rises at night and vanishes by day."},{"title":"Whale Blubber Shields Baird’s Beaked Whale in Near-Freezing Abyssal Waters","slug":"whale-blubber-shields-baird-s-beaked-whale-in-near-freezing-abyssal-waters","url":"/categories/deep-sea-giants/bairds-beaked-whale/whale-blubber-shields-baird-s-beaked-whale-in-near-freezing-abyssal-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It hunts for hours in water barely above freezing."},{"title":"Wide-Ranging Movements of Baird’s Beaked Whale Cover Vast North Pacific Waters","slug":"wide-ranging-movements-of-baird-s-beaked-whale-cover-vast-north-pacific-waters","url":"/categories/deep-sea-giants/bairds-beaked-whale/wide-ranging-movements-of-baird-s-beaked-whale-cover-vast-north-pacific-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant roams ocean stretches larger than many countries."},{"title":"Xiphioid Relatives Reveal Baird’s Beaked Whale Belongs to an Ancient Deep-Diving Lineage","slug":"xiphioid-relatives-reveal-baird-s-beaked-whale-belongs-to-an-ancient-deep-diving-lineage","url":"/categories/deep-sea-giants/bairds-beaked-whale/xiphioid-relatives-reveal-baird-s-beaked-whale-belongs-to-an-ancient-deep-diving-lineage.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its family tree traces back to some of the ocean’s earliest deep divers."},{"title":"Year-Round Offshore Range Keeps Baird’s Beaked Whale Far From Human Coastlines","slug":"year-round-offshore-range-keeps-baird-s-beaked-whale-far-from-human-coastlines","url":"/categories/deep-sea-giants/bairds-beaked-whale/year-round-offshore-range-keeps-baird-s-beaked-whale-far-from-human-coastlines.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It spends its life beyond the horizon of most people."},{"title":"Zonal Diving Patterns of Baird’s Beaked Whale Span Surface to Abyss in a Single Day","slug":"zonal-diving-patterns-of-baird-s-beaked-whale-span-surface-to-abyss-in-a-single-day","url":"/categories/deep-sea-giants/bairds-beaked-whale/zonal-diving-patterns-of-baird-s-beaked-whale-span-surface-to-abyss-in-a-single-day.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It can traverse ocean layers taller than skyscrapers in hours."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

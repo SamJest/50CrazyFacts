@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indus Valley Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Indus Valley Civilization</h1>
+  <p>Explore all facts in "Indus Valley Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Indus Valley Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ahar-Banas Metallurgical Sites Show Indus Trade in Copper and Bronze Materials","slug":"ahar-banas-metallurgical-sites-show-indus-trade-in-copper-and-bronze-materials","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/ahar-banas-metallurgical-sites-show-indus-trade-in-copper-and-bronze-materials.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Peripheral Ahar-Banas settlements indicate the Indus Civilization traded extensively in copper and bronze."},{"title":"Ain Dara-Like Urban Drainage Systems Preceded 2500 BCE Indus Sewers","slug":"ain-dara-like-urban-drainage-systems-preceded-2500-bce-indus-sewers","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/ain-dara-like-urban-drainage-systems-preceded-2500-bce-indus-sewers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Early settlements in South Asia developed drainage networks decades before large-scale Indus engineering."},{"title":"Amri Settlement Layers Reveal Early Urban Transition Before Mature Harappan Phase","slug":"amri-settlement-layers-reveal-early-urban-transition-before-mature-harappan-phase","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/amri-settlement-layers-reveal-early-urban-transition-before-mature-harappan-phase.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stratified layers at Amri show gradual transformation from village settlement to urban integration."},{"title":"Archaeogenetic Studies of Rakhigarhi Skeletons Illuminate Indus Population Origins","slug":"archaeogenetic-studies-of-rakhigarhi-skeletons-illuminate-indus-population-origins","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/archaeogenetic-studies-of-rakhigarhi-skeletons-illuminate-indus-population-origins.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"DNA extracted from skeletons at Rakhigarhi has provided new insight into the ancestry of Indus Valley populations."},{"title":"Banawali Agricultural Fields Reveal Planned Crop Rotation by 2500 BCE","slug":"banawali-agricultural-fields-reveal-planned-crop-rotation-by-2500-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/banawali-agricultural-fields-reveal-planned-crop-rotation-by-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological evidence from Banawali suggests organized farming strategies supporting urban populations around 2500 BCE."},{"title":"Bhirrana Early Settlement Layers Show Agricultural Organization Before 5000 BCE","slug":"bhirrana-early-settlement-layers-show-agricultural-organization-before-5000-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/bhirrana-early-settlement-layers-show-agricultural-organization-before-5000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists found evidence of systematic farming and village organization at Bhirrana more than 7,000 years ago."},{"title":"Bhirrana Layers Date Indus Cultural Roots to Before 6000 BCE","slug":"bhirrana-layers-date-indus-cultural-roots-to-before-6000-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/bhirrana-layers-date-indus-cultural-roots-to-before-6000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Bhirrana suggest cultural phases in the Indus region may extend back to nearly 6000 BCE."},{"title":"Bhola Island-like Harappan Settlements Reveal Strategic Riverine Planning","slug":"bhola-island-like-harappan-settlements-reveal-strategic-riverine-planning","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/bhola-island-like-harappan-settlements-reveal-strategic-riverine-planning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Indus settlements were built on elevated mounds resembling islands to mitigate flooding from seasonal rivers."},{"title":"Chanhudaro Bead Drills Reveal Rotational Technology in 2500 BCE","slug":"chanhudaro-bead-drills-reveal-rotational-technology-in-2500-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/chanhudaro-bead-drills-reveal-rotational-technology-in-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bead production at Chanhudaro employed advanced rotary drills centuries before similar tools in other regions."},{"title":"Chanhudaro Bead Workshops Produced Mass-Scale Carnelian Exports by 2400 BCE","slug":"chanhudaro-bead-workshops-produced-mass-scale-carnelian-exports-by-2400-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/chanhudaro-bead-workshops-produced-mass-scale-carnelian-exports-by-2400-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the city of Chanhudaro, specialized workshops manufactured carnelian beads for export across ancient trade routes."},{"title":"Chanhudaro Industrial District Indicates Craft Specialization Beyond Household Production","slug":"chanhudaro-industrial-district-indicates-craft-specialization-beyond-household-production","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/chanhudaro-industrial-district-indicates-craft-specialization-beyond-household-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Distinct zones at Chanhudaro reveal workshops dedicated to beads, pottery, and toolmaking for mass distribution."},{"title":"Chanhudaro Seal Carvings Suggest Administrative Literacy in 2500 BCE","slug":"chanhudaro-seal-carvings-suggest-administrative-literacy-in-2500-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/chanhudaro-seal-carvings-suggest-administrative-literacy-in-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved seals from Chanhudaro indicate that Indus officials used writing for economic and bureaucratic purposes."},{"title":"Cotton Textile Production in the Indus Region Predated Egyptian Linen by Centuries","slug":"cotton-textile-production-in-the-indus-region-predated-egyptian-linen-by-centuries","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/cotton-textile-production-in-the-indus-region-predated-egyptian-linen-by-centuries.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Indus Valley Civilization was cultivating and weaving cotton thousands of years before cotton became widespread elsewhere."},{"title":"Daimabad Bronze Hoard Demonstrates Advanced Metal Casting Around 2000 BCE","slug":"daimabad-bronze-hoard-demonstrates-advanced-metal-casting-around-2000-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/daimabad-bronze-hoard-demonstrates-advanced-metal-casting-around-2000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A cache of massive bronze sculptures discovered at Daimabad reveals large-scale metal casting in ancient South Asia."},{"title":"Dholavira Observatory Suggests Astronomical Knowledge in 2500 BCE Urban Planning","slug":"dholavira-observatory-suggests-astronomical-knowledge-in-2500-bce-urban-planning","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/dholavira-observatory-suggests-astronomical-knowledge-in-2500-bce-urban-planning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Alignment of structures at Dholavira may indicate intentional astronomical orientation in city design."},{"title":"Dholavira Reservoir Alignment Suggests Solar Orientation Awareness","slug":"dholavira-reservoir-alignment-suggests-solar-orientation-awareness","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/dholavira-reservoir-alignment-suggests-solar-orientation-awareness.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Reservoirs at Dholavira were aligned along cardinal directions, possibly reflecting knowledge of solar cycles."},{"title":"Dholavira Signboard Represents One of the Earliest Urban Public Communication Systems","slug":"dholavira-signboard-represents-one-of-the-earliest-urban-public-communication-systems","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/dholavira-signboard-represents-one-of-the-earliest-urban-public-communication-systems.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A massive inscribed stone at Dholavira likely functioned as a public noticeboard for civic regulation or announcements."},{"title":"Dholavira Water Reservoirs Stored Millions of Liters in 2400 BCE","slug":"dholavira-water-reservoirs-stored-millions-of-liters-in-2400-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/dholavira-water-reservoirs-stored-millions-of-liters-in-2400-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In a region with scarce rainfall, Dholavira engineered massive reservoirs capable of storing millions of liters of water."},{"title":"Harappa Trade Seals Enabled Long-Distance Commerce by 2600 BCE","slug":"harappa-trade-seals-enabled-long-distance-commerce-by-2600-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/harappa-trade-seals-enabled-long-distance-commerce-by-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of carved seals from Harappa suggest a standardized commercial system operating more than 4,500 years ago."},{"title":"Limestone Standardized Weights Enabled Regulated Trade Across Indus Cities","slug":"limestone-standardized-weights-enabled-regulated-trade-across-indus-cities","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/limestone-standardized-weights-enabled-regulated-trade-across-indus-cities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Uniform stone weights discovered across Indus sites reveal a standardized measurement system in operation by 2600 BCE."},{"title":"Lothal Bead Factories Employed Uniform Drilling Techniques for Mass Production","slug":"lothal-bead-factories-employed-uniform-drilling-techniques-for-mass-production","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/lothal-bead-factories-employed-uniform-drilling-techniques-for-mass-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Standardized drills at Lothal allowed consistent production of thousands of carnelian beads for trade."},{"title":"Lothal Dockyard Design Demonstrates Tidal Awareness for 2400 BCE Maritime Trade","slug":"lothal-dockyard-design-demonstrates-tidal-awareness-for-2400-bce-maritime-trade","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/lothal-dockyard-design-demonstrates-tidal-awareness-for-2400-bce-maritime-trade.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Lothal dockyard shows engineering calibrated to tidal fluctuations, facilitating ancient riverine and coastal trade."},{"title":"Lothal Dockyard of 2200 BCE Demonstrates Early Maritime Engineering","slug":"lothal-dockyard-of-2200-bce-demonstrates-early-maritime-engineering","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/lothal-dockyard-of-2200-bce-demonstrates-early-maritime-engineering.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2200 BCE, engineers at Lothal constructed what many scholars identify as one of the world’s earliest dockyards."},{"title":"Mohenjo-daro Urban Grid of 2500 BCE Featured Advanced Drainage Infrastructure","slug":"mohenjo-daro-urban-grid-of-2500-bce-featured-advanced-drainage-infrastructure","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/mohenjo-daro-urban-grid-of-2500-bce-featured-advanced-drainage-infrastructure.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2500 BCE, Mohenjo-daro had a citywide drainage system that many medieval towns never achieved."},{"title":"Qalat-i-Bolan Pass Linked Indus Settlements to Afghan Trade Corridors by 2600 BCE","slug":"qalat-i-bolan-pass-linked-indus-settlements-to-afghan-trade-corridors-by-2600-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/qalat-i-bolan-pass-linked-indus-settlements-to-afghan-trade-corridors-by-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mountain passes west of the Indus connected Bronze Age cities to mineral-rich regions hundreds of kilometers away."},{"title":"Quetta Ware Pottery Signals Pre-Harappan Cultural Networks Before 3000 BCE","slug":"quetta-ware-pottery-signals-pre-harappan-cultural-networks-before-3000-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/quetta-ware-pottery-signals-pre-harappan-cultural-networks-before-3000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before the Indus cities peaked, distinctive Quetta Ware pottery was already circulating across Baluchistan."},{"title":"Quetta-Khyber Trade Corridors Connected Indus Cities to Central Asia","slug":"quetta-khyber-trade-corridors-connected-indus-cities-to-central-asia","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/quetta-khyber-trade-corridors-connected-indus-cities-to-central-asia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Trade routes passing through Quetta and the Khyber region facilitated commerce and cultural exchange for the Indus Civilization."},{"title":"Rakhigarhi Cemetery Evidence Indicates Continuity of Indus Burial Practices","slug":"rakhigarhi-cemetery-evidence-indicates-continuity-of-indus-burial-practices","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/rakhigarhi-cemetery-evidence-indicates-continuity-of-indus-burial-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Graves at Rakhigarhi reveal that Indus cultural and ritual traditions persisted across generations."},{"title":"Rakhigarhi Granary Foundations Indicate Urban Food Storage Systems by 2600 BCE","slug":"rakhigarhi-granary-foundations-indicate-urban-food-storage-systems-by-2600-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/rakhigarhi-granary-foundations-indicate-urban-food-storage-systems-by-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Large granary foundations at Rakhigarhi reveal coordinated food storage supporting dense populations."},{"title":"Rakhigarhi Settlement Covered Over 350 Hectares by 2600 BCE","slug":"rakhigarhi-settlement-covered-over-350-hectares-by-2600-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/rakhigarhi-settlement-covered-over-350-hectares-by-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rakhigarhi grew into one of the largest cities of the ancient world, spanning more than 350 hectares at its peak."},{"title":"Rangpur Site Layers Show Continuity of Indus Cultural Practices in Rural Settlements","slug":"rangpur-site-layers-show-continuity-of-indus-cultural-practices-in-rural-settlements","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/rangpur-site-layers-show-continuity-of-indus-cultural-practices-in-rural-settlements.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rural settlements like Rangpur preserve Indus crafts, pottery, and ritual practice beyond major cities."},{"title":"Riverside Dock Structures at Lothal Indicate Harbor Engineering by 2400 BCE","slug":"riverside-dock-structures-at-lothal-indicate-harbor-engineering-by-2400-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/riverside-dock-structures-at-lothal-indicate-harbor-engineering-by-2400-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Lothal’s dockyard shows that Indus engineers designed waterborne trade infrastructure with precision."},{"title":"Ropar Cemetery Evidence Shows Cultural Continuity After Urban Decline","slug":"ropar-cemetery-evidence-shows-cultural-continuity-after-urban-decline","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/ropar-cemetery-evidence-shows-cultural-continuity-after-urban-decline.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Burial sites at Ropar demonstrate that Indus cultural traditions persisted even after major cities waned."},{"title":"Shortugai Outpost in Afghanistan Proves Indus Commercial Expansion Beyond the Subcontinent","slug":"shortugai-outpost-in-afghanistan-proves-indus-commercial-expansion-beyond-the-subcontinent","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/shortugai-outpost-in-afghanistan-proves-indus-commercial-expansion-beyond-the-subcontinent.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An Indus settlement discovered in northern Afghanistan reveals a commercial colony established over 1,000 kilometers from the core region."},{"title":"Surkotada Fortifications Reveal Defensive Architecture in 2100 BCE Gujarat","slug":"surkotada-fortifications-reveal-defensive-architecture-in-2100-bce-gujarat","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/surkotada-fortifications-reveal-defensive-architecture-in-2100-bce-gujarat.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2100 BCE, the settlement of Surkotada was enclosed by substantial defensive walls in western India."},{"title":"Tando Muhammad Khan Terracotta Figurines Illustrate Indus Ritual Practices","slug":"tando-muhammad-khan-terracotta-figurines-illustrate-indus-ritual-practices","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/tando-muhammad-khan-terracotta-figurines-illustrate-indus-ritual-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Terracotta figurines discovered in Indus settlements provide clues to domestic ritual and belief systems."},{"title":"Tarpur Site Layers Demonstrate Indus Technological Consistency Across Regions","slug":"tarpur-site-layers-demonstrate-indus-technological-consistency-across-regions","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/tarpur-site-layers-demonstrate-indus-technological-consistency-across-regions.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tarpur settlement layers show standardized brick sizes, tool types, and urban design principles used across the Indus Civilization."},{"title":"Tektite Beads in Indus Sites Suggest Awareness of Rare Geological Materials","slug":"tektite-beads-in-indus-sites-suggest-awareness-of-rare-geological-materials","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/tektite-beads-in-indus-sites-suggest-awareness-of-rare-geological-materials.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beads made from naturally formed glass known as tektites have been identified in Indus archaeological contexts."},{"title":"Thar Desert Caravan Routes Linked Indus Cities to Inland Rajasthan","slug":"thar-desert-caravan-routes-linked-indus-cities-to-inland-rajasthan","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/thar-desert-caravan-routes-linked-indus-cities-to-inland-rajasthan.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caravan routes crossing the Thar Desert connected Indus urban centers to resource zones deep inland."},{"title":"Tomb Excavations at Kalibangan Reveal Fire Altars for Ritual Ceremonies","slug":"tomb-excavations-at-kalibangan-reveal-fire-altars-for-ritual-ceremonies","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/tomb-excavations-at-kalibangan-reveal-fire-altars-for-ritual-ceremonies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Indus Valley civilization residents constructed fire altars for domestic and ceremonial purposes."},{"title":"Ubaid-Style Artifacts in the Indus Region Indicate Early Gulf Trade Contacts","slug":"ubaid-style-artifacts-in-the-indus-region-indicate-early-gulf-trade-contacts","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/ubaid-style-artifacts-in-the-indus-region-indicate-early-gulf-trade-contacts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts resembling Mesopotamian Ubaid culture objects have been found in Indus settlements dating back to the 3rd millennium BCE."},{"title":"Uchhali Lake Sites Reveal Indus Adaptation to Semi-Arid Environments","slug":"uchhali-lake-sites-reveal-indus-adaptation-to-semi-arid-environments","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/uchhali-lake-sites-reveal-indus-adaptation-to-semi-arid-environments.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Settlements near Uchhali Lake demonstrate how Indus communities adapted to marginal ecological zones."},{"title":"Uchhalli Lake Sites Demonstrate Environmental Adaptation in Indus Peripheral Settlements","slug":"uchhalli-lake-sites-demonstrate-environmental-adaptation-in-indus-peripheral-settlements","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/uchhalli-lake-sites-demonstrate-environmental-adaptation-in-indus-peripheral-settlements.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Settlements around Uchhalli Lake reveal Indus strategies for semi-arid agriculture and water management."},{"title":"X-Ray Fluorescence Analysis of Indus Beads Confirmed Long-Distance Resource Sourcing","slug":"x-ray-fluorescence-analysis-of-indus-beads-confirmed-long-distance-resource-sourcing","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/x-ray-fluorescence-analysis-of-indus-beads-confirmed-long-distance-resource-sourcing.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Modern X-ray testing revealed that Indus carnelian beads traveled thousands of kilometers before reaching foreign markets."},{"title":"Xanadu-like Luxury in Harappan Houses Shows Advanced Domestic Planning","slug":"xanadu-like-luxury-in-harappan-houses-shows-advanced-domestic-planning","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/xanadu-like-luxury-in-harappan-houses-shows-advanced-domestic-planning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Residential layouts in Indus cities included private wells, bathrooms, and multi-room planning indicative of sophisticated domestic design."},{"title":"Xarala-Type Terracotta Figurines Reflect Widespread Symbolic Practices","slug":"xarala-type-terracotta-figurines-reflect-widespread-symbolic-practices","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/xarala-type-terracotta-figurines-reflect-widespread-symbolic-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Terracotta figurines of standardized form appear across multiple Indus sites, indicating shared cultural or religious symbolism."},{"title":"Xerophytic Crop Cultivation Supported Indus Peripheral Communities","slug":"xerophytic-crop-cultivation-supported-indus-peripheral-communities","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/xerophytic-crop-cultivation-supported-indus-peripheral-communities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Indus farmers practiced drought-resistant agriculture to sustain settlements in semi-arid zones."},{"title":"Yamuna River Settlements Reflect Indus Expansion into Eastern Punjab","slug":"yamuna-river-settlements-reflect-indus-expansion-into-eastern-punjab","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/yamuna-river-settlements-reflect-indus-expansion-into-eastern-punjab.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sites along the Yamuna River show Indus influence extending eastward into previously marginal regions."},{"title":"Yardang Desertification May Have Contributed to Indus Urban Decline After 1900 BCE","slug":"yardang-desertification-may-have-contributed-to-indus-urban-decline-after-1900-bce","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/yardang-desertification-may-have-contributed-to-indus-urban-decline-after-1900-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shifting river patterns and increasing aridity after 1900 BCE coincided with the gradual decline of major Indus cities."},{"title":"Yasodharpur Regional Sites Show Indus Cultural Diffusion Across Punjab","slug":"yasodharpur-regional-sites-show-indus-cultural-diffusion-across-punjab","url":"/categories/ancient-civilizations-secrets/indus-valley-civilization/yasodharpur-regional-sites-show-indus-cultural-diffusion-across-punjab.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Peripheral settlements demonstrate how Indus cultural traits spread far beyond major urban centers."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

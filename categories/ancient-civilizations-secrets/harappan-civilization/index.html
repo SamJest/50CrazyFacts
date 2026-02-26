@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harappan Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Harappan Civilization</h1>
+  <p>Explore all facts in "Harappan Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Harappan Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Agricultural Surplus Sustained Harappan Urban Expansion After 2600 BCE","slug":"agricultural-surplus-sustained-harappan-urban-expansion-after-2600-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/agricultural-surplus-sustained-harappan-urban-expansion-after-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After 2600 BCE, Harappan cities expanded rapidly because agricultural systems produced enough surplus to support tens of thousands of non-farmers."},{"title":"Bead Workshops at Chanhudaro Specialized in Precision Drilling Techniques","slug":"bead-workshops-at-chanhudaro-specialized-in-precision-drilling-techniques","url":"/categories/ancient-civilizations-secrets/harappan-civilization/bead-workshops-at-chanhudaro-specialized-in-precision-drilling-techniques.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Chanhudaro, Harappan artisans drilled tiny holes through hard stone beads with remarkable precision over 4,000 years ago."},{"title":"Citadel Platforms Elevated Harappan Administrative Complexes Above Flood Levels","slug":"citadel-platforms-elevated-harappan-administrative-complexes-above-flood-levels","url":"/categories/ancient-civilizations-secrets/harappan-civilization/citadel-platforms-elevated-harappan-administrative-complexes-above-flood-levels.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan cities raised their citadel complexes on massive mud-brick platforms to withstand seasonal flooding."},{"title":"Dholavira Reservoir Engineering Controlled Seasonal Floodwaters by 2500 BCE","slug":"dholavira-reservoir-engineering-controlled-seasonal-floodwaters-by-2500-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/dholavira-reservoir-engineering-controlled-seasonal-floodwaters-by-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2500 BCE, Harappan engineers at Dholavira had transformed a drought-prone island into a fortified water-harvesting machine."},{"title":"Faience Bangles from Harappa Demonstrate Mass Craft Production","slug":"faience-bangles-from-harappa-demonstrate-mass-craft-production","url":"/categories/ancient-civilizations-secrets/harappan-civilization/faience-bangles-from-harappa-demonstrate-mass-craft-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Harappa uncovered large quantities of faience bangles, suggesting organized craft production beyond household scale."},{"title":"Fire-Baked Brick Production Required Controlled Kiln Temperatures Above 600°C","slug":"fire-baked-brick-production-required-controlled-kiln-temperatures-above-600-c","url":"/categories/ancient-civilizations-secrets/harappan-civilization/fire-baked-brick-production-required-controlled-kiln-temperatures-above-600-c.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Producing durable Harappan baked bricks required kiln temperatures exceeding 600°C across thousands of units."},{"title":"Flood Deposits at Mohenjo-daro Reveal Repeated Urban Rebuilding Cycles","slug":"flood-deposits-at-mohenjo-daro-reveal-repeated-urban-rebuilding-cycles","url":"/categories/ancient-civilizations-secrets/harappan-civilization/flood-deposits-at-mohenjo-daro-reveal-repeated-urban-rebuilding-cycles.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sediment layers at Mohenjo-daro show that the city was rebuilt multiple times after flood events."},{"title":"Fortification Walls at Harappa Measured Several Meters Thick","slug":"fortification-walls-at-harappa-measured-several-meters-thick","url":"/categories/ancient-civilizations-secrets/harappan-civilization/fortification-walls-at-harappa-measured-several-meters-thick.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Defensive walls at Harappa were constructed several meters thick, signaling organized labor and security planning."},{"title":"Ganweriwala May Have Rivaled Harappa in Urban Scale","slug":"ganweriwala-may-have-rivaled-harappa-in-urban-scale","url":"/categories/ancient-civilizations-secrets/harappan-civilization/ganweriwala-may-have-rivaled-harappa-in-urban-scale.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ganweriwala, a largely unexcavated Harappan site in Pakistan, covers an area comparable to the largest Indus cities."},{"title":"Great Bath Waterproofing Used Bitumen Sealing Technology Around 2500 BCE","slug":"great-bath-waterproofing-used-bitumen-sealing-technology-around-2500-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/great-bath-waterproofing-used-bitumen-sealing-technology-around-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2500 BCE, builders at Mohenjo-daro lined a public tank with natural bitumen to prevent leakage."},{"title":"Harappa Brick Standardization Used a 1:2:4 Ratio Across 1,000 Kilometers","slug":"harappa-brick-standardization-used-a-1-2-4-ratio-across-1-000-kilometers","url":"/categories/ancient-civilizations-secrets/harappan-civilization/harappa-brick-standardization-used-a-1-2-4-ratio-across-1-000-kilometers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Across more than 1,000 kilometers, Harappan cities used bricks molded to the same 1:2:4 proportional ratio."},{"title":"Indus Seals Traveled to Mesopotamia During Bronze Age Trade Networks","slug":"indus-seals-traveled-to-mesopotamia-during-bronze-age-trade-networks","url":"/categories/ancient-civilizations-secrets/harappan-civilization/indus-seals-traveled-to-mesopotamia-during-bronze-age-trade-networks.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Indus seals carved with undeciphered script have been discovered in Mesopotamian cities over 2,000 kilometers away."},{"title":"Kalibangan Earthquake Evidence Suggests Sudden Urban Disruption Around 2600 BCE","slug":"kalibangan-earthquake-evidence-suggests-sudden-urban-disruption-around-2600-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/kalibangan-earthquake-evidence-suggests-sudden-urban-disruption-around-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Kalibangan, archaeologists found structural shifts consistent with seismic disturbance dating to the early Mature Harappan period."},{"title":"Kalibangan Fire Altars Suggest Ritual Architecture Around 2600 BCE","slug":"kalibangan-fire-altars-suggest-ritual-architecture-around-2600-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/kalibangan-fire-altars-suggest-ritual-architecture-around-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Kalibangan uncovered rows of brick-lined fire altars dating to approximately 2600 BCE."},{"title":"Kot Diji Fortifications Preceded Mature Harappan Urban Expansion","slug":"kot-diji-fortifications-preceded-mature-harappan-urban-expansion","url":"/categories/ancient-civilizations-secrets/harappan-civilization/kot-diji-fortifications-preceded-mature-harappan-urban-expansion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before the great Indus cities reached their peak, Kot Diji was already building defensive walls that foreshadowed urban planning."},{"title":"Kunal Settlement Shows Pre-Harappan Fortifications Before 2600 BCE","slug":"kunal-settlement-shows-pre-harappan-fortifications-before-2600-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/kunal-settlement-shows-pre-harappan-fortifications-before-2600-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before the rise of the great Indus cities, Kunal was already constructing fortified enclosures prior to 2600 BCE."},{"title":"Lapis Lazuli Trade Linked Indus Merchants to Afghanistan Mines","slug":"lapis-lazuli-trade-linked-indus-merchants-to-afghanistan-mines","url":"/categories/ancient-civilizations-secrets/harappan-civilization/lapis-lazuli-trade-linked-indus-merchants-to-afghanistan-mines.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan merchants imported lapis lazuli from mines over 1,500 kilometers away in present-day Afghanistan."},{"title":"Lothal Dockyard Structure Dates to Around 2400 BCE","slug":"lothal-dockyard-structure-dates-to-around-2400-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/lothal-dockyard-structure-dates-to-around-2400-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2400 BCE, the Harappan settlement of Lothal constructed a large brick basin interpreted as one of the world's earliest dockyards."},{"title":"Lothal Warehouse Foundations Indicate Organized Commodity Storage","slug":"lothal-warehouse-foundations-indicate-organized-commodity-storage","url":"/categories/ancient-civilizations-secrets/harappan-civilization/lothal-warehouse-foundations-indicate-organized-commodity-storage.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Adjacent to Lothal’s dock basin, archaeologists uncovered brick platforms interpreted as foundations for a large warehouse."},{"title":"Mature Harappan Trade With Mesopotamia Is Documented in Akkadian Texts","slug":"mature-harappan-trade-with-mesopotamia-is-documented-in-akkadian-texts","url":"/categories/ancient-civilizations-secrets/harappan-civilization/mature-harappan-trade-with-mesopotamia-is-documented-in-akkadian-texts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Akkadian-era Mesopotamian records mention a distant land called Meluhha, widely believed to refer to the Indus region."},{"title":"Mehrgarh Agricultural Practices Influenced Early Indus Development Before 3000 BCE","slug":"mehrgarh-agricultural-practices-influenced-early-indus-development-before-3000-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/mehrgarh-agricultural-practices-influenced-early-indus-development-before-3000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Harappa and Mohenjo-daro rose, Mehrgarh communities were cultivating crops and domesticating animals in the 7th millennium BCE."},{"title":"Metallurgy in the Indus Civilization Included Bronze Alloy Production","slug":"metallurgy-in-the-indus-civilization-included-bronze-alloy-production","url":"/categories/ancient-civilizations-secrets/harappan-civilization/metallurgy-in-the-indus-civilization-included-bronze-alloy-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan metalworkers alloyed copper with tin to produce bronze tools and ornaments during the third millennium BCE."},{"title":"Mohenjo-daro Population May Have Reached 40,000 at Its Peak","slug":"mohenjo-daro-population-may-have-reached-40-000-at-its-peak","url":"/categories/ancient-civilizations-secrets/harappan-civilization/mohenjo-daro-population-may-have-reached-40-000-at-its-peak.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At its height around 2500 BCE, Mohenjo-daro may have housed up to 40,000 residents within a carefully planned grid."},{"title":"Quarrying of Rohri Hills Chert Supplied Harappan Tool Production","slug":"quarrying-of-rohri-hills-chert-supplied-harappan-tool-production","url":"/categories/ancient-civilizations-secrets/harappan-civilization/quarrying-of-rohri-hills-chert-supplied-harappan-tool-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan craftsmen extracted high-quality chert from the Rohri Hills to mass-produce standardized stone tools across their civilization."},{"title":"Quasi-Standardized Script Signs Appear on Over 4,000 Indus Artifacts","slug":"quasi-standardized-script-signs-appear-on-over-4-000-indus-artifacts","url":"/categories/ancient-civilizations-secrets/harappan-civilization/quasi-standardized-script-signs-appear-on-over-4-000-indus-artifacts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 4,000 inscribed artifacts show repeated sign patterns that hint at structured communication across the Indus world."},{"title":"Quaternary Alluvial Soils Enabled High Agricultural Productivity in the Indus Basin","slug":"quaternary-alluvial-soils-enabled-high-agricultural-productivity-in-the-indus-basin","url":"/categories/ancient-civilizations-secrets/harappan-civilization/quaternary-alluvial-soils-enabled-high-agricultural-productivity-in-the-indus-basin.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Indus River’s annual deposition of nutrient-rich alluvial soil sustained agricultural yields across vast floodplains."},{"title":"Quetta Valley Settlements Show Early Craft Exchange Before Urban Peak","slug":"quetta-valley-settlements-show-early-craft-exchange-before-urban-peak","url":"/categories/ancient-civilizations-secrets/harappan-civilization/quetta-valley-settlements-show-early-craft-exchange-before-urban-peak.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before major Indus cities flourished, Quetta Valley settlements were already participating in regional craft exchange networks."},{"title":"Rakhigarhi DNA Study in 2019 Revealed Genetic Continuity in Indus Populations","slug":"rakhigarhi-dna-study-in-2019-revealed-genetic-continuity-in-indus-populations","url":"/categories/ancient-civilizations-secrets/harappan-civilization/rakhigarhi-dna-study-in-2019-revealed-genetic-continuity-in-indus-populations.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 2019, DNA extracted from a 4,500-year-old skeleton at Rakhigarhi provided the first direct genetic data from the Harappan Civilization."},{"title":"Rangpur Late Harappan Layers Show Ceramic Style Transformation After 1900 BCE","slug":"rangpur-late-harappan-layers-show-ceramic-style-transformation-after-1900-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/rangpur-late-harappan-layers-show-ceramic-style-transformation-after-1900-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Rangpur, pottery styles shifted measurably after 1900 BCE, marking a visible transformation in Late Harappan material culture."},{"title":"Ropar Cemetery Burials Reveal Gradual Cultural Transition After 1900 BCE","slug":"ropar-cemetery-burials-reveal-gradual-cultural-transition-after-1900-bce","url":"/categories/ancient-civilizations-secrets/harappan-civilization/ropar-cemetery-burials-reveal-gradual-cultural-transition-after-1900-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Ropar, burial layers show a measurable shift in material culture after 1900 BCE rather than sudden abandonment."},{"title":"Standardized Street Widths Reflect Urban Regulation in Harappan Cities","slug":"standardized-street-widths-reflect-urban-regulation-in-harappan-cities","url":"/categories/ancient-civilizations-secrets/harappan-civilization/standardized-street-widths-reflect-urban-regulation-in-harappan-cities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan cities maintained relatively consistent street widths, indicating regulated urban design rather than organic sprawl."},{"title":"Tidal Channel Engineering at Lothal Managed Maritime Access","slug":"tidal-channel-engineering-at-lothal-managed-maritime-access","url":"/categories/ancient-civilizations-secrets/harappan-civilization/tidal-channel-engineering-at-lothal-managed-maritime-access.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan engineers at Lothal aligned channels with tidal patterns to regulate water flow into their dock basin."},{"title":"Uniform Drainage Systems Reduced Urban Waste in Harappan Cities","slug":"uniform-drainage-systems-reduced-urban-waste-in-harappan-cities","url":"/categories/ancient-civilizations-secrets/harappan-civilization/uniform-drainage-systems-reduced-urban-waste-in-harappan-cities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan cities incorporated covered brick drains beneath streets to manage wastewater over 4,000 years ago."},{"title":"Uplifted Mud-Brick Granary Structures at Harappa Indicate Organized Storage","slug":"uplifted-mud-brick-granary-structures-at-harappa-indicate-organized-storage","url":"/categories/ancient-civilizations-secrets/harappan-civilization/uplifted-mud-brick-granary-structures-at-harappa-indicate-organized-storage.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Large brick platforms at Harappa have been interpreted as granary foundations capable of storing substantial grain reserves."},{"title":"Upper Town and Lower Town Divisions Structured Harappan Social Space","slug":"upper-town-and-lower-town-divisions-structured-harappan-social-space","url":"/categories/ancient-civilizations-secrets/harappan-civilization/upper-town-and-lower-town-divisions-structured-harappan-social-space.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan cities were physically divided into elevated upper towns and expansive lower towns, embedding hierarchy into urban geography."},{"title":"Urban Decline After 1900 BCE Followed Major River System Shifts","slug":"urban-decline-after-1900-bce-followed-major-river-system-shifts","url":"/categories/ancient-civilizations-secrets/harappan-civilization/urban-decline-after-1900-bce-followed-major-river-system-shifts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1900 BCE, multiple Harappan cities were gradually abandoned as river systems that sustained them began to shift course."},{"title":"Urban Wells at Mohenjo-daro Provided Household Water Access","slug":"urban-wells-at-mohenjo-daro-provided-household-water-access","url":"/categories/ancient-civilizations-secrets/harappan-civilization/urban-wells-at-mohenjo-daro-provided-household-water-access.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hundreds of brick-lined wells at Mohenjo-daro delivered private water access to urban households more than 4,000 years ago."},{"title":"Weight Cubes Found at Dholavira Follow Precise Binary Scaling","slug":"weight-cubes-found-at-dholavira-follow-precise-binary-scaling","url":"/categories/ancient-civilizations-secrets/harappan-civilization/weight-cubes-found-at-dholavira-follow-precise-binary-scaling.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone weight cubes discovered at Dholavira align precisely with the binary measurement system used across the Indus region."},{"title":"Weights and Measures System Used Binary Multiples Across Harappan Cities","slug":"weights-and-measures-system-used-binary-multiples-across-harappan-cities","url":"/categories/ancient-civilizations-secrets/harappan-civilization/weights-and-measures-system-used-binary-multiples-across-harappan-cities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Across hundreds of Harappan sites, stone weights followed a standardized binary system that ensured commercial consistency."},{"title":"X-Ray Analysis of Harappan Beads Reveals Advanced Heat Treatment Techniques","slug":"x-ray-analysis-of-harappan-beads-reveals-advanced-heat-treatment-techniques","url":"/categories/ancient-civilizations-secrets/harappan-civilization/x-ray-analysis-of-harappan-beads-reveals-advanced-heat-treatment-techniques.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Scientific X-ray analysis shows that Harappan artisans deliberately heat-treated carnelian beads to enhance their deep red color."},{"title":"Xenolithic Stone Tools Indicate Long-Distance Raw Material Transport","slug":"xenolithic-stone-tools-indicate-long-distance-raw-material-transport","url":"/categories/ancient-civilizations-secrets/harappan-civilization/xenolithic-stone-tools-indicate-long-distance-raw-material-transport.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Harappan stone tools were crafted from rock types sourced hundreds of kilometers away."},{"title":"Xeric Climate Zones Encouraged Seasonal Adaptation in Harappan Agriculture","slug":"xeric-climate-zones-encouraged-seasonal-adaptation-in-harappan-agriculture","url":"/categories/ancient-civilizations-secrets/harappan-civilization/xeric-climate-zones-encouraged-seasonal-adaptation-in-harappan-agriculture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan farmers operated across semi-arid zones where seasonal rainfall variability demanded adaptive crop strategies."},{"title":"Y-shaped Terracotta Cakes Remain Unexplained Harappan Artifacts","slug":"y-shaped-terracotta-cakes-remain-unexplained-harappan-artifacts","url":"/categories/ancient-civilizations-secrets/harappan-civilization/y-shaped-terracotta-cakes-remain-unexplained-harappan-artifacts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of triangular and Y-shaped terracotta objects found at Harappan sites still lack a definitive explanation."},{"title":"Yamuna River Proximity Influenced Eastern Harappan Settlement Patterns","slug":"yamuna-river-proximity-influenced-eastern-harappan-settlement-patterns","url":"/categories/ancient-civilizations-secrets/harappan-civilization/yamuna-river-proximity-influenced-eastern-harappan-settlement-patterns.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Eastern Harappan settlements clustered near paleo-channels associated with the Yamuna river system."},{"title":"Yellow Faience Production Demonstrated Early Synthetic Material Technology","slug":"yellow-faience-production-demonstrated-early-synthetic-material-technology","url":"/categories/ancient-civilizations-secrets/harappan-civilization/yellow-faience-production-demonstrated-early-synthetic-material-technology.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Harappan artisans produced bright blue-green and yellow faience by chemically transforming crushed quartz more than 4,000 years ago."},{"title":"Yogic Seated Figure on Indus Seal Suggests Early Ritual Symbolism","slug":"yogic-seated-figure-on-indus-seal-suggests-early-ritual-symbolism","url":"/categories/ancient-civilizations-secrets/harappan-civilization/yogic-seated-figure-on-indus-seal-suggests-early-ritual-symbolism.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One Indus seal depicts a horned figure seated cross-legged in a posture that resembles later yogic iconography."},{"title":"Zebu Cattle Domestication Supported Harappan Agricultural Expansion","slug":"zebu-cattle-domestication-supported-harappan-agricultural-expansion","url":"/categories/ancient-civilizations-secrets/harappan-civilization/zebu-cattle-domestication-supported-harappan-agricultural-expansion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Domesticated zebu cattle formed the agricultural backbone of Harappan farming systems."},{"title":"Zebu Iconography Dominates Indus Seal Motifs Across Major Cities","slug":"zebu-iconography-dominates-indus-seal-motifs-across-major-cities","url":"/categories/ancient-civilizations-secrets/harappan-civilization/zebu-iconography-dominates-indus-seal-motifs-across-major-cities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Humped zebu cattle appear repeatedly on Indus seals, signaling their central role in Harappan society."},{"title":"Zinc Traces in Harappan Metal Objects Indicate Complex Alloying Knowledge","slug":"zinc-traces-in-harappan-metal-objects-indicate-complex-alloying-knowledge","url":"/categories/ancient-civilizations-secrets/harappan-civilization/zinc-traces-in-harappan-metal-objects-indicate-complex-alloying-knowledge.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chemical analysis of some Harappan metal artifacts reveals trace elements that suggest nuanced alloy experimentation."},{"title":"Zonal Craft Specialization Differentiated Harappan Urban Districts","slug":"zonal-craft-specialization-differentiated-harappan-urban-districts","url":"/categories/ancient-civilizations-secrets/harappan-civilization/zonal-craft-specialization-differentiated-harappan-urban-districts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological mapping shows that certain Harappan neighborhoods concentrated specific crafts such as bead-making or metallurgy."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

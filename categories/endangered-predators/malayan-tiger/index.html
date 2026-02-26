@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Malayan Tiger</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Malayan Tiger</h1>
+  <p>Explore all facts in "Malayan Tiger".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Malayan Tiger</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Bone Snares Can Kill a Malayan Tiger Without Ever Being Checked","slug":"bone-snares-can-kill-a-malayan-tiger-without-ever-being-checked","url":"/categories/endangered-predators/malayan-tiger/bone-snares-can-kill-a-malayan-tiger-without-ever-being-checked.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A loop of cable hidden in leaves can kill a 120-kilogram Malayan tiger without anyone returning to check it."},{"title":"Camera Traps Prove Some Forests Hold Only Single Malayan Tigers","slug":"camera-traps-prove-some-forests-hold-only-single-malayan-tigers","url":"/categories/endangered-predators/malayan-tiger/camera-traps-prove-some-forests-hold-only-single-malayan-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire rainforest blocks sometimes contain just one surviving Malayan tiger."},{"title":"Deforestation in Peninsular Malaysia Has Compressed Tiger Habitat Dramatically","slug":"deforestation-in-peninsular-malaysia-has-compressed-tiger-habitat-dramatically","url":"/categories/endangered-predators/malayan-tiger/deforestation-in-peninsular-malaysia-has-compressed-tiger-habitat-dramatically.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Logging roads can split a Malayan tiger’s territory in half overnight."},{"title":"Ecosystem Collapse Risk Rises as Malayan Tiger Numbers Shrink","slug":"ecosystem-collapse-risk-rises-as-malayan-tiger-numbers-shrink","url":"/categories/endangered-predators/malayan-tiger/ecosystem-collapse-risk-rises-as-malayan-tiger-numbers-shrink.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When Malayan tigers disappear, entire forest food webs can unravel."},{"title":"Genetic Bottlenecks Threaten the Malayan Tiger’s Future","slug":"genetic-bottlenecks-threaten-the-malayan-tiger-s-future","url":"/categories/endangered-predators/malayan-tiger/genetic-bottlenecks-threaten-the-malayan-tiger-s-future.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"With fewer than 150 individuals, Malayan tigers risk genetic collapse."},{"title":"Human-Tiger Conflict Incidents Increase as Habitat Shrinks","slug":"human-tiger-conflict-incidents-increase-as-habitat-shrinks","url":"/categories/endangered-predators/malayan-tiger/human-tiger-conflict-incidents-increase-as-habitat-shrinks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"As forests shrink, Malayan tigers are forced dangerously closer to villages."},{"title":"Illegal Wildlife Trade Targets Malayan Tiger Body Parts","slug":"illegal-wildlife-trade-targets-malayan-tiger-body-parts","url":"/categories/endangered-predators/malayan-tiger/illegal-wildlife-trade-targets-malayan-tiger-body-parts.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even bones from a single Malayan tiger can be sold across international black markets."},{"title":"Juvenile Malayan Tigers Must Disperse Across Dangerous Terrain","slug":"juvenile-malayan-tigers-must-disperse-across-dangerous-terrain","url":"/categories/endangered-predators/malayan-tiger/juvenile-malayan-tigers-must-disperse-across-dangerous-terrain.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young Malayan tigers leave their mother and cross hostile terrain alone."},{"title":"Kilometer-Wide Wildlife Corridors Aim to Save the Malayan Tiger","slug":"kilometer-wide-wildlife-corridors-aim-to-save-the-malayan-tiger","url":"/categories/endangered-predators/malayan-tiger/kilometer-wide-wildlife-corridors-aim-to-save-the-malayan-tiger.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Conservationists are linking entire forests to give Malayan tigers room to survive."},{"title":"Law Enforcement Patrols Now Use Armed Units to Protect Malayan Tigers","slug":"law-enforcement-patrols-now-use-armed-units-to-protect-malayan-tigers","url":"/categories/endangered-predators/malayan-tiger/law-enforcement-patrols-now-use-armed-units-to-protect-malayan-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Protecting Malayan tigers now requires armed patrols in remote rainforest."},{"title":"Malayan Tiger Cubs Depend on Maternal Hunting Success for Two Years","slug":"malayan-tiger-cubs-depend-on-maternal-hunting-success-for-two-years","url":"/categories/endangered-predators/malayan-tiger/malayan-tiger-cubs-depend-on-maternal-hunting-success-for-two-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"For nearly two years, Malayan tiger cubs survive only if their mother keeps killing."},{"title":"Malayan Tiger Cubs Face Mortality Rates Exceeding 50 Percent","slug":"malayan-tiger-cubs-face-mortality-rates-exceeding-50-percent","url":"/categories/endangered-predators/malayan-tiger/malayan-tiger-cubs-face-mortality-rates-exceeding-50-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than half of Malayan tiger cubs never reach adulthood."},{"title":"Malayan Tiger Roars Can Be Heard Up to 3 Kilometers Away","slug":"malayan-tiger-roars-can-be-heard-up-to-3-kilometers-away","url":"/categories/endangered-predators/malayan-tiger/malayan-tiger-roars-can-be-heard-up-to-3-kilometers-away.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Malayan tiger’s roar can travel nearly three kilometers through dense rainforest."},{"title":"Malayan Tiger Survival Now Depends on Fewer Individuals Than Many Sports Teams","slug":"malayan-tiger-survival-now-depends-on-fewer-individuals-than-many-sports-teams","url":"/categories/endangered-predators/malayan-tiger/malayan-tiger-survival-now-depends-on-fewer-individuals-than-many-sports-teams.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer Malayan tigers survive in the wild than players in a large sports league roster."},{"title":"Malayan Tiger Territories Can Overlap Only Under Strict Hierarchies","slug":"malayan-tiger-territories-can-overlap-only-under-strict-hierarchies","url":"/categories/endangered-predators/malayan-tiger/malayan-tiger-territories-can-overlap-only-under-strict-hierarchies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Multiple Malayan tigers can share forest space, but only under rigid territorial rules."},{"title":"Malayan Tiger Whiskers Detect Movement in Complete Darkness","slug":"malayan-tiger-whiskers-detect-movement-in-complete-darkness","url":"/categories/endangered-predators/malayan-tiger/malayan-tiger-whiskers-detect-movement-in-complete-darkness.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even in pitch-black forest, a Malayan tiger can feel its surroundings through its whiskers."},{"title":"Malayan Tigers Are a Distinct Subspecies Identified Only in 2004","slug":"malayan-tigers-are-a-distinct-subspecies-identified-only-in-2004","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-are-a-distinct-subspecies-identified-only-in-2004.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The Malayan tiger was formally recognized as a distinct subspecies only in 2004."},{"title":"Malayan Tigers Are Solitary Yet Maintain Vast Communication Networks Through Scent","slug":"malayan-tigers-are-solitary-yet-maintain-vast-communication-networks-through-scent","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-are-solitary-yet-maintain-vast-communication-networks-through-scent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A solitary Malayan tiger can communicate across kilometers without ever meeting another tiger."},{"title":"Malayan Tigers Can Consume Up to 18 Kilograms of Meat in a Single Meal","slug":"malayan-tigers-can-consume-up-to-18-kilograms-of-meat-in-a-single-meal","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-can-consume-up-to-18-kilograms-of-meat-in-a-single-meal.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"After a successful hunt, a Malayan tiger can devour nearly 18 kilograms of meat at once."},{"title":"Malayan Tigers Can Drag Prey Heavier Than Themselves Into Cover","slug":"malayan-tigers-can-drag-prey-heavier-than-themselves-into-cover","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-can-drag-prey-heavier-than-themselves-into-cover.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Malayan tiger can haul prey heavier than its own body into dense cover."},{"title":"Malayan Tigers Can Exert Bite Forces Strong Enough to Crush Large Bones","slug":"malayan-tigers-can-exert-bite-forces-strong-enough-to-crush-large-bones","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-can-exert-bite-forces-strong-enough-to-crush-large-bones.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Malayan tiger’s jaws can crush large ungulate bones with lethal efficiency."},{"title":"Malayan Tigers Can Leap Over 10 Meters in a Single Bound","slug":"malayan-tigers-can-leap-over-10-meters-in-a-single-bound","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-can-leap-over-10-meters-in-a-single-bound.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Malayan tiger can clear more than 10 meters in one explosive leap."},{"title":"Malayan Tigers Can Sprint at Speeds Approaching 60 Kilometers Per Hour","slug":"malayan-tigers-can-sprint-at-speeds-approaching-60-kilometers-per-hour","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-can-sprint-at-speeds-approaching-60-kilometers-per-hour.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Malayan tiger can explode to highway speeds in seconds inside dense rainforest."},{"title":"Malayan Tigers Control Entire Forest Food Chains","slug":"malayan-tigers-control-entire-forest-food-chains","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-control-entire-forest-food-chains.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove one Malayan tiger, and an entire forest food chain can destabilize."},{"title":"Malayan Tigers Have Individual Stripe Patterns That Never Repeat","slug":"malayan-tigers-have-individual-stripe-patterns-that-never-repeat","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-have-individual-stripe-patterns-that-never-repeat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"No two Malayan tigers on Earth share the same stripe pattern."},{"title":"Malayan Tigers Now Number Fewer Than 150 in the Wild","slug":"malayan-tigers-now-number-fewer-than-150-in-the-wild","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-now-number-fewer-than-150-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 150 Malayan tigers remain on Earth, a number smaller than a single passenger jet’s capacity."},{"title":"Malayan Tigers Possess Night Vision Six Times Stronger Than Humans","slug":"malayan-tigers-possess-night-vision-six-times-stronger-than-humans","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-possess-night-vision-six-times-stronger-than-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In darkness that blinds humans, a Malayan tiger sees with sixfold clarity."},{"title":"Malayan Tigers Rarely Roar While Hunting to Preserve Stealth","slug":"malayan-tigers-rarely-roar-while-hunting-to-preserve-stealth","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-rarely-roar-while-hunting-to-preserve-stealth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator whose roar carries kilometers hunts in near-total silence."},{"title":"Malayan Tigers Require Vast Territories to Survive","slug":"malayan-tigers-require-vast-territories-to-survive","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-require-vast-territories-to-survive.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single Malayan tiger can claim hundreds of square kilometers as its own."},{"title":"Malayan Tigers Swim Across Rivers to Hunt and Disperse","slug":"malayan-tigers-swim-across-rivers-to-hunt-and-disperse","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-swim-across-rivers-to-hunt-and-disperse.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Malayan tigers willingly swim across wide rivers to hunt and expand territory."},{"title":"Malayan Tigers Weigh Up to 120 Kilograms Yet Move Almost Silently","slug":"malayan-tigers-weigh-up-to-120-kilograms-yet-move-almost-silently","url":"/categories/endangered-predators/malayan-tiger/malayan-tigers-weigh-up-to-120-kilograms-yet-move-almost-silently.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 120-kilogram predator can approach within meters without making a sound."},{"title":"Night Patrol Units Remove Thousands of Snares From Tiger Habitat","slug":"night-patrol-units-remove-thousands-of-snares-from-tiger-habitat","url":"/categories/endangered-predators/malayan-tiger/night-patrol-units-remove-thousands-of-snares-from-tiger-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Night patrol teams pull thousands of deadly wire traps from Malayan tiger forests every year."},{"title":"Only a Fraction of Malaysia’s Forest Can Still Sustain Breeding Tigers","slug":"only-a-fraction-of-malaysia-s-forest-can-still-sustain-breeding-tigers","url":"/categories/endangered-predators/malayan-tiger/only-a-fraction-of-malaysia-s-forest-can-still-sustain-breeding-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Vast green forest maps hide the fact that only fragments can support breeding Malayan tigers."},{"title":"Prey Depletion Can Starve a Malayan Tiger Without Direct Poaching","slug":"prey-depletion-can-starve-a-malayan-tiger-without-direct-poaching","url":"/categories/endangered-predators/malayan-tiger/prey-depletion-can-starve-a-malayan-tiger-without-direct-poaching.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A Malayan tiger can die of starvation even if no one hunts it directly."},{"title":"Quieter Forests Signal Tiger Absence Before Cameras Do","slug":"quieter-forests-signal-tiger-absence-before-cameras-do","url":"/categories/endangered-predators/malayan-tiger/quieter-forests-signal-tiger-absence-before-cameras-do.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When the forest grows quiet of alarm calls, Malayan tigers may already be gone."},{"title":"Secondary Forest Fragmentation Increases Tiger Conflict Risk","slug":"secondary-forest-fragmentation-increases-tiger-conflict-risk","url":"/categories/endangered-predators/malayan-tiger/secondary-forest-fragmentation-increases-tiger-conflict-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When mature rainforest becomes patchwork secondary growth, Malayan tiger survival odds drop sharply."},{"title":"Solar-Powered AI Surveillance Is Now Guarding Malayan Tiger Forests","slug":"solar-powered-ai-surveillance-is-now-guarding-malayan-tiger-forests","url":"/categories/endangered-predators/malayan-tiger/solar-powered-ai-surveillance-is-now-guarding-malayan-tiger-forests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Artificial intelligence now scans remote rainforest in real time to protect Malayan tigers."},{"title":"Striped Camouflage Makes Malayan Tigers Nearly Invisible in Sunlit Forest","slug":"striped-camouflage-makes-malayan-tigers-nearly-invisible-in-sunlit-forest","url":"/categories/endangered-predators/malayan-tiger/striped-camouflage-makes-malayan-tigers-nearly-invisible-in-sunlit-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In dappled sunlight, a 120-kilogram Malayan tiger can vanish in plain sight."},{"title":"Tiger Conservation Areas Must Span Hundreds of Square Kilometers to Be Viable","slug":"tiger-conservation-areas-must-span-hundreds-of-square-kilometers-to-be-viable","url":"/categories/endangered-predators/malayan-tiger/tiger-conservation-areas-must-span-hundreds-of-square-kilometers-to-be-viable.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A protected area smaller than a city can be too small for even a few Malayan tigers."},{"title":"Tiger Numbers in Malaysia Have Fallen by More Than 95 Percent Over a Century","slug":"tiger-numbers-in-malaysia-have-fallen-by-more-than-95-percent-over-a-century","url":"/categories/endangered-predators/malayan-tiger/tiger-numbers-in-malaysia-have-fallen-by-more-than-95-percent-over-a-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Malayan tiger populations have collapsed by over 95 percent in roughly 100 years."},{"title":"Tigers Once Roamed Across Most of Asia but Survive in Only Fragments Today","slug":"tigers-once-roamed-across-most-of-asia-but-survive-in-only-fragments-today","url":"/categories/endangered-predators/malayan-tiger/tigers-once-roamed-across-most-of-asia-but-survive-in-only-fragments-today.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"From Turkey to Indonesia, tigers once spanned continents; now Malayan tigers cling to isolated forests."},{"title":"Underpasses Beneath Highways Are Built Specifically for Malayan Tigers","slug":"underpasses-beneath-highways-are-built-specifically-for-malayan-tigers","url":"/categories/endangered-predators/malayan-tiger/underpasses-beneath-highways-are-built-specifically-for-malayan-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Massive highway underpasses are engineered so Malayan tigers can cross safely beneath traffic."},{"title":"Urban Expansion Near Forest Edges Increases Tiger Exposure to Humans","slug":"urban-expansion-near-forest-edges-increases-tiger-exposure-to-humans","url":"/categories/endangered-predators/malayan-tiger/urban-expansion-near-forest-edges-increases-tiger-exposure-to-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"As cities expand toward rainforest borders, Malayan tigers lose their final buffers."},{"title":"Vehicle Collisions Can Eliminate Years of Tiger Recovery in Seconds","slug":"vehicle-collisions-can-eliminate-years-of-tiger-recovery-in-seconds","url":"/categories/endangered-predators/malayan-tiger/vehicle-collisions-can-eliminate-years-of-tiger-recovery-in-seconds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single vehicle collision can erase years of Malayan tiger recovery progress."},{"title":"Wild Boar Population Surges Can Mask Tiger Decline Temporarily","slug":"wild-boar-population-surges-can-mask-tiger-decline-temporarily","url":"/categories/endangered-predators/malayan-tiger/wild-boar-population-surges-can-mask-tiger-decline-temporarily.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Exploding wild boar numbers can temporarily hide the disappearance of Malayan tigers."},{"title":"Wildlife Forensics Now Tracks DNA From Seized Tiger Parts","slug":"wildlife-forensics-now-tracks-dna-from-seized-tiger-parts","url":"/categories/endangered-predators/malayan-tiger/wildlife-forensics-now-tracks-dna-from-seized-tiger-parts.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"DNA from confiscated tiger bones can trace poaching back to specific forests."},{"title":"X-Ray Studies Reveal Fractures in Snared Malayan Tigers","slug":"x-ray-studies-reveal-fractures-in-snared-malayan-tigers","url":"/categories/endangered-predators/malayan-tiger/x-ray-studies-reveal-fractures-in-snared-malayan-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"X-rays of rescued Malayan tigers reveal shattered bones from snare traps."},{"title":"Young Forest Regrowth Alone Cannot Replace Mature Tiger Habitat","slug":"young-forest-regrowth-alone-cannot-replace-mature-tiger-habitat","url":"/categories/endangered-predators/malayan-tiger/young-forest-regrowth-alone-cannot-replace-mature-tiger-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Newly planted trees cannot instantly recreate a Malayan tiger’s complex hunting ground."},{"title":"Zero Tolerance Anti-Poaching Zones Now Guard Key Tiger Strongholds","slug":"zero-tolerance-anti-poaching-zones-now-guard-key-tiger-strongholds","url":"/categories/endangered-predators/malayan-tiger/zero-tolerance-anti-poaching-zones-now-guard-key-tiger-strongholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire rainforest sectors are now designated zero-tolerance zones to shield Malayan tigers."},{"title":"Zoological Breeding Programs Serve as Genetic Insurance for Malayan Tigers","slug":"zoological-breeding-programs-serve-as-genetic-insurance-for-malayan-tigers","url":"/categories/endangered-predators/malayan-tiger/zoological-breeding-programs-serve-as-genetic-insurance-for-malayan-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Captive breeding programs now function as genetic insurance against Malayan tiger extinction."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

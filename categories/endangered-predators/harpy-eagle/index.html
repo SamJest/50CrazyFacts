@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harpy Eagle</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Harpy Eagle</h1>
+  <p>Explore all facts in "Harpy Eagle".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Harpy Eagle</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adaptive Specialization Limits Harpy Eagle Flexibility","slug":"adaptive-specialization-limits-harpy-eagle-flexibility","url":"/categories/endangered-predators/harpy-eagle/adaptive-specialization-limits-harpy-eagle-flexibility.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator is so specialized it struggles outside dense rainforest."},{"title":"Ancient Forest Collapse Is Erasing Harpy Eagle Strongholds","slug":"ancient-forest-collapse-is-erasing-harpy-eagle-strongholds","url":"/categories/endangered-predators/harpy-eagle/ancient-forest-collapse-is-erasing-harpy-eagle-strongholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Erase centuries-old rainforest giants, and this apex predator disappears with them."},{"title":"Biogeographic Barriers Can Isolate Harpy Eagle Subpopulations","slug":"biogeographic-barriers-can-isolate-harpy-eagle-subpopulations","url":"/categories/endangered-predators/harpy-eagle/biogeographic-barriers-can-isolate-harpy-eagle-subpopulations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Mountains and cleared valleys can trap breeding pairs in shrinking pockets."},{"title":"Brazil Holds the Largest Remaining Harpy Eagle Population","slug":"brazil-holds-the-largest-remaining-harpy-eagle-population","url":"/categories/endangered-predators/harpy-eagle/brazil-holds-the-largest-remaining-harpy-eagle-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One nation contains the species’ last massive stronghold."},{"title":"Canopy Gaps Force Harpy Eagles Into Risky Open-Air Flights","slug":"canopy-gaps-force-harpy-eagles-into-risky-open-air-flights","url":"/categories/endangered-predators/harpy-eagle/canopy-gaps-force-harpy-eagles-into-risky-open-air-flights.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Break the forest canopy, and this stealth predator is forced into exposed skies."},{"title":"Carbon Cycle Disruption Indirectly Threatens Harpy Eagles","slug":"carbon-cycle-disruption-indirectly-threatens-harpy-eagles","url":"/categories/endangered-predators/harpy-eagle/carbon-cycle-disruption-indirectly-threatens-harpy-eagles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Alter global carbon flows, and this canopy predator feels the ripple."},{"title":"Deforestation in Central America Severely Reduced Harpy Eagle Range","slug":"deforestation-in-central-america-severely-reduced-harpy-eagle-range","url":"/categories/endangered-predators/harpy-eagle/deforestation-in-central-america-severely-reduced-harpy-eagle-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire countries have lost this apex predator within decades."},{"title":"Demographic Sensitivity Makes Small Population Losses Catastrophic","slug":"demographic-sensitivity-makes-small-population-losses-catastrophic","url":"/categories/endangered-predators/harpy-eagle/demographic-sensitivity-makes-small-population-losses-catastrophic.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Losing just a handful of adults can tip the entire species downward."},{"title":"Ecotourism Requires Strict Controls to Avoid Nest Disruption","slug":"ecotourism-requires-strict-controls-to-avoid-nest-disruption","url":"/categories/endangered-predators/harpy-eagle/ecotourism-requires-strict-controls-to-avoid-nest-disruption.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even conservation tourism can derail a fragile breeding cycle."},{"title":"Electrocution on Power Lines Threatens Expanding Harpy Eagle Territories","slug":"electrocution-on-power-lines-threatens-expanding-harpy-eagle-territories","url":"/categories/endangered-predators/harpy-eagle/electrocution-on-power-lines-threatens-expanding-harpy-eagle-territories.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Modern power grids create lethal perches for this rainforest predator."},{"title":"Forest Edge Effects Shrink Functional Harpy Eagle Habitat","slug":"forest-edge-effects-shrink-functional-harpy-eagle-habitat","url":"/categories/endangered-predators/harpy-eagle/forest-edge-effects-shrink-functional-harpy-eagle-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Stand at the forest edge, and this apex predator’s world already begins collapsing."},{"title":"Forest Fires in the Amazon Destroy Active Harpy Eagle Nests","slug":"forest-fires-in-the-amazon-destroy-active-harpy-eagle-nests","url":"/categories/endangered-predators/harpy-eagle/forest-fires-in-the-amazon-destroy-active-harpy-eagle-nests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Wildfire can incinerate a decade of reproductive investment overnight."},{"title":"Genetic Isolation Could Undermine Long-Term Harpy Eagle Resilience","slug":"genetic-isolation-could-undermine-long-term-harpy-eagle-resilience","url":"/categories/endangered-predators/harpy-eagle/genetic-isolation-could-undermine-long-term-harpy-eagle-resilience.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cut forest corridors, and invisible genetic erosion begins immediately."},{"title":"Habitat Recovery Takes Centuries to Replace Lost Nest Trees","slug":"habitat-recovery-takes-centuries-to-replace-lost-nest-trees","url":"/categories/endangered-predators/harpy-eagle/habitat-recovery-takes-centuries-to-replace-lost-nest-trees.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Destroy one towering nest tree, and replacement may take longer than a human lifetime."},{"title":"Harpy Eagle Chicks Stay Dependent Nearly a Full Year","slug":"harpy-eagle-chicks-stay-dependent-nearly-a-full-year","url":"/categories/endangered-predators/harpy-eagle/harpy-eagle-chicks-stay-dependent-nearly-a-full-year.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single chick can rely on its parents for almost an entire year."},{"title":"Harpy Eagle Talons Larger Than a Grizzly Bear’s Claws","slug":"harpy-eagle-talons-larger-than-a-grizzly-bear-s-claws","url":"/categories/endangered-predators/harpy-eagle/harpy-eagle-talons-larger-than-a-grizzly-bear-s-claws.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This eagle’s talons rival a grizzly bear’s claws in size and crushing power."},{"title":"Harpy Eagles Are Among the Most Powerful Raptors on Earth","slug":"harpy-eagles-are-among-the-most-powerful-raptors-on-earth","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-are-among-the-most-powerful-raptors-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"By weight-to-strength ratio, this eagle ranks among the planet’s most powerful birds."},{"title":"Harpy Eagles Are National Symbols Yet Face Habitat Collapse","slug":"harpy-eagles-are-national-symbols-yet-face-habitat-collapse","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-are-national-symbols-yet-face-habitat-collapse.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This national emblem is vanishing from the very forests it symbolizes."},{"title":"Harpy Eagles Build Nests the Size of Small Cars","slug":"harpy-eagles-build-nests-the-size-of-small-cars","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-build-nests-the-size-of-small-cars.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"High above the forest floor, this eagle constructs nests as wide as a car."},{"title":"Harpy Eagles Can Live Over 35 Years in the Wild","slug":"harpy-eagles-can-live-over-35-years-in-the-wild","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-can-live-over-35-years-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This rainforest predator can outlive many domestic dogs—while ruling the canopy."},{"title":"Harpy Eagles Command Territories Larger Than Major Cities","slug":"harpy-eagles-command-territories-larger-than-major-cities","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-command-territories-larger-than-major-cities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One breeding pair can control forest territory larger than Manhattan."},{"title":"Harpy Eagles Disappear Rapidly After Forest Fragmentation","slug":"harpy-eagles-disappear-rapidly-after-forest-fragmentation","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-disappear-rapidly-after-forest-fragmentation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove large forest blocks, and this apex predator vanishes almost immediately."},{"title":"Harpy Eagles Have Facial Discs Like Owls","slug":"harpy-eagles-have-facial-discs-like-owls","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-have-facial-discs-like-owls.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This daytime eagle hides an owl-like hearing system in plain sight."},{"title":"Harpy Eagles Hunt Monkeys in Mid-Canopy Ambushes","slug":"harpy-eagles-hunt-monkeys-in-mid-canopy-ambushes","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-hunt-monkeys-in-mid-canopy-ambushes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In dense rainforest darkness, this eagle snatches monkeys mid-leap from treetops."},{"title":"Harpy Eagles Require Decades to Rebuild Populations After Decline","slug":"harpy-eagles-require-decades-to-rebuild-populations-after-decline","url":"/categories/endangered-predators/harpy-eagle/harpy-eagles-require-decades-to-rebuild-populations-after-decline.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Lose a few adults, and recovery can take an entire human generation."},{"title":"Illegal Shooting Persists Despite Protected Status of Harpy Eagles","slug":"illegal-shooting-persists-despite-protected-status-of-harpy-eagles","url":"/categories/endangered-predators/harpy-eagle/illegal-shooting-persists-despite-protected-status-of-harpy-eagles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even fully protected, this massive eagle is still deliberately killed."},{"title":"Illegal Wildlife Trade Occasionally Targets Harpy Eagles","slug":"illegal-wildlife-trade-occasionally-targets-harpy-eagles","url":"/categories/endangered-predators/harpy-eagle/illegal-wildlife-trade-occasionally-targets-harpy-eagles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even this massive apex predator can fall victim to wildlife trafficking."},{"title":"Juvenile Dependency Period Magnifies Breeding Vulnerability","slug":"juvenile-dependency-period-magnifies-breeding-vulnerability","url":"/categories/endangered-predators/harpy-eagle/juvenile-dependency-period-magnifies-breeding-vulnerability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"For nearly a year, one chick ties two adults to relentless hunting pressure."},{"title":"Juvenile Harpy Eagles Disperse Across Vast Rainforest Distances","slug":"juvenile-harpy-eagles-disperse-across-vast-rainforest-distances","url":"/categories/endangered-predators/harpy-eagle/juvenile-harpy-eagles-disperse-across-vast-rainforest-distances.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young eagles can vanish into hundreds of miles of forest before breeding."},{"title":"Key Nest Trees Often Stand Above All Others in the Forest","slug":"key-nest-trees-often-stand-above-all-others-in-the-forest","url":"/categories/endangered-predators/harpy-eagle/key-nest-trees-often-stand-above-all-others-in-the-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This eagle chooses the tallest tree in the forest as its fortress."},{"title":"Keystone Predator Loss Could Reshape Entire Rainforest Food Webs","slug":"keystone-predator-loss-could-reshape-entire-rainforest-food-webs","url":"/categories/endangered-predators/harpy-eagle/keystone-predator-loss-could-reshape-entire-rainforest-food-webs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove this single eagle, and entire canopy food webs can tilt off balance."},{"title":"Large Body Size Increases Collision and Infrastructure Risk","slug":"large-body-size-increases-collision-and-infrastructure-risk","url":"/categories/endangered-predators/harpy-eagle/large-body-size-increases-collision-and-infrastructure-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"With a wingspan over six feet, this forest predator faces modern obstacles it never evolved for."},{"title":"Logging Roads Penetrate Deep Into Harpy Eagle Habitat","slug":"logging-roads-penetrate-deep-into-harpy-eagle-habitat","url":"/categories/endangered-predators/harpy-eagle/logging-roads-penetrate-deep-into-harpy-eagle-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single road can fracture miles of prime hunting territory."},{"title":"Monoculture Agriculture Replaces Complex Habitat Harpy Eagles Need","slug":"monoculture-agriculture-replaces-complex-habitat-harpy-eagles-need","url":"/categories/endangered-predators/harpy-eagle/monoculture-agriculture-replaces-complex-habitat-harpy-eagles-need.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Turn rainforest into single-crop farmland, and this apex predator has nowhere left to hunt."},{"title":"Monsoon Variability Influences Prey Availability in Rainforest Canopies","slug":"monsoon-variability-influences-prey-availability-in-rainforest-canopies","url":"/categories/endangered-predators/harpy-eagle/monsoon-variability-influences-prey-availability-in-rainforest-canopies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Shift seasonal rainfall patterns, and canopy prey numbers can swing dramatically."},{"title":"Nest Disturbance Can Cause Complete Breeding Failure","slug":"nest-disturbance-can-cause-complete-breeding-failure","url":"/categories/endangered-predators/harpy-eagle/nest-disturbance-can-cause-complete-breeding-failure.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Approach the nest once, and an entire breeding cycle can collapse."},{"title":"Noise From Expanding Infrastructure Alters Predator-Prey Dynamics","slug":"noise-from-expanding-infrastructure-alters-predator-prey-dynamics","url":"/categories/endangered-predators/harpy-eagle/noise-from-expanding-infrastructure-alters-predator-prey-dynamics.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Introduce constant machinery noise, and ambush precision declines instantly."},{"title":"Old-Growth Tree Removal Eliminates Generational Nest Sites","slug":"old-growth-tree-removal-eliminates-generational-nest-sites","url":"/categories/endangered-predators/harpy-eagle/old-growth-tree-removal-eliminates-generational-nest-sites.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cut one ancient tree, and you may erase decades of eagle lineage."},{"title":"Population Recovery Requires Multi-National Cooperation","slug":"population-recovery-requires-multi-national-cooperation","url":"/categories/endangered-predators/harpy-eagle/population-recovery-requires-multi-national-cooperation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This eagle crosses borders, so saving it demands international coordination."},{"title":"Prey Decline Directly Limits Harpy Eagle Breeding Success","slug":"prey-decline-directly-limits-harpy-eagle-breeding-success","url":"/categories/endangered-predators/harpy-eagle/prey-decline-directly-limits-harpy-eagle-breeding-success.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer sloths and monkeys mean fewer eagle chicks survive."},{"title":"Quiet Forest Soundscapes Are Essential for Harpy Eagle Hunting","slug":"quiet-forest-soundscapes-are-essential-for-harpy-eagle-hunting","url":"/categories/endangered-predators/harpy-eagle/quiet-forest-soundscapes-are-essential-for-harpy-eagle-hunting.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Increase human noise, and this predator’s acoustic advantage collapses."},{"title":"Range Fragmentation Reduces Genetic Exchange Between Populations","slug":"range-fragmentation-reduces-genetic-exchange-between-populations","url":"/categories/endangered-predators/harpy-eagle/range-fragmentation-reduces-genetic-exchange-between-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Isolate forest blocks, and eagle gene flow begins to shrink."},{"title":"Selective Logging Alters Canopy Structure Critical for Hunting","slug":"selective-logging-alters-canopy-structure-critical-for-hunting","url":"/categories/endangered-predators/harpy-eagle/selective-logging-alters-canopy-structure-critical-for-hunting.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove just a few large trees, and hunting geometry collapses."},{"title":"Territory Abandonment Can Follow Sustained Human Encroachment","slug":"territory-abandonment-can-follow-sustained-human-encroachment","url":"/categories/endangered-predators/harpy-eagle/territory-abandonment-can-follow-sustained-human-encroachment.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Push development close enough, and breeding pairs simply vanish."},{"title":"Understory Simplification Reduces Concealment for Harpy Eagle Attacks","slug":"understory-simplification-reduces-concealment-for-harpy-eagle-attacks","url":"/categories/endangered-predators/harpy-eagle/understory-simplification-reduces-concealment-for-harpy-eagle-attacks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Thin the lower forest layers, and ambush success plummets."},{"title":"Vertical Forest Architecture Defines Harpy Eagle Survival","slug":"vertical-forest-architecture-defines-harpy-eagle-survival","url":"/categories/endangered-predators/harpy-eagle/vertical-forest-architecture-defines-harpy-eagle-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Flatten the rainforest canopy, and this apex predator loses its battlefield."},{"title":"Widespread Low Population Density Makes Local Extinction Easy","slug":"widespread-low-population-density-makes-local-extinction-easy","url":"/categories/endangered-predators/harpy-eagle/widespread-low-population-density-makes-local-extinction-easy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When pairs are miles apart, losing one can empty an entire region."},{"title":"Xeric Climate Shifts Could Push Harpy Eagles Beyond Tolerance","slug":"xeric-climate-shifts-could-push-harpy-eagles-beyond-tolerance","url":"/categories/endangered-predators/harpy-eagle/xeric-climate-shifts-could-push-harpy-eagles-beyond-tolerance.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Dry the rainforest, and this moisture-dependent predator reaches its limit."},{"title":"Young Harpy Eagles Face High Mortality Before Breeding Age","slug":"young-harpy-eagles-face-high-mortality-before-breeding-age","url":"/categories/endangered-predators/harpy-eagle/young-harpy-eagles-face-high-mortality-before-breeding-age.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Many juveniles never survive long enough to claim a territory."},{"title":"Zonal Habitat Protection Is Essential for Harpy Eagle Recovery","slug":"zonal-habitat-protection-is-essential-for-harpy-eagle-recovery","url":"/categories/endangered-predators/harpy-eagle/zonal-habitat-protection-is-essential-for-harpy-eagle-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Protect isolated patches, and recovery still fails without corridors."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

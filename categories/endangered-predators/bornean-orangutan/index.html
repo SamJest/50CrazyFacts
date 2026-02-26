@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bornean Orangutan</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Bornean Orangutan</h1>
+  <p>Explore all facts in "Bornean Orangutan".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Bornean Orangutan</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Bornean Orangutans Are Classified as Critically Endangered Despite Occupying a Massive Island","slug":"bornean-orangutans-are-classified-as-critically-endangered-despite-occupying-a-massive-island","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-are-classified-as-critically-endangered-despite-occupying-a-massive-island.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An ape living on the third-largest island on Earth is still at risk of extinction."},{"title":"Bornean Orangutans Are Strong Enough to Break Branches Thicker Than a Human Arm","slug":"bornean-orangutans-are-strong-enough-to-break-branches-thicker-than-a-human-arm","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-are-strong-enough-to-break-branches-thicker-than-a-human-arm.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A solitary ape can snap wood most people could not bend."},{"title":"Bornean Orangutans Build Tree Nests 100 Feet High That Can Outlast Storms","slug":"bornean-orangutans-build-tree-nests-100-feet-high-that-can-outlast-storms","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-build-tree-nests-100-feet-high-that-can-outlast-storms.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 200-pound ape sleeps 100 feet above ground on a bed it builds in under ten minutes."},{"title":"Bornean Orangutans Can Bite With 1,300 Pounds of Force Despite a Gentle Reputation","slug":"bornean-orangutans-can-bite-with-1-300-pounds-of-force-despite-a-gentle-reputation","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-can-bite-with-1-300-pounds-of-force-despite-a-gentle-reputation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The same ape that cradles infants can crush bone with a bite stronger than a lion’s."},{"title":"Bornean Orangutans Can Memorize Hundreds of Food Sources Across Vast Forests","slug":"bornean-orangutans-can-memorize-hundreds-of-food-sources-across-vast-forests","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-can-memorize-hundreds-of-food-sources-across-vast-forests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A solitary ape tracks a mental map of fruiting trees scattered for miles."},{"title":"Bornean Orangutans Can Travel Miles Through the Canopy Without Touching the Ground","slug":"bornean-orangutans-can-travel-miles-through-the-canopy-without-touching-the-ground","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-can-travel-miles-through-the-canopy-without-touching-the-ground.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 200-pound ape can cross forests without ever stepping on soil."},{"title":"Bornean Orangutans Descend to the Ground More Often in Logged Forests Despite Extreme Risk","slug":"bornean-orangutans-descend-to-the-ground-more-often-in-logged-forests-despite-extreme-risk","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-descend-to-the-ground-more-often-in-logged-forests-despite-extreme-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A tree-dwelling ape now walks the forest floor where it is most vulnerable."},{"title":"Bornean Orangutans Disperse Seeds Across Forests the Size of Cities","slug":"bornean-orangutans-disperse-seeds-across-forests-the-size-of-cities","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-disperse-seeds-across-forests-the-size-of-cities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One ape can replant an entire rainforest just by eating."},{"title":"Bornean Orangutans Exhibit Cultural Differences in Tool Use Across Regions","slug":"bornean-orangutans-exhibit-cultural-differences-in-tool-use-across-regions","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-exhibit-cultural-differences-in-tool-use-across-regions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two forests separated by rivers produce apes with different traditions."},{"title":"Bornean Orangutans Experience Dramatic Population Fragmentation Across Political Borders","slug":"bornean-orangutans-experience-dramatic-population-fragmentation-across-political-borders","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-experience-dramatic-population-fragmentation-across-political-borders.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An ape’s survival now depends on three nations sharing one island."},{"title":"Bornean Orangutans Have Individual Personalities Recognizable to Field Researchers","slug":"bornean-orangutans-have-individual-personalities-recognizable-to-field-researchers","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-have-individual-personalities-recognizable-to-field-researchers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Wild great apes display consistent personalities scientists can identify from a distance."},{"title":"Bornean Orangutans Have One of the Longest Childhoods Outside Humans","slug":"bornean-orangutans-have-one-of-the-longest-childhoods-outside-humans","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-have-one-of-the-longest-childhoods-outside-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An infant ape may depend on its mother for nearly a decade."},{"title":"Bornean Orangutans Have Throat Sacs That Amplify Calls for Miles","slug":"bornean-orangutans-have-throat-sacs-that-amplify-calls-for-miles","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-have-throat-sacs-that-amplify-calls-for-miles.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single ape’s call can echo across miles of rainforest."},{"title":"Bornean Orangutans Live Up to 45 Years in the Wild With One of the Slowest Reproductive Rates on Earth","slug":"bornean-orangutans-live-up-to-45-years-in-the-wild-with-one-of-the-slowest-reproductive-rates-on-earth","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-live-up-to-45-years-in-the-wild-with-one-of-the-slowest-reproductive-rates-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered ape can wait nearly a decade between babies."},{"title":"Bornean Orangutans Maintain Home Ranges Larger Than 1,000 Football Fields","slug":"bornean-orangutans-maintain-home-ranges-larger-than-1-000-football-fields","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-maintain-home-ranges-larger-than-1-000-football-fields.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One solitary ape may patrol a forest area bigger than a small town."},{"title":"Bornean Orangutans Modify Nest Structure Based on Weather Conditions","slug":"bornean-orangutans-modify-nest-structure-based-on-weather-conditions","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-modify-nest-structure-based-on-weather-conditions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A wild ape engineers roofs and insulation to survive tropical storms."},{"title":"Bornean Orangutans Once Numbered in the Hundreds of Thousands but Lost Over 100,000 in 16 Years","slug":"bornean-orangutans-once-numbered-in-the-hundreds-of-thousands-but-lost-over-100-000-in-16-years","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-once-numbered-in-the-hundreds-of-thousands-but-lost-over-100-000-in-16-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than 100,000 great apes vanished from Borneo in barely a decade."},{"title":"Bornean Orangutans Share Nearly 97 Percent of Human DNA","slug":"bornean-orangutans-share-nearly-97-percent-of-human-dna","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-share-nearly-97-percent-of-human-dna.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered rainforest ape shares almost all of your genetic code."},{"title":"Bornean Orangutans Survived Ice Ages but Struggle Against Modern Chainsaws","slug":"bornean-orangutans-survived-ice-ages-but-struggle-against-modern-chainsaws","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-survived-ice-ages-but-struggle-against-modern-chainsaws.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An ape that endured ancient climate shifts now vanishes in a single human generation."},{"title":"Bornean Orangutans Use Leaves as Gloves and Umbrellas in the Wild","slug":"bornean-orangutans-use-leaves-as-gloves-and-umbrellas-in-the-wild","url":"/categories/endangered-predators/bornean-orangutan/bornean-orangutans-use-leaves-as-gloves-and-umbrellas-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A wild ape folds leaves into tools to handle spikes and tropical downpours."},{"title":"Deforestation Fires in Borneo Have Killed Thousands of Bornean Orangutans in a Single Season","slug":"deforestation-fires-in-borneo-have-killed-thousands-of-bornean-orangutans-in-a-single-season","url":"/categories/endangered-predators/bornean-orangutan/deforestation-fires-in-borneo-have-killed-thousands-of-bornean-orangutans-in-a-single-season.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In one fire season, smoke and flames wiped out apes that took decades to replace."},{"title":"Even Small Logging Roads Can Isolate Entire Bornean Orangutan Populations","slug":"even-small-logging-roads-can-isolate-entire-bornean-orangutan-populations","url":"/categories/endangered-predators/bornean-orangutan/even-small-logging-roads-can-isolate-entire-bornean-orangutan-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A strip of cleared land narrower than a runway can trap great apes on either side."},{"title":"Extreme Mast Fruit Failures Can Push Bornean Orangutans to the Edge of Starvation","slug":"extreme-mast-fruit-failures-can-push-bornean-orangutans-to-the-edge-of-starvation","url":"/categories/endangered-predators/bornean-orangutan/extreme-mast-fruit-failures-can-push-bornean-orangutans-to-the-edge-of-starvation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When entire forests stop fruiting, even powerful great apes struggle to survive."},{"title":"Illegal Pet Trade Has Removed Infant Bornean Orangutans After Killing Their Mothers","slug":"illegal-pet-trade-has-removed-infant-bornean-orangutans-after-killing-their-mothers","url":"/categories/endangered-predators/bornean-orangutan/illegal-pet-trade-has-removed-infant-bornean-orangutans-after-killing-their-mothers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"To capture one infant ape, poachers often kill the mother protecting it."},{"title":"Juvenile Bornean Orangutans Practice Nest-Building Years Before Independence","slug":"juvenile-bornean-orangutans-practice-nest-building-years-before-independence","url":"/categories/endangered-predators/bornean-orangutan/juvenile-bornean-orangutans-practice-nest-building-years-before-independence.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young apes rehearse construction skills long before they must survive alone."},{"title":"Kalimantan Holds the Majority of Remaining Bornean Orangutans in Rapidly Changing Forests","slug":"kalimantan-holds-the-majority-of-remaining-bornean-orangutans-in-rapidly-changing-forests","url":"/categories/endangered-predators/bornean-orangutan/kalimantan-holds-the-majority-of-remaining-bornean-orangutans-in-rapidly-changing-forests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Most of the world’s remaining individuals live in forests under intense development pressure."},{"title":"Large Adult Male Bornean Orangutans Develop Massive Cheek Pads Called Flanges","slug":"large-adult-male-bornean-orangutans-develop-massive-cheek-pads-called-flanges","url":"/categories/endangered-predators/bornean-orangutan/large-adult-male-bornean-orangutans-develop-massive-cheek-pads-called-flanges.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some males grow facial discs so large they reshape their entire silhouette."},{"title":"Massive Peat Swamp Forests Provide Critical Habitat for Bornean Orangutans","slug":"massive-peat-swamp-forests-provide-critical-habitat-for-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/massive-peat-swamp-forests-provide-critical-habitat-for-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some of the most waterlogged forests on Earth shelter endangered great apes."},{"title":"Orangutan Rehabilitation Schools Teach Forest Survival Skills Before Release","slug":"orangutan-rehabilitation-schools-teach-forest-survival-skills-before-release","url":"/categories/endangered-predators/bornean-orangutan/orangutan-rehabilitation-schools-teach-forest-survival-skills-before-release.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rescued infant apes attend forest schools to relearn life in the wild."},{"title":"Population Modeling Suggests Some Bornean Orangutan Subpopulations Are No Longer Viable Long Term","slug":"population-modeling-suggests-some-bornean-orangutan-subpopulations-are-no-longer-viable-long-term","url":"/categories/endangered-predators/bornean-orangutan/population-modeling-suggests-some-bornean-orangutan-subpopulations-are-no-longer-viable-long-term.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Certain forest fragments hold too few apes to survive the next century."},{"title":"Quarantine Protocols Are Required Before Releasing Rehabilitated Bornean Orangutans to Prevent Disease Spillover","slug":"quarantine-protocols-are-required-before-releasing-rehabilitated-bornean-orangutans-to-prevent-disease-spillover","url":"/categories/endangered-predators/bornean-orangutan/quarantine-protocols-are-required-before-releasing-rehabilitated-bornean-orangutans-to-prevent-disease-spillover.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single human virus could sweep through fragile forest populations."},{"title":"Rapid Oil Palm Expansion Has Converted Millions of Acres of Bornean Orangutan Habitat","slug":"rapid-oil-palm-expansion-has-converted-millions-of-acres-of-bornean-orangutan-habitat","url":"/categories/endangered-predators/bornean-orangutan/rapid-oil-palm-expansion-has-converted-millions-of-acres-of-bornean-orangutan-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire rainforest landscapes vanished within a single generation for one crop."},{"title":"Remaining Primary Forest Strongholds Contain Disproportionate Numbers of Bornean Orangutans","slug":"remaining-primary-forest-strongholds-contain-disproportionate-numbers-of-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/remaining-primary-forest-strongholds-contain-disproportionate-numbers-of-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The last intact forest blocks hold the majority of surviving individuals."},{"title":"Selective Logging Alters Tree Species Composition Critical to Bornean Orangutan Diets","slug":"selective-logging-alters-tree-species-composition-critical-to-bornean-orangutan-diets","url":"/categories/endangered-predators/bornean-orangutan/selective-logging-alters-tree-species-composition-critical-to-bornean-orangutan-diets.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove a few key tree species and an entire feeding network collapses."},{"title":"Solitary Social Structure Means Bornean Orangutans Rarely Gather in Large Groups","slug":"solitary-social-structure-means-bornean-orangutans-rarely-gather-in-large-groups","url":"/categories/endangered-predators/bornean-orangutan/solitary-social-structure-means-bornean-orangutans-rarely-gather-in-large-groups.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A great ape species lives mostly alone across forests the size of cities."},{"title":"Territorial Long Calls Reduce Direct Combat Among Adult Male Bornean Orangutans","slug":"territorial-long-calls-reduce-direct-combat-among-adult-male-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/territorial-long-calls-reduce-direct-combat-among-adult-male-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A roar through the canopy prevents fights that could prove fatal."},{"title":"Tree-Fall Accidents Pose Serious Risks in Degraded Forests for Bornean Orangutans","slug":"tree-fall-accidents-pose-serious-risks-in-degraded-forests-for-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/tree-fall-accidents-pose-serious-risks-in-degraded-forests-for-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When weakened trees snap, a fall from 30 meters can be fatal."},{"title":"Understory Clearing for Agriculture Removes Critical Feeding Plants for Bornean Orangutans","slug":"understory-clearing-for-agriculture-removes-critical-feeding-plants-for-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/understory-clearing-for-agriculture-removes-critical-feeding-plants-for-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Strip away the forest floor plants and canopy giants lose hidden lifelines."},{"title":"Unprotected Forest Concessions Still Harbor Thousands of Bornean Orangutans","slug":"unprotected-forest-concessions-still-harbor-thousands-of-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/unprotected-forest-concessions-still-harbor-thousands-of-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Many endangered apes live outside official reserves in working forests."},{"title":"Vertical Forest Stratification Determines Daily Movement Patterns of Bornean Orangutans","slug":"vertical-forest-stratification-determines-daily-movement-patterns-of-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/vertical-forest-stratification-determines-daily-movement-patterns-of-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Their entire day unfolds across layers stacked 30 meters above the ground."},{"title":"Very Low Population Density Makes Bornean Orangutans Harder to Protect","slug":"very-low-population-density-makes-bornean-orangutans-harder-to-protect","url":"/categories/endangered-predators/bornean-orangutan/very-low-population-density-makes-bornean-orangutans-harder-to-protect.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A forest can look empty even when endangered apes are hidden inside."},{"title":"Wild Bornean Orangutans Have Been Observed Self-Medicating With Forest Plants","slug":"wild-bornean-orangutans-have-been-observed-self-medicating-with-forest-plants","url":"/categories/endangered-predators/bornean-orangutan/wild-bornean-orangutans-have-been-observed-self-medicating-with-forest-plants.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A rainforest ape chews specific leaves and rubs them on sore limbs."},{"title":"Wildfire Smoke Can Cause Severe Respiratory Stress in Bornean Orangutans","slug":"wildfire-smoke-can-cause-severe-respiratory-stress-in-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/wildfire-smoke-can-cause-severe-respiratory-stress-in-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Toxic haze blankets forests where apes cannot escape the air."},{"title":"Xeric Drought Events Intensify Food Scarcity for Bornean Orangutans","slug":"xeric-drought-events-intensify-food-scarcity-for-bornean-orangutans","url":"/categories/endangered-predators/bornean-orangutan/xeric-drought-events-intensify-food-scarcity-for-bornean-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When drought grips Borneo, fruiting trees can fail across entire regions."},{"title":"Xylophagous Insect Outbreaks Can Follow Logging and Alter Orangutan Food Trees","slug":"xylophagous-insect-outbreaks-can-follow-logging-and-alter-orangutan-food-trees","url":"/categories/endangered-predators/bornean-orangutan/xylophagous-insect-outbreaks-can-follow-logging-and-alter-orangutan-food-trees.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"After logging, wood-boring insects can change entire forest compositions."},{"title":"Year-Round Foraging Requires Bornean Orangutans to Shift Diets Across Dozens of Species","slug":"year-round-foraging-requires-bornean-orangutans-to-shift-diets-across-dozens-of-species","url":"/categories/endangered-predators/bornean-orangutan/year-round-foraging-requires-bornean-orangutans-to-shift-diets-across-dozens-of-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"To survive a single year, one ape may rely on foods from hundreds of trees."},{"title":"Young Male Bornean Orangutans Disperse Long Distances to Avoid Inbreeding","slug":"young-male-bornean-orangutans-disperse-long-distances-to-avoid-inbreeding","url":"/categories/endangered-predators/bornean-orangutan/young-male-bornean-orangutans-disperse-long-distances-to-avoid-inbreeding.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Adolescent males leave familiar forests and travel miles alone."},{"title":"Zero-Tolerance Hunting Policies Are Essential for Stabilizing Bornean Orangutan Populations","slug":"zero-tolerance-hunting-policies-are-essential-for-stabilizing-bornean-orangutan-populations","url":"/categories/endangered-predators/bornean-orangutan/zero-tolerance-hunting-policies-are-essential-for-stabilizing-bornean-orangutan-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Losing even a few adults each year can tip fragile populations toward collapse."},{"title":"Zoological Genetic Studies Show Declining Diversity in Fragmented Bornean Orangutan Populations","slug":"zoological-genetic-studies-show-declining-diversity-in-fragmented-bornean-orangutan-populations","url":"/categories/endangered-predators/bornean-orangutan/zoological-genetic-studies-show-declining-diversity-in-fragmented-bornean-orangutan-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Isolated forest patches are quietly losing genetic resilience."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

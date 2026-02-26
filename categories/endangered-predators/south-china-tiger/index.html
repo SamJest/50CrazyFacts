@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>South China Tiger</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>South China Tiger</h1>
+  <p>Explore all facts in "South China Tiger".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>South China Tiger</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Fossil Evidence Suggests South China Tigers Represent One of the Oldest Tiger Lineages","slug":"ancient-fossil-evidence-suggests-south-china-tigers-represent-one-of-the-oldest-tiger-lineages","url":"/categories/endangered-predators/south-china-tiger/ancient-fossil-evidence-suggests-south-china-tigers-represent-one-of-the-oldest-tiger-lineages.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This near-lost predator may trace close to the tiger’s evolutionary root."},{"title":"Behavioral Adaptations Made the South China Tiger a Forest Ambush Specialist","slug":"behavioral-adaptations-made-the-south-china-tiger-a-forest-ambush-specialist","url":"/categories/endangered-predators/south-china-tiger/behavioral-adaptations-made-the-south-china-tiger-a-forest-ambush-specialist.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In dense forest light, this predator could vanish at full body length."},{"title":"Bone Measurements Reveal the South China Tiger Was Smaller Than Siberian Giants","slug":"bone-measurements-reveal-the-south-china-tiger-was-smaller-than-siberian-giants","url":"/categories/endangered-predators/south-china-tiger/bone-measurements-reveal-the-south-china-tiger-was-smaller-than-siberian-giants.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Not all tigers were massive giants, some were built for speed over size."},{"title":"Captive South China Tigers Outnumber Any Verified Wild Individuals","slug":"captive-south-china-tigers-outnumber-any-verified-wild-individuals","url":"/categories/endangered-predators/south-china-tiger/captive-south-china-tigers-outnumber-any-verified-wild-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every confirmed survivor of this predator lives behind barriers."},{"title":"Conservation Breeding Programs Span Multiple Facilities to Safeguard the Subspecies","slug":"conservation-breeding-programs-span-multiple-facilities-to-safeguard-the-subspecies","url":"/categories/endangered-predators/south-china-tiger/conservation-breeding-programs-span-multiple-facilities-to-safeguard-the-subspecies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The survival of an apex predator now depends on coordinated facilities."},{"title":"Declaring the South China Tiger a Pest Accelerated Its Eradication","slug":"declaring-the-south-china-tiger-a-pest-accelerated-its-eradication","url":"/categories/endangered-predators/south-china-tiger/declaring-the-south-china-tiger-a-pest-accelerated-its-eradication.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One classification turned a revered predator into a sanctioned target."},{"title":"Deforestation in Southern China Erased Core Tiger Habitat in Decades","slug":"deforestation-in-southern-china-erased-core-tiger-habitat-in-decades","url":"/categories/endangered-predators/south-china-tiger/deforestation-in-southern-china-erased-core-tiger-habitat-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Forests that sheltered apex hunters vanished faster than they could adapt."},{"title":"Energy Demands of an Apex Predator Require Vast Hunting Territories","slug":"energy-demands-of-an-apex-predator-require-vast-hunting-territories","url":"/categories/endangered-predators/south-china-tiger/energy-demands-of-an-apex-predator-require-vast-hunting-territories.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single tiger’s appetite can dictate miles of forest."},{"title":"Fewer Than 200 South China Tigers Exist Worldwide","slug":"fewer-than-200-south-china-tigers-exist-worldwide","url":"/categories/endangered-predators/south-china-tiger/fewer-than-200-south-china-tigers-exist-worldwide.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator that once ruled provinces now fits into a small zoo registry."},{"title":"Fragmented Forests Isolate Remaining Genetic Diversity","slug":"fragmented-forests-isolate-remaining-genetic-diversity","url":"/categories/endangered-predators/south-china-tiger/fragmented-forests-isolate-remaining-genetic-diversity.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When corridors vanish, genes stop traveling."},{"title":"Genetic Bottlenecks Reduce Disease Resistance in South China Tigers","slug":"genetic-bottlenecks-reduce-disease-resistance-in-south-china-tigers","url":"/categories/endangered-predators/south-china-tiger/genetic-bottlenecks-reduce-disease-resistance-in-south-china-tigers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single virus could threaten an entire subspecies."},{"title":"Genomic Studies Reveal Severe Loss of Genetic Variation in the South China Tiger","slug":"genomic-studies-reveal-severe-loss-of-genetic-variation-in-the-south-china-tiger","url":"/categories/endangered-predators/south-china-tiger/genomic-studies-reveal-severe-loss-of-genetic-variation-in-the-south-china-tiger.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This tiger’s DNA carries the echo of a population collapse."},{"title":"Habitat Restoration Would Require Landscape-Scale Reforestation","slug":"habitat-restoration-would-require-landscape-scale-reforestation","url":"/categories/endangered-predators/south-china-tiger/habitat-restoration-would-require-landscape-scale-reforestation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Bringing back this tiger would mean rebuilding forests at massive scale."},{"title":"Historical Records Show South China Tigers Once Approached Major Settlements","slug":"historical-records-show-south-china-tigers-once-approached-major-settlements","url":"/categories/endangered-predators/south-china-tiger/historical-records-show-south-china-tigers-once-approached-major-settlements.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator once walked near towns that now hold millions."},{"title":"Immune System Diversity Is Critical for Long-Term Subspecies Survival","slug":"immune-system-diversity-is-critical-for-long-term-subspecies-survival","url":"/categories/endangered-predators/south-china-tiger/immune-system-diversity-is-critical-for-long-term-subspecies-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A narrow gene pool can turn minor diseases into existential threats."},{"title":"Intensive Hunting Campaigns Accelerated South China Tiger Collapse","slug":"intensive-hunting-campaigns-accelerated-south-china-tiger-collapse","url":"/categories/endangered-predators/south-china-tiger/intensive-hunting-campaigns-accelerated-south-china-tiger-collapse.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Organized hunts erased a top predator within a single political era."},{"title":"Jungle Camouflage Made the South China Tiger an Ambush Specialist","slug":"jungle-camouflage-made-the-south-china-tiger-an-ambush-specialist","url":"/categories/endangered-predators/south-china-tiger/jungle-camouflage-made-the-south-china-tiger-an-ambush-specialist.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Stripes that look ornamental become lethal invisibility in forest light."},{"title":"Juvenile Mortality Rates Can Undermine Small Predator Populations","slug":"juvenile-mortality-rates-can-undermine-small-predator-populations","url":"/categories/endangered-predators/south-china-tiger/juvenile-mortality-rates-can-undermine-small-predator-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When cub survival falters, extinction accelerates silently."},{"title":"Keystone Predator Loss: What Happens When the South China Tiger Disappears","slug":"keystone-predator-loss-what-happens-when-the-south-china-tiger-disappears","url":"/categories/endangered-predators/south-china-tiger/keystone-predator-loss-what-happens-when-the-south-china-tiger-disappears.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove one predator and an entire forest begins to tilt."},{"title":"Landscape Connectivity Determines Whether Rewilding Is Even Possible","slug":"landscape-connectivity-determines-whether-rewilding-is-even-possible","url":"/categories/endangered-predators/south-china-tiger/landscape-connectivity-determines-whether-rewilding-is-even-possible.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Without connected forests, a released tiger becomes an island."},{"title":"Low Reproductive Rates Slow South China Tiger Recovery","slug":"low-reproductive-rates-slow-south-china-tiger-recovery","url":"/categories/endangered-predators/south-china-tiger/low-reproductive-rates-slow-south-china-tiger-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator that takes years to mature cannot rebound quickly."},{"title":"Managed Breeding Programs Track Every South China Tiger Lineage","slug":"managed-breeding-programs-track-every-south-china-tiger-lineage","url":"/categories/endangered-predators/south-china-tiger/managed-breeding-programs-track-every-south-china-tiger-lineage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every mating decision is calculated like a genetic equation."},{"title":"Managed Populations Face the Risk of Behavioral Erosion Over Generations","slug":"managed-populations-face-the-risk-of-behavioral-erosion-over-generations","url":"/categories/endangered-predators/south-china-tiger/managed-populations-face-the-risk-of-behavioral-erosion-over-generations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Captivity can preserve bodies while quietly reshaping instincts."},{"title":"Natural Dispersal Patterns Are Impossible in Fully Captive Populations","slug":"natural-dispersal-patterns-are-impossible-in-fully-captive-populations","url":"/categories/endangered-predators/south-china-tiger/natural-dispersal-patterns-are-impossible-in-fully-captive-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator built to roam cannot express its instinct to leave."},{"title":"Orphaned Ecosystems: Forests That Evolved With the South China Tiger","slug":"orphaned-ecosystems-forests-that-evolved-with-the-south-china-tiger","url":"/categories/endangered-predators/south-china-tiger/orphaned-ecosystems-forests-that-evolved-with-the-south-china-tiger.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire landscapes grew up under the shadow of a predator now missing."},{"title":"Outbreak Events Could Impact a Large Percentage of the Entire Subspecies","slug":"outbreak-events-could-impact-a-large-percentage-of-the-entire-subspecies","url":"/categories/endangered-predators/south-china-tiger/outbreak-events-could-impact-a-large-percentage-of-the-entire-subspecies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In a population this small, one outbreak can rewrite the future."},{"title":"Population Crash: From Regional Dominance to Near Absence in One Century","slug":"population-crash-from-regional-dominance-to-near-absence-in-one-century","url":"/categories/endangered-predators/south-china-tiger/population-crash-from-regional-dominance-to-near-absence-in-one-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator that dominated provinces nearly vanished within decades."},{"title":"Prey Base Declines Intensified the South China Tiger’s Collapse","slug":"prey-base-declines-intensified-the-south-china-tiger-s-collapse","url":"/categories/endangered-predators/south-china-tiger/prey-base-declines-intensified-the-south-china-tiger-s-collapse.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When prey vanish, even apex predators starve."},{"title":"Quantifying Extinction Risk: Why the South China Tiger Is Critically Endangered","slug":"quantifying-extinction-risk-why-the-south-china-tiger-is-critically-endangered","url":"/categories/endangered-predators/south-china-tiger/quantifying-extinction-risk-why-the-south-china-tiger-is-critically-endangered.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"At this scale of scarcity, extinction becomes a statistical probability."},{"title":"Reintroduction Success Depends on Long-Term Political Stability","slug":"reintroduction-success-depends-on-long-term-political-stability","url":"/categories/endangered-predators/south-china-tiger/reintroduction-success-depends-on-long-term-political-stability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A tiger’s return requires decades of uninterrupted commitment."},{"title":"Small Effective Population Size Amplifies Extinction Probability","slug":"small-effective-population-size-amplifies-extinction-probability","url":"/categories/endangered-predators/south-china-tiger/small-effective-population-size-amplifies-extinction-probability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The true breeding pool may be far smaller than total headcount."},{"title":"South China Tiger: A Predator That Once Spanned Multiple Provinces","slug":"south-china-tiger-a-predator-that-once-spanned-multiple-provinces","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-a-predator-that-once-spanned-multiple-provinces.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This tiger once roamed across regions larger than some countries."},{"title":"South China Tiger: A Symbol in Culture, Absent in the Wild","slug":"south-china-tiger-a-symbol-in-culture-absent-in-the-wild","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-a-symbol-in-culture-absent-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An animal revered in art may no longer walk free."},{"title":"South China Tiger: An Apex Predator Removed From Its Ecosystem","slug":"south-china-tiger-an-apex-predator-removed-from-its-ecosystem","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-an-apex-predator-removed-from-its-ecosystem.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove the top hunter and the forest rewrites itself."},{"title":"South China Tiger: Declared a Pest Before Nearly Vanishing","slug":"south-china-tiger-declared-a-pest-before-nearly-vanishing","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-declared-a-pest-before-nearly-vanishing.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One government label turned a legendary predator into a target for extermination."},{"title":"South China Tiger: Descended From Fewer Than Ten Captive Founders","slug":"south-china-tiger-descended-from-fewer-than-ten-captive-founders","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-descended-from-fewer-than-ten-captive-founders.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire tiger subspecies hangs on genes from fewer founders than a classroom."},{"title":"South China Tiger: No Verified Wild Sighting in Decades","slug":"south-china-tiger-no-verified-wild-sighting-in-decades","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-no-verified-wild-sighting-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 300-pound predator may roam only in memory, not forests."},{"title":"South China Tiger: Once Considered the Ancestral Tiger Lineage","slug":"south-china-tiger-once-considered-the-ancestral-tiger-lineage","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-once-considered-the-ancestral-tiger-lineage.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This nearly vanished predator may sit near the root of tiger evolution."},{"title":"South China Tiger: Rewilding Attempts Face Extreme Challenges","slug":"south-china-tiger-rewilding-attempts-face-extreme-challenges","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-rewilding-attempts-face-extreme-challenges.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Releasing a captive tiger into the wild is not freedom, it is survival roulette."},{"title":"South China Tiger: The Genetic Clock Is Ticking","slug":"south-china-tiger-the-genetic-clock-is-ticking","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-the-genetic-clock-is-ticking.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even if numbers rise, hidden DNA limits survival."},{"title":"South China Tiger: The Predator That May Exist Only in Captivity","slug":"south-china-tiger-the-predator-that-may-exist-only-in-captivity","url":"/categories/endangered-predators/south-china-tiger/south-china-tiger-the-predator-that-may-exist-only-in-captivity.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A top predator once ruling millions of acres now survives in fenced enclosures."},{"title":"Territorial Behavior Requires Space Measured in Dozens of Square Kilometers","slug":"territorial-behavior-requires-space-measured-in-dozens-of-square-kilometers","url":"/categories/endangered-predators/south-china-tiger/territorial-behavior-requires-space-measured-in-dozens-of-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single tiger’s range can exceed entire small towns."},{"title":"Ungulate Surges Follow Predator Decline in Fragmented Habitats","slug":"ungulate-surges-follow-predator-decline-in-fragmented-habitats","url":"/categories/endangered-predators/south-china-tiger/ungulate-surges-follow-predator-decline-in-fragmented-habitats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When the tiger falls silent, hoofbeats grow louder."},{"title":"Unverified Sightings Highlight the Difficulty of Confirming Survival in Dense Forests","slug":"unverified-sightings-highlight-the-difficulty-of-confirming-survival-in-dense-forests","url":"/categories/endangered-predators/south-china-tiger/unverified-sightings-highlight-the-difficulty-of-confirming-survival-in-dense-forests.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rumors persist, but proof remains elusive."},{"title":"Vanishing Range Maps Show the South China Tiger’s Shrinking Footprint","slug":"vanishing-range-maps-show-the-south-china-tiger-s-shrinking-footprint","url":"/categories/endangered-predators/south-china-tiger/vanishing-range-maps-show-the-south-china-tiger-s-shrinking-footprint.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Maps once shaded across provinces now show near blank space."},{"title":"Wild Recovery Would Require Generations of Stable Coexistence Policies","slug":"wild-recovery-would-require-generations-of-stable-coexistence-policies","url":"/categories/endangered-predators/south-china-tiger/wild-recovery-would-require-generations-of-stable-coexistence-policies.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Saving this tiger demands decades of human tolerance."},{"title":"Wild Reintroduction Requires Prey Bases Large Enough to Sustain Apex Hunters","slug":"wild-reintroduction-requires-prey-bases-large-enough-to-sustain-apex-hunters","url":"/categories/endangered-predators/south-china-tiger/wild-reintroduction-requires-prey-bases-large-enough-to-sustain-apex-hunters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A tiger cannot return without thousands of prey animals."},{"title":"X-Factor of Isolation: Genetic Drift Intensifies in Tiny Populations","slug":"x-factor-of-isolation-genetic-drift-intensifies-in-tiny-populations","url":"/categories/endangered-predators/south-china-tiger/x-factor-of-isolation-genetic-drift-intensifies-in-tiny-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When numbers shrink, random mutations can shape a subspecies."},{"title":"Yearly Survival Hinges on Continuous Human Management","slug":"yearly-survival-hinges-on-continuous-human-management","url":"/categories/endangered-predators/south-china-tiger/yearly-survival-hinges-on-continuous-human-management.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Without constant oversight, this predator would likely disappear."},{"title":"Zero Confirmed Cubs Born in the Wild in Modern Decades","slug":"zero-confirmed-cubs-born-in-the-wild-in-modern-decades","url":"/categories/endangered-predators/south-china-tiger/zero-confirmed-cubs-born-in-the-wild-in-modern-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"No verified wild cubs means no natural future."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

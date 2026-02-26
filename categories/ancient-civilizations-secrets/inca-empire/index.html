@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inca Empire</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Inca Empire</h1>
+  <p>Explore all facts in "Inca Empire".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Inca Empire</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Andean Vertical Archipelago Model Structured Inca Economic Strategy","slug":"andean-vertical-archipelago-model-structured-inca-economic-strategy","url":"/categories/ancient-civilizations-secrets/inca-empire/andean-vertical-archipelago-model-structured-inca-economic-strategy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Instead of relying on single territories, the Inca organized production across multiple ecological tiers to secure food and resources."},{"title":"Choquequirao Served as Strategic Neo-Inca Stronghold After 1536","slug":"choquequirao-served-as-strategic-neo-inca-stronghold-after-1536","url":"/categories/ancient-civilizations-secrets/inca-empire/choquequirao-served-as-strategic-neo-inca-stronghold-after-1536.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Deep in the Vilcabamba region, Choquequirao became a refuge for Inca resistance following Spanish occupation."},{"title":"Cusco Urban Plan Was Designed in the Shape of a Puma Symbolizing Imperial Power","slug":"cusco-urban-plan-was-designed-in-the-shape-of-a-puma-symbolizing-imperial-power","url":"/categories/ancient-civilizations-secrets/inca-empire/cusco-urban-plan-was-designed-in-the-shape-of-a-puma-symbolizing-imperial-power.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 15th century, the Inca capital of Cusco was laid out to resemble a puma, an animal symbolizing strength and authority."},{"title":"Inti Raymi Festival Reinforced Solar Kingship Each Winter Solstice","slug":"inti-raymi-festival-reinforced-solar-kingship-each-winter-solstice","url":"/categories/ancient-civilizations-secrets/inca-empire/inti-raymi-festival-reinforced-solar-kingship-each-winter-solstice.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Every June, the Inca gathered in Cusco to reenact a ritual affirming the emperor’s descent from the sun."},{"title":"Intihuatana Stone Functioned as Astronomical Marker in Inca Ritual Calendars","slug":"intihuatana-stone-functioned-as-astronomical-marker-in-inca-ritual-calendars","url":"/categories/ancient-civilizations-secrets/inca-empire/intihuatana-stone-functioned-as-astronomical-marker-in-inca-ritual-calendars.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved from a single granite outcrop, the Intihuatana stone aligned ritual timekeeping with solar cycles."},{"title":"Kallanka Halls Served as Multi-Functional State Buildings Across the Empire","slug":"kallanka-halls-served-as-multi-functional-state-buildings-across-the-empire","url":"/categories/ancient-civilizations-secrets/inca-empire/kallanka-halls-served-as-multi-functional-state-buildings-across-the-empire.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive rectangular halls called kallankas anchored provincial plazas as centers of military and ceremonial life."},{"title":"Kanchis Province Integration Secured Southern Trade Corridors in the 15th Century","slug":"kanchis-province-integration-secured-southern-trade-corridors-in-the-15th-century","url":"/categories/ancient-civilizations-secrets/inca-empire/kanchis-province-integration-secured-southern-trade-corridors-in-the-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By absorbing Kanchis territory south of Cusco, the Inca locked down vital transport corridors linking Bolivia and Peru."},{"title":"Khipu Archives Were Destroyed in the 16th Century, Erasing Imperial Records","slug":"khipu-archives-were-destroyed-in-the-16th-century-erasing-imperial-records","url":"/categories/ancient-civilizations-secrets/inca-empire/khipu-archives-were-destroyed-in-the-16th-century-erasing-imperial-records.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After the Spanish conquest, thousands of Inca khipu were burned or discarded, eliminating vast portions of administrative history."},{"title":"Khipu Decimal System Enabled Accurate Census Across Millions of Subjects","slug":"khipu-decimal-system-enabled-accurate-census-across-millions-of-subjects","url":"/categories/ancient-civilizations-secrets/inca-empire/khipu-decimal-system-enabled-accurate-census-across-millions-of-subjects.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Using a base-10 structure, Inca administrators tracked population data across an empire spanning nearly 2 million square kilometers."},{"title":"Kuelap Annexation in the Late 15th Century Extended Inca Authority into Chachapoya Territory","slug":"kuelap-annexation-in-the-late-15th-century-extended-inca-authority-into-chachapoya-territory","url":"/categories/ancient-civilizations-secrets/inca-empire/kuelap-annexation-in-the-late-15th-century-extended-inca-authority-into-chachapoya-territory.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Inca expanded north in the late 15th century, they absorbed the formidable Chachapoya stronghold region rather than destroying it."},{"title":"Machu Picchu Construction Around 1450 Demonstrates Seismic-Resistant Masonry","slug":"machu-picchu-construction-around-1450-demonstrates-seismic-resistant-masonry","url":"/categories/ancient-civilizations-secrets/inca-empire/machu-picchu-construction-around-1450-demonstrates-seismic-resistant-masonry.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Built around 1450 at 2,430 meters elevation, Machu Picchu has withstood centuries of earthquakes without mortar."},{"title":"Manco Inca Resistance in 1536 Demonstrated Continued Imperial Cohesion After Conquest","slug":"manco-inca-resistance-in-1536-demonstrated-continued-imperial-cohesion-after-conquest","url":"/categories/ancient-civilizations-secrets/inca-empire/manco-inca-resistance-in-1536-demonstrated-continued-imperial-cohesion-after-conquest.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Three years after Cusco fell, Manco Inca nearly expelled Spanish forces in a coordinated uprising."},{"title":"Mit'a Labor Tax System Powered 15th Century Inca Infrastructure Expansion","slug":"mit-a-labor-tax-system-powered-15th-century-inca-infrastructure-expansion","url":"/categories/ancient-civilizations-secrets/inca-empire/mit-a-labor-tax-system-powered-15th-century-inca-infrastructure-expansion.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Instead of coinage, the Inca Empire taxed its population through mandatory labor rotations that built roads, terraces, and temples."},{"title":"Moray Circular Terraces Functioned as Agricultural Microclimate Laboratories","slug":"moray-circular-terraces-functioned-as-agricultural-microclimate-laboratories","url":"/categories/ancient-civilizations-secrets/inca-empire/moray-circular-terraces-functioned-as-agricultural-microclimate-laboratories.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Moray, concentric stone terraces create temperature differences of up to 5 degrees Celsius between top and bottom levels."},{"title":"Morococha Mining Preceded Spanish Silver Extraction in the Andes","slug":"morococha-mining-preceded-spanish-silver-extraction-in-the-andes","url":"/categories/ancient-civilizations-secrets/inca-empire/morococha-mining-preceded-spanish-silver-extraction-in-the-andes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before Europeans exploited Andean silver, the Inca already managed mining operations for ceremonial and practical use."},{"title":"Qhapaq Hucha Ritual Sacrifices Marked Imperial Crises and Coronations","slug":"qhapaq-hucha-ritual-sacrifices-marked-imperial-crises-and-coronations","url":"/categories/ancient-civilizations-secrets/inca-empire/qhapaq-hucha-ritual-sacrifices-marked-imperial-crises-and-coronations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During moments of imperial crisis or royal succession, the Inca dispatched children on sacred journeys to mountain summits above 5,000 meters."},{"title":"Qhapaq Ñan Road Network Spanned 40,000 Kilometers Across the Andes","slug":"qhapaq-an-road-network-spanned-40-000-kilometers-across-the-andes","url":"/categories/ancient-civilizations-secrets/inca-empire/qhapaq-an-road-network-spanned-40-000-kilometers-across-the-andes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Inca state engineered a road system stretching roughly 40,000 kilometers across some of the most extreme terrain on Earth."},{"title":"Qorikancha Temple in Cusco Once Displayed Walls Sheathed in Gold","slug":"qorikancha-temple-in-cusco-once-displayed-walls-sheathed-in-gold","url":"/categories/ancient-civilizations-secrets/inca-empire/qorikancha-temple-in-cusco-once-displayed-walls-sheathed-in-gold.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before Spanish conquest, the Qorikancha temple in Cusco reportedly shimmered with walls covered in sheets of gold."},{"title":"Quillabamba Lowland Routes Extended Inca Trade Toward the Amazon Basin","slug":"quillabamba-lowland-routes-extended-inca-trade-toward-the-amazon-basin","url":"/categories/ancient-civilizations-secrets/inca-empire/quillabamba-lowland-routes-extended-inca-trade-toward-the-amazon-basin.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beyond the Andes, the Inca pushed trade corridors into subtropical lowlands bordering the Amazon basin."},{"title":"Quinoa Cultivation Strengthened Inca Nutrition at High Elevations","slug":"quinoa-cultivation-strengthened-inca-nutrition-at-high-elevations","url":"/categories/ancient-civilizations-secrets/inca-empire/quinoa-cultivation-strengthened-inca-nutrition-at-high-elevations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At altitudes where maize struggled, quinoa sustained Inca populations with protein-rich harvests."},{"title":"Quipu Knot Records Managed Imperial Data Without Written Alphabet","slug":"quipu-knot-records-managed-imperial-data-without-written-alphabet","url":"/categories/ancient-civilizations-secrets/inca-empire/quipu-knot-records-managed-imperial-data-without-written-alphabet.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Inca administered millions of subjects using knotted cords instead of a written alphabet."},{"title":"Quito Incorporation Around 1463 Expanded Inca Rule into Northern Andes","slug":"quito-incorporation-around-1463-expanded-inca-rule-into-northern-andes","url":"/categories/ancient-civilizations-secrets/inca-empire/quito-incorporation-around-1463-expanded-inca-rule-into-northern-andes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the mid-15th century, Inca armies had pushed their frontier more than 2,000 kilometers north to absorb the region around modern Quito."},{"title":"Sacsayhuamán Fortress Used 100-Ton Stones Without Iron Tools","slug":"sacsayhuam-n-fortress-used-100-ton-stones-without-iron-tools","url":"/categories/ancient-civilizations-secrets/inca-empire/sacsayhuam-n-fortress-used-100-ton-stones-without-iron-tools.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Sacsayhuamán near Cusco, Inca builders positioned stones weighing more than 100 tons without iron tools or mortar."},{"title":"Sapa Inca Succession Crisis in 1532 Weakened Imperial Resistance to Spain","slug":"sapa-inca-succession-crisis-in-1532-weakened-imperial-resistance-to-spain","url":"/categories/ancient-civilizations-secrets/inca-empire/sapa-inca-succession-crisis-in-1532-weakened-imperial-resistance-to-spain.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A civil war between royal brothers in 1532 fractured the Inca Empire just as Spanish forces arrived."},{"title":"Sillustani Chullpa Towers Demonstrate Elite Funerary Architecture","slug":"sillustani-chullpa-towers-demonstrate-elite-funerary-architecture","url":"/categories/ancient-civilizations-secrets/inca-empire/sillustani-chullpa-towers-demonstrate-elite-funerary-architecture.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone burial towers rising above Lake Titicaca reveal how the Inca and their predecessors monumentalized death."},{"title":"Tambo Waystations Enabled Rapid Message Relay Across Mountain Corridors","slug":"tambo-waystations-enabled-rapid-message-relay-across-mountain-corridors","url":"/categories/ancient-civilizations-secrets/inca-empire/tambo-waystations-enabled-rapid-message-relay-across-mountain-corridors.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone-built waystations positioned along mountain roads allowed messages to cross hundreds of kilometers in days."},{"title":"Tambomachay Water Shrine Demonstrates Inca Hydraulic Precision","slug":"tambomachay-water-shrine-demonstrates-inca-hydraulic-precision","url":"/categories/ancient-civilizations-secrets/inca-empire/tambomachay-water-shrine-demonstrates-inca-hydraulic-precision.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Tambomachay near Cusco, twin streams of water still flow in perfect symmetry more than 500 years after construction."},{"title":"Terrace Agriculture Increased Andean Crop Yields at 3,500 Meters Altitude","slug":"terrace-agriculture-increased-andean-crop-yields-at-3-500-meters-altitude","url":"/categories/ancient-civilizations-secrets/inca-empire/terrace-agriculture-increased-andean-crop-yields-at-3-500-meters-altitude.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At elevations exceeding 3,500 meters, Inca engineers transformed steep mountainsides into productive farmland."},{"title":"Titicaca Basin Alliance Strengthened Inca Southern Frontier Control","slug":"titicaca-basin-alliance-strengthened-inca-southern-frontier-control","url":"/categories/ancient-civilizations-secrets/inca-empire/titicaca-basin-alliance-strengthened-inca-southern-frontier-control.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Control of the Lake Titicaca basin secured the Inca southern frontier and anchored imperial mythic origins."},{"title":"Uchucmarca Storehouse Complex Supported High-Altitude Logistics","slug":"uchucmarca-storehouse-complex-supported-high-altitude-logistics","url":"/categories/ancient-civilizations-secrets/inca-empire/uchucmarca-storehouse-complex-supported-high-altitude-logistics.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At elevations exceeding 3,000 meters, the Inca built storehouse complexes that stabilized supply chains across steep terrain."},{"title":"Ullantay River Irrigation Systems Sustained Sacred Valley Productivity","slug":"ullantay-river-irrigation-systems-sustained-sacred-valley-productivity","url":"/categories/ancient-civilizations-secrets/inca-empire/ullantay-river-irrigation-systems-sustained-sacred-valley-productivity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carefully engineered canals diverted mountain runoff into agricultural terraces that fed the Inca capital."},{"title":"Urcos Lake Region Anchored Inca Sacred Geography","slug":"urcos-lake-region-anchored-inca-sacred-geography","url":"/categories/ancient-civilizations-secrets/inca-empire/urcos-lake-region-anchored-inca-sacred-geography.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Lakes such as Urcos were woven into a sacred landscape that mapped cosmology onto empire."},{"title":"Ushnu Ceremonial Platforms Standardized Imperial Ritual Across Conquered Provinces","slug":"ushnu-ceremonial-platforms-standardized-imperial-ritual-across-conquered-provinces","url":"/categories/ancient-civilizations-secrets/inca-empire/ushnu-ceremonial-platforms-standardized-imperial-ritual-across-conquered-provinces.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Across distant provinces, the Inca built raised platforms called ushnus to impose a unified ritual order."},{"title":"Vilcabamba Neo-Inca State Survived Until 1572 Despite Spanish Rule","slug":"vilcabamba-neo-inca-state-survived-until-1572-despite-spanish-rule","url":"/categories/ancient-civilizations-secrets/inca-empire/vilcabamba-neo-inca-state-survived-until-1572-despite-spanish-rule.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Although Cusco fell in 1533, a remnant Inca state persisted in Vilcabamba for nearly four decades."},{"title":"Xapiri Mountain Shrines Linked Inca Cosmology to High-Altitude Ritual Landscapes","slug":"xapiri-mountain-shrines-linked-inca-cosmology-to-high-altitude-ritual-landscapes","url":"/categories/ancient-civilizations-secrets/inca-empire/xapiri-mountain-shrines-linked-inca-cosmology-to-high-altitude-ritual-landscapes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At elevations where oxygen thins and temperatures plunge, the Inca constructed ritual shrines that tied empire to sky."},{"title":"Xauxa Administrative Center Anchored Inca Control in the Central Highlands","slug":"xauxa-administrative-center-anchored-inca-control-in-the-central-highlands","url":"/categories/ancient-civilizations-secrets/inca-empire/xauxa-administrative-center-anchored-inca-control-in-the-central-highlands.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Inca converted the highland city of Xauxa into a provincial capital that secured control over Peru’s central Andes."},{"title":"Xauxa Became Spain’s First Capital of Peru in 1534 Due to Inca Infrastructure","slug":"xauxa-became-spain-s-first-capital-of-peru-in-1534-due-to-inca-infrastructure","url":"/categories/ancient-civilizations-secrets/inca-empire/xauxa-became-spain-s-first-capital-of-peru-in-1534-due-to-inca-infrastructure.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1534, the Spanish chose Xauxa as their first capital of Peru because Inca logistics had already done the planning."},{"title":"Xauxa Llama Caravans Enabled Long-Distance Transport Without Wheeled Vehicles","slug":"xauxa-llama-caravans-enabled-long-distance-transport-without-wheeled-vehicles","url":"/categories/ancient-civilizations-secrets/inca-empire/xauxa-llama-caravans-enabled-long-distance-transport-without-wheeled-vehicles.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Across mountain passes exceeding 4,000 meters, llama caravans replaced wheeled carts in imperial transport."},{"title":"Xauxa Storehouses Held Thousands of Maize Baskets for Imperial Redistribution","slug":"xauxa-storehouses-held-thousands-of-maize-baskets-for-imperial-redistribution","url":"/categories/ancient-civilizations-secrets/inca-empire/xauxa-storehouses-held-thousands-of-maize-baskets-for-imperial-redistribution.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Spanish observers in the 1530s described Xauxa storehouses stacked with maize baskets reaching into the thousands."},{"title":"Yachaywasi Schools Educated Noble Youth in Imperial Administration","slug":"yachaywasi-schools-educated-noble-youth-in-imperial-administration","url":"/categories/ancient-civilizations-secrets/inca-empire/yachaywasi-schools-educated-noble-youth-in-imperial-administration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elite Inca boys attended state schools where they learned governance, religion, and quipu interpretation."},{"title":"Yanaconas Service Class Reveals Flexible Labor Hierarchy in the Empire","slug":"yanaconas-service-class-reveals-flexible-labor-hierarchy-in-the-empire","url":"/categories/ancient-civilizations-secrets/inca-empire/yanaconas-service-class-reveals-flexible-labor-hierarchy-in-the-empire.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beyond mit'a labor rotations, the Inca maintained a permanent service class known as yanaconas."},{"title":"Yauri Frontier Expansion Extended Inca Reach into Southern Highlands","slug":"yauri-frontier-expansion-extended-inca-reach-into-southern-highlands","url":"/categories/ancient-civilizations-secrets/inca-empire/yauri-frontier-expansion-extended-inca-reach-into-southern-highlands.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Inca advanced into the Yauri region, they transformed a peripheral highland zone into a strategic outpost."},{"title":"Yawar Fiesta Traditions Preserve Echoes of Inca Symbolism","slug":"yawar-fiesta-traditions-preserve-echoes-of-inca-symbolism","url":"/categories/ancient-civilizations-secrets/inca-empire/yawar-fiesta-traditions-preserve-echoes-of-inca-symbolism.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Modern Andean festivals known as Yawar Fiesta retain ritual elements that scholars link to pre-Columbian cosmology."},{"title":"Yucay Valley Royal Estates Demonstrate Inca Climate Zoning Strategy","slug":"yucay-valley-royal-estates-demonstrate-inca-climate-zoning-strategy","url":"/categories/ancient-civilizations-secrets/inca-empire/yucay-valley-royal-estates-demonstrate-inca-climate-zoning-strategy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Inca deliberately placed royal estates in microclimates that allowed year-round agricultural experimentation."},{"title":"Yupanqui Reforms Centralized Inca Administration in the 15th Century","slug":"yupanqui-reforms-centralized-inca-administration-in-the-15th-century","url":"/categories/ancient-civilizations-secrets/inca-empire/yupanqui-reforms-centralized-inca-administration-in-the-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Pachacuti Inca Yupanqui transformed a regional kingdom into a centralized empire within a single generation."},{"title":"Zaña Valley Integration Expanded Inca Coastal Influence in the Late 15th Century","slug":"za-a-valley-integration-expanded-inca-coastal-influence-in-the-late-15th-century","url":"/categories/ancient-civilizations-secrets/inca-empire/za-a-valley-integration-expanded-inca-coastal-influence-in-the-late-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Inca expanded into Peru’s northern coast, they absorbed established irrigation economies rather than replacing them."},{"title":"Zarate Canyon Terraces Expanded Imperial Agriculture into Marginal Lands","slug":"zarate-canyon-terraces-expanded-imperial-agriculture-into-marginal-lands","url":"/categories/ancient-civilizations-secrets/inca-empire/zarate-canyon-terraces-expanded-imperial-agriculture-into-marginal-lands.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In narrow Andean canyons, the Inca carved terraces that transformed steep rock faces into productive farmland."},{"title":"Zigzag Walls of Ollantaytambo Reveal Advanced Inca Defensive Planning","slug":"zigzag-walls-of-ollantaytambo-reveal-advanced-inca-defensive-planning","url":"/categories/ancient-civilizations-secrets/inca-empire/zigzag-walls-of-ollantaytambo-reveal-advanced-inca-defensive-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Ollantaytambo, zigzagging stone terraces turned mountain slopes into layered defensive barriers."},{"title":"Zipaquira Salt Exchange Networks Linked Highland and Lowland Economies","slug":"zipaquira-salt-exchange-networks-linked-highland-and-lowland-economies","url":"/categories/ancient-civilizations-secrets/inca-empire/zipaquira-salt-exchange-networks-linked-highland-and-lowland-economies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Control of highland salt deposits allowed Andean trade systems to connect ecological zones long before European arrival."},{"title":"Zonal Administrative Division into Four Suyus Structured the Empire","slug":"zonal-administrative-division-into-four-suyus-structured-the-empire","url":"/categories/ancient-civilizations-secrets/inca-empire/zonal-administrative-division-into-four-suyus-structured-the-empire.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Inca divided their empire into four vast quarters radiating from Cusco like a political compass."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

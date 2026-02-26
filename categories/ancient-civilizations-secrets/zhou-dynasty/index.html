@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zhou Dynasty</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Zhou Dynasty</h1>
+  <p>Explore all facts in "Zhou Dynasty".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Zhou Dynasty</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Agricultural Irrigation Canals in the Zhou Heartland","slug":"agricultural-irrigation-canals-in-the-zhou-heartland","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/agricultural-irrigation-canals-in-the-zhou-heartland.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the early Eastern Zhou, states engineered canals to control the Yellow River, boosting food production and population growth."},{"title":"Agricultural Taxation Reforms in the State of Wei circa 400 BCE","slug":"agricultural-taxation-reforms-in-the-state-of-wei-circa-400-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/agricultural-taxation-reforms-in-the-state-of-wei-circa-400-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 400 BCE, the state of Wei shifted taxation from aristocratic tribute to direct levies on individual farmers, accelerating bureaucratic control."},{"title":"Ancestral Bronze Ritual Vessels of the Western Zhou circa 1046 BCE","slug":"ancestral-bronze-ritual-vessels-of-the-western-zhou-circa-1046-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/ancestral-bronze-ritual-vessels-of-the-western-zhou-circa-1046-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After 1046 BCE, Zhou rulers cast massive bronze vessels inscribed with political victories to legitimize a brand new dynasty."},{"title":"Bamboo Annals Discovery and Early Zhou Chronology","slug":"bamboo-annals-discovery-and-early-zhou-chronology","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/bamboo-annals-discovery-and-early-zhou-chronology.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A chronicle buried in a royal tomb and rediscovered in 279 CE preserved alternative timelines of early Zhou history."},{"title":"Battle of Muye in 1046 BCE and the Fall of the Shang","slug":"battle-of-muye-in-1046-bce-and-the-fall-of-the-shang","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/battle-of-muye-in-1046-bce-and-the-fall-of-the-shang.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single battlefield confrontation in 1046 BCE ended the Shang dynasty and introduced a new political philosophy that reshaped China."},{"title":"Bronze Chariot Burials and Military Prestige","slug":"bronze-chariot-burials-and-military-prestige","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/bronze-chariot-burials-and-military-prestige.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Zhou elites interred complete chariots with nobles, displaying both wealth and martial capability in funerary rituals."},{"title":"Capital Relocation to Luoyang in 770 BCE","slug":"capital-relocation-to-luoyang-in-770-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/capital-relocation-to-luoyang-in-770-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 770 BCE, invading forces forced the Zhou court to abandon its western capital and begin the Eastern Zhou era."},{"title":"Confucius Political Thought and Zhou Governance","slug":"confucius-political-thought-and-zhou-governance","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/confucius-political-thought-and-zhou-governance.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Confucius codified moral and administrative philosophy in the 6th century BCE, shaping subsequent dynastic rule."},{"title":"Daoist Philosophical Emergence during Eastern Zhou","slug":"daoist-philosophical-emergence-during-eastern-zhou","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/daoist-philosophical-emergence-during-eastern-zhou.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Philosophers like Laozi proposed alternative governance and ethical models that diverged from Confucian norms."},{"title":"Decentralized Feudal Land Grants under Western Zhou Rule","slug":"decentralized-feudal-land-grants-under-western-zhou-rule","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/decentralized-feudal-land-grants-under-western-zhou-rule.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Early Zhou kings distributed vast territories to relatives and allies, effectively creating a hereditary aristocratic network across northern China."},{"title":"Diplomatic Marriage Alliances during the Spring and Autumn Period","slug":"diplomatic-marriage-alliances-during-the-spring-and-autumn-period","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/diplomatic-marriage-alliances-during-the-spring-and-autumn-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Interstate marriages during the Spring and Autumn era bound rival courts together in fragile webs of kinship diplomacy."},{"title":"Early Chinese Iron Adoption during Late Zhou Period","slug":"early-chinese-iron-adoption-during-late-zhou-period","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/early-chinese-iron-adoption-during-late-zhou-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 6th century BCE, iron tools and weapons began replacing bronze across Zhou territories, transforming agriculture and warfare."},{"title":"Eastern Zhou Coin Hoards Reveal Economic Integration","slug":"eastern-zhou-coin-hoards-reveal-economic-integration","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/eastern-zhou-coin-hoards-reveal-economic-integration.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological hoards of bronze coins indicate increasingly sophisticated monetary systems and regional trade networks."},{"title":"Eastern Zhou Coinage Standardization circa 4th Century BCE","slug":"eastern-zhou-coinage-standardization-circa-4th-century-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/eastern-zhou-coinage-standardization-circa-4th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"To facilitate trade and taxation, Eastern Zhou states introduced standardized metallic coins, including knife-shaped and spade-shaped forms."},{"title":"Eastern Zhou Philosophical Flourishing circa 5th Century BCE","slug":"eastern-zhou-philosophical-flourishing-circa-5th-century-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/eastern-zhou-philosophical-flourishing-circa-5th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Amid political fragmentation, scholars debated ethics, governance, and cosmology, laying foundations for Confucianism, Daoism, and Legalism."},{"title":"Economic Coinage Innovation in the State of Qi","slug":"economic-coinage-innovation-in-the-state-of-qi","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/economic-coinage-innovation-in-the-state-of-qi.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 4th century BCE, the state of Qi circulated standardized knife-shaped coins to streamline trade across its territory."},{"title":"Fangcheng Canal Engineering in Eastern Zhou","slug":"fangcheng-canal-engineering-in-eastern-zhou","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/fangcheng-canal-engineering-in-eastern-zhou.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Eastern Zhou engineers constructed canals to improve irrigation and transport, enhancing trade and agricultural productivity."},{"title":"Guo Yu Chronicles on Zhou State Conflicts","slug":"guo-yu-chronicles-on-zhou-state-conflicts","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/guo-yu-chronicles-on-zhou-state-conflicts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Guo Yu texts preserve detailed records of inter-state diplomacy and warfare during the Eastern Zhou era."},{"title":"Hegemonic Alliances during the Spring and Autumn Period","slug":"hegemonic-alliances-during-the-spring-and-autumn-period","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/hegemonic-alliances-during-the-spring-and-autumn-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Eastern Zhou regional rulers formed temporary hegemonies to lead coalitions against rivals and stabilize trade routes."},{"title":"Iron Plough Adoption in Eastern Zhou Agriculture","slug":"iron-plough-adoption-in-eastern-zhou-agriculture","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/iron-plough-adoption-in-eastern-zhou-agriculture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 5th century BCE, Zhou farmers increasingly used iron ploughs, doubling efficiency in northern China’s heavy soils."},{"title":"Iron Weapon Standardization in the Warring States Period","slug":"iron-weapon-standardization-in-the-warring-states-period","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/iron-weapon-standardization-in-the-warring-states-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 5th century BCE, Zhou states mass-produced iron swords and spears, changing warfare from bronze-based chariot conflicts to infantry-dominated battles."},{"title":"Jin State Bureaucratic Innovations","slug":"jin-state-bureaucratic-innovations","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/jin-state-bureaucratic-innovations.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During the Eastern Zhou, the state of Jin implemented early civil administration reforms that influenced later Chinese governance."},{"title":"Jixia Academy of Qi State Intellectual Hub","slug":"jixia-academy-of-qi-state-intellectual-hub","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/jixia-academy-of-qi-state-intellectual-hub.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In Linzi, scholars from multiple states gathered under patronage of the Qi court, debating politics, philosophy, and natural science."},{"title":"King Kang of Zhou Consolidation Policies","slug":"king-kang-of-zhou-consolidation-policies","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/king-kang-of-zhou-consolidation-policies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"King Kang, early Western Zhou ruler, reinforced royal authority through ritual, military campaigns, and administrative appointments."},{"title":"King Wu of Zhou Coronation Ritual in 1046 BCE","slug":"king-wu-of-zhou-coronation-ritual-in-1046-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/king-wu-of-zhou-coronation-ritual-in-1046-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After toppling the Shang in 1046 BCE, King Wu staged a carefully scripted coronation to prove Heaven had switched sides."},{"title":"King You of Zhou and the Collapse of Haojing","slug":"king-you-of-zhou-and-the-collapse-of-haojing","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/king-you-of-zhou-and-the-collapse-of-haojing.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 771 BCE, King You's mismanagement and political intrigue led to the sacking of the Western Zhou capital Haojing by nomadic invaders."},{"title":"King Zhao of Zhou Military Expedition to Southern States","slug":"king-zhao-of-zhou-military-expedition-to-southern-states","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/king-zhao-of-zhou-military-expedition-to-southern-states.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During his reign, King Zhao led campaigns along the Yangtze River, expanding Zhou influence while suffering significant losses."},{"title":"King Zhuang of Chu Expansion Campaigns","slug":"king-zhuang-of-chu-expansion-campaigns","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/king-zhuang-of-chu-expansion-campaigns.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During the 6th century BCE, King Zhuang transformed Chu into a major military power by expanding south and west."},{"title":"Legal Codification under Duke Xiao of Qin","slug":"legal-codification-under-duke-xiao-of-qin","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/legal-codification-under-duke-xiao-of-qin.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the mid-4th century BCE, Duke Xiao enacted the Shang Yang reforms, formalizing laws and restructuring society for merit-based governance."},{"title":"Legalist Reforms of Shang Yang in Qin during 356 BCE","slug":"legalist-reforms-of-shang-yang-in-qin-during-356-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/legalist-reforms-of-shang-yang-in-qin-during-356-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 356 BCE, a reformer in the Qin state rewrote social rules so radically that aristocratic privilege collapsed in favor of strict merit."},{"title":"Lu State Maritime Trade Expansion","slug":"lu-state-maritime-trade-expansion","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/lu-state-maritime-trade-expansion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Lu state, during the Eastern Zhou period, enhanced economic influence by establishing maritime trade along the coast of the Shandong Peninsula."},{"title":"Mengzi Writings and Ethical Philosophy Influence","slug":"mengzi-writings-and-ethical-philosophy-influence","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/mengzi-writings-and-ethical-philosophy-influence.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mengzi, or Mencius, expanded Confucian thought during the Eastern Zhou, emphasizing human nature and righteous governance."},{"title":"Millet-Based Agriculture and Northern Zhou Food Security","slug":"millet-based-agriculture-and-northern-zhou-food-security","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/millet-based-agriculture-and-northern-zhou-food-security.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For centuries under the Zhou, drought-resistant millet sustained northern China long before rice dominated the south."},{"title":"Naval Warfare Innovations of the State of Chu","slug":"naval-warfare-innovations-of-the-state-of-chu","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/naval-warfare-innovations-of-the-state-of-chu.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During the late Zhou era, the state of Chu developed riverine naval forces that altered military balance along the Yangtze."},{"title":"Northern Zhou Cavalry Innovations","slug":"northern-zhou-cavalry-innovations","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/northern-zhou-cavalry-innovations.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Eastern Zhou states in northern China developed mounted units to counter nomadic incursions, transforming battlefield dynamics."},{"title":"Northern Zhou Defensive Fortifications and City Walls","slug":"northern-zhou-defensive-fortifications-and-city-walls","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/northern-zhou-defensive-fortifications-and-city-walls.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During the late Eastern Zhou, northern states invested heavily in rammed-earth walls to protect cities from rival states and nomadic incursions."},{"title":"Oracle Bone Legacy and Zhou Divination Practices","slug":"oracle-bone-legacy-and-zhou-divination-practices","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/oracle-bone-legacy-and-zhou-divination-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Although oracle bone divination began under the Shang, Zhou rulers adapted and reshaped the practice to fit their own ideology."},{"title":"Qu Yuan Exile and the 278 BCE Fall of Ying","slug":"qu-yuan-exile-and-the-278-bce-fall-of-ying","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/qu-yuan-exile-and-the-278-bce-fall-of-ying.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 278 BCE, the Chu capital of Ying fell to Qin forces, and its most famous poet chose exile over political compromise."},{"title":"Urban Fortification Walls of the State of Zhao","slug":"urban-fortification-walls-of-the-state-of-zhao","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/urban-fortification-walls-of-the-state-of-zhao.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive rammed-earth walls encircled Zhao cities to defend against both rival states and steppe incursions."},{"title":"Urban Growth of Linzi as Qi State Capital","slug":"urban-growth-of-linzi-as-qi-state-capital","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/urban-growth-of-linzi-as-qi-state-capital.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 4th century BCE, Linzi grew into one of the largest cities in East Asia, powered by state-sponsored industry and trade."},{"title":"Western Zhou Bronze Casting Techniques and Ritual Innovation","slug":"western-zhou-bronze-casting-techniques-and-ritual-innovation","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/western-zhou-bronze-casting-techniques-and-ritual-innovation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the early Western Zhou, advanced bronze casting allowed large ceremonial vessels weighing hundreds of kilograms to be mass-produced for ancestral worship."},{"title":"Xiang Yu and Early Zhou Military Inspiration","slug":"xiang-yu-and-early-zhou-military-inspiration","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/xiang-yu-and-early-zhou-military-inspiration.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries after the Zhou, generals like Xiang Yu drew tactics from Warring States campaigns, reflecting enduring Zhou military principles."},{"title":"Xiaojing of Zhou Ritual Music Codification","slug":"xiaojing-of-zhou-ritual-music-codification","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/xiaojing-of-zhou-ritual-music-codification.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Zhou rulers standardized ceremonial music to maintain social order and reinforce hierarchical governance."},{"title":"Xiongnu Frontier Pressure on Late Zhou States","slug":"xiongnu-frontier-pressure-on-late-zhou-states","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/xiongnu-frontier-pressure-on-late-zhou-states.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nomadic confederations along the northern frontier forced Zhou-era states to rethink military defense long before the Great Wall was unified."},{"title":"Yin Xu Oracle Bones Influence on Early Zhou Ritual","slug":"yin-xu-oracle-bones-influence-on-early-zhou-ritual","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/yin-xu-oracle-bones-influence-on-early-zhou-ritual.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Though originating in the late Shang, oracle bone divination informed Zhou kings' understanding of ancestor worship and state legitimacy."},{"title":"Yue Goujian Revenge Campaign against Wu in 473 BCE","slug":"yue-goujian-revenge-campaign-against-wu-in-473-bce","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/yue-goujian-revenge-campaign-against-wu-in-473-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After years of humiliation and forced servitude, King Goujian of Yue destroyed the rival state of Wu in 473 BCE."},{"title":"Yue Military Strategies Against Wu State","slug":"yue-military-strategies-against-wu-state","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/yue-military-strategies-against-wu-state.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During the late Spring and Autumn period, Yue applied cunning and patience to ultimately defeat the Wu state."},{"title":"Zheng State Legal and Administrative Records","slug":"zheng-state-legal-and-administrative-records","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/zheng-state-legal-and-administrative-records.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Eastern Zhou officials in Zheng maintained detailed documentation of laws, taxation, and military conscription, demonstrating early bureaucratic sophistication."},{"title":"Zhongshan Tombs and Northern Zhou Mortuary Practices","slug":"zhongshan-tombs-and-northern-zhou-mortuary-practices","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/zhongshan-tombs-and-northern-zhou-mortuary-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists uncovered elaborate tombs in the former state of Zhongshan, revealing synthesis of local and Zhou burial traditions."},{"title":"Zuo Zhuan Chronicle and the Spring and Autumn Record","slug":"zuo-zhuan-chronicle-and-the-spring-and-autumn-record","url":"/categories/ancient-civilizations-secrets/zhou-dynasty/zuo-zhuan-chronicle-and-the-spring-and-autumn-record.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A historical commentary compiled during the Eastern Zhou era transformed terse court annals into detailed political narratives."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

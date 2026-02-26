@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snow Leopard</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Snow Leopard</h1>
+  <p>Explore all facts in "Snow Leopard".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Snow Leopard</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Altai Mountains 2015 Survey Estimated Fewer Than 1,000 Snow Leopards in Russia","slug":"altai-mountains-2015-survey-estimated-fewer-than-1-000-snow-leopards-in-russia","url":"/categories/endangered-predators/snow-leopard/altai-mountains-2015-survey-estimated-fewer-than-1-000-snow-leopards-in-russia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Russia’s largest mountain wilderness holds fewer apex predators than a small village population."},{"title":"Annapurna Conservation Area Covers 7,629 Square Kilometers of Snow Leopard Range","slug":"annapurna-conservation-area-covers-7-629-square-kilometers-of-snow-leopard-range","url":"/categories/endangered-predators/snow-leopard/annapurna-conservation-area-covers-7-629-square-kilometers-of-snow-leopard-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One protected Himalayan landscape spans an area larger than some entire island nations for a predator rarely seen."},{"title":"Bhutan Highlands Support Snow Leopards Above 4,500 Meters Near Glacial Frontiers","slug":"bhutan-highlands-support-snow-leopards-above-4-500-meters-near-glacial-frontiers","url":"/categories/endangered-predators/snow-leopard/bhutan-highlands-support-snow-leopards-above-4-500-meters-near-glacial-frontiers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These cats hunt beside glaciers where humans need acclimatization camps to breathe."},{"title":"Bishkek Declaration 2013 United 12 Nations to Protect Snow Leopard Ecosystems","slug":"bishkek-declaration-2013-united-12-nations-to-protect-snow-leopard-ecosystems","url":"/categories/endangered-predators/snow-leopard/bishkek-declaration-2013-united-12-nations-to-protect-snow-leopard-ecosystems.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Twelve countries signed a single declaration to defend a predator that crosses all their borders."},{"title":"Central Asian Highways Fragment Snow Leopard Habitat Across 2 Million Square Kilometers","slug":"central-asian-highways-fragment-snow-leopard-habitat-across-2-million-square-kilometers","url":"/categories/endangered-predators/snow-leopard/central-asian-highways-fragment-snow-leopard-habitat-across-2-million-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator evolved for uninterrupted mountain chains now confronts asphalt slicing through its empire."},{"title":"Chitral National Park Hosts Snow Leopards at Pakistan’s Western Range Edge","slug":"chitral-national-park-hosts-snow-leopards-at-pakistan-s-western-range-edge","url":"/categories/endangered-predators/snow-leopard/chitral-national-park-hosts-snow-leopards-at-pakistan-s-western-range-edge.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"At the far western frontier of their range, fewer predators survive than many city blocks contain dogs."},{"title":"Deosai National Park Protects Snow Leopards Above 4,000 Meters on Pakistan’s High Plateau","slug":"deosai-national-park-protects-snow-leopards-above-4-000-meters-on-pakistan-s-high-plateau","url":"/categories/endangered-predators/snow-leopard/deosai-national-park-protects-snow-leopards-above-4-000-meters-on-pakistan-s-high-plateau.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator hunts across a plateau so high it is called the Land of Giants."},{"title":"Dhaulagiri Region Studies Show Snow Leopards Prey on Species Larger Than Themselves","slug":"dhaulagiri-region-studies-show-snow-leopards-prey-on-species-larger-than-themselves","url":"/categories/endangered-predators/snow-leopard/dhaulagiri-region-studies-show-snow-leopards-prey-on-species-larger-than-themselves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 35-kilogram predator can kill prey nearly twice its own weight on a cliff face."},{"title":"Eastern Himalaya Landscape Initiative Targets Snow Leopard Corridors Across 700,000 Square Kilometers","slug":"eastern-himalaya-landscape-initiative-targets-snow-leopard-corridors-across-700-000-square-kilometers","url":"/categories/endangered-predators/snow-leopard/eastern-himalaya-landscape-initiative-targets-snow-leopard-corridors-across-700-000-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Seven hundred thousand square kilometers of mountains are being coordinated for one elusive predator."},{"title":"Everest Region Camera Traps Captured Snow Leopards Near 5,500 Meters","slug":"everest-region-camera-traps-captured-snow-leopards-near-5-500-meters","url":"/categories/endangered-predators/snow-leopard/everest-region-camera-traps-captured-snow-leopards-near-5-500-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator patrols elevations where commercial aircraft wings scrape mountain airspace."},{"title":"Feral Dog Expansion in Himalayan Villages Competes with Snow Leopard Prey","slug":"feral-dog-expansion-in-himalayan-villages-competes-with-snow-leopard-prey","url":"/categories/endangered-predators/snow-leopard/feral-dog-expansion-in-himalayan-villages-competes-with-snow-leopard-prey.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An introduced predator now competes with a native ghost for survival at 4,000 meters."},{"title":"Fewer Than 10 Percent of Snow Leopard Cubs Reach Adulthood in Some Regions","slug":"fewer-than-10-percent-of-snow-leopard-cubs-reach-adulthood-in-some-regions","url":"/categories/endangered-predators/snow-leopard/fewer-than-10-percent-of-snow-leopard-cubs-reach-adulthood-in-some-regions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In certain mountain ranges, nine out of ten snow leopard cubs never survive to breed."},{"title":"Gansu Province Surveys Confirm Snow Leopards in Qilian Mountain Corridors","slug":"gansu-province-surveys-confirm-snow-leopards-in-qilian-mountain-corridors","url":"/categories/endangered-predators/snow-leopard/gansu-province-surveys-confirm-snow-leopards-in-qilian-mountain-corridors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Camera traps in northern China revealed an endangered predator where few expected survival."},{"title":"Gobi Desert Fringe Populations Survive in Some of the Driest Snow Leopard Habitat","slug":"gobi-desert-fringe-populations-survive-in-some-of-the-driest-snow-leopard-habitat","url":"/categories/endangered-predators/snow-leopard/gobi-desert-fringe-populations-survive-in-some-of-the-driest-snow-leopard-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An animal built for snow persists along desert margins where annual rainfall barely reaches 100 millimeters."},{"title":"Himalayan Snow Leopard Territory Can Span 1,000 Square Kilometers","slug":"himalayan-snow-leopard-territory-can-span-1-000-square-kilometers","url":"/categories/endangered-predators/snow-leopard/himalayan-snow-leopard-territory-can-span-1-000-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One cat can patrol an area larger than New York City alone in near silence."},{"title":"Hindu Kush Range Supports Fewer Than 200 Snow Leopards in Afghanistan","slug":"hindu-kush-range-supports-fewer-than-200-snow-leopards-in-afghanistan","url":"/categories/endangered-predators/snow-leopard/hindu-kush-range-supports-fewer-than-200-snow-leopards-in-afghanistan.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Decades of conflict left one of the world’s rarest big cats surviving in near statistical invisibility."},{"title":"Indian Wildlife Protection Act 1972 Grants Snow Leopards Schedule I Status","slug":"indian-wildlife-protection-act-1972-grants-snow-leopards-schedule-i-status","url":"/categories/endangered-predators/snow-leopard/indian-wildlife-protection-act-1972-grants-snow-leopards-schedule-i-status.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"India classifies this mountain predator in the same legal tier as its most iconic endangered species."},{"title":"Indus River Headwaters Depend on Snow Leopard Ecosystems for Watershed Stability","slug":"indus-river-headwaters-depend-on-snow-leopard-ecosystems-for-watershed-stability","url":"/categories/endangered-predators/snow-leopard/indus-river-headwaters-depend-on-snow-leopard-ecosystems-for-watershed-stability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered predator influences water systems that sustain millions downstream."},{"title":"Jammu and Kashmir 2023 Survey Counted 477 Snow Leopards Across India","slug":"jammu-and-kashmir-2023-survey-counted-477-snow-leopards-across-india","url":"/categories/endangered-predators/snow-leopard/jammu-and-kashmir-2023-survey-counted-477-snow-leopards-across-india.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"India confirmed nearly 500 of the planet’s rarest big cats hiding in its highest mountains."},{"title":"Karakoram Highway Expansion Fragments Critical Snow Leopard Corridors","slug":"karakoram-highway-expansion-fragments-critical-snow-leopard-corridors","url":"/categories/endangered-predators/snow-leopard/karakoram-highway-expansion-fragments-critical-snow-leopard-corridors.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single mountain road can divide an apex predator’s empire in two."},{"title":"Karakoram Snow Leopard Population Crash Left Fewer Than 4,000 in the Wild","slug":"karakoram-snow-leopard-population-crash-left-fewer-than-4-000-in-the-wild","url":"/categories/endangered-predators/snow-leopard/karakoram-snow-leopard-population-crash-left-fewer-than-4-000-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator that rules mountains taller than 8,000 meters now survives in numbers smaller than many suburban high schools."},{"title":"Kazakhstan Altai Corridors Link Small Snow Leopard Subpopulations Across Borders","slug":"kazakhstan-altai-corridors-link-small-snow-leopard-subpopulations-across-borders","url":"/categories/endangered-predators/snow-leopard/kazakhstan-altai-corridors-link-small-snow-leopard-subpopulations-across-borders.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A handful of predators in Kazakhstan depend on invisible pathways stretching into three countries."},{"title":"Kyrgyzstan Poaching Networks Target Snow Leopard Pelts Despite International Bans","slug":"kyrgyzstan-poaching-networks-target-snow-leopard-pelts-despite-international-bans","url":"/categories/endangered-predators/snow-leopard/kyrgyzstan-poaching-networks-target-snow-leopard-pelts-despite-international-bans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A coat taken from a single mountain cat can move through multiple borders before authorities detect it."},{"title":"Ladakh Livestock Insurance Programs Reduced Snow Leopard Retaliatory Killings by Over 50 Percent","slug":"ladakh-livestock-insurance-programs-reduced-snow-leopard-retaliatory-killings-by-over-50-percent","url":"/categories/endangered-predators/snow-leopard/ladakh-livestock-insurance-programs-reduced-snow-leopard-retaliatory-killings-by-over-50-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A financial contract accomplished what patrol rifles could not in mountain valleys."},{"title":"Ladakh Winter Livestock Losses Once Triggered Cluster Snow Leopard Killings","slug":"ladakh-winter-livestock-losses-once-triggered-cluster-snow-leopard-killings","url":"/categories/endangered-predators/snow-leopard/ladakh-winter-livestock-losses-once-triggered-cluster-snow-leopard-killings.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One harsh winter could erase multiple apex predators in a single valley."},{"title":"Mongolia 2020 National Survey Used Over 2,000 Camera Trap Stations to Count Snow Leopards","slug":"mongolia-2020-national-survey-used-over-2-000-camera-trap-stations-to-count-snow-leopards","url":"/categories/endangered-predators/snow-leopard/mongolia-2020-national-survey-used-over-2-000-camera-trap-stations-to-count-snow-leopards.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered predator required thousands of hidden cameras across mountains to prove it still exists."},{"title":"Mongolian Altai Blizzards Can Drop Temperatures Below Minus 40 Celsius in Snow Leopard Range","slug":"mongolian-altai-blizzards-can-drop-temperatures-below-minus-40-celsius-in-snow-leopard-range","url":"/categories/endangered-predators/snow-leopard/mongolian-altai-blizzards-can-drop-temperatures-below-minus-40-celsius-in-snow-leopard-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator hunts in cold intense enough to freeze exposed human skin within minutes."},{"title":"Nepal 2022 National Assessment Documented 355 Snow Leopards in High Himalaya","slug":"nepal-2022-national-assessment-documented-355-snow-leopards-in-high-himalaya","url":"/categories/endangered-predators/snow-leopard/nepal-2022-national-assessment-documented-355-snow-leopards-in-high-himalaya.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Nepal confirmed more than 350 mountain ghosts across terrain higher than most European peaks."},{"title":"Over 70 Percent of Snow Leopard Habitat Lies Outside Strictly Protected Areas","slug":"over-70-percent-of-snow-leopard-habitat-lies-outside-strictly-protected-areas","url":"/categories/endangered-predators/snow-leopard/over-70-percent-of-snow-leopard-habitat-lies-outside-strictly-protected-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Most of this endangered predator’s territory exists beyond park boundaries and patrol gates."},{"title":"Oyu Tolgoi Mining Expansion Overlaps Critical Snow Leopard Habitat in Mongolia","slug":"oyu-tolgoi-mining-expansion-overlaps-critical-snow-leopard-habitat-in-mongolia","url":"/categories/endangered-predators/snow-leopard/oyu-tolgoi-mining-expansion-overlaps-critical-snow-leopard-habitat-in-mongolia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One of the world’s largest copper mines operates within the same mountains as an endangered apex predator."},{"title":"Pakistan 2021 Study Linked Snow Leopard Survival to Markhor Population Recovery","slug":"pakistan-2021-study-linked-snow-leopard-survival-to-markhor-population-recovery","url":"/categories/endangered-predators/snow-leopard/pakistan-2021-study-linked-snow-leopard-survival-to-markhor-population-recovery.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When wild goats rebound in sheer cliffs, an endangered predator quietly follows."},{"title":"Pamirs Highways Connect Remote Valleys Once Shielded Snow Leopards from Poaching","slug":"pamirs-highways-connect-remote-valleys-once-shielded-snow-leopards-from-poaching","url":"/categories/endangered-predators/snow-leopard/pamirs-highways-connect-remote-valleys-once-shielded-snow-leopards-from-poaching.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A new road can undo centuries of natural protection in a single construction season."},{"title":"Qinghai Plateau Warming Is Shrinking Snow Leopard Alpine Habitat","slug":"qinghai-plateau-warming-is-shrinking-snow-leopard-alpine-habitat","url":"/categories/endangered-predators/snow-leopard/qinghai-plateau-warming-is-shrinking-snow-leopard-alpine-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rising temperatures are pushing forests uphill into terrain once reserved for a ghost of the mountains."},{"title":"Qomolangma National Nature Reserve Spans 33,800 Square Kilometers of Snow Leopard Habitat","slug":"qomolangma-national-nature-reserve-spans-33-800-square-kilometers-of-snow-leopard-habitat","url":"/categories/endangered-predators/snow-leopard/qomolangma-national-nature-reserve-spans-33-800-square-kilometers-of-snow-leopard-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"China protects a mountain reserve larger than many nations for a predator most people never see."},{"title":"Rangdum Valley Research Showed Snow Leopards Travel Dozens of Kilometers Nightly","slug":"rangdum-valley-research-showed-snow-leopards-travel-dozens-of-kilometers-nightly","url":"/categories/endangered-predators/snow-leopard/rangdum-valley-research-showed-snow-leopards-travel-dozens-of-kilometers-nightly.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In a single night, this mountain predator can cross terrain that would exhaust trained hikers."},{"title":"Roughly 60 Percent of Global Snow Leopard Habitat Lies Within China","slug":"roughly-60-percent-of-global-snow-leopard-habitat-lies-within-china","url":"/categories/endangered-predators/snow-leopard/roughly-60-percent-of-global-snow-leopard-habitat-lies-within-china.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"More than half of the world’s snow leopard territory exists inside a single country."},{"title":"Tajikistan Mountain Corridors Connect Less Than 250 Estimated Snow Leopards","slug":"tajikistan-mountain-corridors-connect-less-than-250-estimated-snow-leopards","url":"/categories/endangered-predators/snow-leopard/tajikistan-mountain-corridors-connect-less-than-250-estimated-snow-leopards.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 250 apex predators roam Tajikistan’s towering Pamir Mountains."},{"title":"Tien Shan Glacier Retreat Alters Snow Leopard Prey Distribution Across Central Asia","slug":"tien-shan-glacier-retreat-alters-snow-leopard-prey-distribution-across-central-asia","url":"/categories/endangered-predators/snow-leopard/tien-shan-glacier-retreat-alters-snow-leopard-prey-distribution-across-central-asia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Melting glaciers are quietly reshaping the hunting grounds of an endangered mountain predator."},{"title":"Ulaanbaatar Region Surveys Found Snow Leopard Density Below One Per 100 Square Kilometers","slug":"ulaanbaatar-region-surveys-found-snow-leopard-density-below-one-per-100-square-kilometers","url":"/categories/endangered-predators/snow-leopard/ulaanbaatar-region-surveys-found-snow-leopard-density-below-one-per-100-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In some Mongolian ranges, you could hike for days and never share the mountain with another predator."},{"title":"Uzbekistan Western Tien Shan Records Confirm Snow Leopard Presence After Decades","slug":"uzbekistan-western-tien-shan-records-confirm-snow-leopard-presence-after-decades","url":"/categories/endangered-predators/snow-leopard/uzbekistan-western-tien-shan-records-confirm-snow-leopard-presence-after-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator thought absent reappeared in camera traps after years of silence."},{"title":"Vulnerable Status 2017 IUCN Reclassification Masked Continuing Regional Declines","slug":"vulnerable-status-2017-iucn-reclassification-masked-continuing-regional-declines","url":"/categories/endangered-predators/snow-leopard/vulnerable-status-2017-iucn-reclassification-masked-continuing-regional-declines.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered icon was officially downgraded even as local populations remained fragile."},{"title":"Wild Prey Collapse in Some Valleys Triggered Temporary Snow Leopard Local Extinctions","slug":"wild-prey-collapse-in-some-valleys-triggered-temporary-snow-leopard-local-extinctions","url":"/categories/endangered-predators/snow-leopard/wild-prey-collapse-in-some-valleys-triggered-temporary-snow-leopard-local-extinctions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When mountain herbivores vanished, an apex predator disappeared with them."},{"title":"World Bank Supported $45 Million Snow Leopard Landscape Initiatives Across Asia","slug":"world-bank-supported-45-million-snow-leopard-landscape-initiatives-across-asia","url":"/categories/endangered-predators/snow-leopard/world-bank-supported-45-million-snow-leopard-landscape-initiatives-across-asia.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Tens of millions of dollars now fund the survival of a predator most humans never encounter."},{"title":"X-ray Skull Analysis Shows Snow Leopards Have Enlarged Nasal Cavities for Thin Air","slug":"x-ray-skull-analysis-shows-snow-leopards-have-enlarged-nasal-cavities-for-thin-air","url":"/categories/endangered-predators/snow-leopard/x-ray-skull-analysis-shows-snow-leopards-have-enlarged-nasal-cavities-for-thin-air.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator breathes air that would hospitalize most humans without slowing its hunt."},{"title":"Xinjiang Altun Shan Reserve Exceeds 45,000 Square Kilometers of Snow Leopard Habitat","slug":"xinjiang-altun-shan-reserve-exceeds-45-000-square-kilometers-of-snow-leopard-habitat","url":"/categories/endangered-predators/snow-leopard/xinjiang-altun-shan-reserve-exceeds-45-000-square-kilometers-of-snow-leopard-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"China designated a reserve larger than many countries to shelter a predator counted in the thousands globally."},{"title":"Yak Grazing Expansion Reduces Wild Prey Density in Snow Leopard Territory","slug":"yak-grazing-expansion-reduces-wild-prey-density-in-snow-leopard-territory","url":"/categories/endangered-predators/snow-leopard/yak-grazing-expansion-reduces-wild-prey-density-in-snow-leopard-territory.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Domestic livestock can quietly outcompete the wild prey that keeps an apex predator alive."},{"title":"Yak Herding Conflicts Kill Dozens of Snow Leopards Annually","slug":"yak-herding-conflicts-kill-dozens-of-snow-leopards-annually","url":"/categories/endangered-predators/snow-leopard/yak-herding-conflicts-kill-dozens-of-snow-leopards-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single livestock attack can trigger the death of the only apex predator in an entire valley."},{"title":"Yushu Prefecture Conservation Zones Protect Over 100,000 Square Kilometers of Snow Leopard Range","slug":"yushu-prefecture-conservation-zones-protect-over-100-000-square-kilometers-of-snow-leopard-range","url":"/categories/endangered-predators/snow-leopard/yushu-prefecture-conservation-zones-protect-over-100-000-square-kilometers-of-snow-leopard-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An endangered predator now depends on protected land larger than many countries."},{"title":"Zanskar Valley Camera Traps Revealed Snow Leopards at 5,800 Meters","slug":"zanskar-valley-camera-traps-revealed-snow-leopards-at-5-800-meters","url":"/categories/endangered-predators/snow-leopard/zanskar-valley-camera-traps-revealed-snow-leopards-at-5-800-meters.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Few mammals hunt where oxygen drops to half sea-level concentration."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

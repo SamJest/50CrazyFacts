@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giant Squid</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Giant Squid</h1>
+  <p>Explore all facts in "Giant Squid".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Giant Squid</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Colossal Eye Measurements Show Giant Squid Have 27 Centimeter Ocular Diameter","slug":"colossal-eye-measurements-show-giant-squid-have-27-centimeter-ocular-diameter","url":"/categories/deep-sea-giants/giant-squid/colossal-eye-measurements-show-giant-squid-have-27-centimeter-ocular-diameter.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The largest eyes ever measured in the animal kingdom reach roughly 27 centimeters across, nearly the size of a dinner plate."},{"title":"Giant Squid Genome Sequencing in 2020 Revealed 2.7 Billion DNA Base Pairs","slug":"giant-squid-genome-sequencing-in-2020-revealed-2-7-billion-dna-base-pairs","url":"/categories/deep-sea-giants/giant-squid/giant-squid-genome-sequencing-in-2020-revealed-2-7-billion-dna-base-pairs.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A creature rarely seen alive carries a genome roughly the same size as a human’s, mapped only in 2020 after decades of failed attempts."},{"title":"Kagoshima University 2010 Study Observed Bioluminescent Prey Attraction in Deep-Sea Squid Relatives","slug":"kagoshima-university-2010-study-observed-bioluminescent-prey-attraction-in-deep-sea-squid-relatives","url":"/categories/deep-sea-giants/giant-squid/kagoshima-university-2010-study-observed-bioluminescent-prey-attraction-in-deep-sea-squid-relatives.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Experiments in 2010 showed that some deep-sea squid relatives use bioluminescence patterns to attract prey in darkness."},{"title":"Karyotype Research in 1990s Demonstrated Distinct Chromosome Counts in Oegopsid Squid","slug":"karyotype-research-in-1990s-demonstrated-distinct-chromosome-counts-in-oegopsid-squid","url":"/categories/deep-sea-giants/giant-squid/karyotype-research-in-1990s-demonstrated-distinct-chromosome-counts-in-oegopsid-squid.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Chromosome analysis in the 1990s revealed that large oceanic squid possess distinct karyotypes unlike coastal relatives."},{"title":"Kermadec Trench Environmental DNA Survey in 2018 Detected Architeuthis Genetic Traces","slug":"kermadec-trench-environmental-dna-survey-in-2018-detected-architeuthis-genetic-traces","url":"/categories/deep-sea-giants/giant-squid/kermadec-trench-environmental-dna-survey-in-2018-detected-architeuthis-genetic-traces.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2018, scientists identified giant squid DNA in seawater samples without ever seeing the animal itself."},{"title":"Kinetic Mantle Jet Propulsion Studies Demonstrate Giant Squid Achieve Burst Speeds Through Muscular Contraction","slug":"kinetic-mantle-jet-propulsion-studies-demonstrate-giant-squid-achieve-burst-speeds-through-muscular-contraction","url":"/categories/deep-sea-giants/giant-squid/kinetic-mantle-jet-propulsion-studies-demonstrate-giant-squid-achieve-burst-speeds-through-muscular-contraction.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fluid dynamic modeling shows that giant squid can generate sudden forward thrust by forcefully expelling water from the mantle cavity."},{"title":"Krakatoa 1883 Tsunami Debris Included Reports of Large Squid Washed Ashore in Indonesia","slug":"krakatoa-1883-tsunami-debris-included-reports-of-large-squid-washed-ashore-in-indonesia","url":"/categories/deep-sea-giants/giant-squid/krakatoa-1883-tsunami-debris-included-reports-of-large-squid-washed-ashore-in-indonesia.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"After the 1883 Krakatoa eruption and tsunami, coastal reports described unusually large squid among the debris."},{"title":"Kraken Folklore 18th Century Accounts Influenced Early Scientific Descriptions of Architeuthis","slug":"kraken-folklore-18th-century-accounts-influenced-early-scientific-descriptions-of-architeuthis","url":"/categories/deep-sea-giants/giant-squid/kraken-folklore-18th-century-accounts-influenced-early-scientific-descriptions-of-architeuthis.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Eighteenth-century kraken reports shaped how early naturalists framed the first formal descriptions of giant squid."},{"title":"Kubodera 2012 First Live Giant Squid Filming at 900 Meters Depth","slug":"kubodera-2012-first-live-giant-squid-filming-at-900-meters-depth","url":"/categories/deep-sea-giants/giant-squid/kubodera-2012-first-live-giant-squid-filming-at-900-meters-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2012, scientists filmed a live giant squid at 900 meters below the Pacific surface after centuries of relying on dead specimens."},{"title":"Kuroshio Current Modeling Suggests Larval Dispersal Routes for Giant Squid in Western Pacific","slug":"kuroshio-current-modeling-suggests-larval-dispersal-routes-for-giant-squid-in-western-pacific","url":"/categories/deep-sea-giants/giant-squid/kuroshio-current-modeling-suggests-larval-dispersal-routes-for-giant-squid-in-western-pacific.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Ocean current simulations indicate that giant squid larvae may drift thousands of kilometers along the Kuroshio Current."},{"title":"Quantified Mantle Length Records Show Female Giant Squid Reach 2 Meters Excluding Tentacles","slug":"quantified-mantle-length-records-show-female-giant-squid-reach-2-meters-excluding-tentacles","url":"/categories/deep-sea-giants/giant-squid/quantified-mantle-length-records-show-female-giant-squid-reach-2-meters-excluding-tentacles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientific mantle measurements confirm that female giant squid can reach around 2 meters in body length before tentacles are even counted."},{"title":"Quantitative Beak Analysis in 1998 Estimated Thousands of Giant Squid Consumed Annually by Sperm Whales","slug":"quantitative-beak-analysis-in-1998-estimated-thousands-of-giant-squid-consumed-annually-by-sperm-whales","url":"/categories/deep-sea-giants/giant-squid/quantitative-beak-analysis-in-1998-estimated-thousands-of-giant-squid-consumed-annually-by-sperm-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Stomach examinations in the late 20th century suggested that thousands of giant squid may be eaten each year without a single surface witness."},{"title":"Quantum Efficiency Measurements Show Giant Squid Retina Maximizes Photon Capture in Near-Darkness","slug":"quantum-efficiency-measurements-show-giant-squid-retina-maximizes-photon-capture-in-near-darkness","url":"/categories/deep-sea-giants/giant-squid/quantum-efficiency-measurements-show-giant-squid-retina-maximizes-photon-capture-in-near-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Laboratory estimates of retinal quantum efficiency suggest giant squid eyes are tuned to capture the smallest possible number of photons in deep water."},{"title":"Quasi-Neutral Buoyancy Models Show Giant Squid Maintain Energy Efficiency at 1,000 Meters","slug":"quasi-neutral-buoyancy-models-show-giant-squid-maintain-energy-efficiency-at-1-000-meters","url":"/categories/deep-sea-giants/giant-squid/quasi-neutral-buoyancy-models-show-giant-squid-maintain-energy-efficiency-at-1-000-meters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At depths near 1,000 meters, giant squid appear to float in a state close to weightlessness, conserving energy in near-total darkness."},{"title":"Queen Mary University 2021 Study Modeled Giant Squid Energy Budgets in Cold Mesopelagic Waters","slug":"queen-mary-university-2021-study-modeled-giant-squid-energy-budgets-in-cold-mesopelagic-waters","url":"/categories/deep-sea-giants/giant-squid/queen-mary-university-2021-study-modeled-giant-squid-energy-budgets-in-cold-mesopelagic-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2021 metabolic model suggested that giant squid survive in near-freezing depths by tightly balancing energy intake and expenditure."},{"title":"Royal Society 2016 Review Confirmed Giant Squid Diverged from Other Oegopsids Millions of Years Ago","slug":"royal-society-2016-review-confirmed-giant-squid-diverged-from-other-oegopsids-millions-of-years-ago","url":"/categories/deep-sea-giants/giant-squid/royal-society-2016-review-confirmed-giant-squid-diverged-from-other-oegopsids-millions-of-years-ago.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Genetic analysis indicates giant squid split from closely related squid lineages millions of years before humans evolved."},{"title":"Ultraviolet Reflectance Studies Suggest Giant Squid Skin Alters Light Signature Under Submersible Illumination","slug":"ultraviolet-reflectance-studies-suggest-giant-squid-skin-alters-light-signature-under-submersible-illumination","url":"/categories/deep-sea-giants/giant-squid/ultraviolet-reflectance-studies-suggest-giant-squid-skin-alters-light-signature-under-submersible-illumination.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Artificial light at depth can transform a giant squid’s appearance, altering how its skin reflects specific wavelengths."},{"title":"Undersea Cable Surveys in 2003 Recorded Large Squid Interactions with Deep-Ocean Infrastructure","slug":"undersea-cable-surveys-in-2003-recorded-large-squid-interactions-with-deep-ocean-infrastructure","url":"/categories/deep-sea-giants/giant-squid/undersea-cable-surveys-in-2003-recorded-large-squid-interactions-with-deep-ocean-infrastructure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2003, maintenance inspections of transoceanic cables documented large squid contacting deep-sea infrastructure thousands of meters below the surface."},{"title":"Underwater Pressure at 1,000 Meters Exposes Giant Squid to Over 100 Atmospheres of Force","slug":"underwater-pressure-at-1-000-meters-exposes-giant-squid-to-over-100-atmospheres-of-force","url":"/categories/deep-sea-giants/giant-squid/underwater-pressure-at-1-000-meters-exposes-giant-squid-to-over-100-atmospheres-of-force.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At 1,000 meters below the surface, a giant squid lives under pressure exceeding 100 times that at sea level."},{"title":"Underwater ROV Footage in 2019 Captured Juvenile Giant Squid at 600 Meters Depth","slug":"underwater-rov-footage-in-2019-captured-juvenile-giant-squid-at-600-meters-depth","url":"/categories/deep-sea-giants/giant-squid/underwater-rov-footage-in-2019-captured-juvenile-giant-squid-at-600-meters-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2019, a remotely operated vehicle recorded a translucent juvenile giant squid drifting at roughly 600 meters, offering a rare glimpse of its early life stage."},{"title":"United Nations FAO 2014 Cephalopod Report Classified Giant Squid Outside Commercial Fishery Targets","slug":"united-nations-fao-2014-cephalopod-report-classified-giant-squid-outside-commercial-fishery-targets","url":"/categories/deep-sea-giants/giant-squid/united-nations-fao-2014-cephalopod-report-classified-giant-squid-outside-commercial-fishery-targets.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Despite their size, giant squid are not considered viable commercial fishery targets according to 2014 FAO assessments."},{"title":"United States Navy Sonar Studies in Early 2000s Improved Detection of Large Midwater Biomass","slug":"united-states-navy-sonar-studies-in-early-2000s-improved-detection-of-large-midwater-biomass","url":"/categories/deep-sea-giants/giant-squid/united-states-navy-sonar-studies-in-early-2000s-improved-detection-of-large-midwater-biomass.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Military sonar calibration studies indirectly improved scientific estimates of large midwater organisms such as giant squid."},{"title":"University of Aberdeen 2011 Study Analyzed Giant Squid Beak Growth Lines to Estimate Age","slug":"university-of-aberdeen-2011-study-analyzed-giant-squid-beak-growth-lines-to-estimate-age","url":"/categories/deep-sea-giants/giant-squid/university-of-aberdeen-2011-study-analyzed-giant-squid-beak-growth-lines-to-estimate-age.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Microscopic growth increments in giant squid beaks suggest these massive animals may live only a few years."},{"title":"University of Cambridge 2018 Review Linked Giant Squid Visual Pigments to Low-Light Sensitivity Optimization","slug":"university-of-cambridge-2018-review-linked-giant-squid-visual-pigments-to-low-light-sensitivity-optimization","url":"/categories/deep-sea-giants/giant-squid/university-of-cambridge-2018-review-linked-giant-squid-visual-pigments-to-low-light-sensitivity-optimization.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Visual pigment analysis indicates giant squid photoreceptors are tuned for extreme low-light detection rather than color discrimination."},{"title":"University of Copenhagen 2013 Study Linked Giant Squid to Global Whale Diet Analysis","slug":"university-of-copenhagen-2013-study-linked-giant-squid-to-global-whale-diet-analysis","url":"/categories/deep-sea-giants/giant-squid/university-of-copenhagen-2013-study-linked-giant-squid-to-global-whale-diet-analysis.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Chemical traces inside sperm whales revealed that giant squid are not rare accidents but regular menu items."},{"title":"University of Hawaii 2020 Study Examined Oxygen Minimum Zones Affecting Giant Squid Vertical Range","slug":"university-of-hawaii-2020-study-examined-oxygen-minimum-zones-affecting-giant-squid-vertical-range","url":"/categories/deep-sea-giants/giant-squid/university-of-hawaii-2020-study-examined-oxygen-minimum-zones-affecting-giant-squid-vertical-range.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2020 oceanographic study linked expanding oxygen minimum zones to potential shifts in deep-sea predator depth ranges."},{"title":"University of Southampton 2017 Study Linked Ocean Acidification to Cephalopod Egg Development Risks","slug":"university-of-southampton-2017-study-linked-ocean-acidification-to-cephalopod-egg-development-risks","url":"/categories/deep-sea-giants/giant-squid/university-of-southampton-2017-study-linked-ocean-acidification-to-cephalopod-egg-development-risks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2017 laboratory study suggested that rising ocean acidity could interfere with normal squid egg development."},{"title":"University of Tokyo 2013 Analysis Confirmed Giant Squid Possess the Largest Brain Among Invertebrates by Absolute Mass","slug":"university-of-tokyo-2013-analysis-confirmed-giant-squid-possess-the-largest-brain-among-invertebrates-by-absolute-mass","url":"/categories/deep-sea-giants/giant-squid/university-of-tokyo-2013-analysis-confirmed-giant-squid-possess-the-largest-brain-among-invertebrates-by-absolute-mass.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Dissections revealed that giant squid possess one of the largest absolute brain masses among all invertebrates."},{"title":"Uppsala University 2016 Phylogenomic Study Positioned Giant Squid Within Oegopsida Radiation","slug":"uppsala-university-2016-phylogenomic-study-positioned-giant-squid-within-oegopsida-radiation","url":"/categories/deep-sea-giants/giant-squid/uppsala-university-2016-phylogenomic-study-positioned-giant-squid-within-oegopsida-radiation.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2016 phylogenomic analysis clarified the evolutionary branch placing giant squid among open-ocean Oegopsida lineages."},{"title":"Uptake of Ammonium Ions in Giant Squid Tissue Reduces Density Compared to Seawater","slug":"uptake-of-ammonium-ions-in-giant-squid-tissue-reduces-density-compared-to-seawater","url":"/categories/deep-sea-giants/giant-squid/uptake-of-ammonium-ions-in-giant-squid-tissue-reduces-density-compared-to-seawater.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Chemical assays show that ammonium accumulation in giant squid muscle reduces body density below that of surrounding seawater."},{"title":"X-Linked Gene Absence in Architeuthis Genome Confirms Non-Mammalian Sex Determination Pathway","slug":"x-linked-gene-absence-in-architeuthis-genome-confirms-non-mammalian-sex-determination-pathway","url":"/categories/deep-sea-giants/giant-squid/x-linked-gene-absence-in-architeuthis-genome-confirms-non-mammalian-sex-determination-pathway.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Genomic analysis revealed no mammalian-style X chromosome structure in giant squid despite a multi-billion base pair genome."},{"title":"X-Ray Imaging of 2005 Stranded Specimen Revealed Intact Giant Squid Nervous System Structure","slug":"x-ray-imaging-of-2005-stranded-specimen-revealed-intact-giant-squid-nervous-system-structure","url":"/categories/deep-sea-giants/giant-squid/x-ray-imaging-of-2005-stranded-specimen-revealed-intact-giant-squid-nervous-system-structure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2005 stranded giant squid underwent X-ray imaging that exposed delicate internal anatomy without dissection."},{"title":"Xenon Gas Calibration Experiments Improved Deep-Sea Camera Sensitivity for Giant Squid Filming","slug":"xenon-gas-calibration-experiments-improved-deep-sea-camera-sensitivity-for-giant-squid-filming","url":"/categories/deep-sea-giants/giant-squid/xenon-gas-calibration-experiments-improved-deep-sea-camera-sensitivity-for-giant-squid-filming.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Calibration experiments using xenon lighting helped refine low-light cameras capable of recording giant squid in 2012."},{"title":"Xenophyophore-Rich Seafloor Surveys Identified Giant Squid Habitat Zones in 2015","slug":"xenophyophore-rich-seafloor-surveys-identified-giant-squid-habitat-zones-in-2015","url":"/categories/deep-sea-giants/giant-squid/xenophyophore-rich-seafloor-surveys-identified-giant-squid-habitat-zones-in-2015.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Mapping single-celled organisms on the ocean floor helped scientists predict where one of the largest invertebrates on Earth might roam."},{"title":"Xiphactinus Era Fossil Comparisons Highlight Absence of Giant Squid Hard Parts in Mesozoic Record","slug":"xiphactinus-era-fossil-comparisons-highlight-absence-of-giant-squid-hard-parts-in-mesozoic-record","url":"/categories/deep-sea-giants/giant-squid/xiphactinus-era-fossil-comparisons-highlight-absence-of-giant-squid-hard-parts-in-mesozoic-record.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Unlike armored Cretaceous fish such as Xiphactinus, giant squid leave almost no fossil trace in the geological record."},{"title":"Y Chromosome Absence in Cephalopods Means Giant Squid Sex Determination Differs from Humans","slug":"y-chromosome-absence-in-cephalopods-means-giant-squid-sex-determination-differs-from-humans","url":"/categories/deep-sea-giants/giant-squid/y-chromosome-absence-in-cephalopods-means-giant-squid-sex-determination-differs-from-humans.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Giant squid do not rely on X and Y chromosomes for sex determination, despite having complex genomes comparable in size to humans."},{"title":"Y-Chromosome-Free Development in Cephalopods Illustrates Independent Evolution of Sex Systems","slug":"y-chromosome-free-development-in-cephalopods-illustrates-independent-evolution-of-sex-systems","url":"/categories/deep-sea-giants/giant-squid/y-chromosome-free-development-in-cephalopods-illustrates-independent-evolution-of-sex-systems.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cephalopods, including giant squid, evolved reproductive systems entirely independent of the familiar mammalian Y chromosome model."},{"title":"Yale 2004 Comparative Study Showed Giant Squid Axon Diameter Supports Rapid Neural Transmission","slug":"yale-2004-comparative-study-showed-giant-squid-axon-diameter-supports-rapid-neural-transmission","url":"/categories/deep-sea-giants/giant-squid/yale-2004-comparative-study-showed-giant-squid-axon-diameter-supports-rapid-neural-transmission.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Comparative neurobiology in 2004 highlighted that large squid axons enable exceptionally fast nerve impulse conduction."},{"title":"Yale Peabody Museum 1960s Specimen Analysis Corrected Giant Squid Length Overestimation Claims","slug":"yale-peabody-museum-1960s-specimen-analysis-corrected-giant-squid-length-overestimation-claims","url":"/categories/deep-sea-giants/giant-squid/yale-peabody-museum-1960s-specimen-analysis-corrected-giant-squid-length-overestimation-claims.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Museum reanalysis in the 1960s reduced some reported giant squid lengths by several meters after careful remeasurement."},{"title":"Yale University 2022 Review Compared Giant Squid Collagen Structure to Other Large Invertebrates","slug":"yale-university-2022-review-compared-giant-squid-collagen-structure-to-other-large-invertebrates","url":"/categories/deep-sea-giants/giant-squid/yale-university-2022-review-compared-giant-squid-collagen-structure-to-other-large-invertebrates.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2022 structural biology review highlighted unique collagen arrangements supporting the massive yet flexible bodies of giant squid."},{"title":"Yamamoto 2007 Sucker Ring Analysis Identified Chitinous Tooth Structures in Giant Squid","slug":"yamamoto-2007-sucker-ring-analysis-identified-chitinous-tooth-structures-in-giant-squid","url":"/categories/deep-sea-giants/giant-squid/yamamoto-2007-sucker-ring-analysis-identified-chitinous-tooth-structures-in-giant-squid.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Microscopic examination in 2007 revealed that giant squid suction cups contain hardened tooth-like rings rather than simple smooth rims."},{"title":"Yokohama National University 2006 Research Measured Giant Squid Growth Rates from Statoliths","slug":"yokohama-national-university-2006-research-measured-giant-squid-growth-rates-from-statoliths","url":"/categories/deep-sea-giants/giant-squid/yokohama-national-university-2006-research-measured-giant-squid-growth-rates-from-statoliths.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Microscopic growth rings inside a squid’s inner ear revealed that giants may grow astonishingly fast within just a few years."},{"title":"Yokosuka 2014 Submersible Analysis Recorded Giant Squid Arm Strike Velocity in Controlled Observation","slug":"yokosuka-2014-submersible-analysis-recorded-giant-squid-arm-strike-velocity-in-controlled-observation","url":"/categories/deep-sea-giants/giant-squid/yokosuka-2014-submersible-analysis-recorded-giant-squid-arm-strike-velocity-in-controlled-observation.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A deep-sea submersible recorded a giant squid extending its feeding tentacles in a fraction of a second at nearly 900 meters depth."},{"title":"Zebra Mussel Comparisons Highlight Why Giant Squid Avoid Freshwater Ecosystems Entirely","slug":"zebra-mussel-comparisons-highlight-why-giant-squid-avoid-freshwater-ecosystems-entirely","url":"/categories/deep-sea-giants/giant-squid/zebra-mussel-comparisons-highlight-why-giant-squid-avoid-freshwater-ecosystems-entirely.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Unlike invasive zebra mussels that thrive in freshwater, giant squid are physiologically restricted to stable marine salinity."},{"title":"Zonation Studies in 2001 Placed Giant Squid Within Mesopelagic to Bathypelagic Depth Bands","slug":"zonation-studies-in-2001-placed-giant-squid-within-mesopelagic-to-bathypelagic-depth-bands","url":"/categories/deep-sea-giants/giant-squid/zonation-studies-in-2001-placed-giant-squid-within-mesopelagic-to-bathypelagic-depth-bands.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Oceanographic surveys in 2001 positioned giant squid primarily between 300 and 1,000 meters, a twilight zone beyond sunlight."},{"title":"Zoologica Scripta 2015 Paper Resolved Architeuthis Species Debate Using DNA Barcoding","slug":"zoologica-scripta-2015-paper-resolved-architeuthis-species-debate-using-dna-barcoding","url":"/categories/deep-sea-giants/giant-squid/zoologica-scripta-2015-paper-resolved-architeuthis-species-debate-using-dna-barcoding.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2015 genetic study suggested that what were once thought to be multiple giant squid species may belong to a single global species."},{"title":"Zoological Museum Copenhagen Archived 19th Century Giant Squid Beaks for Modern Isotope Testing","slug":"zoological-museum-copenhagen-archived-19th-century-giant-squid-beaks-for-modern-isotope-testing","url":"/categories/deep-sea-giants/giant-squid/zoological-museum-copenhagen-archived-19th-century-giant-squid-beaks-for-modern-isotope-testing.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Beaks collected in the 1800s are now being tested for stable isotopes to reconstruct historic giant squid diets."},{"title":"Zoological Records from 1873 HMS Challenger Expedition Documented Early Giant Squid Evidence","slug":"zoological-records-from-1873-hms-challenger-expedition-documented-early-giant-squid-evidence","url":"/categories/deep-sea-giants/giant-squid/zoological-records-from-1873-hms-challenger-expedition-documented-early-giant-squid-evidence.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1873, a British naval research voyage began turning sea monster rumors into catalogued biological entries."},{"title":"Zoological Records in 1954 Documented One of the Largest Verified Giant Squid Specimens at 18 Meters Total Length","slug":"zoological-records-in-1954-documented-one-of-the-largest-verified-giant-squid-specimens-at-18-meters-total-length","url":"/categories/deep-sea-giants/giant-squid/zoological-records-in-1954-documented-one-of-the-largest-verified-giant-squid-specimens-at-18-meters-total-length.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1954, a verified specimen measured approximately 18 meters in total length, though mantle length remained far shorter."},{"title":"Zoological Society of London 2019 Review Noted Climate Change Could Shift Giant Squid Distribution","slug":"zoological-society-of-london-2019-review-noted-climate-change-could-shift-giant-squid-distribution","url":"/categories/deep-sea-giants/giant-squid/zoological-society-of-london-2019-review-noted-climate-change-could-shift-giant-squid-distribution.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2019 review warned that warming oceans may alter the depth range of deep-sea giants including giant squid."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

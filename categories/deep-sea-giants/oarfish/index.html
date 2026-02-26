@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oarfish</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Oarfish</h1>
+  <p>Explore all facts in "Oarfish".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Oarfish</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Antarctic Oarfish Can Grow Longer Than a London Bus","slug":"antarctic-oarfish-can-grow-longer-than-a-london-bus","url":"/categories/deep-sea-giants/oarfish/antarctic-oarfish-can-grow-longer-than-a-london-bus.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single fish can stretch longer than a city bus."},{"title":"Average Lifespan Remains Largely Unknown Despite Massive Size","slug":"average-lifespan-remains-largely-unknown-despite-massive-size","url":"/categories/deep-sea-giants/oarfish/average-lifespan-remains-largely-unknown-despite-massive-size.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientists still cannot confirm how long this giant lives."},{"title":"Bioluminescent Parasites Can Attach to Oarfish in the Deep","slug":"bioluminescent-parasites-can-attach-to-oarfish-in-the-deep","url":"/categories/deep-sea-giants/oarfish/bioluminescent-parasites-can-attach-to-oarfish-in-the-deep.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Glowing parasites can cling to a bus-length fish in darkness."},{"title":"Bursts of Surface Appearances Often Coincide With Ocean Anomalies","slug":"bursts-of-surface-appearances-often-coincide-with-ocean-anomalies","url":"/categories/deep-sea-giants/oarfish/bursts-of-surface-appearances-often-coincide-with-ocean-anomalies.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Multiple sea giants sometimes surface within weeks."},{"title":"California Strandings Reveal Oarfish Longer Than Small Boats","slug":"california-strandings-reveal-oarfish-longer-than-small-boats","url":"/categories/deep-sea-giants/oarfish/california-strandings-reveal-oarfish-longer-than-small-boats.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A silver ribbon longer than a boat has washed ashore."},{"title":"Deep-Sea Pressure at Oarfish Depths Exceeds 100 Atmospheres","slug":"deep-sea-pressure-at-oarfish-depths-exceeds-100-atmospheres","url":"/categories/deep-sea-giants/oarfish/deep-sea-pressure-at-oarfish-depths-exceeds-100-atmospheres.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This fragile-looking fish survives pressure that crushes submarines."},{"title":"Enormous Oarfish Can Weigh More Than 250 Kilograms","slug":"enormous-oarfish-can-weigh-more-than-250-kilograms","url":"/categories/deep-sea-giants/oarfish/enormous-oarfish-can-weigh-more-than-250-kilograms.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A ribbon-thin fish can weigh as much as three adults."},{"title":"Flashing Silver Skin Reflects Even the Faintest Deep-Sea Light","slug":"flashing-silver-skin-reflects-even-the-faintest-deep-sea-light","url":"/categories/deep-sea-giants/oarfish/flashing-silver-skin-reflects-even-the-faintest-deep-sea-light.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length fish can flash like a moving mirror."},{"title":"Giant Oarfish Have Been Filmed Alive by Deep Submersibles","slug":"giant-oarfish-have-been-filmed-alive-by-deep-submersibles","url":"/categories/deep-sea-giants/oarfish/giant-oarfish-have-been-filmed-alive-by-deep-submersibles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cameras finally caught a sea serpent alive in darkness."},{"title":"Gigantic Oarfish Can Survive Entirely in Midwater Columns","slug":"gigantic-oarfish-can-survive-entirely-in-midwater-columns","url":"/categories/deep-sea-giants/oarfish/gigantic-oarfish-can-survive-entirely-in-midwater-columns.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length fish never touches the seafloor."},{"title":"High Vertical Migrations May Span Hundreds of Meters Daily","slug":"high-vertical-migrations-may-span-hundreds-of-meters-daily","url":"/categories/deep-sea-giants/oarfish/high-vertical-migrations-may-span-hundreds-of-meters-daily.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant fish may travel skyscraper heights every day."},{"title":"Huge Oarfish Can Flex and Twist Like Living Ribbon Sculptures","slug":"huge-oarfish-can-flex-and-twist-like-living-ribbon-sculptures","url":"/categories/deep-sea-giants/oarfish/huge-oarfish-can-flex-and-twist-like-living-ribbon-sculptures.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A living, ten-meter ribbon curls and twists effortlessly."},{"title":"Immense Length Forms a Continuous Dorsal Fin From Head to Tail","slug":"immense-length-forms-a-continuous-dorsal-fin-from-head-to-tail","url":"/categories/deep-sea-giants/oarfish/immense-length-forms-a-continuous-dorsal-fin-from-head-to-tail.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One fin runs almost the entire length of this giant."},{"title":"Incredible Flexibility Allows Tight Curves Along a 10-Meter Body","slug":"incredible-flexibility-allows-tight-curves-along-a-10-meter-body","url":"/categories/deep-sea-giants/oarfish/incredible-flexibility-allows-tight-curves-along-a-10-meter-body.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 10-meter spine can curve like a whip."},{"title":"Juvenile Oarfish Look Completely Different From Adults","slug":"juvenile-oarfish-look-completely-different-from-adults","url":"/categories/deep-sea-giants/oarfish/juvenile-oarfish-look-completely-different-from-adults.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Baby sea serpents look nothing like their giant form."},{"title":"Juveniles Start Life as Tiny, Nearly Invisible Surface Drifters","slug":"juveniles-start-life-as-tiny-nearly-invisible-surface-drifters","url":"/categories/deep-sea-giants/oarfish/juveniles-start-life-as-tiny-nearly-invisible-surface-drifters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Even the largest giants begin smaller than a thumb."},{"title":"Krill Swarms Sustain One of the Ocean’s Longest Fish","slug":"krill-swarms-sustain-one-of-the-ocean-s-longest-fish","url":"/categories/deep-sea-giants/oarfish/krill-swarms-sustain-one-of-the-ocean-s-longest-fish.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Tiny crustaceans power a bus-length vertebrate."},{"title":"Long Red Dorsal Crests Give Oarfish a Crowned Appearance","slug":"long-red-dorsal-crests-give-oarfish-a-crowned-appearance","url":"/categories/deep-sea-giants/oarfish/long-red-dorsal-crests-give-oarfish-a-crowned-appearance.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This sea giant wears a crimson crown in darkness."},{"title":"Luminous Bioluminescent Hitchhikers Occasionally Illuminate Oarfish","slug":"luminous-bioluminescent-hitchhikers-occasionally-illuminate-oarfish","url":"/categories/deep-sea-giants/oarfish/luminous-bioluminescent-hitchhikers-occasionally-illuminate-oarfish.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Tiny glowing organisms ride this giant through darkness."},{"title":"Massive Oarfish Bodies Eventually Sink as Deep-Sea Carbon Pulses","slug":"massive-oarfish-bodies-eventually-sink-as-deep-sea-carbon-pulses","url":"/categories/deep-sea-giants/oarfish/massive-oarfish-bodies-eventually-sink-as-deep-sea-carbon-pulses.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When a sea serpent dies, it becomes falling rain."},{"title":"Massive Oarfish Serve as Nutrient Vectors After Death","slug":"massive-oarfish-serve-as-nutrient-vectors-after-death","url":"/categories/deep-sea-giants/oarfish/massive-oarfish-serve-as-nutrient-vectors-after-death.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When this giant dies, it fuels entire deep-sea communities."},{"title":"Nighttime Currents Can Carry Oarfish Across Entire Ocean Basins","slug":"nighttime-currents-can-carry-oarfish-across-entire-ocean-basins","url":"/categories/deep-sea-giants/oarfish/nighttime-currents-can-carry-oarfish-across-entire-ocean-basins.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length fish can drift across an ocean unseen."},{"title":"Oarfish Are the Longest Bony Fish on Earth","slug":"oarfish-are-the-longest-bony-fish-on-earth","url":"/categories/deep-sea-giants/oarfish/oarfish-are-the-longest-bony-fish-on-earth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The longest true fish on Earth looks unreal."},{"title":"Oarfish Eggs Float Near the Surface Before Sinking","slug":"oarfish-eggs-float-near-the-surface-before-sinking","url":"/categories/deep-sea-giants/oarfish/oarfish-eggs-float-near-the-surface-before-sinking.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A deep-sea giant begins life drifting near sunlight."},{"title":"Oarfish Feed on Tiny Plankton Despite Their Massive Length","slug":"oarfish-feed-on-tiny-plankton-despite-their-massive-length","url":"/categories/deep-sea-giants/oarfish/oarfish-feed-on-tiny-plankton-despite-their-massive-length.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A fish longer than a bus survives on microscopic prey."},{"title":"Oarfish Have Hundreds of Vertebrae Creating Extreme Flexibility","slug":"oarfish-have-hundreds-of-vertebrae-creating-extreme-flexibility","url":"/categories/deep-sea-giants/oarfish/oarfish-have-hundreds-of-vertebrae-creating-extreme-flexibility.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant fish bends like a ribbon despite bus-length size."},{"title":"Oarfish Live Deeper Than 1,000 Meters in Near-Total Darkness","slug":"oarfish-live-deeper-than-1-000-meters-in-near-total-darkness","url":"/categories/deep-sea-giants/oarfish/oarfish-live-deeper-than-1-000-meters-in-near-total-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A fish longer than a bus survives where sunlight dies."},{"title":"Oarfish Rarely Appear at the Surface While Alive","slug":"oarfish-rarely-appear-at-the-surface-while-alive","url":"/categories/deep-sea-giants/oarfish/oarfish-rarely-appear-at-the-surface-while-alive.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"You almost never see this giant fish alive."},{"title":"Oarfish Sightings Have Sparked Centuries of Sea Serpent Legends","slug":"oarfish-sightings-have-sparked-centuries-of-sea-serpent-legends","url":"/categories/deep-sea-giants/oarfish/oarfish-sightings-have-sparked-centuries-of-sea-serpent-legends.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sailors once swore sea serpents rose from the waves."},{"title":"Oarfish Skeletons Are So Soft They Rarely Survive Intact","slug":"oarfish-skeletons-are-so-soft-they-rarely-survive-intact","url":"/categories/deep-sea-giants/oarfish/oarfish-skeletons-are-so-soft-they-rarely-survive-intact.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length fish can collapse like wet ribbon on land."},{"title":"Oarfish Swim Vertically Like Floating Sea Serpents","slug":"oarfish-swim-vertically-like-floating-sea-serpents","url":"/categories/deep-sea-giants/oarfish/oarfish-swim-vertically-like-floating-sea-serpents.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length fish can hover upright like a drifting ribbon."},{"title":"Pacific Oarfish Have Appeared Before Major Seismic Events","slug":"pacific-oarfish-have-appeared-before-major-seismic-events","url":"/categories/deep-sea-giants/oarfish/pacific-oarfish-have-appeared-before-major-seismic-events.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sea serpents have surfaced days before earthquakes."},{"title":"Predation on Oarfish Remains Poorly Documented Due to Depth","slug":"predation-on-oarfish-remains-poorly-documented-due-to-depth","url":"/categories/deep-sea-giants/oarfish/predation-on-oarfish-remains-poorly-documented-due-to-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Few predators ever see this giant alive."},{"title":"Quasi-Serpentine Motion Creates Illusion of Multiple Creatures","slug":"quasi-serpentine-motion-creates-illusion-of-multiple-creatures","url":"/categories/deep-sea-giants/oarfish/quasi-serpentine-motion-creates-illusion-of-multiple-creatures.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single fish appears as several undulating ribbons."},{"title":"Queenly Name Regalecus Means “Little King of the Herrings”","slug":"queenly-name-regalecus-means-little-king-of-the-herrings","url":"/categories/deep-sea-giants/oarfish/queenly-name-regalecus-means-little-king-of-the-herrings.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This abyssal giant carries a royal title in its name."},{"title":"Rapid Decompression Can Kill Oarfish Near the Surface","slug":"rapid-decompression-can-kill-oarfish-near-the-surface","url":"/categories/deep-sea-giants/oarfish/rapid-decompression-can-kill-oarfish-near-the-surface.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Rising too fast can fatally rupture a sea giant."},{"title":"Ribbon-Like Body Minimizes Energy Use Over Great Distances","slug":"ribbon-like-body-minimizes-energy-use-over-great-distances","url":"/categories/deep-sea-giants/oarfish/ribbon-like-body-minimizes-energy-use-over-great-distances.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Extreme length does not demand high power expenditure."},{"title":"Tapered Tail Lacks the Powerful Fork Seen in Fast Predators","slug":"tapered-tail-lacks-the-powerful-fork-seen-in-fast-predators","url":"/categories/deep-sea-giants/oarfish/tapered-tail-lacks-the-powerful-fork-seen-in-fast-predators.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant has no massive tail to drive it."},{"title":"Thin Body Profile Means Most of Its Mass Is Water","slug":"thin-body-profile-means-most-of-its-mass-is-water","url":"/categories/deep-sea-giants/oarfish/thin-body-profile-means-most-of-its-mass-is-water.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant is mostly water despite its size."},{"title":"Transparent Larvae Drift Near Sunlight Before Descending Miles","slug":"transparent-larvae-drift-near-sunlight-before-descending-miles","url":"/categories/deep-sea-giants/oarfish/transparent-larvae-drift-near-sunlight-before-descending-miles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A future sea giant begins as a nearly invisible speck."},{"title":"Ultralong Bodies Allow Oarfish to Detect Vibrations Along Their Entire Length","slug":"ultralong-bodies-allow-oarfish-to-detect-vibrations-along-their-entire-length","url":"/categories/deep-sea-giants/oarfish/ultralong-bodies-allow-oarfish-to-detect-vibrations-along-their-entire-length.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A ribbon giant senses movement across meters of body."},{"title":"Vertical Posture Reduces Visibility to Predators Below","slug":"vertical-posture-reduces-visibility-to-predators-below","url":"/categories/deep-sea-giants/oarfish/vertical-posture-reduces-visibility-to-predators-below.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Upright orientation hides the giant from view."},{"title":"Vertical Ribbon Shape Minimizes Silhouette Against Dim Light","slug":"vertical-ribbon-shape-minimizes-silhouette-against-dim-light","url":"/categories/deep-sea-giants/oarfish/vertical-ribbon-shape-minimizes-silhouette-against-dim-light.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length body can nearly vanish when seen edge-on."},{"title":"Worldwide Distribution Spans Tropical to Temperate Oceans","slug":"worldwide-distribution-spans-tropical-to-temperate-oceans","url":"/categories/deep-sea-giants/oarfish/worldwide-distribution-spans-tropical-to-temperate-oceans.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant fish appears in oceans across the planet."},{"title":"Xiphoid-Like Body Plan Evolved Independently From Eels","slug":"xiphoid-like-body-plan-evolved-independently-from-eels","url":"/categories/deep-sea-giants/oarfish/xiphoid-like-body-plan-evolved-independently-from-eels.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"It looks like an eel but is not one."},{"title":"Yard-Long Segments of Its Body Can Move Independently in Waves","slug":"yard-long-segments-of-its-body-can-move-independently-in-waves","url":"/categories/deep-sea-giants/oarfish/yard-long-segments-of-its-body-can-move-independently-in-waves.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sections of this giant ripple like separate creatures."},{"title":"Zero Solid Structures Support Most of the Midwater Column","slug":"zero-solid-structures-support-most-of-the-midwater-column","url":"/categories/deep-sea-giants/oarfish/zero-solid-structures-support-most-of-the-midwater-column.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant lives in a habitat with no walls."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sumerians</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sumerians</h1>
+  <p>Explore all facts in "Sumerians".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sumerians</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Kesh Temple Economic Archives Tracked Livestock Herds in 3rd Millennium BCE","slug":"kesh-temple-economic-archives-tracked-livestock-herds-in-3rd-millennium-bce","url":"/categories/ancient-civilizations-secrets/sumerians/kesh-temple-economic-archives-tracked-livestock-herds-in-3rd-millennium-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from Kesh record exact sheep and goat counts managed by temple administrators more than 4,000 years ago."},{"title":"Kesh Temple Hymn Circa 2600 BCE Is One of the Oldest Surviving Literary Texts","slug":"kesh-temple-hymn-circa-2600-bce-is-one-of-the-oldest-surviving-literary-texts","url":"/categories/ancient-civilizations-secrets/sumerians/kesh-temple-hymn-circa-2600-bce-is-one-of-the-oldest-surviving-literary-texts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 4,500 years ago, Sumerian priests composed a structured hymn praising a temple with poetic repetition and theological precision."},{"title":"Kish King List Claims 241,200-Year Reign Before the Flood","slug":"kish-king-list-claims-241-200-year-reign-before-the-flood","url":"/categories/ancient-civilizations-secrets/sumerians/kish-king-list-claims-241-200-year-reign-before-the-flood.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One Sumerian king was recorded as ruling for 241,200 years before a catastrophic flood reset history."},{"title":"Kish Standard Weights Circa 2600 BCE Enforced Commercial Accuracy","slug":"kish-standard-weights-circa-2600-bce-enforced-commercial-accuracy","url":"/categories/ancient-civilizations-secrets/sumerians/kish-standard-weights-circa-2600-bce-enforced-commercial-accuracy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 4,500 years ago, merchants in Kish used calibrated stone weights to prevent trade disputes."},{"title":"Kudurru Boundary Stones Formalized Land Ownership in 2000 BCE Mesopotamia","slug":"kudurru-boundary-stones-formalized-land-ownership-in-2000-bce-mesopotamia","url":"/categories/ancient-civilizations-secrets/sumerians/kudurru-boundary-stones-formalized-land-ownership-in-2000-bce-mesopotamia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2000 BCE, Sumerian rulers carved property agreements into stone to prevent future disputes."},{"title":"Kudurru Curse Formulas Threatened Divine Retribution for Land Tampering","slug":"kudurru-curse-formulas-threatened-divine-retribution-for-land-tampering","url":"/categories/ancient-civilizations-secrets/sumerians/kudurru-curse-formulas-threatened-divine-retribution-for-land-tampering.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Mesopotamian boundary stones did not just mark property lines; they threatened violators with curses from multiple gods."},{"title":"Lagash Border War Circa 2450 BCE Produced the First Recorded Peace Treaty","slug":"lagash-border-war-circa-2450-bce-produced-the-first-recorded-peace-treaty","url":"/categories/ancient-civilizations-secrets/sumerians/lagash-border-war-circa-2450-bce-produced-the-first-recorded-peace-treaty.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 4,500-year-old border dispute between two Sumerian cities ended with what may be history's first documented peace treaty."},{"title":"Qing Copper Imports into Mesopotamia Reveal 3rd Millennium BCE Metallurgical Trade","slug":"qing-copper-imports-into-mesopotamia-reveal-3rd-millennium-bce-metallurgical-trade","url":"/categories/ancient-civilizations-secrets/sumerians/qing-copper-imports-into-mesopotamia-reveal-3rd-millennium-bce-metallurgical-trade.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chemical analysis of ancient Mesopotamian copper shows ore sources located hundreds of miles from Sumerian cities."},{"title":"Queen Enheduanna Circa 2300 BCE Became the World’s First Named Author","slug":"queen-enheduanna-circa-2300-bce-became-the-world-s-first-named-author","url":"/categories/ancient-civilizations-secrets/sumerians/queen-enheduanna-circa-2300-bce-became-the-world-s-first-named-author.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2300 BCE, a Sumerian high priestess signed her own literary works, becoming the earliest known author in recorded history."},{"title":"Queen Enheduanna Hymns Unified Religious Policy Across the Akkadian Empire","slug":"queen-enheduanna-hymns-unified-religious-policy-across-the-akkadian-empire","url":"/categories/ancient-civilizations-secrets/sumerians/queen-enheduanna-hymns-unified-religious-policy-across-the-akkadian-empire.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single high priestess used poetry to align temple worship across multiple Mesopotamian cities."},{"title":"Queen Kubaba of Kish Broke Dynastic Norms Around 2500 BCE","slug":"queen-kubaba-of-kish-broke-dynastic-norms-around-2500-bce","url":"/categories/ancient-civilizations-secrets/sumerians/queen-kubaba-of-kish-broke-dynastic-norms-around-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One entry in the Sumerian King List records a woman, Kubaba of Kish, ruling as monarch in a male-dominated era."},{"title":"Queen Kubaba’s Dynasty Claims Extended Influence Beyond Kish","slug":"queen-kubaba-s-dynasty-claims-extended-influence-beyond-kish","url":"/categories/ancient-civilizations-secrets/sumerians/queen-kubaba-s-dynasty-claims-extended-influence-beyond-kish.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Sumerian King List credits Queen Kubaba not only with ruling Kish but with founding a lasting royal lineage."},{"title":"Queen Puabi Tomb Excavation Revealed 4,500-Year-Old Royal Burial Wealth","slug":"queen-puabi-tomb-excavation-revealed-4-500-year-old-royal-burial-wealth","url":"/categories/ancient-civilizations-secrets/sumerians/queen-puabi-tomb-excavation-revealed-4-500-year-old-royal-burial-wealth.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1928, archaeologists uncovered a Sumerian queen buried with gold headdresses, lyres, and the remains of more than 50 attendants."},{"title":"Queen Puabi’s Gold Headdress Contained Lapis Lazuli from Afghanistan","slug":"queen-puabi-s-gold-headdress-contained-lapis-lazuli-from-afghanistan","url":"/categories/ancient-civilizations-secrets/sumerians/queen-puabi-s-gold-headdress-contained-lapis-lazuli-from-afghanistan.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The blue stones in Queen Puabi’s headdress traveled more than 1,500 miles before reaching her tomb."},{"title":"Queen Puabi’s Retainer Sacrifice Suggests Structured Royal Funerary Protocols","slug":"queen-puabi-s-retainer-sacrifice-suggests-structured-royal-funerary-protocols","url":"/categories/ancient-civilizations-secrets/sumerians/queen-puabi-s-retainer-sacrifice-suggests-structured-royal-funerary-protocols.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists found dozens of attendants laid in orderly rows beside Queen Puabi, indicating coordinated burial planning rather than chaos."},{"title":"Queen Shubad Lyre Discovery Revealed Advanced Sumerian Musical Engineering","slug":"queen-shubad-lyre-discovery-revealed-advanced-sumerian-musical-engineering","url":"/categories/ancient-civilizations-secrets/sumerians/queen-shubad-lyre-discovery-revealed-advanced-sumerian-musical-engineering.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 4,500-year-old lyre from Ur demonstrates acoustic design principles still recognizable today."},{"title":"Ur III Taxation Reforms Centralized Grain Accounting in 2100 BCE","slug":"ur-iii-taxation-reforms-centralized-grain-accounting-in-2100-bce","url":"/categories/ancient-civilizations-secrets/sumerians/ur-iii-taxation-reforms-centralized-grain-accounting-in-2100-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2100 BCE, the Ur III dynasty tracked thousands of livestock and grain shipments with standardized clay receipts."},{"title":"Ur-Nammu Law Code Predated Hammurabi by 300 Years","slug":"ur-nammu-law-code-predated-hammurabi-by-300-years","url":"/categories/ancient-civilizations-secrets/sumerians/ur-nammu-law-code-predated-hammurabi-by-300-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Three centuries before Hammurabi, a Sumerian ruler carved legal penalties into stone."},{"title":"Ur-Nanshe Reliefs Depict Organized Temple Construction in 25th Century BCE","slug":"ur-nanshe-reliefs-depict-organized-temple-construction-in-25th-century-bce","url":"/categories/ancient-civilizations-secrets/sumerians/ur-nanshe-reliefs-depict-organized-temple-construction-in-25th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone reliefs from Lagash show King Ur-Nanshe personally carrying a basket of bricks to inaugurate temple building."},{"title":"Uruk Clay Bullae Functioned as Early Inventory Control Devices Around 3300 BCE","slug":"uruk-clay-bullae-functioned-as-early-inventory-control-devices-around-3300-bce","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-clay-bullae-functioned-as-early-inventory-control-devices-around-3300-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before full writing developed, Sumerians sealed small clay envelopes containing tokens to track goods."},{"title":"Uruk Cylinder Seals Functioned as Early Security Authentication Devices","slug":"uruk-cylinder-seals-functioned-as-early-security-authentication-devices","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-cylinder-seals-functioned-as-early-security-authentication-devices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Five thousand years ago, Sumerians rolled carved stone cylinders across wet clay to secure shipments and verify identity."},{"title":"Uruk Expansion Around 3500 BCE Created One of the World’s First Megacities","slug":"uruk-expansion-around-3500-bce-created-one-of-the-world-s-first-megacities","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-expansion-around-3500-bce-created-one-of-the-world-s-first-megacities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 3500 BCE, Uruk covered over 6 square kilometers and housed tens of thousands of residents."},{"title":"Uruk Numerical Tablets Reveal Early Base-60 Mathematics Around 3000 BCE","slug":"uruk-numerical-tablets-reveal-early-base-60-mathematics-around-3000-bce","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-numerical-tablets-reveal-early-base-60-mathematics-around-3000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Five thousand years ago, Sumerian scribes developed a base-60 number system that still shapes modern timekeeping."},{"title":"Uruk Road Networks Facilitated Administrative Control by 3000 BCE","slug":"uruk-road-networks-facilitated-administrative-control-by-3000-bce","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-road-networks-facilitated-administrative-control-by-3000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Urban planners in Uruk built organized roadways that structured traffic, trade, and surveillance."},{"title":"Uruk Seal Iconography Encoded Social Hierarchy in 4th Millennium BCE","slug":"uruk-seal-iconography-encoded-social-hierarchy-in-4th-millennium-bce","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-seal-iconography-encoded-social-hierarchy-in-4th-millennium-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cylinder seals from Uruk depict banquet scenes and divine encounters that signaled rank and authority."},{"title":"Uruk Trade Networks Reached 500 Miles by 3000 BCE","slug":"uruk-trade-networks-reached-500-miles-by-3000-bce","url":"/categories/ancient-civilizations-secrets/sumerians/uruk-trade-networks-reached-500-miles-by-3000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 3000 BCE, merchants from Uruk were moving goods across nearly 500 miles without a single coin in circulation."},{"title":"X-Factor Floodplain Geometry Allowed Predictable Agricultural Zoning in Sumer","slug":"x-factor-floodplain-geometry-allowed-predictable-agricultural-zoning-in-sumer","url":"/categories/ancient-civilizations-secrets/sumerians/x-factor-floodplain-geometry-allowed-predictable-agricultural-zoning-in-sumer.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sumerian planners divided fertile floodplains into measured plots using early geometric principles around 3000 BCE."},{"title":"X-Shaped Cuneiform Impressions Standardized Early Administrative Script","slug":"x-shaped-cuneiform-impressions-standardized-early-administrative-script","url":"/categories/ancient-civilizations-secrets/sumerians/x-shaped-cuneiform-impressions-standardized-early-administrative-script.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The wedge-shaped marks of cuneiform were designed for speed, not beauty, transforming pictographs into abstract strokes."},{"title":"X-Tablet School Exercises Reveal Structured Scribal Education by 2500 BCE","slug":"x-tablet-school-exercises-reveal-structured-scribal-education-by-2500-bce","url":"/categories/ancient-civilizations-secrets/sumerians/x-tablet-school-exercises-reveal-structured-scribal-education-by-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of clay tablets show Sumerian students copying the same signs repeatedly to master administrative writing."},{"title":"Xenophobic Trade Restrictions Appeared in Late Sumerian Administrative Texts","slug":"xenophobic-trade-restrictions-appeared-in-late-sumerian-administrative-texts","url":"/categories/ancient-civilizations-secrets/sumerians/xenophobic-trade-restrictions-appeared-in-late-sumerian-administrative-texts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some late Sumerian records suggest foreign merchants faced stricter oversight than local traders."},{"title":"Xeric Soil Salinization Contributed to Sumerian Agricultural Decline After 2000 BCE","slug":"xeric-soil-salinization-contributed-to-sumerian-agricultural-decline-after-2000-bce","url":"/categories/ancient-civilizations-secrets/sumerians/xeric-soil-salinization-contributed-to-sumerian-agricultural-decline-after-2000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2000 BCE, crop yields in southern Mesopotamia fell sharply as salt accumulated invisibly in irrigated fields."},{"title":"Xerophytic Irrigation Systems Enabled Sumerian Farming in Arid Mesopotamia","slug":"xerophytic-irrigation-systems-enabled-sumerian-farming-in-arid-mesopotamia","url":"/categories/ancient-civilizations-secrets/sumerians/xerophytic-irrigation-systems-enabled-sumerian-farming-in-arid-mesopotamia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sumerian cities flourished in a region receiving less than 200 millimeters of annual rainfall."},{"title":"Yam Cult Ritual Texts Linked River Management to Divine Authority","slug":"yam-cult-ritual-texts-linked-river-management-to-divine-authority","url":"/categories/ancient-civilizations-secrets/sumerians/yam-cult-ritual-texts-linked-river-management-to-divine-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sumerian ritual texts treated river control not merely as engineering, but as sacred responsibility."},{"title":"Yam Supremacy Trade with Dilmun Linked Sumer to Gulf Maritime Routes","slug":"yam-supremacy-trade-with-dilmun-linked-sumer-to-gulf-maritime-routes","url":"/categories/ancient-civilizations-secrets/sumerians/yam-supremacy-trade-with-dilmun-linked-sumer-to-gulf-maritime-routes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2500 BCE, Sumerian merchants were sailing through the Persian Gulf to reach the trading hub of Dilmun."},{"title":"Yamhad Diplomatic Letters Show Sumerian Influence Beyond Mesopotamia","slug":"yamhad-diplomatic-letters-show-sumerian-influence-beyond-mesopotamia","url":"/categories/ancient-civilizations-secrets/sumerians/yamhad-diplomatic-letters-show-sumerian-influence-beyond-mesopotamia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay letters found hundreds of miles from Sumer reveal diplomatic language shaped by Mesopotamian scribes."},{"title":"Yazd Copper Trade Links Suggest Early Sumerian Access to Iranian Resources","slug":"yazd-copper-trade-links-suggest-early-sumerian-access-to-iranian-resources","url":"/categories/ancient-civilizations-secrets/sumerians/yazd-copper-trade-links-suggest-early-sumerian-access-to-iranian-resources.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Copper artifacts found in Mesopotamia carry isotopic signatures pointing to mining regions in ancient Iran."},{"title":"Yazılıkaya Inscriptions Reflect Earlier Sumerian Astronomical Traditions","slug":"yaz-l-kaya-inscriptions-reflect-earlier-sumerian-astronomical-traditions","url":"/categories/ancient-civilizations-secrets/sumerians/yaz-l-kaya-inscriptions-reflect-earlier-sumerian-astronomical-traditions.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries after Sumer's decline, neighboring civilizations preserved astronomical concepts first recorded in Mesopotamian tablets."},{"title":"Yoke Allocation Lists Reveal Centralized Control of Draft Animals in Ur III Period","slug":"yoke-allocation-lists-reveal-centralized-control-of-draft-animals-in-ur-iii-period","url":"/categories/ancient-civilizations-secrets/sumerians/yoke-allocation-lists-reveal-centralized-control-of-draft-animals-in-ur-iii-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ur III administrators recorded which households were responsible for supplying oxen to state projects."},{"title":"Yoke and Plow Innovations Increased Sumerian Crop Yields by 3000 BCE","slug":"yoke-and-plow-innovations-increased-sumerian-crop-yields-by-3000-bce","url":"/categories/ancient-civilizations-secrets/sumerians/yoke-and-plow-innovations-increased-sumerian-crop-yields-by-3000-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 3000 BCE, Sumerian farmers were using animal-drawn plows that multiplied agricultural efficiency."},{"title":"Yoke-Based Ox Teams Enabled Large-Scale Canal Excavation Projects","slug":"yoke-based-ox-teams-enabled-large-scale-canal-excavation-projects","url":"/categories/ancient-civilizations-secrets/sumerians/yoke-based-ox-teams-enabled-large-scale-canal-excavation-projects.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive irrigation canals in Sumer were dug not only by human labor but with coordinated ox-drawn equipment."},{"title":"Yoke-Standard Ration System Defined Worker Compensation in 3rd Millennium BCE Sumer","slug":"yoke-standard-ration-system-defined-worker-compensation-in-3rd-millennium-bce-sumer","url":"/categories/ancient-civilizations-secrets/sumerians/yoke-standard-ration-system-defined-worker-compensation-in-3rd-millennium-bce-sumer.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of Sumerian laborers were paid not in coins but in precisely measured daily barley rations."},{"title":"Zabala Temple Archives Contain Detailed Labor Rosters from 2500 BCE","slug":"zabala-temple-archives-contain-detailed-labor-rosters-from-2500-bce","url":"/categories/ancient-civilizations-secrets/sumerians/zabala-temple-archives-contain-detailed-labor-rosters-from-2500-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from the city of Zabala list individual workers assigned to temple duties over 4,000 years ago."},{"title":"Zabalam Administrative Tablets Document Beer Production in 3rd Millennium BCE","slug":"zabalam-administrative-tablets-document-beer-production-in-3rd-millennium-bce","url":"/categories/ancient-civilizations-secrets/sumerians/zabalam-administrative-tablets-document-beer-production-in-3rd-millennium-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from ancient Zabalam record precise barley allocations for brewing beer over 4,000 years ago."},{"title":"Ziggurat Construction Labor May Have Followed Rotational Corvée Systems","slug":"ziggurat-construction-labor-may-have-followed-rotational-corv-e-systems","url":"/categories/ancient-civilizations-secrets/sumerians/ziggurat-construction-labor-may-have-followed-rotational-corv-e-systems.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Monumental Sumerian temples were likely built through rotating labor obligations rather than permanent slave armies."},{"title":"Ziggurat Maintenance Records Reveal Ongoing Structural Investment After Construction","slug":"ziggurat-maintenance-records-reveal-ongoing-structural-investment-after-construction","url":"/categories/ancient-civilizations-secrets/sumerians/ziggurat-maintenance-records-reveal-ongoing-structural-investment-after-construction.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Building a ziggurat was only the beginning; tablets show continuous repair and resource allocation for upkeep."},{"title":"Ziggurat of Ur Required Millions of Mud Bricks Around 2100 BCE","slug":"ziggurat-of-ur-required-millions-of-mud-bricks-around-2100-bce","url":"/categories/ancient-civilizations-secrets/sumerians/ziggurat-of-ur-required-millions-of-mud-bricks-around-2100-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Constructing the Ziggurat of Ur demanded millions of mud bricks in a landscape with almost no stone."},{"title":"Ziggurat Staircase Design Directed Ritual Movement in Sumerian Cities","slug":"ziggurat-staircase-design-directed-ritual-movement-in-sumerian-cities","url":"/categories/ancient-civilizations-secrets/sumerians/ziggurat-staircase-design-directed-ritual-movement-in-sumerian-cities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The steep staircases of Sumerian ziggurats were engineered to choreograph ceremonial ascent rather than simple access."},{"title":"Zimri-Lim Archives Preserve Earlier Sumerian Legal Traditions in 18th Century BCE Mari","slug":"zimri-lim-archives-preserve-earlier-sumerian-legal-traditions-in-18th-century-bce-mari","url":"/categories/ancient-civilizations-secrets/sumerians/zimri-lim-archives-preserve-earlier-sumerian-legal-traditions-in-18th-century-bce-mari.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of tablets discovered at Mari show how Sumerian legal customs shaped governance centuries after Sumer’s political decline."},{"title":"Ziusudra Flood Narrative Predates Later Mesopotamian Deluge Myths","slug":"ziusudra-flood-narrative-predates-later-mesopotamian-deluge-myths","url":"/categories/ancient-civilizations-secrets/sumerians/ziusudra-flood-narrative-predates-later-mesopotamian-deluge-myths.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before the Epic of Gilgamesh was compiled, a Sumerian text described a man who survived a divinely sent flood."},{"title":"Ziusudra King List Placement Anchored Flood Myth Within Political Chronology","slug":"ziusudra-king-list-placement-anchored-flood-myth-within-political-chronology","url":"/categories/ancient-civilizations-secrets/sumerians/ziusudra-king-list-placement-anchored-flood-myth-within-political-chronology.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Sumerian King List inserted a global flood into its sequence of rulers, blending catastrophe with governance."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

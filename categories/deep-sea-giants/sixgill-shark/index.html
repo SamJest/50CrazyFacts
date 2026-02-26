@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sixgill Shark</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sixgill Shark</h1>
+  <p>Explore all facts in "Sixgill Shark".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sixgill Shark</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Sixgill Shark Lineage Predates the Rise of Tyrannosaurus Rex","slug":"ancient-sixgill-shark-lineage-predates-the-rise-of-tyrannosaurus-rex","url":"/categories/deep-sea-giants/sixgill-shark/ancient-sixgill-shark-lineage-predates-the-rise-of-tyrannosaurus-rex.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This living shark lineage swam oceans before Tyrannosaurus rex existed."},{"title":"Bluntnose Sixgill Sharks Have Litters That Can Exceed 100 Pups","slug":"bluntnose-sixgill-sharks-have-litters-that-can-exceed-100-pups","url":"/categories/deep-sea-giants/sixgill-shark/bluntnose-sixgill-sharks-have-litters-that-can-exceed-100-pups.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One deep-sea shark can give birth to over 100 live young at once."},{"title":"Colossal Sixgill Sharks Possess a Liver That Can Weigh Hundreds of Pounds","slug":"colossal-sixgill-sharks-possess-a-liver-that-can-weigh-hundreds-of-pounds","url":"/categories/deep-sea-giants/sixgill-shark/colossal-sixgill-sharks-possess-a-liver-that-can-weigh-hundreds-of-pounds.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Nearly a quarter of this shark’s body can be one giant oil-filled organ."},{"title":"Deep-Sea Sixgill Sharks Withstand Pressures That Would Crush Most Submarines","slug":"deep-sea-sixgill-sharks-withstand-pressures-that-would-crush-most-submarines","url":"/categories/deep-sea-giants/sixgill-shark/deep-sea-sixgill-sharks-withstand-pressures-that-would-crush-most-submarines.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At 8,000 feet, the pressure could implode steel—yet this shark hunts calmly."},{"title":"Enormous Sixgill Sharks Have Been Recorded Near Major Coastal Cities","slug":"enormous-sixgill-sharks-have-been-recorded-near-major-coastal-cities","url":"/categories/deep-sea-giants/sixgill-shark/enormous-sixgill-sharks-have-been-recorded-near-major-coastal-cities.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 15-foot deep-sea predator sometimes swims beneath city skylines."},{"title":"Fossil Relatives of Sixgill Sharks Date Back to the Early Jurassic","slug":"fossil-relatives-of-sixgill-sharks-date-back-to-the-early-jurassic","url":"/categories/deep-sea-giants/sixgill-shark/fossil-relatives-of-sixgill-sharks-date-back-to-the-early-jurassic.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark’s family tree stretches into the age of early dinosaurs."},{"title":"Gigantic Sixgill Sharks Can Travel From Miles Deep to Near-Surface Waters in Hours","slug":"gigantic-sixgill-sharks-can-travel-from-miles-deep-to-near-surface-waters-in-hours","url":"/categories/deep-sea-giants/sixgill-shark/gigantic-sixgill-sharks-can-travel-from-miles-deep-to-near-surface-waters-in-hours.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A predator can commute from crushing darkness to moonlit water overnight."},{"title":"Hexanchiform Sharks Retain Primitive Anatomical Traits Lost by Most Modern Sharks","slug":"hexanchiform-sharks-retain-primitive-anatomical-traits-lost-by-most-modern-sharks","url":"/categories/deep-sea-giants/sixgill-shark/hexanchiform-sharks-retain-primitive-anatomical-traits-lost-by-most-modern-sharks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This massive shark still carries features abandoned by faster predators."},{"title":"Immense Sixgill Sharks Lack a Swim Bladder, Preventing Implosion at Depth","slug":"immense-sixgill-sharks-lack-a-swim-bladder-preventing-implosion-at-depth","url":"/categories/deep-sea-giants/sixgill-shark/immense-sixgill-sharks-lack-a-swim-bladder-preventing-implosion-at-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator survives crushing depths without an internal air tank."},{"title":"Juvenile Sixgill Sharks Begin Life in Deep Water Rather Than Shallow Nurseries","slug":"juvenile-sixgill-sharks-begin-life-in-deep-water-rather-than-shallow-nurseries","url":"/categories/deep-sea-giants/sixgill-shark/juvenile-sixgill-sharks-begin-life-in-deep-water-rather-than-shallow-nurseries.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Newborn predators start life in darkness instead of sunlit nurseries."},{"title":"Keenly Sensitive Lateral Lines Let Sixgill Sharks Detect Prey in Total Darkness","slug":"keenly-sensitive-lateral-lines-let-sixgill-sharks-detect-prey-in-total-darkness","url":"/categories/deep-sea-giants/sixgill-shark/keenly-sensitive-lateral-lines-let-sixgill-sharks-detect-prey-in-total-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In absolute blackness, this giant hunts by feeling vibrations."},{"title":"Largest Sixgill Sharks Rival Great Whites in Overall Length","slug":"largest-sixgill-sharks-rival-great-whites-in-overall-length","url":"/categories/deep-sea-giants/sixgill-shark/largest-sixgill-sharks-rival-great-whites-in-overall-length.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In total length, this deep-sea shark can match a great white."},{"title":"Massive Sixgill Sharks Can Exceed 1,300 Pounds in Weight","slug":"massive-sixgill-sharks-can-exceed-1-300-pounds-in-weight","url":"/categories/deep-sea-giants/sixgill-shark/massive-sixgill-sharks-can-exceed-1-300-pounds-in-weight.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A predator heavier than a grand piano cruises miles below."},{"title":"Nighttime Ascents Bring Sixgill Sharks Hundreds of Feet Closer to the Surface","slug":"nighttime-ascents-bring-sixgill-sharks-hundreds-of-feet-closer-to-the-surface","url":"/categories/deep-sea-giants/sixgill-shark/nighttime-ascents-bring-sixgill-sharks-hundreds-of-feet-closer-to-the-surface.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"After sunset, a deep-sea giant silently climbs toward moonlight."},{"title":"Over 200 Million Years of Evolution Separate Sixgill Sharks From Many Modern Species","slug":"over-200-million-years-of-evolution-separate-sixgill-sharks-from-many-modern-species","url":"/categories/deep-sea-giants/sixgill-shark/over-200-million-years-of-evolution-separate-sixgill-sharks-from-many-modern-species.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This living predator split from other sharks before mammals existed."},{"title":"Powerful Sixgill Shark Jaws Can Slice Large Prey in a Single Motion","slug":"powerful-sixgill-shark-jaws-can-slice-large-prey-in-a-single-motion","url":"/categories/deep-sea-giants/sixgill-shark/powerful-sixgill-shark-jaws-can-slice-large-prey-in-a-single-motion.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One downward sweep of its jaw can remove a massive chunk of flesh."},{"title":"Quiet Deep-Sea Habitats Allow Sixgill Sharks to Detect Minimal Vibrations","slug":"quiet-deep-sea-habitats-allow-sixgill-sharks-to-detect-minimal-vibrations","url":"/categories/deep-sea-giants/sixgill-shark/quiet-deep-sea-habitats-allow-sixgill-sharks-to-detect-minimal-vibrations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In the stillness of the abyss, even a faint twitch becomes a beacon."},{"title":"Remarkably Large Eyes Help Sixgill Sharks Exploit Faint Bioluminescent Glows","slug":"remarkably-large-eyes-help-sixgill-sharks-exploit-faint-bioluminescent-glows","url":"/categories/deep-sea-giants/sixgill-shark/remarkably-large-eyes-help-sixgill-sharks-exploit-faint-bioluminescent-glows.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its eyes are built to catch the weakest flicker in black water."},{"title":"Sixgill Sharks Are Among the Few Sharks That Inhabit Fjords","slug":"sixgill-sharks-are-among-the-few-sharks-that-inhabit-fjords","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-are-among-the-few-sharks-that-inhabit-fjords.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A deep-sea giant swims inside narrow glacial fjords."},{"title":"Sixgill Sharks Are Found in Oceans Worldwide Except Polar Extremes","slug":"sixgill-sharks-are-found-in-oceans-worldwide-except-polar-extremes","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-are-found-in-oceans-worldwide-except-polar-extremes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-sea giant patrols nearly every major ocean basin."},{"title":"Sixgill Sharks Can Grow Over 16 Feet Long in the Deep Sea","slug":"sixgill-sharks-can-grow-over-16-feet-long-in-the-deep-sea","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-can-grow-over-16-feet-long-in-the-deep-sea.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One deep-sea shark grows longer than a school bus is tall."},{"title":"Sixgill Sharks Can Reach Lengths Comparable to Small Boats","slug":"sixgill-sharks-can-reach-lengths-comparable-to-small-boats","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-can-reach-lengths-comparable-to-small-boats.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Some individuals grow nearly as long as a compact fishing boat."},{"title":"Sixgill Sharks Can Tolerate Near-Freezing Temperatures Just Above 34°F","slug":"sixgill-sharks-can-tolerate-near-freezing-temperatures-just-above-34-f","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-can-tolerate-near-freezing-temperatures-just-above-34-f.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A half-ton predator hunts in water barely warmer than melting ice."},{"title":"Sixgill Sharks Can Weigh as Much as a Small Horse","slug":"sixgill-sharks-can-weigh-as-much-as-a-small-horse","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-can-weigh-as-much-as-a-small-horse.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Some individuals rival the mass of a compact horse."},{"title":"Sixgill Sharks Can Weigh Over Half a Ton in Near-Freezing Water","slug":"sixgill-sharks-can-weigh-over-half-a-ton-in-near-freezing-water","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-can-weigh-over-half-a-ton-in-near-freezing-water.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A half-ton predator glides through water barely above ice temperature."},{"title":"Sixgill Sharks Can Withstand More Than 250 Times Surface Atmospheric Pressure","slug":"sixgill-sharks-can-withstand-more-than-250-times-surface-atmospheric-pressure","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-can-withstand-more-than-250-times-surface-atmospheric-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At depth, the force pressing on this shark would crush most vehicles."},{"title":"Sixgill Sharks Dive Deeper Than 8,000 Feet Into Crushing Ocean Darkness","slug":"sixgill-sharks-dive-deeper-than-8-000-feet-into-crushing-ocean-darkness","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-dive-deeper-than-8-000-feet-into-crushing-ocean-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A shark longer than a car hunts where sunlight has never existed."},{"title":"Sixgill Sharks Feed on Rays, Bony Fish, and Other Sharks in Deep Waters","slug":"sixgill-sharks-feed-on-rays-bony-fish-and-other-sharks-in-deep-waters","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-feed-on-rays-bony-fish-and-other-sharks-in-deep-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In the abyss, even other sharks become prey."},{"title":"Sixgill Sharks Have a Single Dorsal Fin Positioned Far Back on the Body","slug":"sixgill-sharks-have-a-single-dorsal-fin-positioned-far-back-on-the-body","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-a-single-dorsal-fin-positioned-far-back-on-the-body.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Unlike most sharks, this giant carries only one dorsal fin set near its tail."},{"title":"Sixgill Sharks Have Been Documented Living More Than 70 Years","slug":"sixgill-sharks-have-been-documented-living-more-than-70-years","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-been-documented-living-more-than-70-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-sea giant can outlive most large dog breeds by decades."},{"title":"Sixgill Sharks Have Been Filmed Feeding on Whale Carcasses in the Deep","slug":"sixgill-sharks-have-been-filmed-feeding-on-whale-carcasses-in-the-deep","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-been-filmed-feeding-on-whale-carcasses-in-the-deep.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In total darkness, a giant shark tears into a sunken whale."},{"title":"Sixgill Sharks Have Been Recorded at Depths Approaching 9,000 Feet","slug":"sixgill-sharks-have-been-recorded-at-depths-approaching-9-000-feet","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-been-recorded-at-depths-approaching-9-000-feet.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Nearly two miles down, this predator still hunts."},{"title":"Sixgill Sharks Have Serrated Lower Teeth Built for Slicing Large Prey","slug":"sixgill-sharks-have-serrated-lower-teeth-built-for-slicing-large-prey","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-serrated-lower-teeth-built-for-slicing-large-prey.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its lower teeth form a saw designed for massive flesh."},{"title":"Sixgill Sharks Have Six Gill Slits — A Primitive Trait From 200 Million Years Ago","slug":"sixgill-sharks-have-six-gill-slits-a-primitive-trait-from-200-million-years-ago","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-six-gill-slits-a-primitive-trait-from-200-million-years-ago.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator still carries an ancient feature most sharks lost."},{"title":"Sixgill Sharks Have Survived Multiple Mass Extinction Events","slug":"sixgill-sharks-have-survived-multiple-mass-extinction-events","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-have-survived-multiple-mass-extinction-events.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This lineage endured catastrophes that erased countless dominant species."},{"title":"Sixgill Sharks Link Coastal and Abyssal Ecosystems Through Daily Migrations","slug":"sixgill-sharks-link-coastal-and-abyssal-ecosystems-through-daily-migrations","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-link-coastal-and-abyssal-ecosystems-through-daily-migrations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One animal routinely connects city shores to mile-deep darkness."},{"title":"Sixgill Sharks Mature Later Than Many Humans Reach Middle Age","slug":"sixgill-sharks-mature-later-than-many-humans-reach-middle-age","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-mature-later-than-many-humans-reach-middle-age.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark can take decades just to reach adulthood."},{"title":"Sixgill Sharks Often Remain Motionless to Conserve Energy in Food-Scarce Depths","slug":"sixgill-sharks-often-remain-motionless-to-conserve-energy-in-food-scarce-depths","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-often-remain-motionless-to-conserve-energy-in-food-scarce-depths.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A half-ton predator can drift almost perfectly still for long periods."},{"title":"Sixgill Sharks Prey on Other Sharks in the Deep Ocean","slug":"sixgill-sharks-prey-on-other-sharks-in-the-deep-ocean","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-prey-on-other-sharks-in-the-deep-ocean.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In the abyss, even sharks are hunted by bigger sharks."},{"title":"Sixgill Sharks Preyed on Marine Life Long Before Many Modern Fish Evolved","slug":"sixgill-sharks-preyed-on-marine-life-long-before-many-modern-fish-evolved","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-preyed-on-marine-life-long-before-many-modern-fish-evolved.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This predator’s ancestors hunted seas that lacked most modern fish families."},{"title":"Sixgill Sharks Rely on Cartilage Skeletons That Flex Under Immense Pressure","slug":"sixgill-sharks-rely-on-cartilage-skeletons-that-flex-under-immense-pressure","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-rely-on-cartilage-skeletons-that-flex-under-immense-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Its skeleton bends instead of breaking under crushing force."},{"title":"Sixgill Sharks Rise From Abyssal Depths to Surface Waters at Night","slug":"sixgill-sharks-rise-from-abyssal-depths-to-surface-waters-at-night","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-rise-from-abyssal-depths-to-surface-waters-at-night.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"By day it hides miles down; by night it invades shallows."},{"title":"Sixgill Sharks Spend Daylight Hours in Deep Basins to Avoid Surface Disturbance","slug":"sixgill-sharks-spend-daylight-hours-in-deep-basins-to-avoid-surface-disturbance","url":"/categories/deep-sea-giants/sixgill-shark/sixgill-sharks-spend-daylight-hours-in-deep-basins-to-avoid-surface-disturbance.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"By day, this giant disappears into pressure and darkness."},{"title":"Towering Fjord Walls Hide Sixgill Sharks Beneath Busy Ferry Routes","slug":"towering-fjord-walls-hide-sixgill-sharks-beneath-busy-ferry-routes","url":"/categories/deep-sea-giants/sixgill-shark/towering-fjord-walls-hide-sixgill-sharks-beneath-busy-ferry-routes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Beneath commuter ferries, a deep-sea predator drifts unseen."},{"title":"Unusually Slow Growth Rates Make Sixgill Sharks Vulnerable to Overfishing","slug":"unusually-slow-growth-rates-make-sixgill-sharks-vulnerable-to-overfishing","url":"/categories/deep-sea-giants/sixgill-shark/unusually-slow-growth-rates-make-sixgill-sharks-vulnerable-to-overfishing.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A predator that survives for decades can be erased in years."},{"title":"Vertical Range of Sixgill Sharks Spans More Than a Mile of Ocean Depth","slug":"vertical-range-of-sixgill-sharks-spans-more-than-a-mile-of-ocean-depth","url":"/categories/deep-sea-giants/sixgill-shark/vertical-range-of-sixgill-sharks-spans-more-than-a-mile-of-ocean-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This single predator can patrol a vertical world taller than many skyscrapers are high."},{"title":"Whale Fall Sites Attract Sixgill Sharks to Carcasses Weighing Dozens of Tons","slug":"whale-fall-sites-attract-sixgill-sharks-to-carcasses-weighing-dozens-of-tons","url":"/categories/deep-sea-giants/sixgill-shark/whale-fall-sites-attract-sixgill-sharks-to-carcasses-weighing-dozens-of-tons.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A predator the size of a small car feeds on a corpse heavier than a truck."},{"title":"Xiphactinus-Era Seas Were Patrolled by Early Relatives of Modern Sixgill Sharks","slug":"xiphactinus-era-seas-were-patrolled-by-early-relatives-of-modern-sixgill-sharks","url":"/categories/deep-sea-giants/sixgill-shark/xiphactinus-era-seas-were-patrolled-by-early-relatives-of-modern-sixgill-sharks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Sharks like this hunted oceans when giant predatory fish ruled the seas."},{"title":"Young Sixgill Sharks Are Born Nearly Two Feet Long in Deep Water","slug":"young-sixgill-sharks-are-born-nearly-two-feet-long-in-deep-water","url":"/categories/deep-sea-giants/sixgill-shark/young-sixgill-sharks-are-born-nearly-two-feet-long-in-deep-water.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Newborns enter the ocean already the length of a toddler’s leg."},{"title":"Zero Sunlight Penetrates the Depths Where Sixgill Sharks Commonly Hunt","slug":"zero-sunlight-penetrates-the-depths-where-sixgill-sharks-commonly-hunt","url":"/categories/deep-sea-giants/sixgill-shark/zero-sunlight-penetrates-the-depths-where-sixgill-sharks-commonly-hunt.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This massive predator lives where daylight has never reached."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

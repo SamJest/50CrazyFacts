@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waymo Driver</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Waymo Driver</h1>
+  <p>Explore all facts in "Waymo Driver".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Waymo Driver</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Autonomous Safety Report 2020 Detailed Waymo Driver Crash Avoidance Metrics","slug":"autonomous-safety-report-2020-detailed-waymo-driver-crash-avoidance-metrics","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/autonomous-safety-report-2020-detailed-waymo-driver-crash-avoidance-metrics.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo published detailed safety data comparing simulated human drivers against its autonomous system."},{"title":"Behavior Prediction Models 2020 Enabled Waymo Driver to Anticipate Pedestrian Intent","slug":"behavior-prediction-models-2020-enabled-waymo-driver-to-anticipate-pedestrian-intent","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/behavior-prediction-models-2020-enabled-waymo-driver-to-anticipate-pedestrian-intent.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo vehicles begin slowing down before a pedestrian steps into the road because the system predicts intent, not just motion."},{"title":"Closed-Course Validation Facility 2017 Gave Waymo Driver Controlled Safety Testing Grounds","slug":"closed-course-validation-facility-2017-gave-waymo-driver-controlled-safety-testing-grounds","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/closed-course-validation-facility-2017-gave-waymo-driver-controlled-safety-testing-grounds.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Before public deployment, Waymo rehearses dangerous scenarios on a private test track designed to simulate city streets."},{"title":"Collision Avoidance Research 2016 Showed Waymo Driver Reduced Human Error Scenarios","slug":"collision-avoidance-research-2016-showed-waymo-driver-reduced-human-error-scenarios","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/collision-avoidance-research-2016-showed-waymo-driver-reduced-human-error-scenarios.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo’s internal studies compared its autonomous system against common human-driver collision patterns."},{"title":"Driverless Public Rides 2018 Marked Waymo One Commercial Launch","slug":"driverless-public-rides-2018-marked-waymo-one-commercial-launch","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/driverless-public-rides-2018-marked-waymo-one-commercial-launch.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In December 2018, Waymo began charging customers for autonomous rides in Arizona."},{"title":"Fleet Operations Center 2021 Monitored Waymo Driver Vehicles Without Direct Remote Control","slug":"fleet-operations-center-2021-monitored-waymo-driver-vehicles-without-direct-remote-control","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/fleet-operations-center-2021-monitored-waymo-driver-vehicles-without-direct-remote-control.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Even in fully driverless mode, Waymo vehicles are overseen by remote support teams who cannot steer them directly."},{"title":"High-Definition Map Update Cycles 2022 Kept Waymo Driver Aligned With Road Changes","slug":"high-definition-map-update-cycles-2022-kept-waymo-driver-aligned-with-road-changes","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/high-definition-map-update-cycles-2022-kept-waymo-driver-aligned-with-road-changes.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo vehicles update their high-definition maps regularly to reflect construction zones and new traffic patterns."},{"title":"Knowledge Transfer From Google Maps 2016 Accelerated Waymo Driver High-Definition Mapping","slug":"knowledge-transfer-from-google-maps-2016-accelerated-waymo-driver-high-definition-mapping","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/knowledge-transfer-from-google-maps-2016-accelerated-waymo-driver-high-definition-mapping.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo’s early maps drew on more than a decade of Google’s global mapping expertise."},{"title":"Knowledge-Based Route Planning 2020 Enabled Waymo Driver to Anticipate Traffic Patterns","slug":"knowledge-based-route-planning-2020-enabled-waymo-driver-to-anticipate-traffic-patterns","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/knowledge-based-route-planning-2020-enabled-waymo-driver-to-anticipate-traffic-patterns.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo’s route planning algorithms consider historical traffic data before selecting a path."},{"title":"Lidar Cost Reduction 2017 Lowered Waymo Driver Sensor Expenses by 90 Percent","slug":"lidar-cost-reduction-2017-lowered-waymo-driver-sensor-expenses-by-90-percent","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/lidar-cost-reduction-2017-lowered-waymo-driver-sensor-expenses-by-90-percent.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo cut the cost of its proprietary lidar systems by up to 90 percent between early prototypes and 2017."},{"title":"Quality Simulation Engine 2021 Enabled Waymo Driver to Test Billions of Virtual Miles","slug":"quality-simulation-engine-2021-enabled-waymo-driver-to-test-billions-of-virtual-miles","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/quality-simulation-engine-2021-enabled-waymo-driver-to-test-billions-of-virtual-miles.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo tests more miles in simulation each day than most human drivers will cover in a lifetime."},{"title":"Quantitative Disengagement Data 2019 Revealed Waymo Driver Human Intervention Rates","slug":"quantitative-disengagement-data-2019-revealed-waymo-driver-human-intervention-rates","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/quantitative-disengagement-data-2019-revealed-waymo-driver-human-intervention-rates.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"California regulators required Waymo to report every time a human had to take over the autonomous system."},{"title":"Waymo Driver 2009 Originated as Google Self-Driving Car Project","slug":"waymo-driver-2009-originated-as-google-self-driving-car-project","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/waymo-driver-2009-originated-as-google-self-driving-car-project.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2009, a secret Google project began teaching cars to drive themselves on California highways."},{"title":"X-Factor Redundancy Systems 2020 Added Backup Steering and Braking Controls to Waymo Driver","slug":"x-factor-redundancy-systems-2020-added-backup-steering-and-braking-controls-to-waymo-driver","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/x-factor-redundancy-systems-2020-added-backup-steering-and-braking-controls-to-waymo-driver.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Every Waymo vehicle contains redundant systems that can take over instantly if a primary component fails."},{"title":"X-Fleet Expansion 2022 Increased Waymo Driver Coverage in Downtown Phoenix","slug":"x-fleet-expansion-2022-increased-waymo-driver-coverage-in-downtown-phoenix","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/x-fleet-expansion-2022-increased-waymo-driver-coverage-in-downtown-phoenix.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo expanded its driverless service beyond suburbs into more complex downtown environments in 2022."},{"title":"Yield Prediction Algorithms 2019 Improved Waymo Driver Intersection Decision Making","slug":"yield-prediction-algorithms-2019-improved-waymo-driver-intersection-decision-making","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/yield-prediction-algorithms-2019-improved-waymo-driver-intersection-decision-making.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Intersections pose one of the most complex challenges for autonomous vehicles, requiring split-second predictions."},{"title":"Yielding-to-Emergency Vehicles Protocol 2021 Refined Waymo Driver Response Logic","slug":"yielding-to-emergency-vehicles-protocol-2021-refined-waymo-driver-response-logic","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/yielding-to-emergency-vehicles-protocol-2021-refined-waymo-driver-response-logic.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Autonomous vehicles must recognize flashing lights and sirens before humans even register the sound."},{"title":"Zero-Carbon Operations Goal 2023 Linked Waymo Driver Fleet to Renewable Energy Commitments","slug":"zero-carbon-operations-goal-2023-linked-waymo-driver-fleet-to-renewable-energy-commitments","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/zero-carbon-operations-goal-2023-linked-waymo-driver-fleet-to-renewable-energy-commitments.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo committed to powering its electric fleet with renewable energy as part of broader sustainability targets."},{"title":"Zero-Driver Cabin Design 2022 Prepared Waymo Vehicles for Steering-Wheel-Free Futures","slug":"zero-driver-cabin-design-2022-prepared-waymo-vehicles-for-steering-wheel-free-futures","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/zero-driver-cabin-design-2022-prepared-waymo-vehicles-for-steering-wheel-free-futures.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Waymo has tested vehicles designed without steering wheels or pedals during closed-course trials."},{"title":"Zero-Intervention Milestone 2015 Demonstrated Waymo Driver Highway Autonomy","slug":"zero-intervention-milestone-2015-demonstrated-waymo-driver-highway-autonomy","url":"/categories/artificial-intelligence-breakthroughs/waymo-driver/zero-intervention-milestone-2015-demonstrated-waymo-driver-highway-autonomy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2015, a Waymo prototype completed a 50-mile highway trip with no human intervention."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

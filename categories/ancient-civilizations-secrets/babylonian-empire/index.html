@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Babylonian Empire</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Babylonian Empire</h1>
+  <p>Explore all facts in "Babylonian Empire".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Babylonian Empire</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Administrative Seal Usage and Identity Verification in Babylonian Contracts","slug":"administrative-seal-usage-and-identity-verification-in-babylonian-contracts","url":"/categories/ancient-civilizations-secrets/babylonian-empire/administrative-seal-usage-and-identity-verification-in-babylonian-contracts.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cylinder seals rolled across wet clay served as legally binding signatures in Babylonian contracts."},{"title":"Babylonian Debt Cancellation Edicts of 1762 BC","slug":"babylonian-debt-cancellation-edicts-of-1762-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/babylonian-debt-cancellation-edicts-of-1762-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1762 BC, a royal decree erased consumer debts across Babylon with the force of law."},{"title":"Brick Stamp Inscriptions as Branding in Neo-Babylonian Construction Projects","slug":"brick-stamp-inscriptions-as-branding-in-neo-babylonian-construction-projects","url":"/categories/ancient-civilizations-secrets/babylonian-empire/brick-stamp-inscriptions-as-branding-in-neo-babylonian-construction-projects.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of baked bricks from 6th century BC Babylon bear stamped royal inscriptions asserting authorship of public works."},{"title":"Cuneiform Scribal Schools and Literacy Training in Old Babylonian Period","slug":"cuneiform-scribal-schools-and-literacy-training-in-old-babylonian-period","url":"/categories/ancient-civilizations-secrets/babylonian-empire/cuneiform-scribal-schools-and-literacy-training-in-old-babylonian-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the early 2nd millennium BC, Babylonian scribal schools trained students through years of copying standardized text lists."},{"title":"Cyrus Cylinder Policies Affecting Babylon in 539 BC","slug":"cyrus-cylinder-policies-affecting-babylon-in-539-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/cyrus-cylinder-policies-affecting-babylon-in-539-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 539 BC, a clay cylinder proclaimed a new imperial policy of religious tolerance in conquered Babylon."},{"title":"Darius I Administrative Reforms Affecting Babylon after 522 BC","slug":"darius-i-administrative-reforms-affecting-babylon-after-522-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/darius-i-administrative-reforms-affecting-babylon-after-522-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After 522 BC, Darius I reorganized the Persian Empire's provinces, reshaping Babylon's fiscal obligations."},{"title":"Esagila Temple Economy and Silver Reserves in 6th Century BC Babylon","slug":"esagila-temple-economy-and-silver-reserves-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/esagila-temple-economy-and-silver-reserves-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 6th century BC Babylon, a single temple complex controlled vast landholdings and significant silver reserves."},{"title":"Esarhaddon Succession Crisis Impacting Babylon in 7th Century BC","slug":"esarhaddon-succession-crisis-impacting-babylon-in-7th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/esarhaddon-succession-crisis-impacting-babylon-in-7th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 7th century BC Assyrian succession dispute temporarily reshaped political control over Babylon."},{"title":"Foreign Merchant Contracts in Babylonian Trade Law circa 1700 BC","slug":"foreign-merchant-contracts-in-babylonian-trade-law-circa-1700-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/foreign-merchant-contracts-in-babylonian-trade-law-circa-1700-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1700 BC, Babylonian contracts outlined liability rules for merchants transporting goods across hundreds of kilometers."},{"title":"Foundations of the Babylonian Sexagesimal System Influencing Modern Timekeeping","slug":"foundations-of-the-babylonian-sexagesimal-system-influencing-modern-timekeeping","url":"/categories/ancient-civilizations-secrets/babylonian-empire/foundations-of-the-babylonian-sexagesimal-system-influencing-modern-timekeeping.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Babylonian mathematicians divided circles into 360 degrees and hours into 60 minutes, a system still used today."},{"title":"Grain Price Fluctuations Recorded in Old Babylonian Market Tablets circa 1800 BC","slug":"grain-price-fluctuations-recorded-in-old-babylonian-market-tablets-circa-1800-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/grain-price-fluctuations-recorded-in-old-babylonian-market-tablets-circa-1800-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Market tablets from around 1800 BC reveal measurable swings in barley prices tied to harvest conditions."},{"title":"Hanging Gardens Tradition and Hydraulic Engineering Claims in 6th Century BC Babylon","slug":"hanging-gardens-tradition-and-hydraulic-engineering-claims-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/hanging-gardens-tradition-and-hydraulic-engineering-claims-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ancient writers described terraced gardens rising several stories above Babylon's plains, irrigated by engineered water-lifting systems."},{"title":"Irrigation Canal Networks Supporting Babylonian Agriculture in 2nd Millennium BC","slug":"irrigation-canal-networks-supporting-babylonian-agriculture-in-2nd-millennium-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/irrigation-canal-networks-supporting-babylonian-agriculture-in-2nd-millennium-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Extensive canal networks transformed seasonal river flooding into controlled agricultural output across southern Mesopotamia."},{"title":"Judicial Court Procedures Documented in Old Babylonian Legal Tablets","slug":"judicial-court-procedures-documented-in-old-babylonian-legal-tablets","url":"/categories/ancient-civilizations-secrets/babylonian-empire/judicial-court-procedures-documented-in-old-babylonian-legal-tablets.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Court transcripts from around 1750 BC preserve witness testimony, verdicts, and penalties in structured legal format."},{"title":"Kassite Dynasty Diplomatic Treaties Preserving Babylon after 16th Century BC","slug":"kassite-dynasty-diplomatic-treaties-preserving-babylon-after-16th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/kassite-dynasty-diplomatic-treaties-preserving-babylon-after-16th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After the Hittite sack of Babylon around 1595 BC, a new dynasty stabilized the region through long-term diplomacy."},{"title":"Kudurru Boundary Stones and Property Law in 12th Century BC Babylon","slug":"kudurru-boundary-stones-and-property-law-in-12th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/kudurru-boundary-stones-and-property-law-in-12th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 12th century BC Babylon, property deeds were carved into stone and guarded by curses invoking multiple gods."},{"title":"Laws on River Irrigation Liability in Hammurabi's Code 18th Century BC","slug":"laws-on-river-irrigation-liability-in-hammurabi-s-code-18th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/laws-on-river-irrigation-liability-in-hammurabi-s-code-18th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 18th century BC, Babylonian law fined farmers whose neglected canals flooded neighboring fields."},{"title":"Lion of Babylon Statue and Neo-Babylonian Royal Propaganda circa 600 BC","slug":"lion-of-babylon-statue-and-neo-babylonian-royal-propaganda-circa-600-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/lion-of-babylon-statue-and-neo-babylonian-royal-propaganda-circa-600-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved from a single block of black basalt around 600 BC, the Lion of Babylon projected imperial power without a single written word."},{"title":"Loan Default Penalties and Collateral Practices in 18th Century BC Babylon","slug":"loan-default-penalties-and-collateral-practices-in-18th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/loan-default-penalties-and-collateral-practices-in-18th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 18th century BC Babylon, borrowers pledged fields, houses, and even family members as collateral for silver loans."},{"title":"Mari Trade Networks Integrating Babylon around 1800 BC","slug":"mari-trade-networks-integrating-babylon-around-1800-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/mari-trade-networks-integrating-babylon-around-1800-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 1800 BC, Babylon's rise depended on trade routes stretching hundreds of kilometers across Mesopotamia and Syria."},{"title":"Military Conscription Practices in Neo-Babylonian Army Organization","slug":"military-conscription-practices-in-neo-babylonian-army-organization","url":"/categories/ancient-civilizations-secrets/babylonian-empire/military-conscription-practices-in-neo-babylonian-army-organization.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Neo-Babylonian rulers mobilized civilian laborers into military service through structured conscription systems."},{"title":"Nabonidus Cylinder Inscriptions and Historical Preservation in 6th Century BC","slug":"nabonidus-cylinder-inscriptions-and-historical-preservation-in-6th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/nabonidus-cylinder-inscriptions-and-historical-preservation-in-6th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nabonidus left cylinder inscriptions documenting restoration of ancient temples and honoring rulers who had reigned centuries earlier."},{"title":"Nabonidus Religious Reforms and Economic Disruption in 550s BC Babylon","slug":"nabonidus-religious-reforms-and-economic-disruption-in-550s-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/nabonidus-religious-reforms-and-economic-disruption-in-550s-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 550s BC, a Babylonian king alienated his priesthood by elevating a moon god above the city's chief deity."},{"title":"Oracle Divination Texts and State Decision-Making in 1st Millennium BC Babylon","slug":"oracle-divination-texts-and-state-decision-making-in-1st-millennium-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/oracle-divination-texts-and-state-decision-making-in-1st-millennium-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"State officials in 1st millennium BC Babylon consulted standardized omen texts before major political decisions."},{"title":"Organization of New Year Akitu Festival in Babylonian State Religion","slug":"organization-of-new-year-akitu-festival-in-babylonian-state-religion","url":"/categories/ancient-civilizations-secrets/babylonian-empire/organization-of-new-year-akitu-festival-in-babylonian-state-religion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Each spring, Babylon's Akitu festival reenacted cosmic order through a carefully scripted eleven-day ritual."},{"title":"Palace Archives at Babylon Documenting 6th Century BC Ration Systems","slug":"palace-archives-at-babylon-documenting-6th-century-bc-ration-systems","url":"/categories/ancient-civilizations-secrets/babylonian-empire/palace-archives-at-babylon-documenting-6th-century-bc-ration-systems.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"6th century BC palace tablets record precise daily grain and beer rations issued to workers and officials."},{"title":"Population Estimates and Urban Density in 6th Century BC Babylon","slug":"population-estimates-and-urban-density-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/population-estimates-and-urban-density-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Estimates suggest 6th century BC Babylon may have housed more than 100,000 residents within its fortified walls."},{"title":"Processional Way of Babylon and Ishtar Gate Construction circa 575 BC","slug":"processional-way-of-babylon-and-ishtar-gate-construction-circa-575-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/processional-way-of-babylon-and-ishtar-gate-construction-circa-575-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 575 BC, glazed bricks in deep cobalt blue transformed Babylon's main ceremonial road into a controlled display of imperial wealth."},{"title":"Qudurru Land Grants and Tax Immunities in Kassite Babylon","slug":"qudurru-land-grants-and-tax-immunities-in-kassite-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/qudurru-land-grants-and-tax-immunities-in-kassite-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Kassite-era land grants granted tax immunity carved permanently into stone monuments."},{"title":"Queen Nitocris Defensive Flood Barriers in 6th Century BC Babylon","slug":"queen-nitocris-defensive-flood-barriers-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/queen-nitocris-defensive-flood-barriers-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 6th century BC, a Babylonian queen reportedly redirected sections of the Euphrates River to fortify her capital."},{"title":"Ration Lists Naming Jehoiachin in 6th Century BC Babylon","slug":"ration-lists-naming-jehoiachin-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/ration-lists-naming-jehoiachin-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from the 6th century BC record food rations issued to a deposed foreign king living in Babylon."},{"title":"Royal Road Connections Linking Babylon to Persian Trade Routes after 539 BC","slug":"royal-road-connections-linking-babylon-to-persian-trade-routes-after-539-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/royal-road-connections-linking-babylon-to-persian-trade-routes-after-539-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After 539 BC, Babylon became a major node in a road network stretching over 2,500 kilometers across the Persian Empire."},{"title":"Siege of Jerusalem by Nebuchadnezzar II in 587 BC and Its Babylonian Aftermath","slug":"siege-of-jerusalem-by-nebuchadnezzar-ii-in-587-bc-and-its-babylonian-aftermath","url":"/categories/ancient-civilizations-secrets/babylonian-empire/siege-of-jerusalem-by-nebuchadnezzar-ii-in-587-bc-and-its-babylonian-aftermath.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 587 BC, Babylonian forces breached Jerusalem, triggering a deportation that reshaped imperial population policy."},{"title":"State-Sponsored Canal Expansion Projects under Hammurabi circa 18th Century BC","slug":"state-sponsored-canal-expansion-projects-under-hammurabi-circa-18th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/state-sponsored-canal-expansion-projects-under-hammurabi-circa-18th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Royal inscriptions credit Hammurabi with digging major canals to increase agricultural output across southern Mesopotamia."},{"title":"Surgical Provisions in Hammurabi's Code circa 1754 BC","slug":"surgical-provisions-in-hammurabi-s-code-circa-1754-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/surgical-provisions-in-hammurabi-s-code-circa-1754-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1754 BC, Babylonian law fixed the price of surgery and prescribed penalties for medical failure."},{"title":"Temple Banking Practices in 2nd Millennium BC Babylon","slug":"temple-banking-practices-in-2nd-millennium-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/temple-banking-practices-in-2nd-millennium-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 2nd millennium BC, Babylonian temples operated as financial institutions issuing loans with documented interest rates."},{"title":"Temple Land Leases and Agricultural Contracts in 6th Century BC Babylon","slug":"temple-land-leases-and-agricultural-contracts-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/temple-land-leases-and-agricultural-contracts-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Temple institutions in 6th century BC Babylon leased vast tracts of farmland under written contracts specifying yield quotas."},{"title":"Uruk Administrative Archives Influencing Early Babylonian Governance","slug":"uruk-administrative-archives-influencing-early-babylonian-governance","url":"/categories/ancient-civilizations-secrets/babylonian-empire/uruk-administrative-archives-influencing-early-babylonian-governance.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before Babylon's dominance, Uruk's administrative tablets pioneered record-keeping systems later adopted by Babylonian rulers."},{"title":"Uruk Revival under Neo-Babylonian Administration in 7th Century BC","slug":"uruk-revival-under-neo-babylonian-administration-in-7th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/uruk-revival-under-neo-babylonian-administration-in-7th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 7th century BC, administrative reforms helped revive Uruk as a regional religious and economic center."},{"title":"Votive Offerings Inventory Lists in Neo-Babylonian Temples 7th Century BC","slug":"votive-offerings-inventory-lists-in-neo-babylonian-temples-7th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/votive-offerings-inventory-lists-in-neo-babylonian-temples-7th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Temple inventories from the 7th century BC catalogued gold, silver, and livestock with administrative precision."},{"title":"Water Transport Logistics on the Euphrates Supporting Babylonian Commerce","slug":"water-transport-logistics-on-the-euphrates-supporting-babylonian-commerce","url":"/categories/ancient-civilizations-secrets/babylonian-empire/water-transport-logistics-on-the-euphrates-supporting-babylonian-commerce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"River barges carried bulk goods along the Euphrates, enabling large-scale transport far more efficiently than overland caravans."},{"title":"Wealth Redistribution through Royal Building Campaigns in 6th Century BC Babylon","slug":"wealth-redistribution-through-royal-building-campaigns-in-6th-century-bc-babylon","url":"/categories/ancient-civilizations-secrets/babylonian-empire/wealth-redistribution-through-royal-building-campaigns-in-6th-century-bc-babylon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive construction campaigns under Nebuchadnezzar II redistributed imperial wealth through wages, materials, and tribute."},{"title":"Workshop Organization in Neo-Babylonian Craft Production 6th Century BC","slug":"workshop-organization-in-neo-babylonian-craft-production-6th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/workshop-organization-in-neo-babylonian-craft-production-6th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"6th century BC Babylon supported specialized workshops producing glazed bricks, textiles, and metalwork under regulated oversight."},{"title":"Xenophon Account of Babylon's Fall in 539 BC","slug":"xenophon-account-of-babylon-s-fall-in-539-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/xenophon-account-of-babylon-s-fall-in-539-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 539 BC, Babylon fell to Persian forces with remarkably little recorded urban destruction."},{"title":"Xerxes I Destruction of Babylonian Temples in 484 BC","slug":"xerxes-i-destruction-of-babylonian-temples-in-484-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/xerxes-i-destruction-of-babylonian-temples-in-484-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 484 BC, Persian king Xerxes I suppressed a Babylonian revolt and reportedly dismantled key temple structures."},{"title":"Yale Babylonian Collection Tablets Revealing 1800 BC Mathematics","slug":"yale-babylonian-collection-tablets-revealing-1800-bc-mathematics","url":"/categories/ancient-civilizations-secrets/babylonian-empire/yale-babylonian-collection-tablets-revealing-1800-bc-mathematics.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from around 1800 BC show Babylonians solving quadratic equations centuries before Greek formalism."},{"title":"Yoke Taxes and Labor Obligations in Old Babylonian Agricultural Policy","slug":"yoke-taxes-and-labor-obligations-in-old-babylonian-agricultural-policy","url":"/categories/ancient-civilizations-secrets/babylonian-empire/yoke-taxes-and-labor-obligations-in-old-babylonian-agricultural-policy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Old Babylonian farmers owed not only grain but scheduled labor measured in days of service."},{"title":"Ziggurat Etemenanki Measurements Recorded by Herodotus in 5th Century BC","slug":"ziggurat-etemenanki-measurements-recorded-by-herodotus-in-5th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/ziggurat-etemenanki-measurements-recorded-by-herodotus-in-5th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 5th century BC, Herodotus described a Babylonian tower with eight stacked levels rising in dramatic succession."},{"title":"Ziggurat of Babylon Engineering Techniques circa 600 BC","slug":"ziggurat-of-babylon-engineering-techniques-circa-600-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/ziggurat-of-babylon-engineering-techniques-circa-600-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 600 BC, Babylonian engineers constructed a staged temple tower rising roughly 90 meters without modern cranes."},{"title":"Ziggurat Restoration Inscriptions of Nebuchadnezzar II 6th Century BC","slug":"ziggurat-restoration-inscriptions-of-nebuchadnezzar-ii-6th-century-bc","url":"/categories/ancient-civilizations-secrets/babylonian-empire/ziggurat-restoration-inscriptions-of-nebuchadnezzar-ii-6th-century-bc.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Royal inscriptions from the 6th century BC describe rebuilding projects that claimed to reach the heavens while repairing structural decay."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

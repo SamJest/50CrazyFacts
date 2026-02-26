@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunda Clouded Leopard</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sunda Clouded Leopard</h1>
+  <p>Explore all facts in "Sunda Clouded Leopard".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sunda Clouded Leopard</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adaptive Coat Camouflage Makes the Sunda Clouded Leopard Nearly Invisible in Dappled Light","slug":"adaptive-coat-camouflage-makes-the-sunda-clouded-leopard-nearly-invisible-in-dappled-light","url":"/categories/endangered-predators/sunda-clouded-leopard/adaptive-coat-camouflage-makes-the-sunda-clouded-leopard-nearly-invisible-in-dappled-light.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A 20-kilogram predator can vanish five meters away in plain sight."},{"title":"Archaeological Evidence Suggests Sunda Clouded Leopards Survived Ice Age Sea-Level Swings","slug":"archaeological-evidence-suggests-sunda-clouded-leopards-survived-ice-age-sea-level-swings","url":"/categories/endangered-predators/sunda-clouded-leopard/archaeological-evidence-suggests-sunda-clouded-leopards-survived-ice-age-sea-level-swings.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This island predator endured oceans rising and drowning its world."},{"title":"Bite Placement Strategy Allows the Sunda Clouded Leopard to Kill Quickly in Tight Forest Space","slug":"bite-placement-strategy-allows-the-sunda-clouded-leopard-to-kill-quickly-in-tight-forest-space","url":"/categories/endangered-predators/sunda-clouded-leopard/bite-placement-strategy-allows-the-sunda-clouded-leopard-to-kill-quickly-in-tight-forest-space.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In seconds, this mid-sized cat can silence prey larger than expected."},{"title":"Borneo’s Forest Fires Can Erase Sunda Clouded Leopard Habitat in Weeks","slug":"borneo-s-forest-fires-can-erase-sunda-clouded-leopard-habitat-in-weeks","url":"/categories/endangered-predators/sunda-clouded-leopard/borneo-s-forest-fires-can-erase-sunda-clouded-leopard-habitat-in-weeks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire territories can burn to ash before a predator can escape."},{"title":"Camera Traps Reveal Sunda Clouded Leopards Roam at Night Through Human-Modified Landscapes","slug":"camera-traps-reveal-sunda-clouded-leopards-roam-at-night-through-human-modified-landscapes","url":"/categories/endangered-predators/sunda-clouded-leopard/camera-traps-reveal-sunda-clouded-leopards-roam-at-night-through-human-modified-landscapes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This secretive predator walks past plantations under cover of darkness."},{"title":"Connectivity Corridors Determine Whether Sunda Clouded Leopard Populations Remain Viable","slug":"connectivity-corridors-determine-whether-sunda-clouded-leopard-populations-remain-viable","url":"/categories/endangered-predators/sunda-clouded-leopard/connectivity-corridors-determine-whether-sunda-clouded-leopard-populations-remain-viable.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A strip of forest only hundreds of meters wide can decide extinction or survival."},{"title":"Deforestation Has Reduced Suitable Sunda Clouded Leopard Habitat by Large Margins in Decades","slug":"deforestation-has-reduced-suitable-sunda-clouded-leopard-habitat-by-large-margins-in-decades","url":"/categories/endangered-predators/sunda-clouded-leopard/deforestation-has-reduced-suitable-sunda-clouded-leopard-habitat-by-large-margins-in-decades.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A million-year-old predator is losing habitat within a single human lifetime."},{"title":"Dense Dipterocarp Forests Provide Core Habitat for the Sunda Clouded Leopard","slug":"dense-dipterocarp-forests-provide-core-habitat-for-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/dense-dipterocarp-forests-provide-core-habitat-for-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Towering trees over 60 meters tall form this predator’s natural fortress."},{"title":"Edge Effects from Forest Fragmentation Alter Hunting Conditions for the Sunda Clouded Leopard","slug":"edge-effects-from-forest-fragmentation-alter-hunting-conditions-for-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/edge-effects-from-forest-fragmentation-alter-hunting-conditions-for-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A forest edge can change temperature, light, and survival odds instantly."},{"title":"Extreme Canopy Specialization Makes Sunda Clouded Leopards Dependent on Mature Forest Structure","slug":"extreme-canopy-specialization-makes-sunda-clouded-leopards-dependent-on-mature-forest-structure","url":"/categories/endangered-predators/sunda-clouded-leopard/extreme-canopy-specialization-makes-sunda-clouded-leopards-dependent-on-mature-forest-structure.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove the tall trees and this predator’s superpowers collapse."},{"title":"Forest Interior Stability Allows the Sunda Clouded Leopard to Operate as a Silent Apex Predator","slug":"forest-interior-stability-allows-the-sunda-clouded-leopard-to-operate-as-a-silent-apex-predator","url":"/categories/endangered-predators/sunda-clouded-leopard/forest-interior-stability-allows-the-sunda-clouded-leopard-to-operate-as-a-silent-apex-predator.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Deep inside intact rainforest, this predator controls a hidden food web."},{"title":"Forest Road Expansion Increases Human Access Within Sunda Clouded Leopard Habitat","slug":"forest-road-expansion-increases-human-access-within-sunda-clouded-leopard-habitat","url":"/categories/endangered-predators/sunda-clouded-leopard/forest-road-expansion-increases-human-access-within-sunda-clouded-leopard-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single logging road can slice through centuries of predator territory."},{"title":"Fragmented Populations Increase Genetic Risks for Sunda Clouded Leopards","slug":"fragmented-populations-increase-genetic-risks-for-sunda-clouded-leopards","url":"/categories/endangered-predators/sunda-clouded-leopard/fragmented-populations-increase-genetic-risks-for-sunda-clouded-leopards.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Isolated forest pockets can turn survival into a genetic gamble."},{"title":"Genetic Distinctiveness Makes the Sunda Clouded Leopard Irreplaceable Among Living Cats","slug":"genetic-distinctiveness-makes-the-sunda-clouded-leopard-irreplaceable-among-living-cats","url":"/categories/endangered-predators/sunda-clouded-leopard/genetic-distinctiveness-makes-the-sunda-clouded-leopard-irreplaceable-among-living-cats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Lose this species and an entire evolutionary branch disappears forever."},{"title":"Habitat Conversion for Oil Palm Plantations Overlaps with Sunda Clouded Leopard Range","slug":"habitat-conversion-for-oil-palm-plantations-overlaps-with-sunda-clouded-leopard-range","url":"/categories/endangered-predators/sunda-clouded-leopard/habitat-conversion-for-oil-palm-plantations-overlaps-with-sunda-clouded-leopard-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rows of monoculture trees now stand where apex predators once hunted."},{"title":"High Rainfall Patterns Shape the Sunda Clouded Leopard’s Ecological Niche","slug":"high-rainfall-patterns-shape-the-sunda-clouded-leopard-s-ecological-niche","url":"/categories/endangered-predators/sunda-clouded-leopard/high-rainfall-patterns-shape-the-sunda-clouded-leopard-s-ecological-niche.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Relentless tropical rainfall defines this predator’s entire world."},{"title":"Island Endemism Makes the Sunda Clouded Leopard Highly Sensitive to Local Policy Decisions","slug":"island-endemism-makes-the-sunda-clouded-leopard-highly-sensitive-to-local-policy-decisions","url":"/categories/endangered-predators/sunda-clouded-leopard/island-endemism-makes-the-sunda-clouded-leopard-highly-sensitive-to-local-policy-decisions.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A regional law change can determine the fate of an entire species."},{"title":"Island Isolation Accelerated the Evolutionary Split of the Sunda Clouded Leopard","slug":"island-isolation-accelerated-the-evolutionary-split-of-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/island-isolation-accelerated-the-evolutionary-split-of-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Geographic isolation turned one leopard lineage into two."},{"title":"Juvenile Sunda Clouded Leopards Face High Risks in Fragmented Forest Landscapes","slug":"juvenile-sunda-clouded-leopards-face-high-risks-in-fragmented-forest-landscapes","url":"/categories/endangered-predators/sunda-clouded-leopard/juvenile-sunda-clouded-leopards-face-high-risks-in-fragmented-forest-landscapes.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young predators must navigate a maze of shrinking forest islands."},{"title":"Killing Efficiency of the Sunda Clouded Leopard Rivals Much Larger Big Cats","slug":"killing-efficiency-of-the-sunda-clouded-leopard-rivals-much-larger-big-cats","url":"/categories/endangered-predators/sunda-clouded-leopard/killing-efficiency-of-the-sunda-clouded-leopard-rivals-much-larger-big-cats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator half a tiger’s size can dispatch prey with surgical precision."},{"title":"Low Population Density Makes Sunda Clouded Leopards Difficult to Detect Even in Protected Areas","slug":"low-population-density-makes-sunda-clouded-leopards-difficult-to-detect-even-in-protected-areas","url":"/categories/endangered-predators/sunda-clouded-leopard/low-population-density-makes-sunda-clouded-leopards-difficult-to-detect-even-in-protected-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator can occupy a reserve and remain almost invisible."},{"title":"Metabolic Demands Force Sunda Clouded Leopards to Patrol Large Forest Territories","slug":"metabolic-demands-force-sunda-clouded-leopards-to-patrol-large-forest-territories","url":"/categories/endangered-predators/sunda-clouded-leopard/metabolic-demands-force-sunda-clouded-leopards-to-patrol-large-forest-territories.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single cat may need kilometers of forest just to survive."},{"title":"Mountainous Terrain Within Borneo Limits Continuous Range for the Sunda Clouded Leopard","slug":"mountainous-terrain-within-borneo-limits-continuous-range-for-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/mountainous-terrain-within-borneo-limits-continuous-range-for-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Rugged highlands can isolate forest predators as effectively as oceans."},{"title":"No Other Living Cat Combines Such Extreme Gape Angle with Medium Body Size","slug":"no-other-living-cat-combines-such-extreme-gape-angle-with-medium-body-size","url":"/categories/endangered-predators/sunda-clouded-leopard/no-other-living-cat-combines-such-extreme-gape-angle-with-medium-body-size.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This rainforest predator opens its jaws nearly 100 degrees."},{"title":"Oil Palm Expansion Continues Within the Historical Range of the Sunda Clouded Leopard","slug":"oil-palm-expansion-continues-within-the-historical-range-of-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/oil-palm-expansion-continues-within-the-historical-range-of-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Industrial agriculture now overlaps the world of a prehistoric-looking predator."},{"title":"Population Estimates for the Sunda Clouded Leopard Remain Uncertain Due to Elusiveness","slug":"population-estimates-for-the-sunda-clouded-leopard-remain-uncertain-due-to-elusiveness","url":"/categories/endangered-predators/sunda-clouded-leopard/population-estimates-for-the-sunda-clouded-leopard-remain-uncertain-due-to-elusiveness.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator exists in numbers no one can precisely count."},{"title":"Prey Diversity in Southeast Asian Rainforests Sustains the Sunda Clouded Leopard’s Hunting Strategy","slug":"prey-diversity-in-southeast-asian-rainforests-sustains-the-sunda-clouded-leopard-s-hunting-strategy","url":"/categories/endangered-predators/sunda-clouded-leopard/prey-diversity-in-southeast-asian-rainforests-sustains-the-sunda-clouded-leopard-s-hunting-strategy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator’s survival depends on a hidden web of rainforest life."},{"title":"Quaternary Climate Cycles Shaped the Evolutionary Path of the Sunda Clouded Leopard","slug":"quaternary-climate-cycles-shaped-the-evolutionary-path-of-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/quaternary-climate-cycles-shaped-the-evolutionary-path-of-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Ice ages repeatedly rewrote this predator’s entire map."},{"title":"Rainforest Vertical Layers Create a Three-Dimensional Hunting Arena for the Sunda Clouded Leopard","slug":"rainforest-vertical-layers-create-a-three-dimensional-hunting-arena-for-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/rainforest-vertical-layers-create-a-three-dimensional-hunting-arena-for-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This predator hunts in a world stacked above itself."},{"title":"Remaining Primary Forest Strongholds Are Critical for the Sunda Clouded Leopard’s Future","slug":"remaining-primary-forest-strongholds-are-critical-for-the-sunda-clouded-leopard-s-future","url":"/categories/endangered-predators/sunda-clouded-leopard/remaining-primary-forest-strongholds-are-critical-for-the-sunda-clouded-leopard-s-future.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Only pockets of untouched forest still anchor this predator’s existence."},{"title":"Sunda Clouded Leopards Are Solitary in Forests So Dense They Rarely See Each Other","slug":"sunda-clouded-leopards-are-solitary-in-forests-so-dense-they-rarely-see-each-other","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-are-solitary-in-forests-so-dense-they-rarely-see-each-other.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator can live its entire life without seeing another adult."},{"title":"Sunda Clouded Leopards Can Climb Down Trees Headfirst Like Squirrels","slug":"sunda-clouded-leopards-can-climb-down-trees-headfirst-like-squirrels","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-can-climb-down-trees-headfirst-like-squirrels.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This big cat walks down vertical tree trunks headfirst."},{"title":"Sunda Clouded Leopards Have Distinctive Cloud-Like Coat Patterns Unique to Each Individual","slug":"sunda-clouded-leopards-have-distinctive-cloud-like-coat-patterns-unique-to-each-individual","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-have-distinctive-cloud-like-coat-patterns-unique-to-each-individual.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"No two of these forest predators carry the same cloud-shaped markings."},{"title":"Sunda Clouded Leopards Have Fangs Proportionally Longer Than Saber-Toothed Cats","slug":"sunda-clouded-leopards-have-fangs-proportionally-longer-than-saber-toothed-cats","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-have-fangs-proportionally-longer-than-saber-toothed-cats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This forest cat carries saber-length fangs that look evolutionarily impossible."},{"title":"Sunda Clouded Leopards Have One of the Longest Tails Relative to Body Size in Cats","slug":"sunda-clouded-leopards-have-one-of-the-longest-tails-relative-to-body-size-in-cats","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-have-one-of-the-longest-tails-relative-to-body-size-in-cats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This cat’s tail is nearly its body length and acts like a tightrope pole."},{"title":"Sunda Clouded Leopards Have Paw Pads Adapted for Silent Rainforest Ambush","slug":"sunda-clouded-leopards-have-paw-pads-adapted-for-silent-rainforest-ambush","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-have-paw-pads-adapted-for-silent-rainforest-ambush.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In a rainforest louder than a jet engine, this predator hunts unheard."},{"title":"Sunda Clouded Leopards Hunt in Forests Losing Thousands of Square Kilometers Annually","slug":"sunda-clouded-leopards-hunt-in-forests-losing-thousands-of-square-kilometers-annually","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-hunt-in-forests-losing-thousands-of-square-kilometers-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This apex predator’s entire world is being erased faster than cities expand."},{"title":"Sunda Clouded Leopards Occupy Only Two Islands in the Entire World","slug":"sunda-clouded-leopards-occupy-only-two-islands-in-the-entire-world","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-occupy-only-two-islands-in-the-entire-world.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An apex predator’s global range fits on two shrinking islands."},{"title":"Sunda Clouded Leopards Remained Undiscovered as a Separate Species Until 2007","slug":"sunda-clouded-leopards-remained-undiscovered-as-a-separate-species-until-2007","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-remained-undiscovered-as-a-separate-species-until-2007.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A large predator hid in plain sight until the 21st century."},{"title":"Sunda Clouded Leopards Share Islands with Massive Rivers That Limit Their Movement","slug":"sunda-clouded-leopards-share-islands-with-massive-rivers-that-limit-their-movement","url":"/categories/endangered-predators/sunda-clouded-leopard/sunda-clouded-leopards-share-islands-with-massive-rivers-that-limit-their-movement.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A river a few hundred meters wide can trap a predator for life."},{"title":"Territorial Overlap in Fragmented Forests Can Increase Conflict Among Sunda Clouded Leopards","slug":"territorial-overlap-in-fragmented-forests-can-increase-conflict-among-sunda-clouded-leopards","url":"/categories/endangered-predators/sunda-clouded-leopard/territorial-overlap-in-fragmented-forests-can-increase-conflict-among-sunda-clouded-leopards.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Shrinking forests force solitary predators into closer proximity."},{"title":"Understory Density Directly Influences Ambush Success of the Sunda Clouded Leopard","slug":"understory-density-directly-influences-ambush-success-of-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/understory-density-directly-influences-ambush-success-of-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Thin the forest floor and this predator loses its edge."},{"title":"Unique Skull Structure Distinguishes the Sunda Clouded Leopard from Mainland Relatives","slug":"unique-skull-structure-distinguishes-the-sunda-clouded-leopard-from-mainland-relatives","url":"/categories/endangered-predators/sunda-clouded-leopard/unique-skull-structure-distinguishes-the-sunda-clouded-leopard-from-mainland-relatives.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two nearly identical cats hide measurable skull differences."},{"title":"Vertical Isolation in Fragmented Forests Can Trap Sunda Clouded Leopards in Habitat Islands","slug":"vertical-isolation-in-fragmented-forests-can-trap-sunda-clouded-leopards-in-habitat-islands","url":"/categories/endangered-predators/sunda-clouded-leopard/vertical-isolation-in-fragmented-forests-can-trap-sunda-clouded-leopards-in-habitat-islands.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Clear a ring of land and a forest predator becomes stranded."},{"title":"Vulnerability Status Highlights Ongoing Decline of the Sunda Clouded Leopard","slug":"vulnerability-status-highlights-ongoing-decline-of-the-sunda-clouded-leopard","url":"/categories/endangered-predators/sunda-clouded-leopard/vulnerability-status-highlights-ongoing-decline-of-the-sunda-clouded-leopard.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator built for ambush cannot evade habitat collapse."},{"title":"Wide Forest Rivers Act as Natural Barriers Within the Sunda Clouded Leopard’s Range","slug":"wide-forest-rivers-act-as-natural-barriers-within-the-sunda-clouded-leopard-s-range","url":"/categories/endangered-predators/sunda-clouded-leopard/wide-forest-rivers-act-as-natural-barriers-within-the-sunda-clouded-leopard-s-range.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single river can split a predator’s population in two."},{"title":"X-Factor Jaw Strength Allows the Sunda Clouded Leopard to Subdue Prey Larger Than Expected","slug":"x-factor-jaw-strength-allows-the-sunda-clouded-leopard-to-subdue-prey-larger-than-expected","url":"/categories/endangered-predators/sunda-clouded-leopard/x-factor-jaw-strength-allows-the-sunda-clouded-leopard-to-subdue-prey-larger-than-expected.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This mid-sized cat can overpower prey nearly its own size."},{"title":"Young Sunda Clouded Leopards Depend on Dense Cover to Avoid Larger Predators","slug":"young-sunda-clouded-leopards-depend-on-dense-cover-to-avoid-larger-predators","url":"/categories/endangered-predators/sunda-clouded-leopard/young-sunda-clouded-leopards-depend-on-dense-cover-to-avoid-larger-predators.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even a skilled predator begins life vulnerable in the canopy."},{"title":"Zoological Research in 2007 Redefined the Sunda Clouded Leopard as a Separate Species","slug":"zoological-research-in-2007-redefined-the-sunda-clouded-leopard-as-a-separate-species","url":"/categories/endangered-predators/sunda-clouded-leopard/zoological-research-in-2007-redefined-the-sunda-clouded-leopard-as-a-separate-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A genetic revelation split one leopard into two."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

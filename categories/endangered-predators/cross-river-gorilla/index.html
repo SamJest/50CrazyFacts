@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cross River Gorilla</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Cross River Gorilla</h1>
+  <p>Explore all facts in "Cross River Gorilla".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Cross River Gorilla</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Single Road Can Split the Entire Cross River Gorilla Population in Half","slug":"a-single-road-can-split-the-entire-cross-river-gorilla-population-in-half","url":"/categories/endangered-predators/cross-river-gorilla/a-single-road-can-split-the-entire-cross-river-gorilla-population-in-half.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One paved road can fracture an entire great ape subspecies."},{"title":"Boké Forest Blocks Contain Entire Cross River Gorilla Family Lines","slug":"bok-forest-blocks-contain-entire-cross-river-gorilla-family-lines","url":"/categories/endangered-predators/cross-river-gorilla/bok-forest-blocks-contain-entire-cross-river-gorilla-family-lines.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire genetic bloodline may survive in one forest block."},{"title":"Cross River Gorilla Females Give Birth Only Every Four to Six Years","slug":"cross-river-gorilla-females-give-birth-only-every-four-to-six-years","url":"/categories/endangered-predators/cross-river-gorilla/cross-river-gorilla-females-give-birth-only-every-four-to-six-years.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single baby can take half a decade to replace."},{"title":"Cross River Gorillas Are Genetically Distinct From All Other Western Gorillas","slug":"cross-river-gorillas-are-genetically-distinct-from-all-other-western-gorillas","url":"/categories/endangered-predators/cross-river-gorilla/cross-river-gorillas-are-genetically-distinct-from-all-other-western-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These gorillas are genetically isolated from their closest relatives."},{"title":"Cross River Gorillas Build Night Nests on Mountain Slopes for Survival","slug":"cross-river-gorillas-build-night-nests-on-mountain-slopes-for-survival","url":"/categories/endangered-predators/cross-river-gorilla/cross-river-gorillas-build-night-nests-on-mountain-slopes-for-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every night, these apes rebuild a bed on a mountainside."},{"title":"Cross River Gorillas Climb Cliffs Other Gorillas Avoid to Escape Humans","slug":"cross-river-gorillas-climb-cliffs-other-gorillas-avoid-to-escape-humans","url":"/categories/endangered-predators/cross-river-gorilla/cross-river-gorillas-climb-cliffs-other-gorillas-avoid-to-escape-humans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These gorillas scale near-vertical cliffs most apes refuse to touch."},{"title":"Cross River Gorillas Survive in Fewer Than 300 Individuals Across Four Countries","slug":"cross-river-gorillas-survive-in-fewer-than-300-individuals-across-four-countries","url":"/categories/endangered-predators/cross-river-gorilla/cross-river-gorillas-survive-in-fewer-than-300-individuals-across-four-countries.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 300 of these giants remain alive on Earth."},{"title":"Cross River Gorillas Were Once Thought Extinct in the 20th Century","slug":"cross-river-gorillas-were-once-thought-extinct-in-the-20th-century","url":"/categories/endangered-predators/cross-river-gorilla/cross-river-gorillas-were-once-thought-extinct-in-the-20th-century.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"For decades, scientists feared this ape was already gone."},{"title":"Disease Could Wipe Out 10 Percent of Cross River Gorillas in One Outbreak","slug":"disease-could-wipe-out-10-percent-of-cross-river-gorillas-in-one-outbreak","url":"/categories/endangered-predators/cross-river-gorilla/disease-could-wipe-out-10-percent-of-cross-river-gorillas-in-one-outbreak.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single virus could erase a tenth of the species overnight."},{"title":"Extremely Low Density Means You Could Walk for Days Without Seeing One","slug":"extremely-low-density-means-you-could-walk-for-days-without-seeing-one","url":"/categories/endangered-predators/cross-river-gorilla/extremely-low-density-means-you-could-walk-for-days-without-seeing-one.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"You can trek their forest for days and never see a gorilla."},{"title":"Genetic Rescue May Require Moving Cross River Gorillas Between Countries","slug":"genetic-rescue-may-require-moving-cross-river-gorillas-between-countries","url":"/categories/endangered-predators/cross-river-gorilla/genetic-rescue-may-require-moving-cross-river-gorillas-between-countries.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Saving this ape may mean moving it across borders."},{"title":"Highland Forest Loss Shrinks Cross River Gorilla Habitat to Isolated Peaks","slug":"highland-forest-loss-shrinks-cross-river-gorilla-habitat-to-isolated-peaks","url":"/categories/endangered-predators/cross-river-gorilla/highland-forest-loss-shrinks-cross-river-gorilla-habitat-to-isolated-peaks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire gorilla groups now survive on mountaintop islands."},{"title":"Inbreeding Risk Rises as Cross River Gorilla Groups Shrink Below 20 Individuals","slug":"inbreeding-risk-rises-as-cross-river-gorilla-groups-shrink-below-20-individuals","url":"/categories/endangered-predators/cross-river-gorilla/inbreeding-risk-rises-as-cross-river-gorilla-groups-shrink-below-20-individuals.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A troop smaller than a classroom can face genetic collapse."},{"title":"Logging Roads Increase Poaching Access to Remote Gorilla Strongholds","slug":"logging-roads-increase-poaching-access-to-remote-gorilla-strongholds","url":"/categories/endangered-predators/cross-river-gorilla/logging-roads-increase-poaching-access-to-remote-gorilla-strongholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A dirt road can turn a sanctuary into a hunting ground."},{"title":"Mountain Refuges Shielded Cross River Gorillas During Decades of Instability","slug":"mountain-refuges-shielded-cross-river-gorillas-during-decades-of-instability","url":"/categories/endangered-predators/cross-river-gorilla/mountain-refuges-shielded-cross-river-gorillas-during-decades-of-instability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Political instability nearly erased them without anyone noticing."},{"title":"Nigeria-Cameroon Border Forests Hold the Last Wild Cross River Gorillas","slug":"nigeria-cameroon-border-forests-hold-the-last-wild-cross-river-gorillas","url":"/categories/endangered-predators/cross-river-gorilla/nigeria-cameroon-border-forests-hold-the-last-wild-cross-river-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cross one invisible border and the species disappears."},{"title":"Only a Handful of Silverbacks Lead the Entire Cross River Gorilla Population","slug":"only-a-handful-of-silverbacks-lead-the-entire-cross-river-gorilla-population","url":"/categories/endangered-predators/cross-river-gorilla/only-a-handful-of-silverbacks-lead-the-entire-cross-river-gorilla-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer dominant males hold the future of an entire subspecies."},{"title":"Poaching Pressure Once Reduced Some Cross River Gorilla Groups to Single Digits","slug":"poaching-pressure-once-reduced-some-cross-river-gorilla-groups-to-single-digits","url":"/categories/endangered-predators/cross-river-gorilla/poaching-pressure-once-reduced-some-cross-river-gorilla-groups-to-single-digits.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Entire family groups once shrank to fewer than ten individuals."},{"title":"Quasi-Isolated Gorilla Clusters Behave Like Separate Endangered Species","slug":"quasi-isolated-gorilla-clusters-behave-like-separate-endangered-species","url":"/categories/endangered-predators/cross-river-gorilla/quasi-isolated-gorilla-clusters-behave-like-separate-endangered-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some groups are so cut off they function alone."},{"title":"Rugged Terrain Limits Scientific Access to Cross River Gorilla Strongholds","slug":"rugged-terrain-limits-scientific-access-to-cross-river-gorilla-strongholds","url":"/categories/endangered-predators/cross-river-gorilla/rugged-terrain-limits-scientific-access-to-cross-river-gorilla-strongholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Researchers must hike days through cliffs to count them."},{"title":"Small-Scale Farming Expansion Pushes Cross River Gorillas Toward Ecological Edges","slug":"small-scale-farming-expansion-pushes-cross-river-gorillas-toward-ecological-edges","url":"/categories/endangered-predators/cross-river-gorilla/small-scale-farming-expansion-pushes-cross-river-gorillas-toward-ecological-edges.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single new farm can push a great ape uphill."},{"title":"Transboundary Parks Form the Only Safety Net for Cross River Gorillas","slug":"transboundary-parks-form-the-only-safety-net-for-cross-river-gorillas","url":"/categories/endangered-predators/cross-river-gorilla/transboundary-parks-form-the-only-safety-net-for-cross-river-gorillas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Without two nations cooperating, this ape has no refuge."},{"title":"Under 300 Cross River Gorillas Means Every Infant Is Statistically Critical","slug":"under-300-cross-river-gorillas-means-every-infant-is-statistically-critical","url":"/categories/endangered-predators/cross-river-gorilla/under-300-cross-river-gorillas-means-every-infant-is-statistically-critical.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Each newborn shifts the survival odds of an entire subspecies."},{"title":"Very Low Tourism Presence Leaves Cross River Gorillas Economically Invisible","slug":"very-low-tourism-presence-leaves-cross-river-gorillas-economically-invisible","url":"/categories/endangered-predators/cross-river-gorilla/very-low-tourism-presence-leaves-cross-river-gorillas-economically-invisible.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Unlike other gorillas, these generate almost no tourism revenue."},{"title":"Wildfire and Climate Variability Could Impact All Cross River Gorillas at Once","slug":"wildfire-and-climate-variability-could-impact-all-cross-river-gorillas-at-once","url":"/categories/endangered-predators/cross-river-gorilla/wildfire-and-climate-variability-could-impact-all-cross-river-gorillas-at-once.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One extreme climate event could hit nearly every individual."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

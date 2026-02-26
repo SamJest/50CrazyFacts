@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Javan Rhino</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Javan Rhino</h1>
+  <p>Explore all facts in "Javan Rhino".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Javan Rhino</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"2010 Vietnam Extinction Left Indonesia as the Sole Javan Rhino Refuge","slug":"2010-vietnam-extinction-left-indonesia-as-the-sole-javan-rhino-refuge","url":"/categories/endangered-predators/javan-rhino/2010-vietnam-extinction-left-indonesia-as-the-sole-javan-rhino-refuge.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In one year, an entire nation lost its last Javan rhino and never recovered it."},{"title":"2018 Sunda Strait Tsunami Struck Within Kilometers of the Last Javan Rhinos","slug":"2018-sunda-strait-tsunami-struck-within-kilometers-of-the-last-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/2018-sunda-strait-tsunami-struck-within-kilometers-of-the-last-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A sudden nighttime tsunami hit the same coastline that holds an entire species."},{"title":"Anak Krakatau 2018 Eruption Narrowly Missed Javan Rhino Core Habitat","slug":"anak-krakatau-2018-eruption-narrowly-missed-javan-rhino-core-habitat","url":"/categories/endangered-predators/javan-rhino/anak-krakatau-2018-eruption-narrowly-missed-javan-rhino-core-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A volcanic island collapse sent a tsunami toward the world’s rarest rhino."},{"title":"Arenga Palm Overgrowth Once Reduced Forage Access for Javan Rhinos","slug":"arenga-palm-overgrowth-once-reduced-forage-access-for-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/arenga-palm-overgrowth-once-reduced-forage-access-for-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An invasive palm tree once threatened to outcompete the food supply of an entire species."},{"title":"Genetic Bottleneck Limits Javan Rhino Recovery to Dozens of Breeding Adults","slug":"genetic-bottleneck-limits-javan-rhino-recovery-to-dozens-of-breeding-adults","url":"/categories/endangered-predators/javan-rhino/genetic-bottleneck-limits-javan-rhino-recovery-to-dozens-of-breeding-adults.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire species now depends on the fertility of fewer than 40 females."},{"title":"Illegal Rhino Horn Trade Continues Despite Global Ban Under CITES","slug":"illegal-rhino-horn-trade-continues-despite-global-ban-under-cites","url":"/categories/endangered-predators/javan-rhino/illegal-rhino-horn-trade-continues-despite-global-ban-under-cites.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A banned international trade still threatens one of Earth’s rarest mammals."},{"title":"Illegal Snaring Networks Once Reduced Asian Rhino Populations by Thousands","slug":"illegal-snaring-networks-once-reduced-asian-rhino-populations-by-thousands","url":"/categories/endangered-predators/javan-rhino/illegal-snaring-networks-once-reduced-asian-rhino-populations-by-thousands.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Wire loops set for bushmeat once devastated rhino populations across Asia."},{"title":"Java’s 19th Century Hunting Pressure Reduced Javan Rhinos to Dozens","slug":"java-s-19th-century-hunting-pressure-reduced-javan-rhinos-to-dozens","url":"/categories/endangered-predators/javan-rhino/java-s-19th-century-hunting-pressure-reduced-javan-rhinos-to-dozens.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Within a few generations, a continental species was reduced to a few dozen survivors."},{"title":"Java’s Isolation Prevented Natural Recolonization After Mainland Extinction","slug":"java-s-isolation-prevented-natural-recolonization-after-mainland-extinction","url":"/categories/endangered-predators/javan-rhino/java-s-isolation-prevented-natural-recolonization-after-mainland-extinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Once mainland populations vanished, there was no migration route back."},{"title":"Java’s Western Tip Now Contains the Entire Global Range of a Rhino Species","slug":"java-s-western-tip-now-contains-the-entire-global-range-of-a-rhino-species","url":"/categories/endangered-predators/javan-rhino/java-s-western-tip-now-contains-the-entire-global-range-of-a-rhino-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One peninsula on Earth now represents 100 percent of a species’ habitat."},{"title":"Javan Rhino Gestation Lasts 16 Months With Years Between Births","slug":"javan-rhino-gestation-lasts-16-months-with-years-between-births","url":"/categories/endangered-predators/javan-rhino/javan-rhino-gestation-lasts-16-months-with-years-between-births.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A pregnancy longer than a year now determines whether a species survives."},{"title":"Kalimantan Habitat Proposals Aim to Create a Second Javan Rhino Population","slug":"kalimantan-habitat-proposals-aim-to-create-a-second-javan-rhino-population","url":"/categories/endangered-predators/javan-rhino/kalimantan-habitat-proposals-aim-to-create-a-second-javan-rhino-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Conservationists are searching for an entirely new homeland for one of Earth’s rarest mammals."},{"title":"Kalimantan Relocation Proposals Reflect High-Stakes Diversification Strategy","slug":"kalimantan-relocation-proposals-reflect-high-stakes-diversification-strategy","url":"/categories/endangered-predators/javan-rhino/kalimantan-relocation-proposals-reflect-high-stakes-diversification-strategy.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Moving even a handful of individuals could determine whether this species survives the century."},{"title":"Kalimantan Secondary Habitat Planning Reflects Insurance Against Single-Site Collapse","slug":"kalimantan-secondary-habitat-planning-reflects-insurance-against-single-site-collapse","url":"/categories/endangered-predators/javan-rhino/kalimantan-secondary-habitat-planning-reflects-insurance-against-single-site-collapse.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Creating a second refuge could determine whether this species survives a single disaster."},{"title":"Keratine Horn Composition Drives Illegal Demand Despite Zero Medicinal Evidence","slug":"keratine-horn-composition-drives-illegal-demand-despite-zero-medicinal-evidence","url":"/categories/endangered-predators/javan-rhino/keratine-horn-composition-drives-illegal-demand-despite-zero-medicinal-evidence.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A substance chemically identical to human fingernails still fuels a multimillion-dollar black market."},{"title":"Killing One Javan Rhino Removes Over 1 Percent of the Species","slug":"killing-one-javan-rhino-removes-over-1-percent-of-the-species","url":"/categories/endangered-predators/javan-rhino/killing-one-javan-rhino-removes-over-1-percent-of-the-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One animal now equals more than one percent of its species."},{"title":"Krakatau Caldera Formation Reshaped the Ecosystem Surrounding Ujung Kulon","slug":"krakatau-caldera-formation-reshaped-the-ecosystem-surrounding-ujung-kulon","url":"/categories/endangered-predators/javan-rhino/krakatau-caldera-formation-reshaped-the-ecosystem-surrounding-ujung-kulon.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A volcanic collapse in 1883 permanently altered the landscape beside the last Javan rhinos."},{"title":"Krakatoa 1883 Explosion Reshaped the Same Coastline Javan Rhinos Now Inhabit","slug":"krakatoa-1883-explosion-reshaped-the-same-coastline-javan-rhinos-now-inhabit","url":"/categories/endangered-predators/javan-rhino/krakatoa-1883-explosion-reshaped-the-same-coastline-javan-rhinos-now-inhabit.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The loudest eruption in recorded history occurred beside the last refuge of a nearly extinct species."},{"title":"Krakatoa 1883 Tsunami Heights Exceeded 30 Meters Near Rhino Habitat","slug":"krakatoa-1883-tsunami-heights-exceeded-30-meters-near-rhino-habitat","url":"/categories/endangered-predators/javan-rhino/krakatoa-1883-tsunami-heights-exceeded-30-meters-near-rhino-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Waves taller than a 10-story building once struck beside today’s entire population."},{"title":"Krakatoa Shockwaves in 1883 Were Heard Thousands of Kilometers From the Rhino’s Current Habitat","slug":"krakatoa-shockwaves-in-1883-were-heard-thousands-of-kilometers-from-the-rhino-s-current-habitat","url":"/categories/endangered-predators/javan-rhino/krakatoa-shockwaves-in-1883-were-heard-thousands-of-kilometers-from-the-rhino-s-current-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The loudest eruption in recorded history occurred beside the last refuge of this species."},{"title":"Krakatoa Tsunami Risk Threatens the Last Javan Rhinos","slug":"krakatoa-tsunami-risk-threatens-the-last-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/krakatoa-tsunami-risk-threatens-the-last-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One volcanic tsunami could erase the last wild Javan rhinos overnight."},{"title":"Krakatoa’s Active Volcanic Arc Places the Entire Javan Rhino Range in a Seismic Zone","slug":"krakatoa-s-active-volcanic-arc-places-the-entire-javan-rhino-range-in-a-seismic-zone","url":"/categories/endangered-predators/javan-rhino/krakatoa-s-active-volcanic-arc-places-the-entire-javan-rhino-range-in-a-seismic-zone.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every surviving Javan rhino lives within reach of an active volcanic arc."},{"title":"Quarantine Buffer Zones Protect Fewer Than 80 Javan Rhinos From Livestock Disease","slug":"quarantine-buffer-zones-protect-fewer-than-80-javan-rhinos-from-livestock-disease","url":"/categories/endangered-predators/javan-rhino/quarantine-buffer-zones-protect-fewer-than-80-javan-rhinos-from-livestock-disease.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A domestic cow grazing too close to a park boundary could trigger extinction-level consequences."},{"title":"Quaternary Fossil Record Shows Javan Rhinos Survived Ice Ages but Not Modern Expansion","slug":"quaternary-fossil-record-shows-javan-rhinos-survived-ice-ages-but-not-modern-expansion","url":"/categories/endangered-predators/javan-rhino/quaternary-fossil-record-shows-javan-rhinos-survived-ice-ages-but-not-modern-expansion.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A species that endured ice ages now survives only in one shrinking refuge."},{"title":"Quaternary Range Once Spanned India to Indonesia Before Collapse","slug":"quaternary-range-once-spanned-india-to-indonesia-before-collapse","url":"/categories/endangered-predators/javan-rhino/quaternary-range-once-spanned-india-to-indonesia-before-collapse.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A rhino that once roamed across Asia now fits inside one park."},{"title":"Ujung Kulon Boundary Integrity Directly Determines Global Javan Rhino Survival","slug":"ujung-kulon-boundary-integrity-directly-determines-global-javan-rhino-survival","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-boundary-integrity-directly-determines-global-javan-rhino-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single park boundary line now separates extinction from continuity."},{"title":"Ujung Kulon Camera Trap Network Tracks Nearly Every Living Javan Rhino","slug":"ujung-kulon-camera-trap-network-tracks-nearly-every-living-javan-rhino","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-camera-trap-network-tracks-nearly-every-living-javan-rhino.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Researchers can account for almost every surviving individual of an entire species."},{"title":"Ujung Kulon Patrol Units Operate Year-Round to Guard Every Remaining Javan Rhino","slug":"ujung-kulon-patrol-units-operate-year-round-to-guard-every-remaining-javan-rhino","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-patrol-units-operate-year-round-to-guard-every-remaining-javan-rhino.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Armed ranger patrols now protect fewer than 80 animals that represent an entire species."},{"title":"Ujung Kulon Peninsula Holds Fewer Than 80 Javan Rhinos in 2024","slug":"ujung-kulon-peninsula-holds-fewer-than-80-javan-rhinos-in-2024","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-peninsula-holds-fewer-than-80-javan-rhinos-in-2024.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire species now survives inside a single Indonesian peninsula smaller than Los Angeles."},{"title":"Ujung Kulon UNESCO Status Shields the Last Wild Javan Rhinos","slug":"ujung-kulon-unesco-status-shields-the-last-wild-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-unesco-status-shields-the-last-wild-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A World Heritage designation now protects every surviving member of an entire species."},{"title":"Ujung Kulon’s 1,200 Square Kilometers Now Define a Species’ Entire World","slug":"ujung-kulon-s-1-200-square-kilometers-now-define-a-species-entire-world","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-s-1-200-square-kilometers-now-define-a-species-entire-world.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A territory smaller than a major city now contains a whole evolutionary lineage."},{"title":"Ujung Kulon’s 1,200 Square Kilometers Serve as the Sole Genetic Reservoir for Javan Rhinos","slug":"ujung-kulon-s-1-200-square-kilometers-serve-as-the-sole-genetic-reservoir-for-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-s-1-200-square-kilometers-serve-as-the-sole-genetic-reservoir-for-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single protected area now holds 100 percent of this species’ genetic future."},{"title":"Ujung Kulon’s Coastal Elevation Leaves the Javan Rhino Exposed to Tsunami Inundation","slug":"ujung-kulon-s-coastal-elevation-leaves-the-javan-rhino-exposed-to-tsunami-inundation","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-s-coastal-elevation-leaves-the-javan-rhino-exposed-to-tsunami-inundation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Much of a species’ final habitat sits only meters above sea level."},{"title":"Ujung Kulon’s UNESCO World Heritage Status Adds International Oversight to Rhino Protection","slug":"ujung-kulon-s-unesco-world-heritage-status-adds-international-oversight-to-rhino-protection","url":"/categories/endangered-predators/javan-rhino/ujung-kulon-s-unesco-world-heritage-status-adds-international-oversight-to-rhino-protection.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An international treaty now stands between this species and extinction."},{"title":"Under 40 Breeding Females Determine the Future of the Javan Rhino","slug":"under-40-breeding-females-determine-the-future-of-the-javan-rhino","url":"/categories/endangered-predators/javan-rhino/under-40-breeding-females-determine-the-future-of-the-javan-rhino.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer than 40 mothers now carry the survival odds of an entire species."},{"title":"Vietnam’s Last Javan Rhino Was Killed in 2010 for Its Horn","slug":"vietnam-s-last-javan-rhino-was-killed-in-2010-for-its-horn","url":"/categories/endangered-predators/javan-rhino/vietnam-s-last-javan-rhino-was-killed-in-2010-for-its-horn.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single poached animal ended an entire country’s population forever."},{"title":"Xanthophyll-Rich Diet Shapes Javan Rhino Survival in Ujung Kulon","slug":"xanthophyll-rich-diet-shapes-javan-rhino-survival-in-ujung-kulon","url":"/categories/endangered-predators/javan-rhino/xanthophyll-rich-diet-shapes-javan-rhino-survival-in-ujung-kulon.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A plant pigment most people associate with autumn leaves now influences the survival of an entire megafauna species."},{"title":"Xeric Season Water Scarcity Can Stress the Entire Javan Rhino Population","slug":"xeric-season-water-scarcity-can-stress-the-entire-javan-rhino-population","url":"/categories/endangered-predators/javan-rhino/xeric-season-water-scarcity-can-stress-the-entire-javan-rhino-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A prolonged dry spell can strain every remaining member of an entire species at once."},{"title":"Y-Chromosome Scarcity Intensifies Javan Rhino Genetic Bottleneck","slug":"y-chromosome-scarcity-intensifies-javan-rhino-genetic-bottleneck","url":"/categories/endangered-predators/javan-rhino/y-chromosome-scarcity-intensifies-javan-rhino-genetic-bottleneck.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A shrinking gene pool now hinges on the inheritance patterns of fewer than 40 breeding pairs."},{"title":"Yards of Mud Wallows Are Essential to Javan Rhino Thermoregulation","slug":"yards-of-mud-wallows-are-essential-to-javan-rhino-thermoregulation","url":"/categories/endangered-predators/javan-rhino/yards-of-mud-wallows-are-essential-to-javan-rhino-thermoregulation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A shallow mud pool now doubles as climate control for a species on the brink."},{"title":"Yellow Fever Style Spillover Risks Highlight Disease Fragility in Small Rhino Populations","slug":"yellow-fever-style-spillover-risks-highlight-disease-fragility-in-small-rhino-populations","url":"/categories/endangered-predators/javan-rhino/yellow-fever-style-spillover-risks-highlight-disease-fragility-in-small-rhino-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A pathogen introduced once could cascade through an entire species with no geographic escape."},{"title":"Zero Captive Javan Rhinos Exist Anywhere in the World","slug":"zero-captive-javan-rhinos-exist-anywhere-in-the-world","url":"/categories/endangered-predators/javan-rhino/zero-captive-javan-rhinos-exist-anywhere-in-the-world.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Not a single Javan rhino lives in a zoo anywhere on Earth."},{"title":"Zero Genetic Rescue Options Exist Outside Indonesia for Javan Rhinos","slug":"zero-genetic-rescue-options-exist-outside-indonesia-for-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/zero-genetic-rescue-options-exist-outside-indonesia-for-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"No foreign zoo, reserve, or breeding center holds a single backup individual."},{"title":"Zero Margin for Poaching Exists When Each Javan Rhino Equals Over 1 Percent of the Species","slug":"zero-margin-for-poaching-exists-when-each-javan-rhino-equals-over-1-percent-of-the-species","url":"/categories/endangered-predators/javan-rhino/zero-margin-for-poaching-exists-when-each-javan-rhino-equals-over-1-percent-of-the-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Losing one animal now removes more than one percent of an entire species overnight."},{"title":"Zero Migration Corridors Connect the Javan Rhino to Any Other Population","slug":"zero-migration-corridors-connect-the-javan-rhino-to-any-other-population","url":"/categories/endangered-predators/javan-rhino/zero-migration-corridors-connect-the-javan-rhino-to-any-other-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"There is no path out of its final refuge."},{"title":"Zoological Absence Means No Assisted Reproductive Backup for Javan Rhinos","slug":"zoological-absence-means-no-assisted-reproductive-backup-for-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/zoological-absence-means-no-assisted-reproductive-backup-for-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"There is no laboratory or zoo breeding program waiting to rescue this species."},{"title":"Zoological Failure in the 19th Century Left No Captive Lineage of Javan Rhinos","slug":"zoological-failure-in-the-19th-century-left-no-captive-lineage-of-javan-rhinos","url":"/categories/endangered-predators/javan-rhino/zoological-failure-in-the-19th-century-left-no-captive-lineage-of-javan-rhinos.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Early captivity attempts failed, leaving today’s population with zero backup anywhere on Earth."},{"title":"Zoonotic Disease Could Wipe Out the Entire Javan Rhino Population","slug":"zoonotic-disease-could-wipe-out-the-entire-javan-rhino-population","url":"/categories/endangered-predators/javan-rhino/zoonotic-disease-could-wipe-out-the-entire-javan-rhino-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One viral outbreak could eliminate every remaining Javan rhino within months."},{"title":"Zoonotic Interface Between Villages and Park Boundaries Adds Invisible Risk","slug":"zoonotic-interface-between-villages-and-park-boundaries-adds-invisible-risk","url":"/categories/endangered-predators/javan-rhino/zoonotic-interface-between-villages-and-park-boundaries-adds-invisible-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An unseen microbial exchange at a fence line could shift global biodiversity statistics."},{"title":"Zygotic Investment Rate Limits Javan Rhino Recovery to Single-Digit Annual Growth","slug":"zygotic-investment-rate-limits-javan-rhino-recovery-to-single-digit-annual-growth","url":"/categories/endangered-predators/javan-rhino/zygotic-investment-rate-limits-javan-rhino-recovery-to-single-digit-annual-growth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire species can grow only by a handful of calves each year."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

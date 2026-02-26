@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bowhead Whale</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Bowhead Whale</h1>
+  <p>Explore all facts in "Bowhead Whale".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Bowhead Whale</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"2007 Alaska Study Confirmed Bowhead Whales Can Live Over 200 Years","slug":"2007-alaska-study-confirmed-bowhead-whales-can-live-over-200-years","url":"/categories/deep-sea-giants/bowhead-whale/2007-alaska-study-confirmed-bowhead-whales-can-live-over-200-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2007 scientific analysis concluded that some bowhead whales have lived for more than two centuries, making them the longest-lived mammals on Earth."},{"title":"Arctic Ice Breaking Behavior Allows Bowhead Whales to Punch Through 60 Centimeter Sea Ice","slug":"arctic-ice-breaking-behavior-allows-bowhead-whales-to-punch-through-60-centimeter-sea-ice","url":"/categories/deep-sea-giants/bowhead-whale/arctic-ice-breaking-behavior-allows-bowhead-whales-to-punch-through-60-centimeter-sea-ice.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Bowhead whales can break through sea ice up to 60 centimeters thick using reinforced skulls adapted for Arctic survival."},{"title":"Azores 18th Century Whaling Records Document Early Atlantic Bowhead Declines","slug":"azores-18th-century-whaling-records-document-early-atlantic-bowhead-declines","url":"/categories/deep-sea-giants/bowhead-whale/azores-18th-century-whaling-records-document-early-atlantic-bowhead-declines.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Eighteenth-century whaling records from the North Atlantic document rapid bowhead whale declines decades before industrialization."},{"title":"Kaktovik 1978 International Whaling Commission Decision Protected Remaining Bowhead Populations","slug":"kaktovik-1978-international-whaling-commission-decision-protected-remaining-bowhead-populations","url":"/categories/deep-sea-giants/bowhead-whale/kaktovik-1978-international-whaling-commission-decision-protected-remaining-bowhead-populations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 1978, emergency measures by the International Whaling Commission restricted bowhead whale harvests after severe population declines."},{"title":"Kalaallit 2016 Satellite Tracking Revealed Bowhead Whales Travel Over 10,000 Kilometers Annually","slug":"kalaallit-2016-satellite-tracking-revealed-bowhead-whales-travel-over-10-000-kilometers-annually","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-2016-satellite-tracking-revealed-bowhead-whales-travel-over-10-000-kilometers-annually.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Satellite tracking in 2016 revealed that some bowhead whales travel more than 10,000 kilometers across Arctic basins each year."},{"title":"Kalaallit Nunaat 19th Century Trade Networks Accelerated Bowhead Baleen Export From Greenland","slug":"kalaallit-nunaat-19th-century-trade-networks-accelerated-bowhead-baleen-export-from-greenland","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-19th-century-trade-networks-accelerated-bowhead-baleen-export-from-greenland.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Nineteenth-century trade networks in Kalaallit Nunaat accelerated bowhead baleen exports from Greenland to European markets."},{"title":"Kalaallit Nunaat 2018 Health Assessment Found Low Incidence of Disease in Bowhead Populations","slug":"kalaallit-nunaat-2018-health-assessment-found-low-incidence-of-disease-in-bowhead-populations","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-2018-health-assessment-found-low-incidence-of-disease-in-bowhead-populations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2018 health assessment reported low incidence of infectious disease among monitored bowhead whale populations."},{"title":"Kalaallit Nunaat 2020 Tissue Study Measured Bowhead Whale Oxygen Stores Exceeding Most Mammals","slug":"kalaallit-nunaat-2020-tissue-study-measured-bowhead-whale-oxygen-stores-exceeding-most-mammals","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-2020-tissue-study-measured-bowhead-whale-oxygen-stores-exceeding-most-mammals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2020 physiological study found that bowhead whales possess exceptionally high blood oxygen stores relative to body mass."},{"title":"Kalaallit Nunaat 2021 Vessel Strike Assessment Reported Minimal Documented Collisions With Bowheads","slug":"kalaallit-nunaat-2021-vessel-strike-assessment-reported-minimal-documented-collisions-with-bowheads","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-2021-vessel-strike-assessment-reported-minimal-documented-collisions-with-bowheads.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2021 Arctic assessment reported relatively few documented vessel strikes involving bowhead whales compared to temperate whale species."},{"title":"Kalaallit Nunaat 2021 Vessel Strike Assessment Reported Minimal Documented Collisions With Bowheads","slug":"kalaallit-nunaat-2021-vessel-strike-assessment-reported-minimal-documented-collisions-with-bowheads","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-2021-vessel-strike-assessment-reported-minimal-documented-collisions-with-bowheads.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2021 Arctic assessment reported relatively few documented vessel strikes involving bowhead whales compared to temperate whale species."},{"title":"Kalaallit Nunaat 2022 Co Management Framework Balanced Subsistence Harvest and Conservation Science","slug":"kalaallit-nunaat-2022-co-management-framework-balanced-subsistence-harvest-and-conservation-science","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-2022-co-management-framework-balanced-subsistence-harvest-and-conservation-science.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2022, Greenlandic authorities updated co-management frameworks balancing subsistence bowhead harvest with scientific monitoring."},{"title":"Kalaallit Nunaat 2023 Subsistence Quota Adjustment Reflected Updated Bowhead Population Models","slug":"kalaallit-nunaat-2023-subsistence-quota-adjustment-reflected-updated-bowhead-population-models","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-nunaat-2023-subsistence-quota-adjustment-reflected-updated-bowhead-population-models.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2023, Greenland adjusted its bowhead subsistence quota based on updated population modeling and international review."},{"title":"Kalaallit Sea 2020 Acoustic Study Recorded Complex Bowhead Songs Lasting Over 30 Minutes","slug":"kalaallit-sea-2020-acoustic-study-recorded-complex-bowhead-songs-lasting-over-30-minutes","url":"/categories/deep-sea-giants/bowhead-whale/kalaallit-sea-2020-acoustic-study-recorded-complex-bowhead-songs-lasting-over-30-minutes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"An acoustic study in 2020 documented bowhead whale songs lasting more than 30 minutes beneath Arctic ice."},{"title":"Kara 2021 Marine Spatial Plan Incorporated Bowhead Migration Corridors Into Arctic Infrastructure Policy","slug":"kara-2021-marine-spatial-plan-incorporated-bowhead-migration-corridors-into-arctic-infrastructure-policy","url":"/categories/deep-sea-giants/bowhead-whale/kara-2021-marine-spatial-plan-incorporated-bowhead-migration-corridors-into-arctic-infrastructure-policy.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2021 Arctic marine spatial plan incorporated documented bowhead migration corridors into infrastructure policy decisions."},{"title":"Kara Sea 2020 Survey Estimated Western Arctic Bowhead Population Exceeds 16,000 Whales","slug":"kara-sea-2020-survey-estimated-western-arctic-bowhead-population-exceeds-16-000-whales","url":"/categories/deep-sea-giants/bowhead-whale/kara-sea-2020-survey-estimated-western-arctic-bowhead-population-exceeds-16-000-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2020 population survey in the western Arctic estimated more than 16,000 bowhead whales, marking a major rebound from twentieth-century depletion."},{"title":"Qikiqtaaluk Inuit Knowledge Helped Map Bowhead Whale Migration Routes Across Baffin Bay","slug":"qikiqtaaluk-inuit-knowledge-helped-map-bowhead-whale-migration-routes-across-baffin-bay","url":"/categories/deep-sea-giants/bowhead-whale/qikiqtaaluk-inuit-knowledge-helped-map-bowhead-whale-migration-routes-across-baffin-bay.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Inuit knowledge from Qikiqtaaluk communities helped scientists refine modern maps of bowhead whale migration across Baffin Bay."},{"title":"Quebec 2011 Acoustic Monitoring Detected Bowhead Whale Calls Beneath Seasonal Ice Cover","slug":"quebec-2011-acoustic-monitoring-detected-bowhead-whale-calls-beneath-seasonal-ice-cover","url":"/categories/deep-sea-giants/bowhead-whale/quebec-2011-acoustic-monitoring-detected-bowhead-whale-calls-beneath-seasonal-ice-cover.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Acoustic monitoring in 2011 detected bowhead whale vocalizations traveling beneath thick seasonal ice in Arctic Canada."},{"title":"Quebec 2022 Saguenay Review Evaluated Arctic Shipping Noise Risks to Migrating Bowhead Whales","slug":"quebec-2022-saguenay-review-evaluated-arctic-shipping-noise-risks-to-migrating-bowhead-whales","url":"/categories/deep-sea-giants/bowhead-whale/quebec-2022-saguenay-review-evaluated-arctic-shipping-noise-risks-to-migrating-bowhead-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2022 Canadian review evaluated how increasing Arctic shipping noise could interfere with bowhead whale communication across hundreds of kilometers."},{"title":"Quebec 2022 Saguenay Review Evaluated Arctic Shipping Noise Risks to Migrating Bowhead Whales","slug":"quebec-2022-saguenay-review-evaluated-arctic-shipping-noise-risks-to-migrating-bowhead-whales","url":"/categories/deep-sea-giants/bowhead-whale/quebec-2022-saguenay-review-evaluated-arctic-shipping-noise-risks-to-migrating-bowhead-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2022 Canadian review evaluated how increasing Arctic shipping noise could interfere with bowhead whale communication across hundreds of kilometers."},{"title":"Queen Elizabeth Islands 2017 Genetic Analysis Identified Distinct Bowhead Subpopulations","slug":"queen-elizabeth-islands-2017-genetic-analysis-identified-distinct-bowhead-subpopulations","url":"/categories/deep-sea-giants/bowhead-whale/queen-elizabeth-islands-2017-genetic-analysis-identified-distinct-bowhead-subpopulations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2017 genetic analysis found that bowhead whales near the Queen Elizabeth Islands form distinct subpopulations shaped by historical ice barriers."},{"title":"Queen Elizabeth Islands 2024 Arctic Council Report Flagged Bowhead Habitat as High Risk Zone","slug":"queen-elizabeth-islands-2024-arctic-council-report-flagged-bowhead-habitat-as-high-risk-zone","url":"/categories/deep-sea-giants/bowhead-whale/queen-elizabeth-islands-2024-arctic-council-report-flagged-bowhead-habitat-as-high-risk-zone.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2024 Arctic Council assessment classified key bowhead whale habitat near the Queen Elizabeth Islands as a high-risk zone for cumulative industrial impact."},{"title":"Queen Maud Gulf 2018 Aerial Survey Confirmed Bowhead Calving Activity in Shallow Arctic Waters","slug":"queen-maud-gulf-2018-aerial-survey-confirmed-bowhead-calving-activity-in-shallow-arctic-waters","url":"/categories/deep-sea-giants/bowhead-whale/queen-maud-gulf-2018-aerial-survey-confirmed-bowhead-calving-activity-in-shallow-arctic-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2018 aerial survey over Queen Maud Gulf confirmed bowhead whale calving activity in unexpectedly shallow Arctic waters."},{"title":"U.S. 2015 Genetic Study Identified Cancer Resistance Traits in Bowhead Whale DNA","slug":"u-s-2015-genetic-study-identified-cancer-resistance-traits-in-bowhead-whale-dna","url":"/categories/deep-sea-giants/bowhead-whale/u-s-2015-genetic-study-identified-cancer-resistance-traits-in-bowhead-whale-dna.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2015 genetic sequencing project identified unique DNA repair and cancer resistance traits in bowhead whales."},{"title":"U.S. 2019 Critical Habitat Designation Expanded Protection for Alaska Bowhead Feeding Areas","slug":"u-s-2019-critical-habitat-designation-expanded-protection-for-alaska-bowhead-feeding-areas","url":"/categories/deep-sea-giants/bowhead-whale/u-s-2019-critical-habitat-designation-expanded-protection-for-alaska-bowhead-feeding-areas.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2019, federal regulators expanded critical habitat designations to protect key Alaska feeding areas used by bowhead whales."},{"title":"U.S. 2021 Endangered Species Act Review Reaffirmed Bowhead Whale Protections in Federal Waters","slug":"u-s-2021-endangered-species-act-review-reaffirmed-bowhead-whale-protections-in-federal-waters","url":"/categories/deep-sea-giants/bowhead-whale/u-s-2021-endangered-species-act-review-reaffirmed-bowhead-whale-protections-in-federal-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2021 federal review reaffirmed that bowhead whales remain protected under the U.S. Endangered Species Act despite regional recovery trends."},{"title":"U.S. 2022 Beaufort Sea Infrastructure Proposal Triggered Formal Bowhead Habitat Review","slug":"u-s-2022-beaufort-sea-infrastructure-proposal-triggered-formal-bowhead-habitat-review","url":"/categories/deep-sea-giants/bowhead-whale/u-s-2022-beaufort-sea-infrastructure-proposal-triggered-formal-bowhead-habitat-review.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2022 Beaufort Sea infrastructure proposal triggered a formal habitat impact review centered on bowhead whale migration corridors."},{"title":"Ural 2018 Ice Thickness Decline Correlated With Increased Orca Presence in Bowhead Habitat","slug":"ural-2018-ice-thickness-decline-correlated-with-increased-orca-presence-in-bowhead-habitat","url":"/categories/deep-sea-giants/bowhead-whale/ural-2018-ice-thickness-decline-correlated-with-increased-orca-presence-in-bowhead-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2018 study linked declining Arctic ice thickness with increased orca presence in traditional bowhead whale habitats."},{"title":"Ural 2024 Orca Range Expansion Study Modeled Increased Predation Pressure on Bowhead Calves","slug":"ural-2024-orca-range-expansion-study-modeled-increased-predation-pressure-on-bowhead-calves","url":"/categories/deep-sea-giants/bowhead-whale/ural-2024-orca-range-expansion-study-modeled-increased-predation-pressure-on-bowhead-calves.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2024 Arctic ecology study modeled rising predation pressure on bowhead calves as orcas expand northward into formerly ice-locked waters."},{"title":"Ural Arctic 2022 Sea Ice Satellite Data Linked Bowhead Distribution to Polynyas","slug":"ural-arctic-2022-sea-ice-satellite-data-linked-bowhead-distribution-to-polynyas","url":"/categories/deep-sea-giants/bowhead-whale/ural-arctic-2022-sea-ice-satellite-data-linked-bowhead-distribution-to-polynyas.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Satellite imagery in 2022 linked bowhead whale distribution in the Ural Arctic to persistent polynyas, areas of open water within sea ice."},{"title":"Utrecht 2019 Climate Model Projected Arctic Shipping Growth Overlapping Bowhead Habitat","slug":"utrecht-2019-climate-model-projected-arctic-shipping-growth-overlapping-bowhead-habitat","url":"/categories/deep-sea-giants/bowhead-whale/utrecht-2019-climate-model-projected-arctic-shipping-growth-overlapping-bowhead-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2019 climate model projected increased Arctic shipping traffic overlapping key bowhead whale habitats by mid-century."},{"title":"Utrecht 2023 Climate Economics Model Valued Bowhead Carbon Storage in Arctic Ecosystems","slug":"utrecht-2023-climate-economics-model-valued-bowhead-carbon-storage-in-arctic-ecosystems","url":"/categories/deep-sea-giants/bowhead-whale/utrecht-2023-climate-economics-model-valued-bowhead-carbon-storage-in-arctic-ecosystems.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2023 climate economics model estimated that large whales, including bowheads, contribute measurable carbon sequestration through nutrient cycling."},{"title":"Utrecht 2023 Climate Economics Model Valued Bowhead Carbon Storage in Arctic Ecosystems","slug":"utrecht-2023-climate-economics-model-valued-bowhead-carbon-storage-in-arctic-ecosystems","url":"/categories/deep-sea-giants/bowhead-whale/utrecht-2023-climate-economics-model-valued-bowhead-carbon-storage-in-arctic-ecosystems.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2023 climate economics model estimated that large whales, including bowheads, contribute measurable carbon sequestration through nutrient cycling."},{"title":"X-Ray Analysis of Bowhead Ear Bones Revealed Lifetime Growth Layers Used for Age Verification","slug":"x-ray-analysis-of-bowhead-ear-bones-revealed-lifetime-growth-layers-used-for-age-verification","url":"/categories/deep-sea-giants/bowhead-whale/x-ray-analysis-of-bowhead-ear-bones-revealed-lifetime-growth-layers-used-for-age-verification.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"High-resolution X-ray imaging of bowhead whale ear bones revealed annual growth layers that help verify extreme longevity estimates."},{"title":"Xenobiotic Contaminant Study Found Low PCB Levels in Remote Bowhead Whale Tissues","slug":"xenobiotic-contaminant-study-found-low-pcb-levels-in-remote-bowhead-whale-tissues","url":"/categories/deep-sea-giants/bowhead-whale/xenobiotic-contaminant-study-found-low-pcb-levels-in-remote-bowhead-whale-tissues.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A contaminant study found that bowhead whales in remote Arctic waters carry lower PCB concentrations than many temperate marine mammals."},{"title":"Xenon Gas Dive Modeling Demonstrated Bowhead Whales Minimize Nitrogen Uptake During Deep Foraging","slug":"xenon-gas-dive-modeling-demonstrated-bowhead-whales-minimize-nitrogen-uptake-during-deep-foraging","url":"/categories/deep-sea-giants/bowhead-whale/xenon-gas-dive-modeling-demonstrated-bowhead-whales-minimize-nitrogen-uptake-during-deep-foraging.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Dive modeling using inert gas simulations demonstrated that bowhead whales limit nitrogen absorption during extended Arctic foraging dives."},{"title":"Xeric Arctic Air Patterns Influence Bowhead Whale Breathing Hole Formation","slug":"xeric-arctic-air-patterns-influence-bowhead-whale-breathing-hole-formation","url":"/categories/deep-sea-giants/bowhead-whale/xeric-arctic-air-patterns-influence-bowhead-whale-breathing-hole-formation.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Dry Arctic air masses can influence sea ice fracture patterns that bowhead whales rely on to maintain breathing access."},{"title":"Xerophyte Inspired Bioengineering Study Cited Bowhead Longevity Genes in 2020 Aging Research","slug":"xerophyte-inspired-bioengineering-study-cited-bowhead-longevity-genes-in-2020-aging-research","url":"/categories/deep-sea-giants/bowhead-whale/xerophyte-inspired-bioengineering-study-cited-bowhead-longevity-genes-in-2020-aging-research.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2020 comparative biology paper cited bowhead whale longevity genes alongside desert-adapted species in cross-species aging research."},{"title":"Xerophyte Inspired Bioengineering Study Cited Bowhead Longevity Genes in 2020 Aging Research","slug":"xerophyte-inspired-bioengineering-study-cited-bowhead-longevity-genes-in-2020-aging-research","url":"/categories/deep-sea-giants/bowhead-whale/xerophyte-inspired-bioengineering-study-cited-bowhead-longevity-genes-in-2020-aging-research.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2020 comparative biology paper cited bowhead whale longevity genes alongside desert-adapted species in cross-species aging research."},{"title":"Xiangyang 2022 Bioacoustics Algorithm Improved Detection of Bowhead Calls Under Thick Ice","slug":"xiangyang-2022-bioacoustics-algorithm-improved-detection-of-bowhead-calls-under-thick-ice","url":"/categories/deep-sea-giants/bowhead-whale/xiangyang-2022-bioacoustics-algorithm-improved-detection-of-bowhead-calls-under-thick-ice.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2022, a new bioacoustic algorithm improved detection rates of bowhead whale calls beneath thick Arctic ice by filtering background noise."},{"title":"Yamal 2021 Satellite Telemetry Revealed Bowhead Whales Adjust Migration to Earlier Ice Breakup","slug":"yamal-2021-satellite-telemetry-revealed-bowhead-whales-adjust-migration-to-earlier-ice-breakup","url":"/categories/deep-sea-giants/bowhead-whale/yamal-2021-satellite-telemetry-revealed-bowhead-whales-adjust-migration-to-earlier-ice-breakup.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Satellite telemetry in 2021 showed bowhead whales departing Arctic feeding grounds earlier as sea ice breakup advanced by weeks."},{"title":"Yamal Peninsula Surveys Recorded Bowhead Whales Feeding in Kara Sea Plankton Blooms","slug":"yamal-peninsula-surveys-recorded-bowhead-whales-feeding-in-kara-sea-plankton-blooms","url":"/categories/deep-sea-giants/bowhead-whale/yamal-peninsula-surveys-recorded-bowhead-whales-feeding-in-kara-sea-plankton-blooms.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Marine surveys near Russia’s Yamal Peninsula documented bowhead whales aggregating during intense plankton blooms in the Kara Sea."},{"title":"Yenisey Gulf 2023 Survey Detected Bowhead Whales Expanding Into Newly Ice Free Waters","slug":"yenisey-gulf-2023-survey-detected-bowhead-whales-expanding-into-newly-ice-free-waters","url":"/categories/deep-sea-giants/bowhead-whale/yenisey-gulf-2023-survey-detected-bowhead-whales-expanding-into-newly-ice-free-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2023 Arctic survey detected bowhead whales entering sections of the Yenisey Gulf that were historically locked in multi year ice."},{"title":"Yukon 2009 Aerial Census Counted Over 12,000 Bowhead Whales in a Single Migration Corridor","slug":"yukon-2009-aerial-census-counted-over-12-000-bowhead-whales-in-a-single-migration-corridor","url":"/categories/deep-sea-giants/bowhead-whale/yukon-2009-aerial-census-counted-over-12-000-bowhead-whales-in-a-single-migration-corridor.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2009 aerial census recorded more than 12,000 bowhead whales passing through a single migration corridor near the Yukon-Alaska border."},{"title":"Yukon 2014 Passive Acoustic Study Mapped Bowhead Wintering Areas Beneath Beaufort Sea Ice","slug":"yukon-2014-passive-acoustic-study-mapped-bowhead-wintering-areas-beneath-beaufort-sea-ice","url":"/categories/deep-sea-giants/bowhead-whale/yukon-2014-passive-acoustic-study-mapped-bowhead-wintering-areas-beneath-beaufort-sea-ice.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2014 passive acoustic study mapped bowhead whale wintering grounds hidden beneath solid Beaufort Sea ice."},{"title":"Zemlya 2015 Ice Core Comparison Linked Bowhead Distribution to Long Term Arctic Climate Cycles","slug":"zemlya-2015-ice-core-comparison-linked-bowhead-distribution-to-long-term-arctic-climate-cycles","url":"/categories/deep-sea-giants/bowhead-whale/zemlya-2015-ice-core-comparison-linked-bowhead-distribution-to-long-term-arctic-climate-cycles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2015 interdisciplinary study linked bowhead whale distribution patterns to climate cycles reconstructed from Arctic ice cores."},{"title":"Zemlya 2020 Seismic Survey Guidelines Required Marine Mammal Observers in Bowhead Habitat","slug":"zemlya-2020-seismic-survey-guidelines-required-marine-mammal-observers-in-bowhead-habitat","url":"/categories/deep-sea-giants/bowhead-whale/zemlya-2020-seismic-survey-guidelines-required-marine-mammal-observers-in-bowhead-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2020, Arctic seismic exploration guidelines mandated trained marine mammal observers in regions used by bowhead whales."},{"title":"Zemlya 2020 Seismic Survey Guidelines Required Marine Mammal Observers in Bowhead Habitat","slug":"zemlya-2020-seismic-survey-guidelines-required-marine-mammal-observers-in-bowhead-habitat","url":"/categories/deep-sea-giants/bowhead-whale/zemlya-2020-seismic-survey-guidelines-required-marine-mammal-observers-in-bowhead-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2020, Arctic seismic exploration guidelines mandated trained marine mammal observers in regions used by bowhead whales."},{"title":"Zemlya Franz Josef 2022 Drone Survey Observed Bowhead Whales Navigating Heavy Multi Year Ice","slug":"zemlya-franz-josef-2022-drone-survey-observed-bowhead-whales-navigating-heavy-multi-year-ice","url":"/categories/deep-sea-giants/bowhead-whale/zemlya-franz-josef-2022-drone-survey-observed-bowhead-whales-navigating-heavy-multi-year-ice.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2022 drone survey near Franz Josef Land captured bowhead whales surfacing through thick multi year ice."},{"title":"Zemlya Severnaya 2019 Study Linked Bowhead Feeding to Upwelling Along Arctic Shelf Breaks","slug":"zemlya-severnaya-2019-study-linked-bowhead-feeding-to-upwelling-along-arctic-shelf-breaks","url":"/categories/deep-sea-giants/bowhead-whale/zemlya-severnaya-2019-study-linked-bowhead-feeding-to-upwelling-along-arctic-shelf-breaks.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2019 oceanographic study linked bowhead whale feeding concentrations to nutrient upwelling along Arctic continental shelf breaks."},{"title":"Zoological 2024 Body Condition Index Showed Stable Energy Reserves in Western Arctic Bowheads","slug":"zoological-2024-body-condition-index-showed-stable-energy-reserves-in-western-arctic-bowheads","url":"/categories/deep-sea-giants/bowhead-whale/zoological-2024-body-condition-index-showed-stable-energy-reserves-in-western-arctic-bowheads.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2024 body condition index analysis showed stable energy reserves in Western Arctic bowhead whales despite ongoing sea ice decline."},{"title":"Zoological Energy Modeling Shows Bowhead Whales Store Thick Blubber for Arctic Thermal Stability","slug":"zoological-energy-modeling-shows-bowhead-whales-store-thick-blubber-for-arctic-thermal-stability","url":"/categories/deep-sea-giants/bowhead-whale/zoological-energy-modeling-shows-bowhead-whales-store-thick-blubber-for-arctic-thermal-stability.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Energy modeling demonstrates that bowhead whales rely on blubber layers exceeding 50 centimeters in thickness to survive Arctic temperatures."},{"title":"Zoological Mass Measurements Confirm Bowhead Whales Can Weigh Up to 100 Metric Tons","slug":"zoological-mass-measurements-confirm-bowhead-whales-can-weigh-up-to-100-metric-tons","url":"/categories/deep-sea-giants/bowhead-whale/zoological-mass-measurements-confirm-bowhead-whales-can-weigh-up-to-100-metric-tons.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Adult bowhead whales can weigh up to 100 metric tons, placing them among the heaviest mammals ever recorded."},{"title":"Zoological Measurements Show Bowhead Whales Possess Baleen Plates Over 4 Meters Long","slug":"zoological-measurements-show-bowhead-whales-possess-baleen-plates-over-4-meters-long","url":"/categories/deep-sea-giants/bowhead-whale/zoological-measurements-show-bowhead-whales-possess-baleen-plates-over-4-meters-long.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Bowhead whales possess baleen plates that can exceed 4 meters in length, the longest of any whale species."},{"title":"Zoological Research Demonstrated Bowhead Whales Possess the Thickest Blubber of Any Whale Species","slug":"zoological-research-demonstrated-bowhead-whales-possess-the-thickest-blubber-of-any-whale-species","url":"/categories/deep-sea-giants/bowhead-whale/zoological-research-demonstrated-bowhead-whales-possess-the-thickest-blubber-of-any-whale-species.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Zoological measurements confirm that bowhead whales possess the thickest blubber layer of any whale species, sometimes exceeding half a meter."},{"title":"Zoological Stable Isotope Analysis Traced Bowhead Whale Diet Shifts Over Decades","slug":"zoological-stable-isotope-analysis-traced-bowhead-whale-diet-shifts-over-decades","url":"/categories/deep-sea-giants/bowhead-whale/zoological-stable-isotope-analysis-traced-bowhead-whale-diet-shifts-over-decades.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Stable isotope analysis of bowhead baleen traced subtle diet shifts over multiple decades in response to Arctic environmental change."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

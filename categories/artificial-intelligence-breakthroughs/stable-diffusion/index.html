@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stable Diffusion</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Stable Diffusion</h1>
+  <p>Explore all facts in "Stable Diffusion".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Stable Diffusion</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Benchmark Evaluations Measured Stable Diffusion’s Image Alignment Accuracy","slug":"benchmark-evaluations-measured-stable-diffusion-s-image-alignment-accuracy","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/benchmark-evaluations-measured-stable-diffusion-s-image-alignment-accuracy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers evaluated Stable Diffusion using automated benchmarks to measure how accurately images matched textual prompts."},{"title":"Benchmark Evaluations Measured Stable Diffusion’s Image Alignment Accuracy","slug":"benchmark-evaluations-measured-stable-diffusion-s-image-alignment-accuracy","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/benchmark-evaluations-measured-stable-diffusion-s-image-alignment-accuracy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers evaluated Stable Diffusion using automated benchmarks to measure how accurately images matched textual prompts."},{"title":"Bias and Content Moderation Challenges Emerged From Open Model Access","slug":"bias-and-content-moderation-challenges-emerged-from-open-model-access","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/bias-and-content-moderation-challenges-emerged-from-open-model-access.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Because Stable Diffusion was released openly, controlling harmful or biased outputs became more difficult."},{"title":"Bias Audits Revealed Representation Gaps in Generated Images","slug":"bias-audits-revealed-representation-gaps-in-generated-images","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/bias-audits-revealed-representation-gaps-in-generated-images.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Independent researchers conducted audits to assess demographic representation biases within Stable Diffusion outputs."},{"title":"Bias Mitigation Research Proposes Dataset Reweighting for Fairer Outputs","slug":"bias-mitigation-research-proposes-dataset-reweighting-for-fairer-outputs","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/bias-mitigation-research-proposes-dataset-reweighting-for-fairer-outputs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers are investigating reweighting training data to reduce stereotype amplification in diffusion models."},{"title":"Community Dataset Curation Influenced Future Stable Diffusion Releases","slug":"community-dataset-curation-influenced-future-stable-diffusion-releases","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/community-dataset-curation-influenced-future-stable-diffusion-releases.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Feedback from artists and researchers prompted revisions to training datasets in later Stable Diffusion versions."},{"title":"Community Plugins Enabled Integration With 3D and Game Engines","slug":"community-plugins-enabled-integration-with-3d-and-game-engines","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/community-plugins-enabled-integration-with-3d-and-game-engines.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Developers integrated Stable Diffusion into 3D modeling tools and game engines to automate texture and concept art creation."},{"title":"Community-Led Documentation Accelerated Global Adoption of Stable Diffusion","slug":"community-led-documentation-accelerated-global-adoption-of-stable-diffusion","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/community-led-documentation-accelerated-global-adoption-of-stable-diffusion.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Extensive community tutorials and guides helped millions learn how to use Stable Diffusion within months of release."},{"title":"ControlNet Extensions Added Structured Guidance to Stable Diffusion","slug":"controlnet-extensions-added-structured-guidance-to-stable-diffusion","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/controlnet-extensions-added-structured-guidance-to-stable-diffusion.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"ControlNet allowed Stable Diffusion to follow edge maps, depth maps, and human poses for more precise image control."},{"title":"Cross-Attention Layers Align Text and Image Features in Stable Diffusion","slug":"cross-attention-layers-align-text-and-image-features-in-stable-diffusion","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/cross-attention-layers-align-text-and-image-features-in-stable-diffusion.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion uses cross-attention mechanisms to merge text embeddings with visual features during image generation."},{"title":"K-Sampler Variants Influence Image Sharpness and Generation Speed","slug":"k-sampler-variants-influence-image-sharpness-and-generation-speed","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/k-sampler-variants-influence-image-sharpness-and-generation-speed.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Different sampling algorithms within Stable Diffusion can dramatically change both image quality and rendering time."},{"title":"Karras Noise Schedules Improved Sampling Stability in Diffusion Models","slug":"karras-noise-schedules-improved-sampling-stability-in-diffusion-models","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/karras-noise-schedules-improved-sampling-stability-in-diffusion-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Adopting Karras-style noise schedules refined how Stable Diffusion transitions from randomness to clarity."},{"title":"Keyframe Interpolation Enabled Early AI-Generated Video Experiments","slug":"keyframe-interpolation-enabled-early-ai-generated-video-experiments","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/keyframe-interpolation-enabled-early-ai-generated-video-experiments.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion users discovered that interpolating between seeds could create short animated sequences."},{"title":"Keyframe Interpolation Enabled Early AI-Generated Video Experiments","slug":"keyframe-interpolation-enabled-early-ai-generated-video-experiments","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/keyframe-interpolation-enabled-early-ai-generated-video-experiments.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion users discovered that interpolating between seeds could create short animated sequences."},{"title":"Kohya Trainer Tools Simplified Advanced LoRA and DreamBooth Training","slug":"kohya-trainer-tools-simplified-advanced-lora-and-dreambooth-training","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/kohya-trainer-tools-simplified-advanced-lora-and-dreambooth-training.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Community-built Kohya trainer scripts made advanced Stable Diffusion customization accessible to non-experts."},{"title":"Latent Diffusion Architecture Reduced Compute Costs Compared to Pixel Models","slug":"latent-diffusion-architecture-reduced-compute-costs-compared-to-pixel-models","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/latent-diffusion-architecture-reduced-compute-costs-compared-to-pixel-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion generates images in a compressed latent space rather than directly in pixel space, dramatically lowering computational demands."},{"title":"Model Checkpoints Allow Stable Diffusion Versions to Evolve Rapidly","slug":"model-checkpoints-allow-stable-diffusion-versions-to-evolve-rapidly","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/model-checkpoints-allow-stable-diffusion-versions-to-evolve-rapidly.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion’s development accelerated because researchers could release and swap entire model checkpoints with a single file."},{"title":"Model Distillation Research Aims to Shrink Stable Diffusion Without Losing Quality","slug":"model-distillation-research-aims-to-shrink-stable-diffusion-without-losing-quality","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/model-distillation-research-aims-to-shrink-stable-diffusion-without-losing-quality.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers are exploring distillation methods to compress diffusion models into smaller, faster variants."},{"title":"Model Fine-Tuning With LoRA Reduced Hardware Requirements for Customization","slug":"model-fine-tuning-with-lora-reduced-hardware-requirements-for-customization","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/model-fine-tuning-with-lora-reduced-hardware-requirements-for-customization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Low-Rank Adaptation allowed Stable Diffusion users to personalize models using smaller training files and less compute."},{"title":"Model Fine-Tuning With LoRA Reduced Hardware Requirements for Customization","slug":"model-fine-tuning-with-lora-reduced-hardware-requirements-for-customization","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/model-fine-tuning-with-lora-reduced-hardware-requirements-for-customization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Low-Rank Adaptation allowed Stable Diffusion users to personalize models using smaller training files and less compute."},{"title":"Multilingual Prompt Support Emerged Through Expanded Text Encoders","slug":"multilingual-prompt-support-emerged-through-expanded-text-encoders","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/multilingual-prompt-support-emerged-through-expanded-text-encoders.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion gained broader language flexibility as encoder updates improved multilingual understanding."},{"title":"Open-Source Community Rapidly Built Fine-Tuned Models Like DreamBooth Variants","slug":"open-source-community-rapidly-built-fine-tuned-models-like-dreambooth-variants","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/open-source-community-rapidly-built-fine-tuned-models-like-dreambooth-variants.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Within months of release, the Stable Diffusion community created personalized fine-tuning methods that allowed users to train the model on specific subjects."},{"title":"Quality Improvements in Stable Diffusion 2 Shifted to OpenCLIP Encoders","slug":"quality-improvements-in-stable-diffusion-2-shifted-to-openclip-encoders","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/quality-improvements-in-stable-diffusion-2-shifted-to-openclip-encoders.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion 2 replaced its original text encoder with OpenCLIP, altering image style and semantic interpretation."},{"title":"Quality Improvements in Stable Diffusion 2 Shifted to OpenCLIP Encoders","slug":"quality-improvements-in-stable-diffusion-2-shifted-to-openclip-encoders","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/quality-improvements-in-stable-diffusion-2-shifted-to-openclip-encoders.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion 2 replaced its original text encoder with OpenCLIP, altering image style and semantic interpretation."},{"title":"Quantitative FID Scores Helped Compare Stable Diffusion to Competing Models","slug":"quantitative-fid-scores-helped-compare-stable-diffusion-to-competing-models","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/quantitative-fid-scores-helped-compare-stable-diffusion-to-competing-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Researchers used Fréchet Inception Distance to measure how closely Stable Diffusion’s outputs resembled real images."},{"title":"Quantization Techniques Reduced Memory Footprint for Stable Diffusion Models","slug":"quantization-techniques-reduced-memory-footprint-for-stable-diffusion-models","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/quantization-techniques-reduced-memory-footprint-for-stable-diffusion-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Developers lowered Stable Diffusion’s hardware requirements by converting full-precision weights into more compact numerical formats."},{"title":"Quantized ONNX Exports Enabled Stable Diffusion to Run on Edge Devices","slug":"quantized-onnx-exports-enabled-stable-diffusion-to-run-on-edge-devices","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/quantized-onnx-exports-enabled-stable-diffusion-to-run-on-edge-devices.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"By exporting Stable Diffusion models to ONNX format and applying quantization, developers brought image generation closer to edge computing."},{"title":"Regulatory Discussions Intensified After Open Generative Models Spread Globally","slug":"regulatory-discussions-intensified-after-open-generative-models-spread-globally","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/regulatory-discussions-intensified-after-open-generative-models-spread-globally.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The open release of Stable Diffusion accelerated global conversations about regulating generative AI technologies."},{"title":"Regulatory Discussions Intensified After Open Generative Models Spread Globally","slug":"regulatory-discussions-intensified-after-open-generative-models-spread-globally","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/regulatory-discussions-intensified-after-open-generative-models-spread-globally.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The open release of Stable Diffusion accelerated global conversations about regulating generative AI technologies."},{"title":"Reproducibility Through Random Seed Control Enables Deterministic Image Outputs","slug":"reproducibility-through-random-seed-control-enables-deterministic-image-outputs","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/reproducibility-through-random-seed-control-enables-deterministic-image-outputs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion can recreate the exact same image if the same random seed and parameters are used."},{"title":"Residual Connections Preserve Detail During Stable Diffusion’s Denoising Steps","slug":"residual-connections-preserve-detail-during-stable-diffusion-s-denoising-steps","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/residual-connections-preserve-detail-during-stable-diffusion-s-denoising-steps.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Residual links within Stable Diffusion’s architecture help maintain fine-grained image detail throughout iterative refinement."},{"title":"Robust Watermarking Experiments Attempt to Identify AI-Generated Images","slug":"robust-watermarking-experiments-attempt-to-identify-ai-generated-images","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/robust-watermarking-experiments-attempt-to-identify-ai-generated-images.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Developers and researchers have tested watermarking systems to mark images produced by Stable Diffusion."},{"title":"Stable Diffusion Democratized AI Image Generation With Open Weights in 2022","slug":"stable-diffusion-democratized-ai-image-generation-with-open-weights-in-2022","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/stable-diffusion-democratized-ai-image-generation-with-open-weights-in-2022.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, Stable Diffusion became one of the first high-quality text-to-image models released with open weights, transforming who could build generative AI tools."},{"title":"Stable Diffusion Triggered Policy Debates Over Copyright and Training Data","slug":"stable-diffusion-triggered-policy-debates-over-copyright-and-training-data","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/stable-diffusion-triggered-policy-debates-over-copyright-and-training-data.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The release of Stable Diffusion intensified global debate about whether training on scraped internet images violates copyright law."},{"title":"Text Encoder From CLIP Enables Stable Diffusion to Understand Prompts","slug":"text-encoder-from-clip-enables-stable-diffusion-to-understand-prompts","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/text-encoder-from-clip-enables-stable-diffusion-to-understand-prompts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion translates human text prompts into visual guidance using a pretrained CLIP text encoder."},{"title":"Ultra-High-Resolution Outputs Became Possible With Tile-Based Rendering","slug":"ultra-high-resolution-outputs-became-possible-with-tile-based-rendering","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/ultra-high-resolution-outputs-became-possible-with-tile-based-rendering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Developers achieved ultra-high-resolution Stable Diffusion images by generating and stitching smaller tiles together."},{"title":"Unet Backbone Powers Stable Diffusion’s Denoising Process","slug":"unet-backbone-powers-stable-diffusion-s-denoising-process","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/unet-backbone-powers-stable-diffusion-s-denoising-process.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"At the core of Stable Diffusion lies a U-Net neural network that gradually transforms noise into coherent images."},{"title":"Unified Web Interfaces Like Automatic1111 Accelerated Community Adoption","slug":"unified-web-interfaces-like-automatic1111-accelerated-community-adoption","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/unified-web-interfaces-like-automatic1111-accelerated-community-adoption.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Graphical user interfaces such as Automatic1111 made Stable Diffusion accessible to non-programmers worldwide."},{"title":"Upscaling Pipelines Enhanced Resolution Beyond Base Model Limits","slug":"upscaling-pipelines-enhanced-resolution-beyond-base-model-limits","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/upscaling-pipelines-enhanced-resolution-beyond-base-model-limits.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion can generate images beyond its base resolution by combining diffusion outputs with dedicated upscaling models."},{"title":"User Interface Seed History Tracking Improved Reproducible Creativity","slug":"user-interface-seed-history-tracking-improved-reproducible-creativity","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/user-interface-seed-history-tracking-improved-reproducible-creativity.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion interfaces log generation history, allowing users to revisit exact parameter combinations."},{"title":"User Safety Checkers Filter Explicit Outputs Before Display","slug":"user-safety-checkers-filter-explicit-outputs-before-display","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/user-safety-checkers-filter-explicit-outputs-before-display.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion deployments often include safety checker models that analyze generated images for potentially explicit content."},{"title":"User-Driven Model Merging Created Hybrid Stable Diffusion Variants","slug":"user-driven-model-merging-created-hybrid-stable-diffusion-variants","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/user-driven-model-merging-created-hybrid-stable-diffusion-variants.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Enthusiasts began merging different Stable Diffusion checkpoints to blend styles and capabilities."},{"title":"X/Y Plot Tools Allowed Systematic Prompt and Parameter Comparisons","slug":"x-y-plot-tools-allowed-systematic-prompt-and-parameter-comparisons","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/x-y-plot-tools-allowed-systematic-prompt-and-parameter-comparisons.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion interfaces introduced X/Y plotting tools that visually compare multiple prompts or settings in a single grid."},{"title":"Xformers Memory-Efficient Attention Reduced VRAM Bottlenecks","slug":"xformers-memory-efficient-attention-reduced-vram-bottlenecks","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/xformers-memory-efficient-attention-reduced-vram-bottlenecks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Integrating memory-efficient attention from xFormers allowed Stable Diffusion to generate larger images without crashing GPUs."},{"title":"Xformers Optimization Libraries Improved Stable Diffusion Inference Speed","slug":"xformers-optimization-libraries-improved-stable-diffusion-inference-speed","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/xformers-optimization-libraries-improved-stable-diffusion-inference-speed.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Community-driven optimization tools like xFormers significantly accelerated Stable Diffusion’s image generation performance."},{"title":"XLA and Tensor Optimization Accelerated Stable Diffusion Training Pipelines","slug":"xla-and-tensor-optimization-accelerated-stable-diffusion-training-pipelines","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/xla-and-tensor-optimization-accelerated-stable-diffusion-training-pipelines.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Advanced compiler optimizations such as XLA helped streamline tensor computations during diffusion model training."},{"title":"YAML Configuration Files Enable Custom Stable Diffusion Training Setups","slug":"yaml-configuration-files-enable-custom-stable-diffusion-training-setups","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/yaml-configuration-files-enable-custom-stable-diffusion-training-setups.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion’s modular training and inference workflows are controlled through editable YAML configuration files."},{"title":"YAML-Based Scheduler Tweaks Adjusted Diffusion Noise Trajectories","slug":"yaml-based-scheduler-tweaks-adjusted-diffusion-noise-trajectories","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/yaml-based-scheduler-tweaks-adjusted-diffusion-noise-trajectories.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Editing scheduler parameters in configuration files changes how noise is gradually removed during image generation."},{"title":"Yoked Guidance Scale Controls Balance Between Creativity and Literalism","slug":"yoked-guidance-scale-controls-balance-between-creativity-and-literalism","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/yoked-guidance-scale-controls-balance-between-creativity-and-literalism.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Classifier-free guidance scale settings determine how strongly Stable Diffusion adheres to a text prompt."},{"title":"Yoked Text Embedding Interpolation Enables Prompt Blending Effects","slug":"yoked-text-embedding-interpolation-enables-prompt-blending-effects","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/yoked-text-embedding-interpolation-enables-prompt-blending-effects.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Blending text embeddings allows Stable Diffusion to merge multiple concepts into a single coherent image."},{"title":"Zero-Convolution Initialization Stabilized ControlNet Training","slug":"zero-convolution-initialization-stabilized-controlnet-training","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/zero-convolution-initialization-stabilized-controlnet-training.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"ControlNet’s developers introduced zero-initialized convolution layers to prevent disruption of pretrained Stable Diffusion weights."},{"title":"Zero-Redundancy Optimizers Reduced Memory Usage During Fine-Tuning","slug":"zero-redundancy-optimizers-reduced-memory-usage-during-fine-tuning","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/zero-redundancy-optimizers-reduced-memory-usage-during-fine-tuning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Parameter-efficient training strategies such as ZeRO optimization minimized memory duplication in large diffusion models."},{"title":"Zero-Shot Image Editing Became Possible Through Inpainting Models","slug":"zero-shot-image-editing-became-possible-through-inpainting-models","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/zero-shot-image-editing-became-possible-through-inpainting-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion’s inpainting variant allows users to replace specific image regions using only text prompts."},{"title":"Zero-Shot Object Combinations Revealed Compositional Generalization","slug":"zero-shot-object-combinations-revealed-compositional-generalization","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/zero-shot-object-combinations-revealed-compositional-generalization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Stable Diffusion can generate novel object combinations it likely never saw during training."},{"title":"Zero-Shot Style Transfer Became Possible Through Prompt Engineering","slug":"zero-shot-style-transfer-became-possible-through-prompt-engineering","url":"/categories/artificial-intelligence-breakthroughs/stable-diffusion/zero-shot-style-transfer-became-possible-through-prompt-engineering.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Without retraining the model, Stable Diffusion can mimic artistic styles using carefully crafted text prompts."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

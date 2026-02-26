@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chavin Culture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Chavin Culture</h1>
+  <p>Explore all facts in "Chavin Culture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Chavin Culture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Kallawaya Healers' Techniques Influenced Chavín Botanical Rituals","slug":"kallawaya-healers-techniques-influenced-chav-n-botanical-rituals","url":"/categories/ancient-civilizations-secrets/chavin-culture/kallawaya-healers-techniques-influenced-chav-n-botanical-rituals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ethnobotanical knowledge from highland healers shaped Chavín ceremonial use of medicinal plants."},{"title":"Kallawaya Medicinal Knowledge Prefigured Later Andean Pharmacology","slug":"kallawaya-medicinal-knowledge-prefigured-later-andean-pharmacology","url":"/categories/ancient-civilizations-secrets/chavin-culture/kallawaya-medicinal-knowledge-prefigured-later-andean-pharmacology.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín shamans appear to have pioneered the use of psychoactive and medicinal plants centuries before documented Inca practices."},{"title":"Kerosene-Like Resin Use Illuminated Chavín Underground Galleries","slug":"kerosene-like-resin-use-illuminated-chav-n-underground-galleries","url":"/categories/ancient-civilizations-secrets/chavin-culture/kerosene-like-resin-use-illuminated-chav-n-underground-galleries.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín priests engineered underground stone corridors that required artificial light to navigate their ritual labyrinths."},{"title":"Kerosene-Like Resins Used for Chavín Ritual Illumination","slug":"kerosene-like-resins-used-for-chav-n-ritual-illumination","url":"/categories/ancient-civilizations-secrets/chavin-culture/kerosene-like-resins-used-for-chav-n-ritual-illumination.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Experimental archaeology indicates Chavín priests burned resinous materials to light subterranean galleries."},{"title":"Khipu-Like Cords Suggest Proto-Accounting in Early Chavín Administration","slug":"khipu-like-cords-suggest-proto-accounting-in-early-chav-n-administration","url":"/categories/ancient-civilizations-secrets/chavin-culture/khipu-like-cords-suggest-proto-accounting-in-early-chav-n-administration.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cord systems resembling khipu may have recorded offerings, labor, or ceremonial obligations at Chavín sites."},{"title":"Kotosh Influence Observed in Early Chavín Ritual Practices","slug":"kotosh-influence-observed-in-early-chav-n-ritual-practices","url":"/categories/ancient-civilizations-secrets/chavin-culture/kotosh-influence-observed-in-early-chav-n-ritual-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ritual patterns at Chavín may have been influenced by earlier highland sites like Kotosh, revealing continuity over centuries."},{"title":"Kotosh Precedent Influenced Chavín Subterranean Gallery Design","slug":"kotosh-precedent-influenced-chav-n-subterranean-gallery-design","url":"/categories/ancient-civilizations-secrets/chavin-culture/kotosh-precedent-influenced-chav-n-subterranean-gallery-design.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Earlier highland ceremonial sites like Kotosh shaped Chavín underground architecture over a millennium later."},{"title":"Kuntur Wasi Metallurgy Demonstrates Early Gold Craftsmanship in the Andes","slug":"kuntur-wasi-metallurgy-demonstrates-early-gold-craftsmanship-in-the-andes","url":"/categories/ancient-civilizations-secrets/chavin-culture/kuntur-wasi-metallurgy-demonstrates-early-gold-craftsmanship-in-the-andes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Gold artifacts from Kuntur Wasi predate the Chavín horizon, showing advanced techniques for ritual objects."},{"title":"Kuntur Wasi Temple Complex Reveals 3,000-Year-Old Metallurgy in the Andes","slug":"kuntur-wasi-temple-complex-reveals-3-000-year-old-metallurgy-in-the-andes","url":"/categories/ancient-civilizations-secrets/chavin-culture/kuntur-wasi-temple-complex-reveals-3-000-year-old-metallurgy-in-the-andes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 3,000 years ago, Andean metalworkers were hammering gold into ritual objects centuries before the Inca Empire existed."},{"title":"Kuntur Worship Linked Eagles to Solar Rituals in Chavín Society","slug":"kuntur-worship-linked-eagles-to-solar-rituals-in-chav-n-society","url":"/categories/ancient-civilizations-secrets/chavin-culture/kuntur-worship-linked-eagles-to-solar-rituals-in-chav-n-society.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Eagles carved into Chavín temple walls symbolized celestial authority and solar power in ritual practice."},{"title":"Quarries at Chavín De Huántar Show Advanced Stone Sourcing Techniques","slug":"quarries-at-chav-n-de-hu-ntar-show-advanced-stone-sourcing-techniques","url":"/categories/ancient-civilizations-secrets/chavin-culture/quarries-at-chav-n-de-hu-ntar-show-advanced-stone-sourcing-techniques.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín builders selected granite blocks with precise geological knowledge, centuries before formal geology."},{"title":"Quarrying Techniques at Chavín Enabled Massive Granite Sculptures","slug":"quarrying-techniques-at-chav-n-enabled-massive-granite-sculptures","url":"/categories/ancient-civilizations-secrets/chavin-culture/quarrying-techniques-at-chav-n-enabled-massive-granite-sculptures.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín artisans moved multi-ton granite monoliths without metal tools, relying on hammer stones and precise leverage."},{"title":"Quinine-Like Plants Cultivated Suggest Early Chavín Medical Knowledge","slug":"quinine-like-plants-cultivated-suggest-early-chav-n-medical-knowledge","url":"/categories/ancient-civilizations-secrets/chavin-culture/quinine-like-plants-cultivated-suggest-early-chav-n-medical-knowledge.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Evidence indicates Chavín priests may have harnessed natural alkaloids for therapeutic and ritual purposes."},{"title":"Quinoa Cultivation Evidence Suggests Early Andean Agricultural Innovation","slug":"quinoa-cultivation-evidence-suggests-early-andean-agricultural-innovation","url":"/categories/ancient-civilizations-secrets/chavin-culture/quinoa-cultivation-evidence-suggests-early-andean-agricultural-innovation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Remains of quinoa at Chavín sites indicate advanced crop management and dietary planning centuries before the Inca."},{"title":"Quipu Predecessors Suggest Early Record-Keeping Before the Inca Empire","slug":"quipu-predecessors-suggest-early-record-keeping-before-the-inca-empire","url":"/categories/ancient-civilizations-secrets/chavin-culture/quipu-predecessors-suggest-early-record-keeping-before-the-inca-empire.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Inca administrators tied accounting knots, earlier Andean societies were experimenting with cord-based recording systems."},{"title":"Quipu-Like Knots Suggest Ritual Record-Keeping in Chavín Culture","slug":"quipu-like-knots-suggest-ritual-record-keeping-in-chav-n-culture","url":"/categories/ancient-civilizations-secrets/chavin-culture/quipu-like-knots-suggest-ritual-record-keeping-in-chav-n-culture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Evidence shows that cord knots may have functioned as mnemonic or accounting devices centuries before the Inca Empire."},{"title":"U-shaped Temple Layout Standardized Religious Architecture in Early Horizon Peru","slug":"u-shaped-temple-layout-standardized-religious-architecture-in-early-horizon-peru","url":"/categories/ancient-civilizations-secrets/chavin-culture/u-shaped-temple-layout-standardized-religious-architecture-in-early-horizon-peru.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín architects formalized a U-shaped ceremonial layout that influenced Andean temple design for centuries."},{"title":"Ulluchu Seeds Embedded in Offerings Indicate Psychoactive Ritual Practices","slug":"ulluchu-seeds-embedded-in-offerings-indicate-psychoactive-ritual-practices","url":"/categories/ancient-civilizations-secrets/chavin-culture/ulluchu-seeds-embedded-in-offerings-indicate-psychoactive-ritual-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seeds of the Ulluchu plant found at Chavín ceremonial sites suggest early controlled use of stimulants and hallucinogens."},{"title":"Ulluchu Seeds Identified in Offerings Reveal Psychoactive Ritual Practices","slug":"ulluchu-seeds-identified-in-offerings-reveal-psychoactive-ritual-practices","url":"/categories/ancient-civilizations-secrets/chavin-culture/ulluchu-seeds-identified-in-offerings-reveal-psychoactive-ritual-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Botanical remains of Ulluchu plants indicate controlled use of hallucinogenic substances in Chavín ceremonies."},{"title":"Ulluchu Seeds Indicate Advanced Ritual and Psychoactive Knowledge","slug":"ulluchu-seeds-indicate-advanced-ritual-and-psychoactive-knowledge","url":"/categories/ancient-civilizations-secrets/chavin-culture/ulluchu-seeds-indicate-advanced-ritual-and-psychoactive-knowledge.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ritual use of Ulluchu seeds demonstrates Chavín expertise in controlled psychoactive consumption."},{"title":"Urcos Tumuli Demonstrate Ancestor Veneration Linked to Chavín Beliefs","slug":"urcos-tumuli-demonstrate-ancestor-veneration-linked-to-chav-n-beliefs","url":"/categories/ancient-civilizations-secrets/chavin-culture/urcos-tumuli-demonstrate-ancestor-veneration-linked-to-chav-n-beliefs.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Burial mounds in the Urcos region preserve Chavín-influenced mortuary practices emphasizing lineage and ritual continuity."},{"title":"Urcos Tumuli Reveal Chavín-Inspired Ancestor Veneration Practices","slug":"urcos-tumuli-reveal-chav-n-inspired-ancestor-veneration-practices","url":"/categories/ancient-civilizations-secrets/chavin-culture/urcos-tumuli-reveal-chav-n-inspired-ancestor-veneration-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Burial mounds in Urcos Valley preserve ceremonial patterns influenced by Chavín ideology."},{"title":"Ushnu Precursors in Chavín Platforms Demonstrate Early Ceremonial Hierarchy","slug":"ushnu-precursors-in-chav-n-platforms-demonstrate-early-ceremonial-hierarchy","url":"/categories/ancient-civilizations-secrets/chavin-culture/ushnu-precursors-in-chav-n-platforms-demonstrate-early-ceremonial-hierarchy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elevated platforms at Chavín de Huántar foreshadow Inca ushnu, signifying visual and ritual dominance."},{"title":"Ushnu Precursors Observed in Elevated Chavín Platforms","slug":"ushnu-precursors-observed-in-elevated-chav-n-platforms","url":"/categories/ancient-civilizations-secrets/chavin-culture/ushnu-precursors-observed-in-elevated-chav-n-platforms.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"High platforms in Chavín de Huántar resemble later Andean ushnu, signaling early ceremonial hierarchy expression."},{"title":"Ushnu-Like Stone Steps Provided Acoustic Amplification During Chavín Ceremonies","slug":"ushnu-like-stone-steps-provided-acoustic-amplification-during-chav-n-ceremonies","url":"/categories/ancient-civilizations-secrets/chavin-culture/ushnu-like-stone-steps-provided-acoustic-amplification-during-chav-n-ceremonies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín architects engineered stepped stone platforms that enhanced sound propagation during rituals."},{"title":"X-ray Fluorescence Testing Revealed Non-Local Obsidian in Chavín Ritual Blades","slug":"x-ray-fluorescence-testing-revealed-non-local-obsidian-in-chav-n-ritual-blades","url":"/categories/ancient-civilizations-secrets/chavin-culture/x-ray-fluorescence-testing-revealed-non-local-obsidian-in-chav-n-ritual-blades.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Laboratory X-ray analysis proved that some Chavín ceremonial blades were crafted from volcanic glass sourced over 200 kilometers away."},{"title":"Xenolith Inclusions in Chavín Stonework Reveal Geological Sourcing Techniques","slug":"xenolith-inclusions-in-chav-n-stonework-reveal-geological-sourcing-techniques","url":"/categories/ancient-civilizations-secrets/chavin-culture/xenolith-inclusions-in-chav-n-stonework-reveal-geological-sourcing-techniques.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín builders exploited natural rock inclusions to identify suitable construction stones for durability and aesthetics."},{"title":"Xerophyte Cultivation Evidence Suggests Early Andean Botanical Experimentation","slug":"xerophyte-cultivation-evidence-suggests-early-andean-botanical-experimentation","url":"/categories/ancient-civilizations-secrets/chavin-culture/xerophyte-cultivation-evidence-suggests-early-andean-botanical-experimentation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists found traces of drought-resistant plants cultivated by Chavín communities to stabilize food supply."},{"title":"Xylophone-Like Instruments Indicate Early Andean Musical Rituals","slug":"xylophone-like-instruments-indicate-early-andean-musical-rituals","url":"/categories/ancient-civilizations-secrets/chavin-culture/xylophone-like-instruments-indicate-early-andean-musical-rituals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín iconography depicts percussion instruments resembling xylophones, used in coordinated ritual ceremonies."},{"title":"Xylophonic Instruments Depicted in Chavín Art Suggest Early Musical Rituals","slug":"xylophonic-instruments-depicted-in-chav-n-art-suggest-early-musical-rituals","url":"/categories/ancient-civilizations-secrets/chavin-culture/xylophonic-instruments-depicted-in-chav-n-art-suggest-early-musical-rituals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín iconography shows percussion instruments resembling xylophones, indicating organized ritual music."},{"title":"Y-shaped Drainage System at Chavín de Huántar Prevented Structural Collapse","slug":"y-shaped-drainage-system-at-chav-n-de-hu-ntar-prevented-structural-collapse","url":"/categories/ancient-civilizations-secrets/chavin-culture/y-shaped-drainage-system-at-chav-n-de-hu-ntar-prevented-structural-collapse.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín engineers built a drainage network sophisticated enough to protect massive stone temples from seasonal Andean floods."},{"title":"Yacumama Iconography Shows Early Integration of Water Spirits in Andean Rituals","slug":"yacumama-iconography-shows-early-integration-of-water-spirits-in-andean-rituals","url":"/categories/ancient-civilizations-secrets/chavin-culture/yacumama-iconography-shows-early-integration-of-water-spirits-in-andean-rituals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín temples depict aquatic deities, connecting environmental management to religious practice."},{"title":"Yacumama River Deities Integrated into Chavín Water Management Rituals","slug":"yacumama-river-deities-integrated-into-chav-n-water-management-rituals","url":"/categories/ancient-civilizations-secrets/chavin-culture/yacumama-river-deities-integrated-into-chav-n-water-management-rituals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín ceremonies invoked river gods to safeguard irrigation and ceremonial water flow."},{"title":"Yacuruna Mythology Integrated Water Spirits into Chavín Rituals","slug":"yacuruna-mythology-integrated-water-spirits-into-chav-n-rituals","url":"/categories/ancient-civilizations-secrets/chavin-culture/yacuruna-mythology-integrated-water-spirits-into-chav-n-rituals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín iconography and architecture reflect early Andean beliefs in underwater deities controlling life and fertility."},{"title":"Yana Cultivars Used for Ritual Pigments in Chavín Ceremonies","slug":"yana-cultivars-used-for-ritual-pigments-in-chav-n-ceremonies","url":"/categories/ancient-civilizations-secrets/chavin-culture/yana-cultivars-used-for-ritual-pigments-in-chav-n-ceremonies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín artisans extracted dyes from black Andean plants to create sacred pigments for temple decoration."},{"title":"Yana Plant Cultivation Provided Ritual Pigments for Chavín Ceremonies","slug":"yana-plant-cultivation-provided-ritual-pigments-for-chav-n-ceremonies","url":"/categories/ancient-civilizations-secrets/chavin-culture/yana-plant-cultivation-provided-ritual-pigments-for-chav-n-ceremonies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Dark pigments from highland plants were cultivated specifically for temple art and offerings."},{"title":"Yauya Valley Ceramics Show Chavín Iconography Far From Core Centers","slug":"yauya-valley-ceramics-show-chav-n-iconography-far-from-core-centers","url":"/categories/ancient-civilizations-secrets/chavin-culture/yauya-valley-ceramics-show-chav-n-iconography-far-from-core-centers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Pottery in remote valleys carries Chavín motifs, indicating ideological influence and pilgrimage networks."},{"title":"Yauya Valley Excavations Exposed Early Pilgrimage Networks Tied to Chavín Influence","slug":"yauya-valley-excavations-exposed-early-pilgrimage-networks-tied-to-chav-n-influence","url":"/categories/ancient-civilizations-secrets/chavin-culture/yauya-valley-excavations-exposed-early-pilgrimage-networks-tied-to-chav-n-influence.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations in Peru's Yauya Valley uncovered ceramics bearing Chavín motifs far from the culture's ceremonial heartland."},{"title":"Yura River Shells Reveal Chavín Trade Networks Extending to the Amazon","slug":"yura-river-shells-reveal-chav-n-trade-networks-extending-to-the-amazon","url":"/categories/ancient-civilizations-secrets/chavin-culture/yura-river-shells-reveal-chav-n-trade-networks-extending-to-the-amazon.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Exotic marine shells at Chavín de Huántar came from distant coastal and Amazonian regions, evidencing complex trade."},{"title":"Yura River Trade Routes Linked Chavín Priests to Distant Amazonian Regions","slug":"yura-river-trade-routes-linked-chav-n-priests-to-distant-amazonian-regions","url":"/categories/ancient-civilizations-secrets/chavin-culture/yura-river-trade-routes-linked-chav-n-priests-to-distant-amazonian-regions.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín ceremonial centers contained materials sourced hundreds of kilometers away, including Amazonian shell and tropical feathers."},{"title":"Zaña River Floodplain Agriculture Supported Early Chavín Economic Stability","slug":"za-a-river-floodplain-agriculture-supported-early-chav-n-economic-stability","url":"/categories/ancient-civilizations-secrets/chavin-culture/za-a-river-floodplain-agriculture-supported-early-chav-n-economic-stability.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Agricultural production along northern Peru's river valleys sustained ceremonial centers perched high in the Andes."},{"title":"Zaragosa Obsidian Production Sites Indicate Centralized Craft Oversight","slug":"zaragosa-obsidian-production-sites-indicate-centralized-craft-oversight","url":"/categories/ancient-civilizations-secrets/chavin-culture/zaragosa-obsidian-production-sites-indicate-centralized-craft-oversight.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín priests regulated obsidian blade production to ensure ritual and technical consistency."},{"title":"Zaragosa Obsidian Workshops Indicate Centralized Craft Control Under Chavín Priests","slug":"zaragosa-obsidian-workshops-indicate-centralized-craft-control-under-chav-n-priests","url":"/categories/ancient-civilizations-secrets/chavin-culture/zaragosa-obsidian-workshops-indicate-centralized-craft-control-under-chav-n-priests.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Obsidian blade production at Zaragosa valleys was likely regulated by Chavín religious authorities."},{"title":"Zeolite Deposits Used for Water Filtration at Chavín Ceremonial Centers","slug":"zeolite-deposits-used-for-water-filtration-at-chav-n-ceremonial-centers","url":"/categories/ancient-civilizations-secrets/chavin-culture/zeolite-deposits-used-for-water-filtration-at-chav-n-ceremonial-centers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín builders incorporated natural zeolite into water channels, improving clarity and hygiene in sacred spaces."},{"title":"Zeolite Mineral Integration in Chavín Channels Improved Water Quality","slug":"zeolite-mineral-integration-in-chav-n-channels-improved-water-quality","url":"/categories/ancient-civilizations-secrets/chavin-culture/zeolite-mineral-integration-in-chav-n-channels-improved-water-quality.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Natural zeolite was used in ceremonial channels to filter water, combining ritual and practical engineering."},{"title":"Zeppelin-Like Balloons Possibly Used for Chavín Festival Displays","slug":"zeppelin-like-balloons-possibly-used-for-chav-n-festival-displays","url":"/categories/ancient-civilizations-secrets/chavin-culture/zeppelin-like-balloons-possibly-used-for-chav-n-festival-displays.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some archaeologists theorize that air-filled ritual objects resembling balloons were part of Chavín public ceremonies."},{"title":"Zigzag Drain Channels Controlled Water Flow for Chavín Ritual Performance","slug":"zigzag-drain-channels-controlled-water-flow-for-chav-n-ritual-performance","url":"/categories/ancient-civilizations-secrets/chavin-culture/zigzag-drain-channels-controlled-water-flow-for-chav-n-ritual-performance.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Complex zigzagging stone channels managed both water and auditory experience in underground galleries."},{"title":"Zigzag Drainage Channels Engineered for Acoustics and Flood Control","slug":"zigzag-drainage-channels-engineered-for-acoustics-and-flood-control","url":"/categories/ancient-civilizations-secrets/chavin-culture/zigzag-drainage-channels-engineered-for-acoustics-and-flood-control.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín architects designed zigzag stone channels to manage water flow and amplify ritual sound simultaneously."},{"title":"Zigzag Stone Channels Combined Flood Control and Ritual Acoustics","slug":"zigzag-stone-channels-combined-flood-control-and-ritual-acoustics","url":"/categories/ancient-civilizations-secrets/chavin-culture/zigzag-stone-channels-combined-flood-control-and-ritual-acoustics.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín galleries used zigzag drainage channels to manage water and enhance ritual sound."},{"title":"Zoological Iconography at Chavín Blended Jaguars, Eagles, and Serpents into Hybrid Deities","slug":"zoological-iconography-at-chav-n-blended-jaguars-eagles-and-serpents-into-hybrid-deities","url":"/categories/ancient-civilizations-secrets/chavin-culture/zoological-iconography-at-chav-n-blended-jaguars-eagles-and-serpents-into-hybrid-deities.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chavín stone carvings fused predators from jungle, sky, and river into composite gods centuries before written mythology existed in the Andes."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

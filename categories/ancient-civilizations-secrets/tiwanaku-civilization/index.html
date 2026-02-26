@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiwanaku Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Tiwanaku Civilization</h1>
+  <p>Explore all facts in "Tiwanaku Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Tiwanaku Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Akapana Pyramid Drainage System Engineered to Withstand Andean Monsoons c. 500 CE","slug":"akapana-pyramid-drainage-system-engineered-to-withstand-andean-monsoons-c-500-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/akapana-pyramid-drainage-system-engineered-to-withstand-andean-monsoons-c-500-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 60-foot-tall ceremonial pyramid in the high Andes was built with an internal stormwater system precise enough to survive seasonal mountain deluges without collapsing."},{"title":"Gateway of the Sun Monolith Carved from 10-Ton Andesite Block c. 600–1000 CE","slug":"gateway-of-the-sun-monolith-carved-from-10-ton-andesite-block-c-600-1000-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/gateway-of-the-sun-monolith-carved-from-10-ton-andesite-block-c-600-1000-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single 10-ton stone slab was carved into a ceremonial gateway featuring one of the Andes’ most complex iconographic programs."},{"title":"K’antati Ritual Sites Aligned With Celestial Events c. 500–800 CE","slug":"k-antati-ritual-sites-aligned-with-celestial-events-c-500-800-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/k-antati-ritual-sites-aligned-with-celestial-events-c-500-800-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone markers at Tiwanaku ceremonial spaces are aligned to track solstices, indicating sophisticated astronomical observation."},{"title":"K’araña Ceremonial Stones Show Evidence of Symbolic Hieroglyphs","slug":"k-ara-a-ceremonial-stones-show-evidence-of-symbolic-hieroglyphs","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/k-ara-a-ceremonial-stones-show-evidence-of-symbolic-hieroglyphs.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone carvings depict abstract motifs possibly representing religious or administrative concepts."},{"title":"Kalasasaya Courtyard Walls Rebuilt After Structural Shifts c. 700–900 CE","slug":"kalasasaya-courtyard-walls-rebuilt-after-structural-shifts-c-700-900-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/kalasasaya-courtyard-walls-rebuilt-after-structural-shifts-c-700-900-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological evidence shows that Tiwanaku engineers dismantled and rebuilt massive stone walls when alignment errors became visible."},{"title":"Kalassasaya Temple Solar Alignments Calibrated to Equinoxes c. 300–600 CE","slug":"kalassasaya-temple-solar-alignments-calibrated-to-equinoxes-c-300-600-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/kalassasaya-temple-solar-alignments-calibrated-to-equinoxes-c-300-600-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stone courtyard in Bolivia was aligned so precisely that sunlight marked seasonal transitions across the Andean calendar more than 1,400 years ago."},{"title":"Kallawaya Herbal Knowledge Likely Integrated Into Tiwanaku Medicinal Practices","slug":"kallawaya-herbal-knowledge-likely-integrated-into-tiwanaku-medicinal-practices","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/kallawaya-herbal-knowledge-likely-integrated-into-tiwanaku-medicinal-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ethnobotanical studies trace ancestral herbal use back to Tiwanaku ceremonial centers, indicating early medical sophistication."},{"title":"Kuntur Wasi Stone Carvings Reveal Ritual and Political Symbolism","slug":"kuntur-wasi-stone-carvings-reveal-ritual-and-political-symbolism","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/kuntur-wasi-stone-carvings-reveal-ritual-and-political-symbolism.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Monumental reliefs depict ceremonial scenes and elite authority in pre-Tiwanaku highland settlements."},{"title":"Monolith Bennett Stands Over 7 Meters Tall and Weighs Approximately 20 Tons","slug":"monolith-bennett-stands-over-7-meters-tall-and-weighs-approximately-20-tons","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/monolith-bennett-stands-over-7-meters-tall-and-weighs-approximately-20-tons.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single carved sandstone statue rising more than 7 meters once dominated the ceremonial core of Tiwanaku."},{"title":"Obsidian Distribution Networks Connected Tiwanaku to Distant Volcanic Sources","slug":"obsidian-distribution-networks-connected-tiwanaku-to-distant-volcanic-sources","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/obsidian-distribution-networks-connected-tiwanaku-to-distant-volcanic-sources.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chemical analysis of volcanic glass shows that Tiwanaku elites imported obsidian from quarries over 300 kilometers away."},{"title":"Pumapunku Stone Blocks Cut with Sub-Millimeter Precision c. 600–900 CE","slug":"pumapunku-stone-blocks-cut-with-sub-millimeter-precision-c-600-900-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/pumapunku-stone-blocks-cut-with-sub-millimeter-precision-c-600-900-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At 12,500 feet above sea level, builders shaped and fitted stone blocks so precisely that gaps between them measure less than a millimeter."},{"title":"Qollqa Storage Facilities Preserved Grains Across the Tiwanaku Empire","slug":"qollqa-storage-facilities-preserved-grains-across-the-tiwanaku-empire","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/qollqa-storage-facilities-preserved-grains-across-the-tiwanaku-empire.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone-and-adobe granaries stored maize, quinoa, and tubers, ensuring urban populations remained fed year-round."},{"title":"Quinoa Domestication at Tiwanaku Supported High-Altitude Urban Growth c. 400–1000 CE","slug":"quinoa-domestication-at-tiwanaku-supported-high-altitude-urban-growth-c-400-1000-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/quinoa-domestication-at-tiwanaku-supported-high-altitude-urban-growth-c-400-1000-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A grain once dismissed as peasant food helped sustain one of the highest major urban centers in the pre-Columbian world."},{"title":"Quipu-Style Recording Stones Suggest Early Numerical Notation c. 700–900 CE","slug":"quipu-style-recording-stones-suggest-early-numerical-notation-c-700-900-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/quipu-style-recording-stones-suggest-early-numerical-notation-c-700-900-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone carvings at Tiwanaku resemble knotted record-keeping devices, hinting at proto-accounting systems for tribute and labor."},{"title":"Raised Field Agriculture Increased Altiplano Crop Yields Despite Frost Risk c. 400–1000 CE","slug":"raised-field-agriculture-increased-altiplano-crop-yields-despite-frost-risk-c-400-1000-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/raised-field-agriculture-increased-altiplano-crop-yields-despite-frost-risk-c-400-1000-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Farmers at 12,500 feet engineered elevated planting platforms that turned freezing nights into agricultural advantage."},{"title":"Residential Compounds at Tiwanaku Organized Around Rectangular Courtyards","slug":"residential-compounds-at-tiwanaku-organized-around-rectangular-courtyards","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/residential-compounds-at-tiwanaku-organized-around-rectangular-courtyards.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Urban households in one of the Andes’ highest cities were structured around shared courtyards rather than isolated dwellings."},{"title":"Skeletal Analysis Indicates Diet Diversity in Tiwanaku Population c. 600–1000 CE","slug":"skeletal-analysis-indicates-diet-diversity-in-tiwanaku-population-c-600-1000-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/skeletal-analysis-indicates-diet-diversity-in-tiwanaku-population-c-600-1000-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bone chemistry reveals that residents of a 12,500-foot city consumed a more varied diet than altitude alone would suggest."},{"title":"Uchusuma Burial Sites Reveal Elite Mortuary Practices c. 700–1000 CE","slug":"uchusuma-burial-sites-reveal-elite-mortuary-practices-c-700-1000-ce","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/uchusuma-burial-sites-reveal-elite-mortuary-practices-c-700-1000-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"High-status tombs contained complex grave goods and carefully arranged human remains indicating ritualized social differentiation."},{"title":"Ullakaya Burial Urns Demonstrate Standardized Funerary Practices","slug":"ullakaya-burial-urns-demonstrate-standardized-funerary-practices","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/ullakaya-burial-urns-demonstrate-standardized-funerary-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ceramic urns reveal consistent burial methods, reflecting centralized control over mortuary rituals."},{"title":"Underwater Canals Adjacent to Tiwanaku Raised Fields Controlled Frost and Irrigation","slug":"underwater-canals-adjacent-to-tiwanaku-raised-fields-controlled-frost-and-irrigation","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/underwater-canals-adjacent-to-tiwanaku-raised-fields-controlled-frost-and-irrigation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineers constructed extensive water channels next to crops to stabilize temperatures and supply water in a high-altitude desert environment."},{"title":"Urban Core of Tiwanaku Covered Approximately 4 Square Kilometers at Its Peak","slug":"urban-core-of-tiwanaku-covered-approximately-4-square-kilometers-at-its-peak","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/urban-core-of-tiwanaku-covered-approximately-4-square-kilometers-at-its-peak.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At its height, a high-altitude city covering roughly 4 square kilometers coordinated labor across the Andean plateau."},{"title":"Uru-Uru Ritual Platforms Integrated Water Features for Ceremony","slug":"uru-uru-ritual-platforms-integrated-water-features-for-ceremony","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/uru-uru-ritual-platforms-integrated-water-features-for-ceremony.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elevated stone platforms incorporated channels for flowing water, merging ritual, architecture, and hydraulic engineering."},{"title":"Ushnu Ceremonial Platforms Aligned With Solstices to Integrate Ritual and Astronomy","slug":"ushnu-ceremonial-platforms-aligned-with-solstices-to-integrate-ritual-and-astronomy","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/ushnu-ceremonial-platforms-aligned-with-solstices-to-integrate-ritual-and-astronomy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elevated podiums within Tiwanaku plazas correspond to solar events, blending political spectacle with seasonal observation."},{"title":"Ushnu Platforms Functioned as Elevated Ceremonial Thrones for Tiwanaku Rulers","slug":"ushnu-platforms-functioned-as-elevated-ceremonial-thrones-for-tiwanaku-rulers","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/ushnu-platforms-functioned-as-elevated-ceremonial-thrones-for-tiwanaku-rulers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rulers presided over communities from raised platforms visible across ceremonial plazas, reinforcing political hierarchy."},{"title":"Uturuncu Water Channels Supported Agriculture and Ceremonial Needs","slug":"uturuncu-water-channels-supported-agriculture-and-ceremonial-needs","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/uturuncu-water-channels-supported-agriculture-and-ceremonial-needs.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineered canals delivered water to crops and ritual plazas, demonstrating integrated hydraulic planning."},{"title":"X-Ray Analysis of Tiwanaku Metal Artifacts Reveals Advanced Alloying Techniques","slug":"x-ray-analysis-of-tiwanaku-metal-artifacts-reveals-advanced-alloying-techniques","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/x-ray-analysis-of-tiwanaku-metal-artifacts-reveals-advanced-alloying-techniques.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Scientific imaging shows that Tiwanaku metalworkers deliberately blended copper with arsenic to alter hardness centuries before European contact."},{"title":"Xauxa Peripheral Settlements Reflect Tiwanaku Architectural Influence","slug":"xauxa-peripheral-settlements-reflect-tiwanaku-architectural-influence","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/xauxa-peripheral-settlements-reflect-tiwanaku-architectural-influence.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ceramic and stone structures hundreds of kilometers from the capital show Tiwanaku-style planning and design."},{"title":"Xauxani Ceremonial Terraces Demonstrate Coordinated Labor and Ritual Planning","slug":"xauxani-ceremonial-terraces-demonstrate-coordinated-labor-and-ritual-planning","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/xauxani-ceremonial-terraces-demonstrate-coordinated-labor-and-ritual-planning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Terraces constructed with precise leveling and stonework indicate integration of agriculture, ceremony, and social organization."},{"title":"Xerophyte Cultivation Evidence Shows Adaptation to High-Altitude Microclimates","slug":"xerophyte-cultivation-evidence-shows-adaptation-to-high-altitude-microclimates","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/xerophyte-cultivation-evidence-shows-adaptation-to-high-altitude-microclimates.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Analysis of soil and plant remains suggests Tiwanaku farmers selected drought-resistant crops for microclimates within the Altiplano."},{"title":"Yanamarca Stone Roads Facilitated Llama Caravan Transport Across Tiwanaku Region","slug":"yanamarca-stone-roads-facilitated-llama-caravan-transport-across-tiwanaku-region","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yanamarca-stone-roads-facilitated-llama-caravan-transport-across-tiwanaku-region.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineered stone pathways allowed long-distance trade without wheeled vehicles, demonstrating advanced logistics."},{"title":"Yanamayo Canal Systems Maintained Agricultural Productivity Across Seasonal Variation","slug":"yanamayo-canal-systems-maintained-agricultural-productivity-across-seasonal-variation","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yanamayo-canal-systems-maintained-agricultural-productivity-across-seasonal-variation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Engineered water channels distributed meltwater to crops, mitigating drought and frost in the high Andes."},{"title":"Yanapaccha Monoliths Exhibit Iconography Connected to Agricultural Fertility","slug":"yanapaccha-monoliths-exhibit-iconography-connected-to-agricultural-fertility","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yanapaccha-monoliths-exhibit-iconography-connected-to-agricultural-fertility.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved figures emphasize crops and animals, linking monumental art to food production cycles."},{"title":"Yanatari Crop Storage Structures Maintained Surplus Across Seasons","slug":"yanatari-crop-storage-structures-maintained-surplus-across-seasons","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yanatari-crop-storage-structures-maintained-surplus-across-seasons.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Specialized stone and adobe granaries allowed Tiwanaku farmers to preserve crops for extended periods."},{"title":"Yanaurco Monoliths Convey Political and Cosmological Authority","slug":"yanaurco-monoliths-convey-political-and-cosmological-authority","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yanaurco-monoliths-convey-political-and-cosmological-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone pillars carved with deity imagery and attendants reinforced elite power across ceremonial spaces."},{"title":"Yapacani Ceremonial Plaza Exhibits Hydraulic Engineering for Ritual Purposes","slug":"yapacani-ceremonial-plaza-exhibits-hydraulic-engineering-for-ritual-purposes","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yapacani-ceremonial-plaza-exhibits-hydraulic-engineering-for-ritual-purposes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Water channels in the main plaza may have been designed to create reflective pools for visual and ritual impact."},{"title":"Yapacani Raised Fields Enhanced Microclimates for Crop Survival","slug":"yapacani-raised-fields-enhanced-microclimates-for-crop-survival","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yapacani-raised-fields-enhanced-microclimates-for-crop-survival.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artificial mounds and adjacent water channels created warmer, more stable conditions, improving yields of frost-sensitive crops."},{"title":"Yapu Stone Carvings Depict Ritual Processions Across Tiwanaku Civic Centers","slug":"yapu-stone-carvings-depict-ritual-processions-across-tiwanaku-civic-centers","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yapu-stone-carvings-depict-ritual-processions-across-tiwanaku-civic-centers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone reliefs show detailed processions, suggesting coordinated ceremonial activity across the urban complex."},{"title":"Yapuna Quarry Evidence Shows Advanced Stone Transport Techniques in Tiwanaku","slug":"yapuna-quarry-evidence-shows-advanced-stone-transport-techniques-in-tiwanaku","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yapuna-quarry-evidence-shows-advanced-stone-transport-techniques-in-tiwanaku.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stones weighing several tons were moved several kilometers from quarries to ceremonial complexes without wheeled vehicles."},{"title":"Yaya-Mama Religious Iconography Spread Across Lake Titicaca Basin Before Tiwanaku Expansion","slug":"yaya-mama-religious-iconography-spread-across-lake-titicaca-basin-before-tiwanaku-expansion","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/yaya-mama-religious-iconography-spread-across-lake-titicaca-basin-before-tiwanaku-expansion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before Tiwanaku reached political dominance, shared stone imagery had already unified communities around Lake Titicaca."},{"title":"Zapata Peripheral Settlements Exhibit Tiwanaku Ceramics and Architecture","slug":"zapata-peripheral-settlements-exhibit-tiwanaku-ceramics-and-architecture","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zapata-peripheral-settlements-exhibit-tiwanaku-ceramics-and-architecture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts hundreds of kilometers from the core reveal the geographic reach of Tiwanaku cultural influence."},{"title":"Zaruma Ceramic Workshops Indicate Organized Production for Ritual and Trade","slug":"zaruma-ceramic-workshops-indicate-organized-production-for-ritual-and-trade","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zaruma-ceramic-workshops-indicate-organized-production-for-ritual-and-trade.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavated kilns and mold fragments show centralized manufacturing of ritual vessels distributed across Tiwanaku settlements."},{"title":"Zenteno Agricultural Terraces Optimized Soil and Water Retention","slug":"zenteno-agricultural-terraces-optimized-soil-and-water-retention","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zenteno-agricultural-terraces-optimized-soil-and-water-retention.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Terraces stabilized steep slopes, controlled runoff, and maximized arable land, enhancing high-altitude farming efficiency."},{"title":"Zhang-Machu Site Analysis Suggests Tiwanaku Influenced Southern Peruvian Highlands","slug":"zhang-machu-site-analysis-suggests-tiwanaku-influenced-southern-peruvian-highlands","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zhang-machu-site-analysis-suggests-tiwanaku-influenced-southern-peruvian-highlands.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations in southern Peru reveal Tiwanaku-style ceramics and architecture, extending its cultural influence beyond Lake Titicaca."},{"title":"Zonal Colonization Strategy Linked Tiwanaku to Pacific and Amazonian Trade Routes","slug":"zonal-colonization-strategy-linked-tiwanaku-to-pacific-and-amazonian-trade-routes","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zonal-colonization-strategy-linked-tiwanaku-to-pacific-and-amazonian-trade-routes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A landlocked highland state maintained access to coastal and tropical goods through strategically placed colonies hundreds of miles away."},{"title":"Zonally Distributed Tiwanaku Colonies Enabled Access to Diverse Resources","slug":"zonally-distributed-tiwanaku-colonies-enabled-access-to-diverse-resources","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zonally-distributed-tiwanaku-colonies-enabled-access-to-diverse-resources.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Strategically placed colonies extended political and economic reach across multiple ecological zones without full territorial occupation."},{"title":"Zorrillo Ceremonial Stones Indicate Ritual Use of Animal Iconography","slug":"zorrillo-ceremonial-stones-indicate-ritual-use-of-animal-iconography","url":"/categories/ancient-civilizations-secrets/tiwanaku-civilization/zorrillo-ceremonial-stones-indicate-ritual-use-of-animal-iconography.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Monolithic carvings depict llamas and camelids, integrating livestock into religious and civic symbolism."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

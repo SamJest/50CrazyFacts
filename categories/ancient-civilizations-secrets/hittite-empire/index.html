@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hittite Empire</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Hittite Empire</h1>
+  <p>Explore all facts in "Hittite Empire".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Hittite Empire</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Hattusa Archives Preserved Over 30,000 Clay Tablets Detailing Hittite Statecraft","slug":"hattusa-archives-preserved-over-30-000-clay-tablets-detailing-hittite-statecraft","url":"/categories/ancient-civilizations-secrets/hittite-empire/hattusa-archives-preserved-over-30-000-clay-tablets-detailing-hittite-statecraft.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 30,000 clay tablets buried in Anatolia reconstructed an empire that historians once believed vanished without record."},{"title":"Hattusa Archives Preserved Over 30,000 Clay Tablets Detailing Hittite Statecraft","slug":"hattusa-archives-preserved-over-30-000-clay-tablets-detailing-hittite-statecraft","url":"/categories/ancient-civilizations-secrets/hittite-empire/hattusa-archives-preserved-over-30-000-clay-tablets-detailing-hittite-statecraft.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 30,000 clay tablets buried in Anatolia reconstructed an empire that historians once believed vanished without record."},{"title":"Kadesh Peace Silver Tablet Replica Reflects Lost Original Inscribed in 1259 BCE","slug":"kadesh-peace-silver-tablet-replica-reflects-lost-original-inscribed-in-1259-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/kadesh-peace-silver-tablet-replica-reflects-lost-original-inscribed-in-1259-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The original Kadesh Treaty was reportedly engraved on silver, yet only clay and stone copies survive."},{"title":"Kadesh Relief Discrepancies Highlighted Competing Narratives Between Hittites and Egypt","slug":"kadesh-relief-discrepancies-highlighted-competing-narratives-between-hittites-and-egypt","url":"/categories/ancient-civilizations-secrets/hittite-empire/kadesh-relief-discrepancies-highlighted-competing-narratives-between-hittites-and-egypt.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Temple walls in Egypt proclaim decisive victory at Kadesh, while Hittite records suggest a far more ambiguous outcome."},{"title":"Kadesh Treaty of 1259 BCE Established the First Recorded International Peace Accord","slug":"kadesh-treaty-of-1259-bce-established-the-first-recorded-international-peace-accord","url":"/categories/ancient-civilizations-secrets/hittite-empire/kadesh-treaty-of-1259-bce-established-the-first-recorded-international-peace-accord.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1259 BCE, two rival superpowers carved a peace agreement into silver tablets after decades of warfare."},{"title":"Kadesh Treaty of 1259 BCE Established the First Recorded International Peace Accord","slug":"kadesh-treaty-of-1259-bce-established-the-first-recorded-international-peace-accord","url":"/categories/ancient-civilizations-secrets/hittite-empire/kadesh-treaty-of-1259-bce-established-the-first-recorded-international-peace-accord.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1259 BCE, two rival superpowers carved a peace agreement into silver tablets after decades of warfare."},{"title":"Karahoyuk Tablets Revealed Provincial Taxation Systems in 14th Century BCE Anatolia","slug":"karahoyuk-tablets-revealed-provincial-taxation-systems-in-14th-century-bce-anatolia","url":"/categories/ancient-civilizations-secrets/hittite-empire/karahoyuk-tablets-revealed-provincial-taxation-systems-in-14th-century-bce-anatolia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay records from provincial Anatolia show that taxation in the Hittite Empire extended far beyond the capital."},{"title":"Karkemish Administrative Hub Sustained Neo-Hittite Governance After 1200 BCE","slug":"karkemish-administrative-hub-sustained-neo-hittite-governance-after-1200-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/karkemish-administrative-hub-sustained-neo-hittite-governance-after-1200-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Hattusa fell, Karkemish emerged as a successor power preserving elements of Hittite statecraft."},{"title":"Kaska Tribes Challenged Hittite Northern Borders for Over 200 Years","slug":"kaska-tribes-challenged-hittite-northern-borders-for-over-200-years","url":"/categories/ancient-civilizations-secrets/hittite-empire/kaska-tribes-challenged-hittite-northern-borders-for-over-200-years.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For more than two centuries, loosely organized mountain tribes repeatedly breached the Hittite Empire’s northern frontier."},{"title":"KBo Cuneiform Series Catalogued Royal Edicts Across Multiple Hittite Reigns","slug":"kbo-cuneiform-series-catalogued-royal-edicts-across-multiple-hittite-reigns","url":"/categories/ancient-civilizations-secrets/hittite-empire/kbo-cuneiform-series-catalogued-royal-edicts-across-multiple-hittite-reigns.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of tablets classified under the modern KBo series preserve administrative continuity across generations of Hittite rulers."},{"title":"Kikkuli Horse Training Manual of c.1400 BCE Standardized Chariot Warfare Conditioning","slug":"kikkuli-horse-training-manual-of-c-1400-bce-standardized-chariot-warfare-conditioning","url":"/categories/ancient-civilizations-secrets/hittite-empire/kikkuli-horse-training-manual-of-c-1400-bce-standardized-chariot-warfare-conditioning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 3,400-year-old training program prescribed 214 days of interval conditioning for war horses."},{"title":"Kikkuli Horse Training Manual of c.1400 BCE Standardized Chariot Warfare Conditioning","slug":"kikkuli-horse-training-manual-of-c-1400-bce-standardized-chariot-warfare-conditioning","url":"/categories/ancient-civilizations-secrets/hittite-empire/kikkuli-horse-training-manual-of-c-1400-bce-standardized-chariot-warfare-conditioning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 3,400-year-old training program prescribed 214 days of interval conditioning for war horses."},{"title":"Kultepe Trade Colony of c.1900 BCE Prefigured Hittite Commercial Administration","slug":"kultepe-trade-colony-of-c-1900-bce-prefigured-hittite-commercial-administration","url":"/categories/ancient-civilizations-secrets/hittite-empire/kultepe-trade-colony-of-c-1900-bce-prefigured-hittite-commercial-administration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries before the Hittite Empire peaked, Anatolian merchants at Kultepe were already running international credit networks."},{"title":"Kumarbi Cycle Texts Revealed Hurrian Influence on Hittite State Religion","slug":"kumarbi-cycle-texts-revealed-hurrian-influence-on-hittite-state-religion","url":"/categories/ancient-civilizations-secrets/hittite-empire/kumarbi-cycle-texts-revealed-hurrian-influence-on-hittite-state-religion.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tablets from Hattusa show that Hittite mythology absorbed and reshaped stories from neighboring Hurrian traditions."},{"title":"Kummanni Cult Integration Linked Hittite Kingship to Southern Anatolian Deities","slug":"kummanni-cult-integration-linked-hittite-kingship-to-southern-anatolian-deities","url":"/categories/ancient-civilizations-secrets/hittite-empire/kummanni-cult-integration-linked-hittite-kingship-to-southern-anatolian-deities.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By honoring the goddess Hebat at Kummanni, Hittite rulers fused local devotion with imperial legitimacy."},{"title":"Kussara Origins Narrative Anchored Early Hittite Royal Identity in 17th Century BCE","slug":"kussara-origins-narrative-anchored-early-hittite-royal-identity-in-17th-century-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/kussara-origins-narrative-anchored-early-hittite-royal-identity-in-17th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hittite kings traced their authority to the city of Kussara, a settlement whose exact location remains debated."},{"title":"Qadesh Aftermath of 1274 BCE Forced Hittite Military Reforms in Chariot Deployment","slug":"qadesh-aftermath-of-1274-bce-forced-hittite-military-reforms-in-chariot-deployment","url":"/categories/ancient-civilizations-secrets/hittite-empire/qadesh-aftermath-of-1274-bce-forced-hittite-military-reforms-in-chariot-deployment.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The largest chariot battle of the Bronze Age exposed vulnerabilities that reshaped Hittite battlefield tactics."},{"title":"Qarqar Coalition Pressures in 9th Century BCE Echoed Former Hittite Regional Power Blocs","slug":"qarqar-coalition-pressures-in-9th-century-bce-echoed-former-hittite-regional-power-blocs","url":"/categories/ancient-civilizations-secrets/hittite-empire/qarqar-coalition-pressures-in-9th-century-bce-echoed-former-hittite-regional-power-blocs.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Even after the Hittite Empire collapsed, successor states in Syria joined coalitions that mirrored earlier imperial alliances."},{"title":"Qatna Alliance Networks Strengthened Hittite Control Over Syrian Trade Routes","slug":"qatna-alliance-networks-strengthened-hittite-control-over-syrian-trade-routes","url":"/categories/ancient-civilizations-secrets/hittite-empire/qatna-alliance-networks-strengthened-hittite-control-over-syrian-trade-routes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By absorbing strategic Syrian cities, the Hittites controlled caravan arteries linking Mesopotamia to the Mediterranean."},{"title":"Qatna Amarna Letters Confirmed Hittite Rivalry With Egypt in 14th Century BCE","slug":"qatna-amarna-letters-confirmed-hittite-rivalry-with-egypt-in-14th-century-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/qatna-amarna-letters-confirmed-hittite-rivalry-with-egypt-in-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets found in Egypt reveal Syrian rulers balancing allegiance between the Hittite king and the Egyptian pharaoh."},{"title":"Qatna Royal Tomb Discoveries Confirmed Hittite Diplomatic Presence in Syrian Courts","slug":"qatna-royal-tomb-discoveries-confirmed-hittite-diplomatic-presence-in-syrian-courts","url":"/categories/ancient-civilizations-secrets/hittite-empire/qatna-royal-tomb-discoveries-confirmed-hittite-diplomatic-presence-in-syrian-courts.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Royal tombs at Qatna revealed material evidence of diplomatic contact between Syrian elites and the Hittite Empire."},{"title":"Qizzuwatna Treaties of 15th Century BCE Integrated Southern Anatolia Into Hittite Power","slug":"qizzuwatna-treaties-of-15th-century-bce-integrated-southern-anatolia-into-hittite-power","url":"/categories/ancient-civilizations-secrets/hittite-empire/qizzuwatna-treaties-of-15th-century-bce-integrated-southern-anatolia-into-hittite-power.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Diplomatic contracts with Qizzuwatna secured a strategic corridor linking Anatolia to Syria without prolonged war."},{"title":"Queen Puduhepa of 13th Century BCE Negotiated Directly With Ramesses II","slug":"queen-puduhepa-of-13th-century-bce-negotiated-directly-with-ramesses-ii","url":"/categories/ancient-civilizations-secrets/hittite-empire/queen-puduhepa-of-13th-century-bce-negotiated-directly-with-ramesses-ii.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A Hittite queen corresponded personally with Egypt’s pharaoh, shaping international diplomacy in the 1200s BCE."},{"title":"Queen’s Edicts of 13th Century BCE Expanded Legal Authority Within Hittite Courts","slug":"queen-s-edicts-of-13th-century-bce-expanded-legal-authority-within-hittite-courts","url":"/categories/ancient-civilizations-secrets/hittite-empire/queen-s-edicts-of-13th-century-bce-expanded-legal-authority-within-hittite-courts.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets show that Hittite queens issued legal directives affecting property, inheritance, and religious endowments."},{"title":"Uda River Campaign Records Exposed Hittite Vulnerability to Regional Flooding","slug":"uda-river-campaign-records-exposed-hittite-vulnerability-to-regional-flooding","url":"/categories/ancient-civilizations-secrets/hittite-empire/uda-river-campaign-records-exposed-hittite-vulnerability-to-regional-flooding.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Military texts reveal that river conditions could delay Hittite campaigns as effectively as enemy armies."},{"title":"Ugarit Correspondence of c.1200 BCE Revealed Hittite Intelligence Failures Before the Bronze Age Collapse","slug":"ugarit-correspondence-of-c-1200-bce-revealed-hittite-intelligence-failures-before-the-bronze-age-collapse","url":"/categories/ancient-civilizations-secrets/hittite-empire/ugarit-correspondence-of-c-1200-bce-revealed-hittite-intelligence-failures-before-the-bronze-age-collapse.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Letters sent to the Hittite court in the early 12th century BCE warned of enemy ships, yet the empire still fell within a generation."},{"title":"Ullassa Frontier Policies Demonstrated Hittite Use of Buffer States in 14th Century BCE","slug":"ullassa-frontier-policies-demonstrated-hittite-use-of-buffer-states-in-14th-century-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/ullassa-frontier-policies-demonstrated-hittite-use-of-buffer-states-in-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rather than annex every conquered territory, the Hittites often ruled indirectly through carefully managed buffer kingdoms."},{"title":"Ullaza Treaty Clauses Required Extradition of Political Refugees in 14th Century BCE","slug":"ullaza-treaty-clauses-required-extradition-of-political-refugees-in-14th-century-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/ullaza-treaty-clauses-required-extradition-of-political-refugees-in-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 14th century BCE Hittite treaty required the return of political fugitives, formalizing cross-border extradition long before modern law."},{"title":"Ullikummi Myth Encoded Hittite Fears of Geological Catastrophe","slug":"ullikummi-myth-encoded-hittite-fears-of-geological-catastrophe","url":"/categories/ancient-civilizations-secrets/hittite-empire/ullikummi-myth-encoded-hittite-fears-of-geological-catastrophe.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A Hittite myth describes a stone giant rising from the sea, threatening to overturn the cosmic order."},{"title":"Ura Port of 13th Century BCE Secured Hittite Access to Mediterranean Grain and Timber","slug":"ura-port-of-13th-century-bce-secured-hittite-access-to-mediterranean-grain-and-timber","url":"/categories/ancient-civilizations-secrets/hittite-empire/ura-port-of-13th-century-bce-secured-hittite-access-to-mediterranean-grain-and-timber.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single southern Anatolian port allowed the landlocked Hittite capital to tap Mediterranean grain and timber supply lines."},{"title":"Xanthian Obelisk Preserved Luwian Hieroglyphs Linked to Post-Hittite Cultural Memory","slug":"xanthian-obelisk-preserved-luwian-hieroglyphs-linked-to-post-hittite-cultural-memory","url":"/categories/ancient-civilizations-secrets/hittite-empire/xanthian-obelisk-preserved-luwian-hieroglyphs-linked-to-post-hittite-cultural-memory.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An inscribed pillar in southwestern Anatolia preserved a script rooted in Hittite-era hieroglyphic tradition."},{"title":"Xanthos Treaty Parallels Reveal Long-Term Anatolian Tradition of Written Political Compacts","slug":"xanthos-treaty-parallels-reveal-long-term-anatolian-tradition-of-written-political-compacts","url":"/categories/ancient-civilizations-secrets/hittite-empire/xanthos-treaty-parallels-reveal-long-term-anatolian-tradition-of-written-political-compacts.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries after Hittite treaties standardized diplomatic clauses, Anatolian states continued formalizing alliances in inscribed agreements."},{"title":"Xanthos Valley Campaigns Extended Hittite Influence Into Southwestern Anatolia","slug":"xanthos-valley-campaigns-extended-hittite-influence-into-southwestern-anatolia","url":"/categories/ancient-civilizations-secrets/hittite-empire/xanthos-valley-campaigns-extended-hittite-influence-into-southwestern-anatolia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Military expeditions into the rugged Xanthos Valley pushed Hittite authority toward the Aegean frontier."},{"title":"Xerographic Clay Seals of Hattusa Secured Thousands of Royal Transactions","slug":"xerographic-clay-seals-of-hattusa-secured-thousands-of-royal-transactions","url":"/categories/ancient-civilizations-secrets/hittite-empire/xerographic-clay-seals-of-hattusa-secured-thousands-of-royal-transactions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before signatures existed, Hittite officials authenticated state orders with carved stone cylinders pressed into wet clay."},{"title":"Xerographic Tablet Firing at Hattusa Accidentally Preserved Imperial Archives in 1200 BCE","slug":"xerographic-tablet-firing-at-hattusa-accidentally-preserved-imperial-archives-in-1200-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/xerographic-tablet-firing-at-hattusa-accidentally-preserved-imperial-archives-in-1200-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Hattusa burned around 1200 BCE, the fire that destroyed the city permanently hardened thousands of state records."},{"title":"Xerophyte Agriculture Adaptations Helped Hittite Farmers Survive Anatolian Drought Cycles","slug":"xerophyte-agriculture-adaptations-helped-hittite-farmers-survive-anatolian-drought-cycles","url":"/categories/ancient-civilizations-secrets/hittite-empire/xerophyte-agriculture-adaptations-helped-hittite-farmers-survive-anatolian-drought-cycles.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Farming in central Anatolia required crop strategies adapted to semi-arid conditions long before modern irrigation."},{"title":"Xerxes I Inscriptions Referenced Hittite Territories as Pre-Imperial Precedent","slug":"xerxes-i-inscriptions-referenced-hittite-territories-as-pre-imperial-precedent","url":"/categories/ancient-civilizations-secrets/hittite-empire/xerxes-i-inscriptions-referenced-hittite-territories-as-pre-imperial-precedent.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries after Hattusa fell, Persian royal inscriptions still referenced lands once ruled by the Hittites."},{"title":"Yalburt Inscription of c.1300 BCE Documented Tudhaliya IV’s Western Campaigns","slug":"yalburt-inscription-of-c-1300-bce-documented-tudhaliya-iv-s-western-campaigns","url":"/categories/ancient-civilizations-secrets/hittite-empire/yalburt-inscription-of-c-1300-bce-documented-tudhaliya-iv-s-western-campaigns.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stone water monument in western Anatolia records a Hittite king’s military victories in hieroglyphs carved for eternity."},{"title":"Yamhad Conflict in 16th Century BCE Marked Early Hittite Expansion Into Syria","slug":"yamhad-conflict-in-16th-century-bce-marked-early-hittite-expansion-into-syria","url":"/categories/ancient-civilizations-secrets/hittite-empire/yamhad-conflict-in-16th-century-bce-marked-early-hittite-expansion-into-syria.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The destruction of Yamhad signaled that the Hittites were prepared to project power far beyond Anatolia."},{"title":"Yazilikaya Chamber B Reliefs Mapped Lunar Cycles in 13th Century BCE Anatolia","slug":"yazilikaya-chamber-b-reliefs-mapped-lunar-cycles-in-13th-century-bce-anatolia","url":"/categories/ancient-civilizations-secrets/hittite-empire/yazilikaya-chamber-b-reliefs-mapped-lunar-cycles-in-13th-century-bce-anatolia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved figures in a narrow rock chamber may encode a lunar calendar used by Hittite priests more than 3,200 years ago."},{"title":"Yazilikaya Processional Reliefs Visualized Dynastic Legitimacy in 13th Century BCE","slug":"yazilikaya-processional-reliefs-visualized-dynastic-legitimacy-in-13th-century-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/yazilikaya-processional-reliefs-visualized-dynastic-legitimacy-in-13th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone carvings of deities at Yazilikaya positioned Hittite kings within a divine lineage carved into limestone."},{"title":"Yazilikaya Sanctuary Encoded a 90 Deity Pantheon in Stone Reliefs","slug":"yazilikaya-sanctuary-encoded-a-90-deity-pantheon-in-stone-reliefs","url":"/categories/ancient-civilizations-secrets/hittite-empire/yazilikaya-sanctuary-encoded-a-90-deity-pantheon-in-stone-reliefs.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved into open-air rock chambers, more than 90 deities march in procession at a Hittite sanctuary outside Hattusa."},{"title":"Yazilikaya Sanctuary Encoded a 90 Deity Pantheon in Stone Reliefs","slug":"yazilikaya-sanctuary-encoded-a-90-deity-pantheon-in-stone-reliefs","url":"/categories/ancient-civilizations-secrets/hittite-empire/yazilikaya-sanctuary-encoded-a-90-deity-pantheon-in-stone-reliefs.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved into open-air rock chambers, more than 90 deities march in procession at a Hittite sanctuary outside Hattusa."},{"title":"Yenicekale Fortifications Demonstrated Layered Hittite Defensive Engineering","slug":"yenicekale-fortifications-demonstrated-layered-hittite-defensive-engineering","url":"/categories/ancient-civilizations-secrets/hittite-empire/yenicekale-fortifications-demonstrated-layered-hittite-defensive-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Massive stone ramparts in central Anatolia reveal that Hittite defense strategy relied on terrain as much as walls."},{"title":"Yenikapi Trade Routes Connected Hittite Anatolia to Aegean Maritime Networks","slug":"yenikapi-trade-routes-connected-hittite-anatolia-to-aegean-maritime-networks","url":"/categories/ancient-civilizations-secrets/hittite-empire/yenikapi-trade-routes-connected-hittite-anatolia-to-aegean-maritime-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological evidence shows that Hittite-controlled Anatolia linked inland trade to Aegean sea routes centuries before classical Greece."},{"title":"Zalpa Revolt Accounts Documented Early Hittite Struggles for Centralization","slug":"zalpa-revolt-accounts-documented-early-hittite-struggles-for-centralization","url":"/categories/ancient-civilizations-secrets/hittite-empire/zalpa-revolt-accounts-documented-early-hittite-struggles-for-centralization.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before the Hittite Empire reached its height, rebellions like the revolt at Zalpa exposed fragile early authority."},{"title":"Zalpa River Trade Corridors Shaped Early Hittite Political Geography","slug":"zalpa-river-trade-corridors-shaped-early-hittite-political-geography","url":"/categories/ancient-civilizations-secrets/hittite-empire/zalpa-river-trade-corridors-shaped-early-hittite-political-geography.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Control of river-linked corridors near Zalpa influenced early Hittite consolidation more than monumental architecture did."},{"title":"Zannanza Affair Triggered a Diplomatic Crisis Between Hittites and Egypt in 1320s BCE","slug":"zannanza-affair-triggered-a-diplomatic-crisis-between-hittites-and-egypt-in-1320s-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/zannanza-affair-triggered-a-diplomatic-crisis-between-hittites-and-egypt-in-1320s-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An Egyptian queen once asked the Hittite king to send her a husband, and the prince died before reaching the throne."},{"title":"Zannanza Affair Triggered a Diplomatic Crisis Between Hittites and Egypt in 1320s BCE","slug":"zannanza-affair-triggered-a-diplomatic-crisis-between-hittites-and-egypt-in-1320s-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/zannanza-affair-triggered-a-diplomatic-crisis-between-hittites-and-egypt-in-1320s-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An Egyptian queen once asked the Hittite king to send her a husband, and the prince died before reaching the throne."},{"title":"Zannanza Diplomatic Crisis Demonstrated Risks of Dynastic Marriage in 14th Century BCE","slug":"zannanza-diplomatic-crisis-demonstrated-risks-of-dynastic-marriage-in-14th-century-bce","url":"/categories/ancient-civilizations-secrets/hittite-empire/zannanza-diplomatic-crisis-demonstrated-risks-of-dynastic-marriage-in-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single royal marriage proposal between Egypt and the Hittites triggered suspicion, retaliation, and renewed warfare."},{"title":"Zincirli Inscriptions Preserved Post-Hittite Political Continuity in 1st Millennium BCE Anatolia","slug":"zincirli-inscriptions-preserved-post-hittite-political-continuity-in-1st-millennium-bce-anatolia","url":"/categories/ancient-civilizations-secrets/hittite-empire/zincirli-inscriptions-preserved-post-hittite-political-continuity-in-1st-millennium-bce-anatolia.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Centuries after Hattusa fell, hieroglyphic inscriptions at Zincirli show that Hittite traditions survived in successor states."},{"title":"Zippalanda Cult Center Integrated Storm God Worship Into State Ritual","slug":"zippalanda-cult-center-integrated-storm-god-worship-into-state-ritual","url":"/categories/ancient-civilizations-secrets/hittite-empire/zippalanda-cult-center-integrated-storm-god-worship-into-state-ritual.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A regional Anatolian town became a spiritual anchor for imperial authority through annual state-sponsored ceremonies."},{"title":"Zippalanda Festival Calendars Structured 13th Century BCE Hittite State Ritual Economy","slug":"zippalanda-festival-calendars-structured-13th-century-bce-hittite-state-ritual-economy","url":"/categories/ancient-civilizations-secrets/hittite-empire/zippalanda-festival-calendars-structured-13th-century-bce-hittite-state-ritual-economy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Multi-day state festivals at Zippalanda required coordinated offerings, music, and livestock on a schedule as precise as a military campaign."},{"title":"Zippalanda Storm God Cult Reinforced Agricultural Stability Across Hittite Territories","slug":"zippalanda-storm-god-cult-reinforced-agricultural-stability-across-hittite-territories","url":"/categories/ancient-civilizations-secrets/hittite-empire/zippalanda-storm-god-cult-reinforced-agricultural-stability-across-hittite-territories.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"State-sponsored devotion to the Storm God tied rainfall, harvest yields, and royal legitimacy into a single system."},{"title":"Zulapi River References in Hittite Texts Highlight Strategic Waterway Management","slug":"zulapi-river-references-in-hittite-texts-highlight-strategic-waterway-management","url":"/categories/ancient-civilizations-secrets/hittite-empire/zulapi-river-references-in-hittite-texts-highlight-strategic-waterway-management.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mentions of the Zulapi River in Hittite records show how even secondary waterways factored into imperial planning."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

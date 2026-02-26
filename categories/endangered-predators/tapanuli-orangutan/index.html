@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tapanuli Orangutan</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Tapanuli Orangutan</h1>
+  <p>Explore all facts in "Tapanuli Orangutan".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Tapanuli Orangutan</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Disease Outbreak Could Reach Every Tapanuli Orangutan Within Days","slug":"a-disease-outbreak-could-reach-every-tapanuli-orangutan-within-days","url":"/categories/endangered-predators/tapanuli-orangutan/a-disease-outbreak-could-reach-every-tapanuli-orangutan-within-days.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One contagious pathogen could sweep through the entire species."},{"title":"Batang Toru Earthquakes Could Impact the Entire Tapanuli Orangutan Population","slug":"batang-toru-earthquakes-could-impact-the-entire-tapanuli-orangutan-population","url":"/categories/endangered-predators/tapanuli-orangutan/batang-toru-earthquakes-could-impact-the-entire-tapanuli-orangutan-population.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single major earthquake could shake every remaining member of this species at once."},{"title":"Behavioral Adaptations Reflect Millions of Years of Mountain Isolation","slug":"behavioral-adaptations-reflect-millions-of-years-of-mountain-isolation","url":"/categories/endangered-predators/tapanuli-orangutan/behavioral-adaptations-reflect-millions-of-years-of-mountain-isolation.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape’s daily routine was shaped by isolation older than humanity."},{"title":"Carrying Capacity of Batang Toru Strictly Limits Population Growth","slug":"carrying-capacity-of-batang-toru-strictly-limits-population-growth","url":"/categories/endangered-predators/tapanuli-orangutan/carrying-capacity-of-batang-toru-strictly-limits-population-growth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even perfect protection cannot allow unlimited recovery in one small forest."},{"title":"Critically Endangered Status Means Tapanuli Orangutan Faces Extreme Extinction Risk","slug":"critically-endangered-status-means-tapanuli-orangutan-faces-extreme-extinction-risk","url":"/categories/endangered-predators/tapanuli-orangutan/critically-endangered-status-means-tapanuli-orangutan-faces-extreme-extinction-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This great ape sits in the highest extinction risk category before the wild disappears."},{"title":"Declining Forest Corridors Threaten Genetic Survival of the Tapanuli Orangutan","slug":"declining-forest-corridors-threaten-genetic-survival-of-the-tapanuli-orangutan","url":"/categories/endangered-predators/tapanuli-orangutan/declining-forest-corridors-threaten-genetic-survival-of-the-tapanuli-orangutan.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cut one forest corridor and entire family lines can vanish."},{"title":"Demographic Stochasticity Threatens Small Subgroups of Tapanuli Orangutans","slug":"demographic-stochasticity-threatens-small-subgroups-of-tapanuli-orangutans","url":"/categories/endangered-predators/tapanuli-orangutan/demographic-stochasticity-threatens-small-subgroups-of-tapanuli-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Pure chance alone can push a tiny forest group toward extinction."},{"title":"Eastern and Western Subpopulations of Tapanuli Orangutans Are Genetically Fragile","slug":"eastern-and-western-subpopulations-of-tapanuli-orangutans-are-genetically-fragile","url":"/categories/endangered-predators/tapanuli-orangutan/eastern-and-western-subpopulations-of-tapanuli-orangutans-are-genetically-fragile.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Split this species in two, and neither half may survive."},{"title":"Edge Effects From Fragmentation Alter Forest Microclimates","slug":"edge-effects-from-fragmentation-alter-forest-microclimates","url":"/categories/endangered-predators/tapanuli-orangutan/edge-effects-from-fragmentation-alter-forest-microclimates.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Cut the forest and the climate inside it begins to change."},{"title":"Extremely Slow Life History Makes Tapanuli Orangutans Demographically Vulnerable","slug":"extremely-slow-life-history-makes-tapanuli-orangutans-demographically-vulnerable","url":"/categories/endangered-predators/tapanuli-orangutan/extremely-slow-life-history-makes-tapanuli-orangutans-demographically-vulnerable.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"It can take nearly a decade before one newborn sibling arrives."},{"title":"Gene Flow Disruption Could Reduce Tapanuli Orangutan Adaptability","slug":"gene-flow-disruption-could-reduce-tapanuli-orangutan-adaptability","url":"/categories/endangered-predators/tapanuli-orangutan/gene-flow-disruption-could-reduce-tapanuli-orangutan-adaptability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When forests fragment, evolution itself slows down."},{"title":"Genetic Drift Can Fix Harmful Traits in Tiny Populations","slug":"genetic-drift-can-fix-harmful-traits-in-tiny-populations","url":"/categories/endangered-predators/tapanuli-orangutan/genetic-drift-can-fix-harmful-traits-in-tiny-populations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In a small gene pool, chance mutations can become permanent."},{"title":"Habitat Connectivity Determines Long-Term Viability","slug":"habitat-connectivity-determines-long-term-viability","url":"/categories/endangered-predators/tapanuli-orangutan/habitat-connectivity-determines-long-term-viability.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Break the canopy links and the species’ future fractures."},{"title":"Highland Habitat Sets Tapanuli Orangutans Apart From Other Orangutans","slug":"highland-habitat-sets-tapanuli-orangutans-apart-from-other-orangutans","url":"/categories/endangered-predators/tapanuli-orangutan/highland-habitat-sets-tapanuli-orangutans-apart-from-other-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This great ape survives in steep mountains most orangutans avoid."},{"title":"Illegal Killing of Just a Few Individuals Can Shift Tapanuli Population Trajectory","slug":"illegal-killing-of-just-a-few-individuals-can-shift-tapanuli-population-trajectory","url":"/categories/endangered-predators/tapanuli-orangutan/illegal-killing-of-just-a-few-individuals-can-shift-tapanuli-population-trajectory.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove a handful of adults and extinction odds spike dramatically."},{"title":"Isolation Increases Inbreeding Risk Across Subpopulations","slug":"isolation-increases-inbreeding-risk-across-subpopulations","url":"/categories/endangered-predators/tapanuli-orangutan/isolation-increases-inbreeding-risk-across-subpopulations.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Separate forest blocks can turn cousins into the only mates available."},{"title":"Juvenile Dependency Lasts Nearly a Decade in the Tapanuli Orangutan","slug":"juvenile-dependency-lasts-nearly-a-decade-in-the-tapanuli-orangutan","url":"/categories/endangered-predators/tapanuli-orangutan/juvenile-dependency-lasts-nearly-a-decade-in-the-tapanuli-orangutan.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A young ape can depend on its mother longer than most childhoods."},{"title":"Keystone Seed Disperser Role Makes Tapanuli Orangutan a Forest Architect","slug":"keystone-seed-disperser-role-makes-tapanuli-orangutan-a-forest-architect","url":"/categories/endangered-predators/tapanuli-orangutan/keystone-seed-disperser-role-makes-tapanuli-orangutan-a-forest-architect.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Remove this ape and entire tree species can struggle to spread."},{"title":"Limited Dispersal Across Rugged Terrain Restricts Gene Exchange","slug":"limited-dispersal-across-rugged-terrain-restricts-gene-exchange","url":"/categories/endangered-predators/tapanuli-orangutan/limited-dispersal-across-rugged-terrain-restricts-gene-exchange.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Steep mountains slow the very movement that keeps the species alive."},{"title":"Low Population Density Means Tapanuli Orangutans Rarely Encounter Each Other","slug":"low-population-density-means-tapanuli-orangutans-rarely-encounter-each-other","url":"/categories/endangered-predators/tapanuli-orangutan/low-population-density-means-tapanuli-orangutans-rarely-encounter-each-other.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Two members of the same species can live miles apart without meeting."},{"title":"Maximum Lifespan Cannot Offset Extremely Slow Reproduction","slug":"maximum-lifespan-cannot-offset-extremely-slow-reproduction","url":"/categories/endangered-predators/tapanuli-orangutan/maximum-lifespan-cannot-offset-extremely-slow-reproduction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Even a long life cannot compensate for a birth every decade."},{"title":"Mountain Forest Fragmentation Compresses Tapanuli Orangutan Range Further Each Year","slug":"mountain-forest-fragmentation-compresses-tapanuli-orangutan-range-further-each-year","url":"/categories/endangered-predators/tapanuli-orangutan/mountain-forest-fragmentation-compresses-tapanuli-orangutan-range-further-each-year.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every cleared hectare shrinks the entire global range of this species."},{"title":"Newly Recognized Species Status Elevated Global Focus on Tapanuli Orangutans","slug":"newly-recognized-species-status-elevated-global-focus-on-tapanuli-orangutans","url":"/categories/endangered-predators/tapanuli-orangutan/newly-recognized-species-status-elevated-global-focus-on-tapanuli-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Recognition as a new species instantly transformed a local ape into a global priority."},{"title":"One Forest Block Contains the Majority of Tapanuli Orangutans","slug":"one-forest-block-contains-the-majority-of-tapanuli-orangutans","url":"/categories/endangered-predators/tapanuli-orangutan/one-forest-block-contains-the-majority-of-tapanuli-orangutans.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Most of this species lives in a single section of forest."},{"title":"Orphaned Tapanuli Orangutan Infants Rarely Survive in the Wild","slug":"orphaned-tapanuli-orangutan-infants-rarely-survive-in-the-wild","url":"/categories/endangered-predators/tapanuli-orangutan/orphaned-tapanuli-orangutan-infants-rarely-survive-in-the-wild.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Lose the mother, and the infant’s survival odds collapse overnight."},{"title":"Overlapping Infrastructure Projects Increase Fragmentation Pressure","slug":"overlapping-infrastructure-projects-increase-fragmentation-pressure","url":"/categories/endangered-predators/tapanuli-orangutan/overlapping-infrastructure-projects-increase-fragmentation-pressure.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Multiple development corridors cut through the only forest this ape has."},{"title":"Population Viability Models Show Extinction Risk Within Decades Without Protection","slug":"population-viability-models-show-extinction-risk-within-decades-without-protection","url":"/categories/endangered-predators/tapanuli-orangutan/population-viability-models-show-extinction-risk-within-decades-without-protection.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Without strict safeguards, this species could vanish within a human lifetime."},{"title":"Quantitative IUCN Criteria Place Tapanuli Orangutan Near Irreversible Thresholds","slug":"quantitative-iucn-criteria-place-tapanuli-orangutan-near-irreversible-thresholds","url":"/categories/endangered-predators/tapanuli-orangutan/quantitative-iucn-criteria-place-tapanuli-orangutan-near-irreversible-thresholds.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This species meets extinction-risk thresholds defined by strict numerical rules."},{"title":"Range Restriction Makes Tapanuli Orangutan the Most Geographically Limited Great Ape","slug":"range-restriction-makes-tapanuli-orangutan-the-most-geographically-limited-great-ape","url":"/categories/endangered-predators/tapanuli-orangutan/range-restriction-makes-tapanuli-orangutan-the-most-geographically-limited-great-ape.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"All known individuals fit inside a forest smaller than many cities."},{"title":"Remaining Population Is Smaller Than Many Small-Town Human Communities","slug":"remaining-population-is-smaller-than-many-small-town-human-communities","url":"/categories/endangered-predators/tapanuli-orangutan/remaining-population-is-smaller-than-many-small-town-human-communities.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer individuals exist than residents of a rural village."},{"title":"Steep Terrain Increases Landslide Risk for Tapanuli Orangutan Habitat","slug":"steep-terrain-increases-landslide-risk-for-tapanuli-orangutan-habitat","url":"/categories/endangered-predators/tapanuli-orangutan/steep-terrain-increases-landslide-risk-for-tapanuli-orangutan-habitat.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A heavy rainstorm can send entire forest slopes crashing downward."},{"title":"Tapanuli Orangutan Discovery Increased Great Ape Count While Revealing Crisis","slug":"tapanuli-orangutan-discovery-increased-great-ape-count-while-revealing-crisis","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-discovery-increased-great-ape-count-while-revealing-crisis.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists announced a new great ape species—and it was already near extinction."},{"title":"Tapanuli Orangutan Diverged 3.4 Million Years Ago and Survived in One Valley","slug":"tapanuli-orangutan-diverged-3-4-million-years-ago-and-survived-in-one-valley","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-diverged-3-4-million-years-ago-and-survived-in-one-valley.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This great ape lineage split from its cousins before early humans even existed."},{"title":"Tapanuli Orangutan Faces Extinction From a Single Hydropower Project","slug":"tapanuli-orangutan-faces-extinction-from-a-single-hydropower-project","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-faces-extinction-from-a-single-hydropower-project.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One dam project overlaps the core habitat of Earth’s rarest great ape."},{"title":"Tapanuli Orangutan Is One of Only Eight Great Ape Species","slug":"tapanuli-orangutan-is-one-of-only-eight-great-ape-species","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-is-one-of-only-eight-great-ape-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One of the planet’s eight great ape species fits inside a single forest."},{"title":"Tapanuli Orangutan Lives Entirely Within a 1,000 Square Kilometer Mountain Forest","slug":"tapanuli-orangutan-lives-entirely-within-a-1-000-square-kilometer-mountain-forest","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-lives-entirely-within-a-1-000-square-kilometer-mountain-forest.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every known member of this great ape species lives inside a single mountain ecosystem."},{"title":"Tapanuli Orangutan Population Could Collapse From Losing Just 1 Percent Annually","slug":"tapanuli-orangutan-population-could-collapse-from-losing-just-1-percent-annually","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-population-could-collapse-from-losing-just-1-percent-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An annual loss of one in a hundred could erase this species."},{"title":"Tapanuli Orangutan Reproduces Slower Than Almost Any Land Mammal","slug":"tapanuli-orangutan-reproduces-slower-than-almost-any-land-mammal","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-reproduces-slower-than-almost-any-land-mammal.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single mother may raise only four offspring in her entire lifetime."},{"title":"Tapanuli Orangutan Skull Structure Proved It Was a New Species","slug":"tapanuli-orangutan-skull-structure-proved-it-was-a-new-species","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-skull-structure-proved-it-was-a-new-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists realized this ape was different by measuring its skull."},{"title":"Tapanuli Orangutan Survived Ice Ages but Struggles Against Modern Roads","slug":"tapanuli-orangutan-survived-ice-ages-but-struggles-against-modern-roads","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-survived-ice-ages-but-struggles-against-modern-roads.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"This ape endured ancient climate swings but is threatened by asphalt."},{"title":"Tapanuli Orangutan: The Great Ape With Fewer Than 800 Left on Earth","slug":"tapanuli-orangutan-the-great-ape-with-fewer-than-800-left-on-earth","url":"/categories/endangered-predators/tapanuli-orangutan/tapanuli-orangutan-the-great-ape-with-fewer-than-800-left-on-earth.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An entire species of great ape survives in a forest smaller than a major city."},{"title":"Unique Vocal Patterns Help Distinguish Tapanuli Orangutans From Other Species","slug":"unique-vocal-patterns-help-distinguish-tapanuli-orangutans-from-other-species","url":"/categories/endangered-predators/tapanuli-orangutan/unique-vocal-patterns-help-distinguish-tapanuli-orangutans-from-other-species.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Scientists detected a new great ape species partly by its calls."},{"title":"Upper Elevation Forest Limits Climate Migration Options","slug":"upper-elevation-forest-limits-climate-migration-options","url":"/categories/endangered-predators/tapanuli-orangutan/upper-elevation-forest-limits-climate-migration-options.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"As temperatures rise, this ape has nowhere higher to climb."},{"title":"Very Small Effective Population Size Intensifies Tapanuli Orangutan Risk","slug":"very-small-effective-population-size-intensifies-tapanuli-orangutan-risk","url":"/categories/endangered-predators/tapanuli-orangutan/very-small-effective-population-size-intensifies-tapanuli-orangutan-risk.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The breeding population may be far smaller than the headcount suggests."},{"title":"Watershed Protection Ties Human Water Security to Tapanuli Orangutan Survival","slug":"watershed-protection-ties-human-water-security-to-tapanuli-orangutan-survival","url":"/categories/endangered-predators/tapanuli-orangutan/watershed-protection-ties-human-water-security-to-tapanuli-orangutan-survival.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Protecting this ape also protects water for surrounding communities."},{"title":"X-Factor of Evolutionary Distinctness Makes Tapanuli Orangutan Irreplaceable","slug":"x-factor-of-evolutionary-distinctness-makes-tapanuli-orangutan-irreplaceable","url":"/categories/endangered-predators/tapanuli-orangutan/x-factor-of-evolutionary-distinctness-makes-tapanuli-orangutan-irreplaceable.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Eliminate this ape and millions of years of unique evolution vanish."},{"title":"Yearly Habitat Loss Directly Shrinks the Entire Global Range of This Ape","slug":"yearly-habitat-loss-directly-shrinks-the-entire-global-range-of-this-ape","url":"/categories/endangered-predators/tapanuli-orangutan/yearly-habitat-loss-directly-shrinks-the-entire-global-range-of-this-ape.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Every hectare cleared erases a measurable piece of a species’ world."},{"title":"Young Females Take Years to Reach Reproductive Maturity","slug":"young-females-take-years-to-reach-reproductive-maturity","url":"/categories/endangered-predators/tapanuli-orangutan/young-females-take-years-to-reach-reproductive-maturity.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A female may wait over a decade before producing her first offspring."},{"title":"Zero Captive Population Means No Backup for the Tapanuli Orangutan","slug":"zero-captive-population-means-no-backup-for-the-tapanuli-orangutan","url":"/categories/endangered-predators/tapanuli-orangutan/zero-captive-population-means-no-backup-for-the-tapanuli-orangutan.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"If the wild population collapses, there is no captive reserve to restore it."},{"title":"Zero Geographic Redundancy Makes Global Extinction a Local Event","slug":"zero-geographic-redundancy-makes-global-extinction-a-local-event","url":"/categories/endangered-predators/tapanuli-orangutan/zero-geographic-redundancy-makes-global-extinction-a-local-event.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"If one valley fails, the entire species disappears."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

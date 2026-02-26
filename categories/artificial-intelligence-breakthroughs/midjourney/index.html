@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Midjourney</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Midjourney</h1>
+  <p>Explore all facts in "Midjourney".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Midjourney</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adaptive Prompting in MidJourney for Iterative Design","slug":"adaptive-prompting-in-midjourney-for-iterative-design","url":"/categories/artificial-intelligence-breakthroughs/midjourney/adaptive-prompting-in-midjourney-for-iterative-design.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"MidJourney allows users to refine AI-generated images iteratively by adjusting prompts and parameters in real time."},{"title":"Batch Image Generation in MidJourney Increases Productivity","slug":"batch-image-generation-in-midjourney-increases-productivity","url":"/categories/artificial-intelligence-breakthroughs/midjourney/batch-image-generation-in-midjourney-increases-productivity.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"MidJourney allows multiple images to be generated simultaneously from a single prompt, enhancing creative output."},{"title":"Collaborative Image Generation Through MidJourney Discord Server","slug":"collaborative-image-generation-through-midjourney-discord-server","url":"/categories/artificial-intelligence-breakthroughs/midjourney/collaborative-image-generation-through-midjourney-discord-server.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"MidJourney leverages Discord as its primary interface, allowing real-time collaborative creation of AI-generated images."},{"title":"Community Challenges in MidJourney Inspire AI Creativity","slug":"community-challenges-in-midjourney-inspire-ai-creativity","url":"/categories/artificial-intelligence-breakthroughs/midjourney/community-challenges-in-midjourney-inspire-ai-creativity.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"MidJourney hosts community prompt challenges that drive innovation and exploration of new artistic styles."},{"title":"Community Voting Influences MidJourney AI Development","slug":"community-voting-influences-midjourney-ai-development","url":"/categories/artificial-intelligence-breakthroughs/midjourney/community-voting-influences-midjourney-ai-development.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The MidJourney user community provides feedback and votes that guide platform updates and feature prioritization."},{"title":"Custom Stylization Levels in MidJourney AI","slug":"custom-stylization-levels-in-midjourney-ai","url":"/categories/artificial-intelligence-breakthroughs/midjourney/custom-stylization-levels-in-midjourney-ai.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can control the degree of artistic style applied to images with MidJourney’s stylization parameters."},{"title":"MidJourney AI Accelerates Mood Board Creation","slug":"midjourney-ai-accelerates-mood-board-creation","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-accelerates-mood-board-creation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Designers and artists generate curated image sets to convey visual themes or project aesthetics rapidly."},{"title":"MidJourney AI Allows Focused Object Emphasis in Prompts","slug":"midjourney-ai-allows-focused-object-emphasis-in-prompts","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-allows-focused-object-emphasis-in-prompts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Prompts can direct the AI to prioritize certain objects or subjects within a composition for visual prominence."},{"title":"MidJourney AI Applies Texture Synthesis to Surfaces","slug":"midjourney-ai-applies-texture-synthesis-to-surfaces","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-applies-texture-synthesis-to-surfaces.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AI-generated textures can mimic materials like metal, wood, fabric, or stone for use in design and gaming."},{"title":"MidJourney AI Enables Collaborative Prompt Sharing","slug":"midjourney-ai-enables-collaborative-prompt-sharing","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-enables-collaborative-prompt-sharing.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Artists can share prompts and outputs within the MidJourney community to inspire and guide creative projects."},{"title":"MidJourney AI Enables Conceptual Branding Visuals","slug":"midjourney-ai-enables-conceptual-branding-visuals","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-enables-conceptual-branding-visuals.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Businesses use MidJourney to generate AI-driven brand concepts and marketing visuals quickly."},{"title":"MidJourney AI Enables Rapid Concept Art Prototyping","slug":"midjourney-ai-enables-rapid-concept-art-prototyping","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-enables-rapid-concept-art-prototyping.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Artists can generate multiple concept art options in minutes using MidJourney’s AI, streamlining pre-production workflows."},{"title":"MidJourney AI Enhances Educational Visualization","slug":"midjourney-ai-enhances-educational-visualization","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-enhances-educational-visualization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Teachers and students use MidJourney to illustrate complex scientific, historical, or abstract concepts visually."},{"title":"MidJourney AI Enhances Typography Visualization","slug":"midjourney-ai-enhances-typography-visualization","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-enhances-typography-visualization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Designers can generate typographic art and visualize lettering styles using AI prompts."},{"title":"MidJourney AI Generates Cinematic Imagery","slug":"midjourney-ai-generates-cinematic-imagery","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-generates-cinematic-imagery.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can produce images with cinematic lighting, composition, and visual storytelling using descriptive prompts."},{"title":"MidJourney AI Generates Photorealistic Environments","slug":"midjourney-ai-generates-photorealistic-environments","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-generates-photorealistic-environments.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can create lifelike landscapes and interiors by specifying environmental details in text prompts."},{"title":"MidJourney AI Generates Textures for 3D Modeling","slug":"midjourney-ai-generates-textures-for-3d-modeling","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-generates-textures-for-3d-modeling.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Designers use MidJourney to create realistic and stylized textures for 3D models directly from descriptive prompts."},{"title":"MidJourney AI Integrates Style Transfer Capabilities","slug":"midjourney-ai-integrates-style-transfer-capabilities","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-integrates-style-transfer-capabilities.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can instruct MidJourney to emulate styles of famous artists or artistic movements through text prompts."},{"title":"MidJourney AI Integrates Stylized Lighting Effects","slug":"midjourney-ai-integrates-stylized-lighting-effects","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-integrates-stylized-lighting-effects.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can specify lighting styles like cinematic, neon, or volumetric to enhance the visual impact of images."},{"title":"MidJourney AI Interprets Emotion and Mood in Image Prompts","slug":"midjourney-ai-interprets-emotion-and-mood-in-image-prompts","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-interprets-emotion-and-mood-in-image-prompts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Text prompts describing emotions or mood affect lighting, color, and composition in generated images."},{"title":"MidJourney AI Produces Iterative Scene Variants","slug":"midjourney-ai-produces-iterative-scene-variants","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-produces-iterative-scene-variants.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can generate multiple scene variants from one prompt to explore different stylistic and compositional approaches."},{"title":"MidJourney AI Supports Batch Upscaling for Large Projects","slug":"midjourney-ai-supports-batch-upscaling-for-large-projects","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-batch-upscaling-for-large-projects.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can upscale multiple images at once, improving efficiency for high-volume content creation."},{"title":"MidJourney AI Supports Custom Lighting and Mood in Prompts","slug":"midjourney-ai-supports-custom-lighting-and-mood-in-prompts","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-custom-lighting-and-mood-in-prompts.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can specify lighting conditions and atmospheric effects in prompts to influence the AI’s image generation."},{"title":"MidJourney AI Supports High-Resolution Poster Creation","slug":"midjourney-ai-supports-high-resolution-poster-creation","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-high-resolution-poster-creation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can generate large-format, high-resolution images suitable for posters and physical displays."},{"title":"MidJourney AI Supports Multi-Aspect Ratio Image Generation","slug":"midjourney-ai-supports-multi-aspect-ratio-image-generation","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-multi-aspect-ratio-image-generation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can generate images in custom aspect ratios, enhancing suitability for various media and design projects."},{"title":"MidJourney AI Supports Multi-Layer Compositional Control","slug":"midjourney-ai-supports-multi-layer-compositional-control","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-multi-layer-compositional-control.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can influence foreground, midground, and background elements separately using descriptive prompts."},{"title":"MidJourney AI Supports Prompt Remixing for Iterative Design","slug":"midjourney-ai-supports-prompt-remixing-for-iterative-design","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-prompt-remixing-for-iterative-design.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can modify existing AI-generated images with new prompts to explore alternative designs."},{"title":"MidJourney AI Supports Remixing of Uploaded Images","slug":"midjourney-ai-supports-remixing-of-uploaded-images","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-ai-supports-remixing-of-uploaded-images.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can provide their own images as input for AI remixing, creating new interpretations or stylistic transformations."},{"title":"MidJourney Allows Seed Control for Image Reproducibility","slug":"midjourney-allows-seed-control-for-image-reproducibility","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-allows-seed-control-for-image-reproducibility.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can set a specific seed number to reproduce the same AI-generated image consistently."},{"title":"MidJourney Community Showcase Drives Innovation","slug":"midjourney-community-showcase-drives-innovation","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-community-showcase-drives-innovation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The MidJourney Discord and gallery platforms allow users to share AI-generated artwork, inspiring new creative directions."},{"title":"MidJourney Enables AI-Assisted Character Design","slug":"midjourney-enables-ai-assisted-character-design","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-enables-ai-assisted-character-design.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Artists can rapidly generate character concepts with customizable traits and styles using AI prompts."},{"title":"MidJourney Enhances Storytelling Through AI-Generated Scenes","slug":"midjourney-enhances-storytelling-through-ai-generated-scenes","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-enhances-storytelling-through-ai-generated-scenes.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Writers and visual storytellers use MidJourney to create immersive environments and character designs from narrative prompts."},{"title":"MidJourney Generates AI-Enhanced Concept Maps","slug":"midjourney-generates-ai-enhanced-concept-maps","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-generates-ai-enhanced-concept-maps.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can visualize abstract concepts and ideas through AI-generated illustrative maps and diagrams."},{"title":"MidJourney Iterative Variations Enhance Creativity","slug":"midjourney-iterative-variations-enhance-creativity","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-iterative-variations-enhance-creativity.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can generate multiple variations from a single image to explore different compositions and artistic directions."},{"title":"MidJourney Launches AI-Powered Image Generation in 2022","slug":"midjourney-launches-ai-powered-image-generation-in-2022","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-launches-ai-powered-image-generation-in-2022.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2022, MidJourney introduced an AI platform capable of generating photorealistic and artistic images from text prompts."},{"title":"MidJourney Supports Custom Aspect Ratios for Targeted Outputs","slug":"midjourney-supports-custom-aspect-ratios-for-targeted-outputs","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-supports-custom-aspect-ratios-for-targeted-outputs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can specify custom width-to-height ratios for AI-generated images to fit specific media or design needs."},{"title":"MidJourney Supports High-Detail Macro Imagery","slug":"midjourney-supports-high-detail-macro-imagery","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-supports-high-detail-macro-imagery.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AI-generated macro images allow exploration of intricate details at extreme close-up scales."},{"title":"MidJourney Supports Multi-Image Prompt References","slug":"midjourney-supports-multi-image-prompt-references","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-supports-multi-image-prompt-references.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can provide existing images as references, guiding AI generation towards a desired style or composition."},{"title":"MidJourney Supports Multi-Lingual Prompt Inputs","slug":"midjourney-supports-multi-lingual-prompt-inputs","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-supports-multi-lingual-prompt-inputs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can generate images using prompts in multiple languages, expanding accessibility for global creators."},{"title":"MidJourney Supports Up-Scaling Variants for Detailed Outputs","slug":"midjourney-supports-up-scaling-variants-for-detailed-outputs","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-supports-up-scaling-variants-for-detailed-outputs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After generating an image, users can create larger, high-resolution versions with enhanced detail and clarity."},{"title":"MidJourney Upscaling for High-Resolution Image Outputs","slug":"midjourney-upscaling-for-high-resolution-image-outputs","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-upscaling-for-high-resolution-image-outputs.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"MidJourney can upscale AI-generated images to higher resolutions suitable for printing and professional use."},{"title":"MidJourney V5 Introduces Enhanced Photorealism","slug":"midjourney-v5-introduces-enhanced-photorealism","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-v5-introduces-enhanced-photorealism.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The release of MidJourney V5 dramatically improved image realism, lighting, and texture fidelity in AI-generated images."},{"title":"MidJourney’s Remix Feature Enables Creative Iteration","slug":"midjourney-s-remix-feature-enables-creative-iteration","url":"/categories/artificial-intelligence-breakthroughs/midjourney/midjourney-s-remix-feature-enables-creative-iteration.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Remix mode allows users to combine multiple images and prompts to generate new, unique outputs."},{"title":"Prompt Weighting in MidJourney Adjusts Output Emphasis","slug":"prompt-weighting-in-midjourney-adjusts-output-emphasis","url":"/categories/artificial-intelligence-breakthroughs/midjourney/prompt-weighting-in-midjourney-adjusts-output-emphasis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Users can assign weights to specific words in prompts to influence which elements the AI emphasizes in generated images."},{"title":"Variations Feature in MidJourney for Creative Exploration","slug":"variations-feature-in-midjourney-for-creative-exploration","url":"/categories/artificial-intelligence-breakthroughs/midjourney/variations-feature-in-midjourney-for-creative-exploration.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"MidJourney generates multiple variations of a single prompt, allowing exploration of different interpretations and styles."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

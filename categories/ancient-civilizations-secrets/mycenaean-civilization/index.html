@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mycenaean Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Mycenaean Civilization</h1>
+  <p>Explore all facts in "Mycenaean Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Mycenaean Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Kafkania Shipwreck Cargo Tablets Reveal 14th Century BCE Bronze Trade Fraud","slug":"kafkania-shipwreck-cargo-tablets-reveal-14th-century-bce-bronze-trade-fraud","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kafkania-shipwreck-cargo-tablets-reveal-14th-century-bce-bronze-trade-fraud.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Four clay tablets found in a 2018 Greek excavation exposed a 3,300-year-old commercial scandal hiding inside a Mycenaean shipwreck cargo."},{"title":"Kalapodi Sanctuary Evidence Suggests Mycenaean Religious Continuity into the Iron Age","slug":"kalapodi-sanctuary-evidence-suggests-mycenaean-religious-continuity-into-the-iron-age","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kalapodi-sanctuary-evidence-suggests-mycenaean-religious-continuity-into-the-iron-age.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Kalapodi reveal cult activity stretching from the Late Bronze Age into the Iron Age, bridging Mycenaean collapse and classical religion."},{"title":"Kea Ayia Irini Settlement Shows Mycenaean Expansion into the Cyclades in the 14th Century BCE","slug":"kea-ayia-irini-settlement-shows-mycenaean-expansion-into-the-cyclades-in-the-14th-century-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kea-ayia-irini-settlement-shows-mycenaean-expansion-into-the-cyclades-in-the-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Ayia Irini on Kea reveal a 14th century BCE settlement layer dominated by Mycenaean material culture."},{"title":"Kition Harbor in Cyprus Hosted 13th Century BCE Mycenaean Maritime Exchange","slug":"kition-harbor-in-cyprus-hosted-13th-century-bce-mycenaean-maritime-exchange","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kition-harbor-in-cyprus-hosted-13th-century-bce-mycenaean-maritime-exchange.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Imported Mycenaean ceramics at Kition confirm sustained 13th century BCE trade between mainland Greece and Cypriot copper hubs."},{"title":"Knossos Linear B Archive in 14th Century BCE Confirms Mycenaean Control of Crete","slug":"knossos-linear-b-archive-in-14th-century-bce-confirms-mycenaean-control-of-crete","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/knossos-linear-b-archive-in-14th-century-bce-confirms-mycenaean-control-of-crete.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Administrative tablets at Knossos prove that mainland Greek rulers governed Crete in the 14th century BCE."},{"title":"Knossos Throne Room Frescoes Reflect Mycenaean Administrative Adaptation After 1450 BCE","slug":"knossos-throne-room-frescoes-reflect-mycenaean-administrative-adaptation-after-1450-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/knossos-throne-room-frescoes-reflect-mycenaean-administrative-adaptation-after-1450-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After 1450 BCE, the throne room at Knossos shows artistic and administrative shifts consistent with mainland Mycenaean control."},{"title":"Kopais Drainage System in 13th Century BCE Demonstrated Mycenaean Hydraulic Engineering","slug":"kopais-drainage-system-in-13th-century-bce-demonstrated-mycenaean-hydraulic-engineering","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kopais-drainage-system-in-13th-century-bce-demonstrated-mycenaean-hydraulic-engineering.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A massive 13th century BCE drainage project turned Lake Kopais into arable land using engineered channels that stretched for kilometers."},{"title":"Kourion Ceramic Imports Reflect 13th Century BCE Mycenaean Trade with Cyprus","slug":"kourion-ceramic-imports-reflect-13th-century-bce-mycenaean-trade-with-cyprus","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kourion-ceramic-imports-reflect-13th-century-bce-mycenaean-trade-with-cyprus.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Imported Mycenaean pottery found at Kourion in Cyprus confirms structured 13th century BCE exchange across the eastern Mediterranean."},{"title":"Kydonia Linear B Tablets Confirm Mycenaean Governance of Western Crete in 13th Century BCE","slug":"kydonia-linear-b-tablets-confirm-mycenaean-governance-of-western-crete-in-13th-century-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kydonia-linear-b-tablets-confirm-mycenaean-governance-of-western-crete-in-13th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Administrative tablets from Kydonia demonstrate that western Crete fell under Mycenaean control during the 13th century BCE."},{"title":"Kythera Island Outpost Linked Mycenaean Greece to Minoan Trade in the 15th Century BCE","slug":"kythera-island-outpost-linked-mycenaean-greece-to-minoan-trade-in-the-15th-century-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/kythera-island-outpost-linked-mycenaean-greece-to-minoan-trade-in-the-15th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The island of Kythera functioned as a maritime bridge, connecting Mycenaean mainland powers to earlier Minoan trade networks."},{"title":"Linear B Decipherment in 1952 Rewrote the Origins of Greek Literacy","slug":"linear-b-decipherment-in-1952-rewrote-the-origins-of-greek-literacy","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/linear-b-decipherment-in-1952-rewrote-the-origins-of-greek-literacy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1952, a young architect proved that Europe’s earliest known writing system recorded an early form of Greek, overturning decades of scholarly certainty."},{"title":"Mycenae Lion Gate Relief from c1250 BCE Signals Monumental State Identity","slug":"mycenae-lion-gate-relief-from-c1250-bce-signals-monumental-state-identity","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/mycenae-lion-gate-relief-from-c1250-bce-signals-monumental-state-identity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single carved relief above the Lion Gate, installed around 1250 BCE, turned stone into a declaration of centralized power."},{"title":"Mycenaean Palace of Pylos Fire in c1200 BCE Accidentally Preserved 1,000 Administrative Tablets","slug":"mycenaean-palace-of-pylos-fire-in-c1200-bce-accidentally-preserved-1-000-administrative-tablets","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/mycenaean-palace-of-pylos-fire-in-c1200-bce-accidentally-preserved-1-000-administrative-tablets.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A destructive palace fire around 1200 BCE unintentionally created one of the best-preserved government archives of the Bronze Age."},{"title":"Qasr Ibrim Pottery Finds Confirm 13th Century BCE Mycenaean Reach into the Eastern Mediterranean","slug":"qasr-ibrim-pottery-finds-confirm-13th-century-bce-mycenaean-reach-into-the-eastern-mediterranean","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/qasr-ibrim-pottery-finds-confirm-13th-century-bce-mycenaean-reach-into-the-eastern-mediterranean.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mycenaean pottery fragments discovered near Egypt’s southern frontier reveal trade routes stretching more than 1,200 kilometers from mainland Greece."},{"title":"Qatna Palace Inventories Show 14th Century BCE Exchange with Mycenaean Greece","slug":"qatna-palace-inventories-show-14th-century-bce-exchange-with-mycenaean-greece","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/qatna-palace-inventories-show-14th-century-bce-exchange-with-mycenaean-greece.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tablets and luxury imports at Qatna reveal that 14th century BCE Syrian courts received goods linked to Mycenaean trade networks."},{"title":"Qeiyafa Fortification Parallels Suggest 12th Century BCE Aegean Military Influence","slug":"qeiyafa-fortification-parallels-suggest-12th-century-bce-aegean-military-influence","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/qeiyafa-fortification-parallels-suggest-12th-century-bce-aegean-military-influence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fortification layouts at Khirbet Qeiyafa dated to the 12th century BCE show architectural parallels to earlier Mycenaean defensive logic."},{"title":"Qoppa Symbol in Early Greek Alphabet May Preserve Mycenaean Sound Patterns","slug":"qoppa-symbol-in-early-greek-alphabet-may-preserve-mycenaean-sound-patterns","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/qoppa-symbol-in-early-greek-alphabet-may-preserve-mycenaean-sound-patterns.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A nearly obsolete Greek letter may echo phonetic patterns first recorded in Mycenaean tablets three centuries earlier."},{"title":"Quake Damage at Tiryns in the 13th Century BCE Reveals Engineered Seismic Defense","slug":"quake-damage-at-tiryns-in-the-13th-century-bce-reveals-engineered-seismic-defense","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/quake-damage-at-tiryns-in-the-13th-century-bce-reveals-engineered-seismic-defense.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cyclopean walls up to 8 meters thick at Tiryns were not just displays of power but structural responses to repeated seismic shock."},{"title":"Ugarit Letters in c1200 BCE Mention Aegean Raiders Linked to Mycenaean Networks","slug":"ugarit-letters-in-c1200-bce-mention-aegean-raiders-linked-to-mycenaean-networks","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/ugarit-letters-in-c1200-bce-mention-aegean-raiders-linked-to-mycenaean-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay letters from Ugarit written just before its destruction in 1200 BCE describe sea-borne attackers that may connect to Mycenaean spheres."},{"title":"Ugarit Trade Collapse Around 1200 BCE Mirrors Mycenaean Palace Destruction","slug":"ugarit-trade-collapse-around-1200-bce-mirrors-mycenaean-palace-destruction","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/ugarit-trade-collapse-around-1200-bce-mirrors-mycenaean-palace-destruction.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The destruction of Ugarit around 1200 BCE coincides with the fall of Mycenaean palaces, exposing synchronized economic collapse across the Mediterranean."},{"title":"Ugaritic Diplomatic Archives Mention Ahhiyawa Power Linked to Mycenaean Greece","slug":"ugaritic-diplomatic-archives-mention-ahhiyawa-power-linked-to-mycenaean-greece","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/ugaritic-diplomatic-archives-mention-ahhiyawa-power-linked-to-mycenaean-greece.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Late Bronze Age diplomatic tablets reference a western kingdom called Ahhiyawa, widely identified with Mycenaean Greece."},{"title":"Ulu Burun Shipwreck in c1320 BCE Carried Mycenaean Swords Across 10 Mediterranean Regions","slug":"ulu-burun-shipwreck-in-c1320-bce-carried-mycenaean-swords-across-10-mediterranean-regions","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/ulu-burun-shipwreck-in-c1320-bce-carried-mycenaean-swords-across-10-mediterranean-regions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single 14th century BCE shipwreck off Turkey contained cargo linking at least 10 regions, including Mycenaean Greece."},{"title":"Uluburun Copper Cargo of 10 Tons Highlights Mycenaean Bronze Dependency in c1320 BCE","slug":"uluburun-copper-cargo-of-10-tons-highlights-mycenaean-bronze-dependency-in-c1320-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/uluburun-copper-cargo-of-10-tons-highlights-mycenaean-bronze-dependency-in-c1320-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single Late Bronze Age ship carried roughly 10 tons of copper, exposing how dependent Mycenaean weapon systems were on foreign ore."},{"title":"Uluburun Gold Scarab Cargo Connects Mycenaean Trade to 14th Century BCE Egypt","slug":"uluburun-gold-scarab-cargo-connects-mycenaean-trade-to-14th-century-bce-egypt","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/uluburun-gold-scarab-cargo-connects-mycenaean-trade-to-14th-century-bce-egypt.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A gold scarab bearing the name of an Egyptian queen lay aboard a 14th century BCE ship that also carried Mycenaean goods."},{"title":"Upland Arcadia Settlements Reveal Post-1200 BCE Mycenaean Survival Strategies","slug":"upland-arcadia-settlements-reveal-post-1200-bce-mycenaean-survival-strategies","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/upland-arcadia-settlements-reveal-post-1200-bce-mycenaean-survival-strategies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After palace destruction around 1200 BCE, upland Arcadian settlements show evidence of continued habitation beyond the collapse."},{"title":"Upland Laconia Surveys Indicate 12th Century BCE Population Redistribution After Palace Destruction","slug":"upland-laconia-surveys-indicate-12th-century-bce-population-redistribution-after-palace-destruction","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/upland-laconia-surveys-indicate-12th-century-bce-population-redistribution-after-palace-destruction.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Survey data from upland Laconia show settlement persistence after 1200 BCE even as major Mycenaean centers vanished."},{"title":"Wanax Title on 13th Century BCE Tablets Shows Centralized Mycenaean Kingship","slug":"wanax-title-on-13th-century-bce-tablets-shows-centralized-mycenaean-kingship","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/wanax-title-on-13th-century-bce-tablets-shows-centralized-mycenaean-kingship.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The word wanax appears repeatedly in 13th century BCE tablets, identifying a ruler with powers far beyond a tribal chief."},{"title":"Xanthi Metallurgical Finds Demonstrate 13th Century BCE Alloy Precision","slug":"xanthi-metallurgical-finds-demonstrate-13th-century-bce-alloy-precision","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xanthi-metallurgical-finds-demonstrate-13th-century-bce-alloy-precision.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bronze artifacts from northern Greek sites show consistent tin percentages, revealing 13th century BCE control over alloy composition."},{"title":"Xanthos Lycian Finds Include Mycenaean Ceramics from the 14th Century BCE","slug":"xanthos-lycian-finds-include-mycenaean-ceramics-from-the-14th-century-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xanthos-lycian-finds-include-mycenaean-ceramics-from-the-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stratified layers along the Lycian coast contain 14th century BCE Mycenaean ceramics, marking sustained Aegean presence."},{"title":"Xanthos River Trade Routes Linked Mycenaean Merchants to Anatolian Markets","slug":"xanthos-river-trade-routes-linked-mycenaean-merchants-to-anatolian-markets","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xanthos-river-trade-routes-linked-mycenaean-merchants-to-anatolian-markets.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts found along Anatolia’s southern coast show Mycenaean merchants operating more than 800 kilometers from mainland Greece."},{"title":"Xanthos Treaty References Reflect Late Bronze Age Diplomacy Linked to Aegean Powers","slug":"xanthos-treaty-references-reflect-late-bronze-age-diplomacy-linked-to-aegean-powers","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xanthos-treaty-references-reflect-late-bronze-age-diplomacy-linked-to-aegean-powers.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Anatolian treaty texts from the 13th century BCE mention western entities consistent with Mycenaean diplomatic presence."},{"title":"Xenia Hospitality Codes May Trace Back to Mycenaean Elite Exchange Practices","slug":"xenia-hospitality-codes-may-trace-back-to-mycenaean-elite-exchange-practices","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xenia-hospitality-codes-may-trace-back-to-mycenaean-elite-exchange-practices.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The later Greek concept of xenia, or ritualized hospitality, may reflect structured elite exchange systems rooted in the Mycenaean era."},{"title":"Xenon Isotope Analysis of Mycenaean Glass Beads Traces 14th Century BCE Trade to Egypt","slug":"xenon-isotope-analysis-of-mycenaean-glass-beads-traces-14th-century-bce-trade-to-egypt","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xenon-isotope-analysis-of-mycenaean-glass-beads-traces-14th-century-bce-trade-to-egypt.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Chemical signatures locked inside tiny glass beads show that 14th century BCE Mycenae imported luxury materials from Egypt."},{"title":"Xerias Valley Surveys Show Agricultural Retrenchment After 1200 BCE Mycenaean Collapse","slug":"xerias-valley-surveys-show-agricultural-retrenchment-after-1200-bce-mycenaean-collapse","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xerias-valley-surveys-show-agricultural-retrenchment-after-1200-bce-mycenaean-collapse.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological surveys in the Xerias Valley document reduced field systems following the destruction of Mycenaean palace centers."},{"title":"Xeropotamos Burial Site Reveals 14th Century BCE Mycenaean Weapon Standardization","slug":"xeropotamos-burial-site-reveals-14th-century-bce-mycenaean-weapon-standardization","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xeropotamos-burial-site-reveals-14th-century-bce-mycenaean-weapon-standardization.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bronze swords recovered from Xeropotamos show near-identical dimensions, suggesting 14th century BCE weapon standardization under centralized oversight."},{"title":"Xerxes River Region Surveys Identify 12th Century BCE Settlement Contraction After Mycenaean Collapse","slug":"xerxes-river-region-surveys-identify-12th-century-bce-settlement-contraction-after-mycenaean-collapse","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xerxes-river-region-surveys-identify-12th-century-bce-settlement-contraction-after-mycenaean-collapse.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological surveys show that settlement density declined sharply in parts of Greece after 1200 BCE, signaling demographic contraction."},{"title":"Xylokastro Coastal Surveys Reveal 13th Century BCE Mycenaean Harbor Installations","slug":"xylokastro-coastal-surveys-reveal-13th-century-bce-mycenaean-harbor-installations","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/xylokastro-coastal-surveys-reveal-13th-century-bce-mycenaean-harbor-installations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Underwater surveys near Xylokastro identified Late Bronze Age anchorage points that imply organized 13th century BCE harbor systems."},{"title":"Y-shaped Dagger Motifs in 16th Century BCE Mycenaean Graves Indicate Early Military Symbolism","slug":"y-shaped-dagger-motifs-in-16th-century-bce-mycenaean-graves-indicate-early-military-symbolism","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/y-shaped-dagger-motifs-in-16th-century-bce-mycenaean-graves-indicate-early-military-symbolism.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Distinctive Y-shaped dagger inlays buried in 16th century BCE graves signaled that warfare was already embedded in elite identity."},{"title":"Yalysos Cemetery in Rhodes Contains 14th Century BCE Mycenaean Burials","slug":"yalysos-cemetery-in-rhodes-contains-14th-century-bce-mycenaean-burials","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/yalysos-cemetery-in-rhodes-contains-14th-century-bce-mycenaean-burials.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Burials at Yalysos on Rhodes demonstrate that Mycenaean cultural influence extended deep into the southeastern Aegean."},{"title":"Yenikapi Harbor Discoveries Strengthen Evidence of Mycenaean Maritime Exchange","slug":"yenikapi-harbor-discoveries-strengthen-evidence-of-mycenaean-maritime-exchange","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/yenikapi-harbor-discoveries-strengthen-evidence-of-mycenaean-maritime-exchange.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Istanbul’s Yenikapi harbor uncovered Late Bronze Age materials that reinforce the scale of Mycenaean maritime connectivity."},{"title":"Yenikapi Ship Layers Highlight Long-Term Aegean Maritime Continuity Beyond Mycenaean Era","slug":"yenikapi-ship-layers-highlight-long-term-aegean-maritime-continuity-beyond-mycenaean-era","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/yenikapi-ship-layers-highlight-long-term-aegean-maritime-continuity-beyond-mycenaean-era.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Multiple shipwreck layers at Yenikapi demonstrate that maritime corridors used in the Mycenaean era remained active for centuries."},{"title":"Ypogeio Chamber Tomb Architecture Demonstrates 15th Century BCE Structural Planning","slug":"ypogeio-chamber-tomb-architecture-demonstrates-15th-century-bce-structural-planning","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/ypogeio-chamber-tomb-architecture-demonstrates-15th-century-bce-structural-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Subterranean chamber tombs carved in the 15th century BCE reveal precise engineering in confined rock-cut environments."},{"title":"Zagora Fortification Parallels Suggest Mycenaean Defensive Planning Influenced Later Aegean Settlements","slug":"zagora-fortification-parallels-suggest-mycenaean-defensive-planning-influenced-later-aegean-settlements","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zagora-fortification-parallels-suggest-mycenaean-defensive-planning-influenced-later-aegean-settlements.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Defensive layouts at later Aegean sites mirror Mycenaean fortification logic, suggesting architectural continuity beyond the Bronze Age collapse."},{"title":"Zagros Tin Routes Fueled 13th Century BCE Mycenaean Bronze Production","slug":"zagros-tin-routes-fueled-13th-century-bce-mycenaean-bronze-production","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zagros-tin-routes-fueled-13th-century-bce-mycenaean-bronze-production.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Tin mined in regions east of Mesopotamia ultimately strengthened Mycenaean swords forged over 2,000 kilometers away."},{"title":"Zakros Seal Impressions Demonstrate Mycenaean Control of 14th Century BCE Trade Documentation","slug":"zakros-seal-impressions-demonstrate-mycenaean-control-of-14th-century-bce-trade-documentation","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zakros-seal-impressions-demonstrate-mycenaean-control-of-14th-century-bce-trade-documentation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seal impressions used in 14th century BCE Crete show how Mycenaean administrators secured cargo and verified authority."},{"title":"Zakynthos Bronze Hoards Indicate 13th Century BCE Emergency Metal Storage","slug":"zakynthos-bronze-hoards-indicate-13th-century-bce-emergency-metal-storage","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zakynthos-bronze-hoards-indicate-13th-century-bce-emergency-metal-storage.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Concentrated bronze hoards buried in the 13th century BCE suggest Mycenaean communities anticipated sudden disruption."},{"title":"Zephyrian Hill Chamber Tombs Contained 15th Century BCE Gold Masks and Imported Amber","slug":"zephyrian-hill-chamber-tombs-contained-15th-century-bce-gold-masks-and-imported-amber","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zephyrian-hill-chamber-tombs-contained-15th-century-bce-gold-masks-and-imported-amber.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Burials beneath Zephyrian Hill included gold funerary masks and Baltic amber, proving Mycenaean elites invested wealth in death as aggressively as in life."},{"title":"Zeus Cult References in Linear B Tablets Reveal 13th Century BCE Religious Continuity","slug":"zeus-cult-references-in-linear-b-tablets-reveal-13th-century-bce-religious-continuity","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zeus-cult-references-in-linear-b-tablets-reveal-13th-century-bce-religious-continuity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from the 13th century BCE record offerings to a deity later known as Zeus, pushing the god’s documented history centuries earlier than classical texts."},{"title":"Zygia Coastal Finds Confirm Mycenaean Navigation Along Southern Cyprus in the 13th Century BCE","slug":"zygia-coastal-finds-confirm-mycenaean-navigation-along-southern-cyprus-in-the-13th-century-bce","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zygia-coastal-finds-confirm-mycenaean-navigation-along-southern-cyprus-in-the-13th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Mycenaean ceramics discovered near Zygia on Cyprus confirm structured navigation routes during the 13th century BCE."},{"title":"Zygouries Workshop Complex Shows 14th Century BCE Mycenaean Craft Specialization","slug":"zygouries-workshop-complex-shows-14th-century-bce-mycenaean-craft-specialization","url":"/categories/ancient-civilizations-secrets/mycenaean-civilization/zygouries-workshop-complex-shows-14th-century-bce-mycenaean-craft-specialization.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Zygouries uncovered workshop remains proving that 14th century BCE Mycenaean production was organized at industrial scale."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

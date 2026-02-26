@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingdom Of Kush</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Kingdom Of Kush</h1>
+  <p>Explore all facts in "Kingdom Of Kush".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Kingdom Of Kush</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Amanirenas Led Kushite Forces Against Rome in 24 BCE","slug":"amanirenas-led-kushite-forces-against-rome-in-24-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/amanirenas-led-kushite-forces-against-rome-in-24-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 24 BCE, a one-eyed queen from Kush launched a military campaign against the Roman Empire and forced a negotiated peace."},{"title":"Apedemak Lion God Cult Signaled Kushite Religious Independence by 100 BCE","slug":"apedemak-lion-god-cult-signaled-kushite-religious-independence-by-100-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/apedemak-lion-god-cult-signaled-kushite-religious-independence-by-100-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 100 BCE, Kushite rulers were prominently depicting a lion-headed god unknown in mainstream Egyptian theology."},{"title":"Ballana Tomb Discoveries Revealed Post-Kushite Royal Wealth in the 4th Century CE","slug":"ballana-tomb-discoveries-revealed-post-kushite-royal-wealth-in-the-4th-century-ce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/ballana-tomb-discoveries-revealed-post-kushite-royal-wealth-in-the-4th-century-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When archaeologists opened tombs at Ballana in the early 20th century, they found horses, jewelry, and imported goods buried with Nubian elites."},{"title":"Berenice Trade Corridor Connected Kush to Mediterranean Markets in the 1st Century BCE","slug":"berenice-trade-corridor-connected-kush-to-mediterranean-markets-in-the-1st-century-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/berenice-trade-corridor-connected-kush-to-mediterranean-markets-in-the-1st-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 1st century BCE, goods moving from Kush could reach Mediterranean ports through the Red Sea corridor at Berenice."},{"title":"Cataract Control Along the Nile Gave Kush Strategic Military Advantage","slug":"cataract-control-along-the-nile-gave-kush-strategic-military-advantage","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/cataract-control-along-the-nile-gave-kush-strategic-military-advantage.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Control over the Nile’s cataracts allowed Kush to regulate movement between central Africa and Egypt."},{"title":"Central Nile Corridor Enabled Kushite Control of Interregional Trade","slug":"central-nile-corridor-enabled-kushite-control-of-interregional-trade","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/central-nile-corridor-enabled-kushite-control-of-interregional-trade.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By dominating the central Nile corridor, Kush controlled one of the most critical trade arteries in northeastern Africa."},{"title":"Desert Gold Mining Sustained Kushite Wealth for Centuries","slug":"desert-gold-mining-sustained-kushite-wealth-for-centuries","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/desert-gold-mining-sustained-kushite-wealth-for-centuries.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For centuries, Nubian gold mines supplied precious metal that financed Kushite political power."},{"title":"Dongola Reach Formed Economic Heartland of Early Kushite Settlement","slug":"dongola-reach-formed-economic-heartland-of-early-kushite-settlement","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/dongola-reach-formed-economic-heartland-of-early-kushite-settlement.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The fertile stretch of the Nile known as the Dongola Reach sustained dense settlement patterns that underpinned early Kushite growth."},{"title":"El-Kurru Royal Tombs Reveal Kushite Pyramid Design Before 700 BCE","slug":"el-kurru-royal-tombs-reveal-kushite-pyramid-design-before-700-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/el-kurru-royal-tombs-reveal-kushite-pyramid-design-before-700-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before 700 BCE, Kushite rulers were already building steep-sided pyramids in Nubia."},{"title":"Elephant Imagery at Musawwarat es-Sufra Suggests Royal Control of Exotic Animals","slug":"elephant-imagery-at-musawwarat-es-sufra-suggests-royal-control-of-exotic-animals","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/elephant-imagery-at-musawwarat-es-sufra-suggests-royal-control-of-exotic-animals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved elephant reliefs at Musawwarat es-Sufra indicate that Kushite rulers displayed control over one of Africa’s most formidable animals."},{"title":"Frontier Fort at Qasr Ibrim Anchored Kushite Northern Defense","slug":"frontier-fort-at-qasr-ibrim-anchored-kushite-northern-defense","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/frontier-fort-at-qasr-ibrim-anchored-kushite-northern-defense.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Perched above the Nile, Qasr Ibrim served as a fortified stronghold guarding Kush’s northern approaches."},{"title":"Gebel Barkal Temple Complex Anchored Kushite Royal Legitimacy","slug":"gebel-barkal-temple-complex-anchored-kushite-royal-legitimacy","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/gebel-barkal-temple-complex-anchored-kushite-royal-legitimacy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A sandstone mountain rising 98 meters above the Nile became the spiritual anchor of Kushite kingship."},{"title":"Gold Tribute from Nubia Fueled Regional Power Struggles for Centuries","slug":"gold-tribute-from-nubia-fueled-regional-power-struggles-for-centuries","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/gold-tribute-from-nubia-fueled-regional-power-struggles-for-centuries.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nubian gold reserves repeatedly drew foreign intervention and shaped power struggles across the Nile Valley."},{"title":"Hamadab Stela Documents Meroitic Royal Authority in the 1st Century BCE","slug":"hamadab-stela-documents-meroitic-royal-authority-in-the-1st-century-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/hamadab-stela-documents-meroitic-royal-authority-in-the-1st-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A stone inscription at Hamadab records a Kushite ruler’s power in text that scholars still struggle to fully interpret."},{"title":"Hellenistic Artistic Influences Appeared in Meroitic Temple Design","slug":"hellenistic-artistic-influences-appeared-in-meroitic-temple-design","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/hellenistic-artistic-influences-appeared-in-meroitic-temple-design.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Columns and decorative motifs at certain Meroitic temples reveal subtle Hellenistic artistic influence."},{"title":"Iron Smelting at Meroë Required Vast Charcoal Production","slug":"iron-smelting-at-mero-required-vast-charcoal-production","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/iron-smelting-at-mero-required-vast-charcoal-production.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Each furnace operating at Meroë consumed significant quantities of charcoal, reshaping surrounding woodland ecosystems."},{"title":"Island of Meroe Hosted Concentrated Urban and Industrial Activity","slug":"island-of-meroe-hosted-concentrated-urban-and-industrial-activity","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/island-of-meroe-hosted-concentrated-urban-and-industrial-activity.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Between the Nile and Atbara rivers, the so-called Island of Meroe became one of the most densely developed regions in ancient Nubia."},{"title":"Jebel Barkal Rock Pinnacle Functioned as Natural Symbol of Divine Kingship","slug":"jebel-barkal-rock-pinnacle-functioned-as-natural-symbol-of-divine-kingship","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/jebel-barkal-rock-pinnacle-functioned-as-natural-symbol-of-divine-kingship.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A dramatic sandstone pinnacle rising beside Jebel Barkal was interpreted as a physical manifestation of divine authority."},{"title":"Kawa Temple Complex Linked Kushite Kings to Egyptian Amun Worship","slug":"kawa-temple-complex-linked-kushite-kings-to-egyptian-amun-worship","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/kawa-temple-complex-linked-kushite-kings-to-egyptian-amun-worship.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 8th century BCE, Kushite rulers invested heavily in a temple hundreds of miles north to legitimize their claim over Egypt."},{"title":"Kushite Meroitic Script Remains Partially Undeciphered After 2,000 Years","slug":"kushite-meroitic-script-remains-partially-undeciphered-after-2-000-years","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/kushite-meroitic-script-remains-partially-undeciphered-after-2-000-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than two millennia after its creation, parts of the Kushite writing system still resist full translation."},{"title":"Lion Imagery in Kushite Royal Art Reinforced Military Authority","slug":"lion-imagery-in-kushite-royal-art-reinforced-military-authority","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/lion-imagery-in-kushite-royal-art-reinforced-military-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Across Kushite temples and reliefs, lions appear repeatedly as visual shorthand for royal power and battlefield dominance."},{"title":"Lion Temple at Musawwarat es-Sufra Showcases Unique Kushite Architecture","slug":"lion-temple-at-musawwarat-es-sufra-showcases-unique-kushite-architecture","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/lion-temple-at-musawwarat-es-sufra-showcases-unique-kushite-architecture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Deep in the desert, the Lion Temple at Musawwarat es-Sufra presents one of the most unusual architectural complexes of ancient Nubia."},{"title":"Meroë Iron Industry Produced Thousands of Tons of Slag by 300 BCE","slug":"mero-iron-industry-produced-thousands-of-tons-of-slag-by-300-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/mero-iron-industry-produced-thousands-of-tons-of-slag-by-300-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 300 BCE, the Kingdom of Kush was producing so much iron that entire hills of industrial waste reshaped the landscape around its capital."},{"title":"Meroë Relocation of Capital Shifted Kushite Political Center Around 300 BCE","slug":"mero-relocation-of-capital-shifted-kushite-political-center-around-300-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/mero-relocation-of-capital-shifted-kushite-political-center-around-300-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 300 BCE, Kushite rulers moved their political center south from Napata to Meroë, altering the kingdom’s strategic focus."},{"title":"Napatan Kings Controlled Egypt in the 8th Century BCE","slug":"napatan-kings-controlled-egypt-in-the-8th-century-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/napatan-kings-controlled-egypt-in-the-8th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 747 BCE, rulers from Nubia marched north and took control of Egypt itself."},{"title":"Naqa Temple Reliefs Show Kushite Royal Rituals in Detailed Stone Carvings","slug":"naqa-temple-reliefs-show-kushite-royal-rituals-in-detailed-stone-carvings","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/naqa-temple-reliefs-show-kushite-royal-rituals-in-detailed-stone-carvings.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the desert east of the Nile, intricately carved reliefs at Naqa still depict Kushite rulers performing sacred ceremonies."},{"title":"Nuri Pyramid Field Holds Over 20 Royal Kushite Burials","slug":"nuri-pyramid-field-holds-over-20-royal-kushite-burials","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/nuri-pyramid-field-holds-over-20-royal-kushite-burials.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 20 Kushite kings and queens were buried beneath steep pyramids at Nuri."},{"title":"Obelisks at Nubian Temples Demonstrate Architectural Exchange with Egypt","slug":"obelisks-at-nubian-temples-demonstrate-architectural-exchange-with-egypt","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/obelisks-at-nubian-temples-demonstrate-architectural-exchange-with-egypt.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Slender stone obelisks erected at Nubian temples reveal how Kushite builders adapted Egyptian architectural traditions."},{"title":"Port of Adulis Connected Kushite Trade to the Indian Ocean Network","slug":"port-of-adulis-connected-kushite-trade-to-the-indian-ocean-network","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/port-of-adulis-connected-kushite-trade-to-the-indian-ocean-network.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Through Red Sea connections reaching ports like Adulis, Kushite trade networks linked Africa to the Indian Ocean world."},{"title":"Pyramid Construction at Meroë Reached Over 200 Structures","slug":"pyramid-construction-at-mero-reached-over-200-structures","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/pyramid-construction-at-mero-reached-over-200-structures.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The royal cemetery at Meroë eventually contained more than 200 pyramids, making it one of the largest pyramid fields in the ancient world."},{"title":"Qasr Ibrim Preserved Kushite Documents for Over 2,000 Years","slug":"qasr-ibrim-preserved-kushite-documents-for-over-2-000-years","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/qasr-ibrim-preserved-kushite-documents-for-over-2-000-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Dry desert winds allowed papyrus documents from the Kushite world to survive for more than two millennia."},{"title":"Qore Title Defined Male Sovereignty in the Meroitic Political System","slug":"qore-title-defined-male-sovereignty-in-the-meroitic-political-system","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/qore-title-defined-male-sovereignty-in-the-meroitic-political-system.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the Meroitic period, the title qore formally identified the reigning male monarch of Kush."},{"title":"Roman Peace Treaty of 21 BCE Secured Kushite Autonomy After Border War","slug":"roman-peace-treaty-of-21-bce-secured-kushite-autonomy-after-border-war","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/roman-peace-treaty-of-21-bce-secured-kushite-autonomy-after-border-war.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 21 BCE, Rome signed a peace treaty that allowed Kush to remain independent despite direct military confrontation."},{"title":"Royal Succession in Kush Often Included Kandake Participation","slug":"royal-succession-in-kush-often-included-kandake-participation","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/royal-succession-in-kush-often-included-kandake-participation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In several documented cases, royal succession in Kush involved the kandake, a queen who wielded formal political authority."},{"title":"Sedeinga Temple Inscriptions Reveal Kushite Royal Women’s Political Influence","slug":"sedeinga-temple-inscriptions-reveal-kushite-royal-women-s-political-influence","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/sedeinga-temple-inscriptions-reveal-kushite-royal-women-s-political-influence.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Sedeinga, temple inscriptions show Kushite royal women exercising authority in their own right during the Meroitic period."},{"title":"Shanakdakhete Became One of Kush’s Earliest Documented Queens in the 2nd Century BCE","slug":"shanakdakhete-became-one-of-kush-s-earliest-documented-queens-in-the-2nd-century-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/shanakdakhete-became-one-of-kush-s-earliest-documented-queens-in-the-2nd-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 2nd century BCE, a Kushite queen ruled in her own name and left inscriptions to prove it."},{"title":"Taharqa’s 690 BCE Building Program Expanded Temples Across Nubia and Egypt","slug":"taharqa-s-690-bce-building-program-expanded-temples-across-nubia-and-egypt","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/taharqa-s-690-bce-building-program-expanded-temples-across-nubia-and-egypt.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 690 BCE, King Taharqa launched a construction campaign so extensive that his name appears on monuments from the Nile Delta to central Sudan."},{"title":"Temple of Mut at Gebel Barkal Strengthened Kushite Religious Authority","slug":"temple-of-mut-at-gebel-barkal-strengthened-kushite-religious-authority","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/temple-of-mut-at-gebel-barkal-strengthened-kushite-religious-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A temple dedicated to the goddess Mut at Gebel Barkal reinforced Kushite claims to divine favor in the 7th century BCE."},{"title":"Trade in Ivory Elevated Kushite Prestige in Mediterranean Markets","slug":"trade-in-ivory-elevated-kushite-prestige-in-mediterranean-markets","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/trade-in-ivory-elevated-kushite-prestige-in-mediterranean-markets.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ivory sourced from African interior routes enhanced Kush’s economic importance in Mediterranean trade systems."},{"title":"Umm Ruweim Fortifications Demonstrate Kushite Frontier Defense Strategy","slug":"umm-ruweim-fortifications-demonstrate-kushite-frontier-defense-strategy","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/umm-ruweim-fortifications-demonstrate-kushite-frontier-defense-strategy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological remains at Umm Ruweim reveal a fortified settlement guarding desert approaches to the Nile Valley."},{"title":"Uraeus Symbol on Kushite Crowns Signaled Royal Authority","slug":"uraeus-symbol-on-kushite-crowns-signaled-royal-authority","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/uraeus-symbol-on-kushite-crowns-signaled-royal-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Kushite kings wore the same rearing cobra symbol as Egyptian pharaohs to signal divine kingship."},{"title":"Victory Reliefs at Naqa Depict Kushite Military Dominance","slug":"victory-reliefs-at-naqa-depict-kushite-military-dominance","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/victory-reliefs-at-naqa-depict-kushite-military-dominance.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Temple walls at Naqa portray Kushite rulers striking enemies in scenes designed to project absolute military control."},{"title":"Victory Stela of Piye Records Kushite Conquest of Egypt in 728 BCE","slug":"victory-stela-of-piye-records-kushite-conquest-of-egypt-in-728-bce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/victory-stela-of-piye-records-kushite-conquest-of-egypt-in-728-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 728 BCE, King Piye commemorated his conquest of Egypt on a monumental stone inscription that still survives."},{"title":"Wadi Abu Dom Route Linked Inland Forts to Nile Trade Networks","slug":"wadi-abu-dom-route-linked-inland-forts-to-nile-trade-networks","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/wadi-abu-dom-route-linked-inland-forts-to-nile-trade-networks.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Wadi Abu Dom corridor connected desert settlements to the Nile, forming a critical artery for Kushite communication."},{"title":"X-Group Culture Preserved Kushite Traditions After 350 CE","slug":"x-group-culture-preserved-kushite-traditions-after-350-ce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/x-group-culture-preserved-kushite-traditions-after-350-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After the fall of Meroë around 350 CE, elements of Kushite identity survived in what archaeologists call the X-Group culture."},{"title":"Xeric Climate Conditions Helped Preserve Kushite Archaeological Sites for Millennia","slug":"xeric-climate-conditions-helped-preserve-kushite-archaeological-sites-for-millennia","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/xeric-climate-conditions-helped-preserve-kushite-archaeological-sites-for-millennia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Extreme desert dryness in Nubia allowed Kushite pyramids and inscriptions to survive for over 2,000 years."},{"title":"Yam Trade Expeditions Brought African Goods to Kushite Markets","slug":"yam-trade-expeditions-brought-african-goods-to-kushite-markets","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/yam-trade-expeditions-brought-african-goods-to-kushite-markets.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before classical historians described sub-Saharan trade, expeditions from the Nile sought goods from a region known as Yam."},{"title":"Yemenite Incense Routes Influenced Kushite Participation in Red Sea Commerce","slug":"yemenite-incense-routes-influenced-kushite-participation-in-red-sea-commerce","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/yemenite-incense-routes-influenced-kushite-participation-in-red-sea-commerce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Incense harvested in southern Arabia reshaped trade priorities along the Red Sea, indirectly strengthening Kushite commercial strategy."},{"title":"Zerqa Desert Routes Connected Kush to Red Sea Trade Networks","slug":"zerqa-desert-routes-connected-kush-to-red-sea-trade-networks","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/zerqa-desert-routes-connected-kush-to-red-sea-trade-networks.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Caravan routes across Nubia’s deserts linked the Kingdom of Kush to Red Sea ports long before Roman expansion."},{"title":"Zuma Cemetery Excavations Highlight Late Kushite Elite Burials","slug":"zuma-cemetery-excavations-highlight-late-kushite-elite-burials","url":"/categories/ancient-civilizations-secrets/kingdom-of-kush/zuma-cemetery-excavations-highlight-late-kushite-elite-burials.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Zuma uncovered large tumulus tombs that reflect elite burial customs in Nubia after the Meroitic era."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

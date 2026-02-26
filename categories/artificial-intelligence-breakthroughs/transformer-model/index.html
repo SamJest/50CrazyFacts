@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transformer Model</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Transformer Model</h1>
+  <p>Explore all facts in "Transformer Model".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Transformer Model</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Encoder-Decoder Architecture Enables Sequence-to-Sequence Learning","slug":"encoder-decoder-architecture-enables-sequence-to-sequence-learning","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/encoder-decoder-architecture-enables-sequence-to-sequence-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Transformer uses separate encoder and decoder stacks to map input sequences to output sequences."},{"title":"Feed-Forward Layers Enhance Nonlinear Representation","slug":"feed-forward-layers-enhance-nonlinear-representation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/feed-forward-layers-enhance-nonlinear-representation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After attention, Transformers apply feed-forward networks to refine embeddings with nonlinear transformations."},{"title":"Layer Normalization Stabilizes Transformer Training","slug":"layer-normalization-stabilizes-transformer-training","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/layer-normalization-stabilizes-transformer-training.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers use layer normalization to maintain stable gradients during deep network training."},{"title":"Multi-Head Attention Captures Multiple Relationships","slug":"multi-head-attention-captures-multiple-relationships","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/multi-head-attention-captures-multiple-relationships.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers use multi-head attention to focus on different aspects of the input sequence simultaneously."},{"title":"Multi-Head Attention Provides Multiple Representation Perspectives","slug":"multi-head-attention-provides-multiple-representation-perspectives","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/multi-head-attention-provides-multiple-representation-perspectives.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers use multiple attention heads to focus on different aspects of the input simultaneously."},{"title":"Positional Encoding Preserves Sequence Order","slug":"positional-encoding-preserves-sequence-order","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/positional-encoding-preserves-sequence-order.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers lack recurrence, so positional encoding injects token order information into the model."},{"title":"Self-Attention Mechanism Enables Context Awareness","slug":"self-attention-mechanism-enables-context-awareness","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/self-attention-mechanism-enables-context-awareness.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Self-attention allows the Transformer to weigh the importance of each token relative to others in the sequence."},{"title":"Transformer Architecture Enables Machine Translation","slug":"transformer-architecture-enables-machine-translation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformer-architecture-enables-machine-translation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Transformer was first applied to machine translation, outperforming previous RNN-based models."},{"title":"Transformer Model Introduced in 2017 by Google","slug":"transformer-model-introduced-in-2017-by-google","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformer-model-introduced-in-2017-by-google.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Transformer architecture revolutionized natural language processing by eliminating recurrence and using attention mechanisms."},{"title":"Transformer Models Introduced Attention-Only Architecture","slug":"transformer-models-introduced-attention-only-architecture","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformer-models-introduced-attention-only-architecture.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The original Transformer replaced recurrence and convolutions with self-attention, enabling parallel processing of sequences."},{"title":"Transformers Achieve Parallelizable Computation","slug":"transformers-achieve-parallelizable-computation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-achieve-parallelizable-computation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Unlike RNNs, Transformers process sequences in parallel, enabling faster training on GPUs and TPUs."},{"title":"Transformers Adapted for Vision Tasks","slug":"transformers-adapted-for-vision-tasks","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-adapted-for-vision-tasks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Transformer architecture has been extended to image classification and object recognition."},{"title":"Transformers Applied in Scientific Text Mining","slug":"transformers-applied-in-scientific-text-mining","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-applied-in-scientific-text-mining.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers help extract information from biomedical and scientific literature efficiently."},{"title":"Transformers Applied in Text Classification","slug":"transformers-applied-in-text-classification","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-applied-in-text-classification.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer models excel at classifying text for sentiment, topic, or spam detection."},{"title":"Transformers Applied to Code Understanding","slug":"transformers-applied-to-code-understanding","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-applied-to-code-understanding.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer models like CodeBERT process programming languages for code search and generation."},{"title":"Transformers Are Adapted for Speech Recognition","slug":"transformers-are-adapted-for-speech-recognition","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-are-adapted-for-speech-recognition.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer models extend beyond text to process audio sequences in speech recognition tasks."},{"title":"Transformers Are Used in Summarization Tasks","slug":"transformers-are-used-in-summarization-tasks","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-are-used-in-summarization-tasks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer architectures can produce abstractive summaries of long documents."},{"title":"Transformers Enable Contextual Word Embeddings","slug":"transformers-enable-contextual-word-embeddings","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-contextual-word-embeddings.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Self-attention generates embeddings that reflect word meaning based on surrounding context."},{"title":"Transformers Enable Few-Shot Learning in NLP","slug":"transformers-enable-few-shot-learning-in-nlp","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-few-shot-learning-in-nlp.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Large-scale Transformer models can perform new tasks with minimal examples through prompt-based learning."},{"title":"Transformers Enable Large-Scale Pretrained Language Models","slug":"transformers-enable-large-scale-pretrained-language-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-large-scale-pretrained-language-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The architecture allows models like GPT, BERT, and T5 to scale to billions of parameters efficiently."},{"title":"Transformers Enable Large-Scale Pretraining","slug":"transformers-enable-large-scale-pretraining","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-large-scale-pretraining.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The architecture allows models like BERT and GPT to be trained on billions of words efficiently."},{"title":"Transformers Enable Long Document Processing","slug":"transformers-enable-long-document-processing","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-long-document-processing.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like Longformer and BigBird extend attention mechanisms to handle extremely long sequences."},{"title":"Transformers Enable Multimodal Learning","slug":"transformers-enable-multimodal-learning","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-multimodal-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers can process text, images, and other modalities to perform cross-domain reasoning."},{"title":"Transformers Enable Multimodal Models","slug":"transformers-enable-multimodal-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-multimodal-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers can combine text, images, and other modalities for integrated reasoning."},{"title":"Transformers Enable Named Entity Recognition","slug":"transformers-enable-named-entity-recognition","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-named-entity-recognition.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers identify entities such as names, locations, and organizations with high accuracy."},{"title":"Transformers Enable Named Entity Recognition","slug":"transformers-enable-named-entity-recognition","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-named-entity-recognition.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer models can identify names, locations, and organizations in text accurately."},{"title":"Transformers Enable Named Entity Recognition","slug":"transformers-enable-named-entity-recognition","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-named-entity-recognition.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer-based models detect entities like people, organizations, and dates with high accuracy."},{"title":"Transformers Enable Real-Time Text Completion","slug":"transformers-enable-real-time-text-completion","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-real-time-text-completion.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Autoregressive Transformer models generate next-token predictions for predictive typing and code assistance."},{"title":"Transformers Enable Scalable Pretrained Language Models","slug":"transformers-enable-scalable-pretrained-language-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-scalable-pretrained-language-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer architecture supports massive models like GPT-3 with billions of parameters."},{"title":"Transformers Enable Sentiment Analysis","slug":"transformers-enable-sentiment-analysis","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-sentiment-analysis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer embeddings capture context for accurate sentiment classification in text."},{"title":"Transformers Enable Speech Recognition Improvements","slug":"transformers-enable-speech-recognition-improvements","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-speech-recognition-improvements.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Audio Transformers process speech sequences effectively for transcription and voice understanding."},{"title":"Transformers Enable Text-to-Text Transfer Learning","slug":"transformers-enable-text-to-text-transfer-learning","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enable-text-to-text-transfer-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like T5 use the Transformer framework to treat every NLP problem as a text-to-text task."},{"title":"Transformers Enhance Textual Entailment Tasks","slug":"transformers-enhance-textual-entailment-tasks","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-enhance-textual-entailment-tasks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like BERT determine whether one sentence logically follows from another using attention mechanisms."},{"title":"Transformers Facilitate Abstractive Summarization","slug":"transformers-facilitate-abstractive-summarization","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-facilitate-abstractive-summarization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like BART and T5 use Transformers to generate concise summaries that paraphrase original text."},{"title":"Transformers Facilitate Few-Shot Learning","slug":"transformers-facilitate-few-shot-learning","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-facilitate-few-shot-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Large Transformer models can perform tasks with minimal examples through prompt-based adaptation."},{"title":"Transformers Facilitate Large-Scale Knowledge Extraction","slug":"transformers-facilitate-large-scale-knowledge-extraction","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-facilitate-large-scale-knowledge-extraction.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers extract structured knowledge from massive unstructured text corpora."},{"title":"Transformers Facilitate Machine Translation","slug":"transformers-facilitate-machine-translation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-facilitate-machine-translation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The original Transformer model was designed to improve machine translation accuracy and speed."},{"title":"Transformers Facilitate Transfer Learning in NLP","slug":"transformers-facilitate-transfer-learning-in-nlp","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-facilitate-transfer-learning-in-nlp.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Pretrained Transformer models can be fine-tuned for various downstream language tasks with minimal data."},{"title":"Transformers Improve Dialogue Systems","slug":"transformers-improve-dialogue-systems","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-improve-dialogue-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer models power chatbots and virtual assistants with coherent multi-turn conversations."},{"title":"Transformers Improve Language Modeling","slug":"transformers-improve-language-modeling","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-improve-language-modeling.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Self-attention in Transformers allows models to predict the next word with greater context awareness."},{"title":"Transformers Improve Multimodal Learning","slug":"transformers-improve-multimodal-learning","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-improve-multimodal-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers process text, images, and audio together for integrated understanding."},{"title":"Transformers Improve Question Answering Systems","slug":"transformers-improve-question-answering-systems","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-improve-question-answering-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer-based models excel at reading comprehension and answering complex questions from text."},{"title":"Transformers Inspired Vision Models","slug":"transformers-inspired-vision-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-inspired-vision-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Transformer architecture has been adapted for computer vision tasks such as image classification and object detection."},{"title":"Transformers Power Chatbot Dialogue Generation","slug":"transformers-power-chatbot-dialogue-generation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-chatbot-dialogue-generation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like DialoGPT generate contextually coherent multi-turn conversations."},{"title":"Transformers Power Cross-Lingual NLP Models","slug":"transformers-power-cross-lingual-nlp-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-cross-lingual-nlp-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Multilingual Transformers like mBERT learn shared representations across languages for zero-shot transfer."},{"title":"Transformers Power Question Answering Systems","slug":"transformers-power-question-answering-systems","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-question-answering-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"BERT and similar Transformer models can extract answers directly from context passages."},{"title":"Transformers Power Question Answering Systems","slug":"transformers-power-question-answering-systems","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-question-answering-systems.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like BERT and RoBERTa answer questions based on textual context using attention mechanisms."},{"title":"Transformers Power State-of-the-Art NLP Models","slug":"transformers-power-state-of-the-art-nlp-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-state-of-the-art-nlp-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like BERT, GPT, and T5 are based on the Transformer architecture."},{"title":"Transformers Power Summarization for Long Documents","slug":"transformers-power-summarization-for-long-documents","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-summarization-for-long-documents.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like Longformer extend Transformers to efficiently summarize long texts without truncation."},{"title":"Transformers Power Summarization of Scientific Literature","slug":"transformers-power-summarization-of-scientific-literature","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-summarization-of-scientific-literature.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like Longformer summarize lengthy research papers efficiently using sparse attention."},{"title":"Transformers Power Text Generation Models","slug":"transformers-power-text-generation-models","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-power-text-generation-models.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"GPT models rely on Transformer decoders for coherent and context-aware text generation."},{"title":"Transformers Reduce Training Time Compared to RNNs","slug":"transformers-reduce-training-time-compared-to-rnns","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-reduce-training-time-compared-to-rnns.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Parallel computation in Transformers drastically reduces the time required for model training."},{"title":"Transformers Revolutionize Text Summarization","slug":"transformers-revolutionize-text-summarization","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-revolutionize-text-summarization.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The Transformer architecture allows automatic summarization of long texts with improved coherence."},{"title":"Transformers Revolutionized Machine Translation","slug":"transformers-revolutionized-machine-translation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-revolutionized-machine-translation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Encoder-decoder Transformers outperformed RNNs in translation benchmarks like WMT."},{"title":"Transformers Support Code Generation","slug":"transformers-support-code-generation","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-support-code-generation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformer models like Codex can generate programming code from natural language prompts."},{"title":"Transformers Support Long-Sequence Processing","slug":"transformers-support-long-sequence-processing","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-support-long-sequence-processing.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Sparse attention models like Longformer and BigBird extend Transformers to thousands of tokens."},{"title":"Transformers Support Time Series Prediction","slug":"transformers-support-time-series-prediction","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-support-time-series-prediction.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The architecture can model sequential data like financial and sensor signals for forecasting."},{"title":"Transformers Used in Cross-Lingual NLP","slug":"transformers-used-in-cross-lingual-nlp","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-used-in-cross-lingual-nlp.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers enable models to process multiple languages simultaneously for translation and understanding."},{"title":"Transformers Used in Summarization Tasks","slug":"transformers-used-in-summarization-tasks","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-used-in-summarization-tasks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Models like BART and T5 apply Transformers to generate abstractive summaries."},{"title":"Transformers Used in Text-to-Speech Synthesis","slug":"transformers-used-in-text-to-speech-synthesis","url":"/categories/artificial-intelligence-breakthroughs/transformer-model/transformers-used-in-text-to-speech-synthesis.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Transformers can generate high-quality speech from text using attention-based alignment."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

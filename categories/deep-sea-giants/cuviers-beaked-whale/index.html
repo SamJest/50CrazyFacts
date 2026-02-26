@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuviers Beaked Whale</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Cuviers Beaked Whale</h1>
+  <p>Explore all facts in "Cuviers Beaked Whale".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Cuviers Beaked Whale</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Continental Margin Oil Exploration Increased Regulatory Scrutiny for Cuvier’s Beaked Whale Habitat","slug":"continental-margin-oil-exploration-increased-regulatory-scrutiny-for-cuvier-s-beaked-whale-habitat","url":"/categories/deep-sea-giants/cuviers-beaked-whale/continental-margin-oil-exploration-increased-regulatory-scrutiny-for-cuvier-s-beaked-whale-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Deep-water oil exploration along continental margins has required environmental assessments that specifically reference Cuvier’s beaked whale presence."},{"title":"Continental Shelf Break Zones Increase Detection Probability of Cuvier’s Beaked Whales","slug":"continental-shelf-break-zones-increase-detection-probability-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/continental-shelf-break-zones-increase-detection-probability-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Research surveys show that detection rates for Cuvier’s beaked whales increase near continental shelf break zones."},{"title":"Continental Slope Habitats Concentrate Cuvier’s Beaked Whale Sightings Worldwide","slug":"continental-slope-habitats-concentrate-cuvier-s-beaked-whale-sightings-worldwide","url":"/categories/deep-sea-giants/cuviers-beaked-whale/continental-slope-habitats-concentrate-cuvier-s-beaked-whale-sightings-worldwide.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Global sighting data show that Cuvier’s beaked whales are most frequently recorded along steep continental slopes rather than open abyssal plains."},{"title":"Coordinated Mass Strandings of Cuvier’s Beaked Whales Shaped International Noise Policy","slug":"coordinated-mass-strandings-of-cuvier-s-beaked-whales-shaped-international-noise-policy","url":"/categories/deep-sea-giants/cuviers-beaked-whale/coordinated-mass-strandings-of-cuvier-s-beaked-whales-shaped-international-noise-policy.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Clusters of Cuvier’s beaked whale strandings in the late 20th and early 21st centuries prompted international reassessment of naval sonar policy."},{"title":"Cuvier’s Beaked Whale 2014 Record Dive Reached Nearly 3,000 Meters","slug":"cuvier-s-beaked-whale-2014-record-dive-reached-nearly-3-000-meters","url":"/categories/deep-sea-giants/cuviers-beaked-whale/cuvier-s-beaked-whale-2014-record-dive-reached-nearly-3-000-meters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2014, a tagged Cuvier’s beaked whale descended to nearly 3,000 meters, setting the deepest recorded dive for any mammal."},{"title":"Cuvier’s Beaked Whale 2019 Dive Record Confirmed Longest Mammalian Submergence","slug":"cuvier-s-beaked-whale-2019-dive-record-confirmed-longest-mammalian-submergence","url":"/categories/deep-sea-giants/cuviers-beaked-whale/cuvier-s-beaked-whale-2019-dive-record-confirmed-longest-mammalian-submergence.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2019, researchers confirmed that Cuvier’s beaked whales hold the record for the longest recorded dive of any mammal."},{"title":"Cuvier’s Beaked Whale 2020 Tag Data Recorded Three-Hour Foraging Dive","slug":"cuvier-s-beaked-whale-2020-tag-data-recorded-three-hour-foraging-dive","url":"/categories/deep-sea-giants/cuviers-beaked-whale/cuvier-s-beaked-whale-2020-tag-data-recorded-three-hour-foraging-dive.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Tagging data published in 2020 documented a Cuvier’s beaked whale dive lasting nearly three hours."},{"title":"Cuvier’s Beaked Whale Brain Size Supports Advanced Echolocation Processing","slug":"cuvier-s-beaked-whale-brain-size-supports-advanced-echolocation-processing","url":"/categories/deep-sea-giants/cuviers-beaked-whale/cuvier-s-beaked-whale-brain-size-supports-advanced-echolocation-processing.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales possess relatively large brains that support complex echolocation in extreme darkness."},{"title":"Kelp-Derived Microplastics Have Been Found in Deep-Sea Prey of Cuvier’s Beaked Whales","slug":"kelp-derived-microplastics-have-been-found-in-deep-sea-prey-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kelp-derived-microplastics-have-been-found-in-deep-sea-prey-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Microplastics traced through marine food webs have been detected in deep-sea organisms consumed by Cuvier’s beaked whales."},{"title":"Kelp-Linked Carbon Cycling Influences Deep-Sea Prey of Cuvier’s Beaked Whales","slug":"kelp-linked-carbon-cycling-influences-deep-sea-prey-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kelp-linked-carbon-cycling-influences-deep-sea-prey-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Carbon exported from productive coastal ecosystems can influence deep-sea food webs that sustain Cuvier’s beaked whales."},{"title":"Kermadec Region Long-Term Acoustic Arrays Track Cuvier’s Beaked Whale Presence","slug":"kermadec-region-long-term-acoustic-arrays-track-cuvier-s-beaked-whale-presence","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kermadec-region-long-term-acoustic-arrays-track-cuvier-s-beaked-whale-presence.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Long-term acoustic arrays in the Kermadec region have provided multi-year records of Cuvier’s beaked whale presence."},{"title":"Kermadec Trench Acoustic Detections Confirm Presence of Cuvier’s Beaked Whales in Extreme Depth Regions","slug":"kermadec-trench-acoustic-detections-confirm-presence-of-cuvier-s-beaked-whales-in-extreme-depth-regions","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kermadec-trench-acoustic-detections-confirm-presence-of-cuvier-s-beaked-whales-in-extreme-depth-regions.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Acoustic monitoring near the Kermadec Trench has detected Cuvier’s beaked whale clicks in one of the deepest oceanic regions on Earth."},{"title":"Killer Whale Predation Events Have Targeted Cuvier’s Beaked Whales","slug":"killer-whale-predation-events-have-targeted-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/killer-whale-predation-events-have-targeted-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Although rare, documented predation events show killer whales attacking Cuvier’s beaked whales in offshore waters."},{"title":"Kinematic Acceleration Data Reveal High-Speed Lunges by Cuvier’s Beaked Whales","slug":"kinematic-acceleration-data-reveal-high-speed-lunges-by-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kinematic-acceleration-data-reveal-high-speed-lunges-by-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Accelerometer tags show that Cuvier’s beaked whales perform rapid acceleration bursts when capturing prey at depth."},{"title":"Kinetic Buoyancy Adjustment Allows Cuvier’s Beaked Whales to Glide During Descent","slug":"kinetic-buoyancy-adjustment-allows-cuvier-s-beaked-whales-to-glide-during-descent","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kinetic-buoyancy-adjustment-allows-cuvier-s-beaked-whales-to-glide-during-descent.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales reduce energy expenditure by gliding during portions of their deep descents."},{"title":"Kinetic Buoyancy Adjustment Allows Cuvier’s Beaked Whales to Glide During Descent","slug":"kinetic-buoyancy-adjustment-allows-cuvier-s-beaked-whales-to-glide-during-descent","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kinetic-buoyancy-adjustment-allows-cuvier-s-beaked-whales-to-glide-during-descent.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales reduce energy expenditure by gliding during portions of their deep descents."},{"title":"Kinetic Energy Calculations Show Controlled Ascent Critical for Cuvier’s Beaked Whale Safety","slug":"kinetic-energy-calculations-show-controlled-ascent-critical-for-cuvier-s-beaked-whale-safety","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kinetic-energy-calculations-show-controlled-ascent-critical-for-cuvier-s-beaked-whale-safety.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Physics modeling demonstrates that rapid ascent from extreme depth dramatically increases decompression risk for Cuvier’s beaked whales."},{"title":"Kinetic Sonar Avoidance Behavior Alters Dive Profiles in Cuvier’s Beaked Whales","slug":"kinetic-sonar-avoidance-behavior-alters-dive-profiles-in-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kinetic-sonar-avoidance-behavior-alters-dive-profiles-in-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Tagging data show that Cuvier’s beaked whales can modify dive depth and ascent timing when exposed to mid-frequency sonar."},{"title":"Krill-Scarce Diet Forces Cuvier’s Beaked Whales to Hunt Deep-Sea Squid","slug":"krill-scarce-diet-forces-cuvier-s-beaked-whales-to-hunt-deep-sea-squid","url":"/categories/deep-sea-giants/cuviers-beaked-whale/krill-scarce-diet-forces-cuvier-s-beaked-whales-to-hunt-deep-sea-squid.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Unlike many large whales that filter-feed near the surface, Cuvier’s beaked whales hunt deep-sea squid in near-total darkness."},{"title":"Kuroshio Current Regions Support Offshore Range of Cuvier’s Beaked Whales","slug":"kuroshio-current-regions-support-offshore-range-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kuroshio-current-regions-support-offshore-range-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Oceanographic surveys indicate that the Kuroshio Current region supports habitat suitable for Cuvier’s beaked whales."},{"title":"Kuroshio Extension Zone Provides Migratory Corridor for Cuvier’s Beaked Whales","slug":"kuroshio-extension-zone-provides-migratory-corridor-for-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/kuroshio-extension-zone-provides-migratory-corridor-for-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Oceanographic mapping indicates that the Kuroshio Extension zone forms a migratory pathway for Cuvier’s beaked whales in the western Pacific."},{"title":"Quantified Nitrogen Uptake Models Refine Cuvier’s Beaked Whale Decompression Risk Assessments","slug":"quantified-nitrogen-uptake-models-refine-cuvier-s-beaked-whale-decompression-risk-assessments","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quantified-nitrogen-uptake-models-refine-cuvier-s-beaked-whale-decompression-risk-assessments.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Biophysical models now quantify nitrogen absorption and release in Cuvier’s beaked whales during extreme dives."},{"title":"Quasi-Monogamous Social Units Observed in Some Cuvier’s Beaked Whale Groups","slug":"quasi-monogamous-social-units-observed-in-some-cuvier-s-beaked-whale-groups","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quasi-monogamous-social-units-observed-in-some-cuvier-s-beaked-whale-groups.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Field observations suggest that some Cuvier’s beaked whale groups maintain stable social units over extended periods."},{"title":"Quasi-Steady Heart Rate Adaptations Support Extreme Diving in Cuvier’s Beaked Whales","slug":"quasi-steady-heart-rate-adaptations-support-extreme-diving-in-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quasi-steady-heart-rate-adaptations-support-extreme-diving-in-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Physiological research indicates that Cuvier’s beaked whales dramatically lower heart rate during deep dives to conserve oxygen."},{"title":"Quaternary Fossil Evidence Suggests Ancient Lineage of Cuvier’s Beaked Whales","slug":"quaternary-fossil-evidence-suggests-ancient-lineage-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quaternary-fossil-evidence-suggests-ancient-lineage-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fossil evidence from the Quaternary period confirms that Cuvier’s beaked whales have persisted through multiple glacial cycles."},{"title":"Quiescent Deep Soundscapes Enhance Echolocation Precision for Cuvier’s Beaked Whales","slug":"quiescent-deep-soundscapes-enhance-echolocation-precision-for-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quiescent-deep-soundscapes-enhance-echolocation-precision-for-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales forage most effectively in acoustically quiet deep-water environments where background noise is minimal."},{"title":"Quiescent Deep Soundscapes Enhance Echolocation Precision for Cuvier’s Beaked Whales","slug":"quiescent-deep-soundscapes-enhance-echolocation-precision-for-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quiescent-deep-soundscapes-enhance-echolocation-precision-for-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales forage most effectively in acoustically quiet deep-water environments where background noise is minimal."},{"title":"Quiescent Surface Intervals of Cuvier’s Beaked Whales Can Exceed 90 Minutes","slug":"quiescent-surface-intervals-of-cuvier-s-beaked-whales-can-exceed-90-minutes","url":"/categories/deep-sea-giants/cuviers-beaked-whale/quiescent-surface-intervals-of-cuvier-s-beaked-whales-can-exceed-90-minutes.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"After extreme deep dives, Cuvier’s beaked whales can remain near the surface for more than 90 minutes before descending again."},{"title":"Undersea Canyon Military Exclusion Zones Now Account for Cuvier’s Beaked Whale Habitat","slug":"undersea-canyon-military-exclusion-zones-now-account-for-cuvier-s-beaked-whale-habitat","url":"/categories/deep-sea-giants/cuviers-beaked-whale/undersea-canyon-military-exclusion-zones-now-account-for-cuvier-s-beaked-whale-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Several naval training areas have introduced exclusion or mitigation zones in undersea canyon regions used by Cuvier’s beaked whales."},{"title":"Underwater Canyon Systems Provide Critical Foraging Habitat for Cuvier’s Beaked Whales","slug":"underwater-canyon-systems-provide-critical-foraging-habitat-for-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/underwater-canyon-systems-provide-critical-foraging-habitat-for-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Submarine canyon systems concentrate prey and serve as recurring foraging grounds for Cuvier’s beaked whales."},{"title":"Underwater Decompression Physiology Explains Gas Emboli in Cuvier’s Beaked Whale Strandings","slug":"underwater-decompression-physiology-explains-gas-emboli-in-cuvier-s-beaked-whale-strandings","url":"/categories/deep-sea-giants/cuviers-beaked-whale/underwater-decompression-physiology-explains-gas-emboli-in-cuvier-s-beaked-whale-strandings.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Post-mortem examinations of stranded Cuvier’s beaked whales have revealed gas and fat emboli similar to decompression sickness in human divers."},{"title":"Underwater Radiated Noise Reduces Foraging Efficiency of Cuvier’s Beaked Whales","slug":"underwater-radiated-noise-reduces-foraging-efficiency-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/underwater-radiated-noise-reduces-foraging-efficiency-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Controlled exposure studies show that elevated underwater noise can disrupt the foraging dives of Cuvier’s beaked whales."},{"title":"Underwater Sonar Exposure Linked to Cuvier’s Beaked Whale Mass Strandings","slug":"underwater-sonar-exposure-linked-to-cuvier-s-beaked-whale-mass-strandings","url":"/categories/deep-sea-giants/cuviers-beaked-whale/underwater-sonar-exposure-linked-to-cuvier-s-beaked-whale-mass-strandings.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Multiple mass strandings of Cuvier’s beaked whales have been temporally associated with mid-frequency naval sonar exercises."},{"title":"Unusual Mortality Events Involving Cuvier’s Beaked Whales Trigger Federal Investigations","slug":"unusual-mortality-events-involving-cuvier-s-beaked-whales-trigger-federal-investigations","url":"/categories/deep-sea-giants/cuviers-beaked-whale/unusual-mortality-events-involving-cuvier-s-beaked-whales-trigger-federal-investigations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When clusters of Cuvier’s beaked whale strandings occur, they can trigger formal Unusual Mortality Event investigations under U.S. federal law."},{"title":"Unusual Mortality Events Involving Cuvier’s Beaked Whales Trigger Federal Investigations","slug":"unusual-mortality-events-involving-cuvier-s-beaked-whales-trigger-federal-investigations","url":"/categories/deep-sea-giants/cuviers-beaked-whale/unusual-mortality-events-involving-cuvier-s-beaked-whales-trigger-federal-investigations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"When clusters of Cuvier’s beaked whale strandings occur, they can trigger formal Unusual Mortality Event investigations under U.S. federal law."},{"title":"X-Ray Computed Tomography Revealed Dense Rostral Bone in Cuvier’s Beaked Whales","slug":"x-ray-computed-tomography-revealed-dense-rostral-bone-in-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/x-ray-computed-tomography-revealed-dense-rostral-bone-in-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Computed tomography scans show that Cuvier’s beaked whales possess unusually dense rostral bones compared to many other cetaceans."},{"title":"Xenobiotic Contaminants Detected in Cuvier’s Beaked Whale Blubber Samples","slug":"xenobiotic-contaminants-detected-in-cuvier-s-beaked-whale-blubber-samples","url":"/categories/deep-sea-giants/cuviers-beaked-whale/xenobiotic-contaminants-detected-in-cuvier-s-beaked-whale-blubber-samples.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Chemical analyses have detected persistent industrial pollutants in the blubber of stranded Cuvier’s beaked whales."},{"title":"Xenothermal Pressure Tolerance Allows Cuvier’s Beaked Whales to Survive 300 Atmospheres","slug":"xenothermal-pressure-tolerance-allows-cuvier-s-beaked-whales-to-survive-300-atmospheres","url":"/categories/deep-sea-giants/cuviers-beaked-whale/xenothermal-pressure-tolerance-allows-cuvier-s-beaked-whales-to-survive-300-atmospheres.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At depths near 3,000 meters, Cuvier’s beaked whales endure pressures exceeding 300 times that at sea level."},{"title":"Xerothermic Climate Phases Likely Influenced Historical Distribution of Cuvier’s Beaked Whales","slug":"xerothermic-climate-phases-likely-influenced-historical-distribution-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/xerothermic-climate-phases-likely-influenced-historical-distribution-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Past warm climate intervals likely shifted prey distribution and influenced the historical range of Cuvier’s beaked whales."},{"title":"Xiphactinus-Like Jaw Structure Enables Suction Feeding in Cuvier’s Beaked Whale","slug":"xiphactinus-like-jaw-structure-enables-suction-feeding-in-cuvier-s-beaked-whale","url":"/categories/deep-sea-giants/cuviers-beaked-whale/xiphactinus-like-jaw-structure-enables-suction-feeding-in-cuvier-s-beaked-whale.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales lack large functional teeth and instead rely on suction feeding to capture deep-sea prey."},{"title":"Xiphoid-Like Beak Morphology Defines Cuvier’s Beaked Whale External Profile","slug":"xiphoid-like-beak-morphology-defines-cuvier-s-beaked-whale-external-profile","url":"/categories/deep-sea-giants/cuviers-beaked-whale/xiphoid-like-beak-morphology-defines-cuvier-s-beaked-whale-external-profile.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The elongated beak of Cuvier’s beaked whale gives the species a distinctive silhouette among deep-diving cetaceans."},{"title":"Xiphoid-Like Beak Morphology Defines Cuvier’s Beaked Whale External Profile","slug":"xiphoid-like-beak-morphology-defines-cuvier-s-beaked-whale-external-profile","url":"/categories/deep-sea-giants/cuviers-beaked-whale/xiphoid-like-beak-morphology-defines-cuvier-s-beaked-whale-external-profile.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The elongated beak of Cuvier’s beaked whale gives the species a distinctive silhouette among deep-diving cetaceans."},{"title":"Yale 2013 Study Modeled Oxygen Use in Cuvier’s Beaked Whale Extreme Dives","slug":"yale-2013-study-modeled-oxygen-use-in-cuvier-s-beaked-whale-extreme-dives","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yale-2013-study-modeled-oxygen-use-in-cuvier-s-beaked-whale-extreme-dives.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2013 physiological modeling study estimated how Cuvier’s beaked whales allocate oxygen during multi-hour dives."},{"title":"Yellow Sea Naval Exercises Triggered International Review of Beaked Whale Protection","slug":"yellow-sea-naval-exercises-triggered-international-review-of-beaked-whale-protection","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yellow-sea-naval-exercises-triggered-international-review-of-beaked-whale-protection.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Naval sonar operations in parts of the Yellow Sea prompted international scrutiny over beaked whale conservation measures."},{"title":"Yellow-Brown Scar Patterns Reveal Male Combat in Cuvier’s Beaked Whales","slug":"yellow-brown-scar-patterns-reveal-male-combat-in-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yellow-brown-scar-patterns-reveal-male-combat-in-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Adult male Cuvier’s beaked whales often display dense linear scars, evidence of tooth-rake combat with rivals."},{"title":"Yellowtail Squid Biomass Fluctuations Affect Foraging Success of Cuvier’s Beaked Whales","slug":"yellowtail-squid-biomass-fluctuations-affect-foraging-success-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yellowtail-squid-biomass-fluctuations-affect-foraging-success-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Year-to-year fluctuations in mesopelagic squid biomass can influence the foraging efficiency of Cuvier’s beaked whales."},{"title":"Yokosuka Naval Range Litigation Cited Beaked Whale Acoustic Sensitivity","slug":"yokosuka-naval-range-litigation-cited-beaked-whale-acoustic-sensitivity","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yokosuka-naval-range-litigation-cited-beaked-whale-acoustic-sensitivity.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Court cases reviewing naval sonar operations have cited scientific evidence of beaked whale sensitivity to mid-frequency sound."},{"title":"Yokosuka Naval Range Litigation Cited Beaked Whale Acoustic Sensitivity","slug":"yokosuka-naval-range-litigation-cited-beaked-whale-acoustic-sensitivity","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yokosuka-naval-range-litigation-cited-beaked-whale-acoustic-sensitivity.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Court cases reviewing naval sonar operations have cited scientific evidence of beaked whale sensitivity to mid-frequency sound."},{"title":"Yucatán Basin Surveys Identified Cuvier’s Beaked Whale Habitat in Gulf of Mexico","slug":"yucat-n-basin-surveys-identified-cuvier-s-beaked-whale-habitat-in-gulf-of-mexico","url":"/categories/deep-sea-giants/cuviers-beaked-whale/yucat-n-basin-surveys-identified-cuvier-s-beaked-whale-habitat-in-gulf-of-mexico.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Acoustic surveys in the Gulf of Mexico confirmed Cuvier’s beaked whales occupying deep waters of the Yucatán Basin."},{"title":"Zero-Visibility Deep-Water Habitat Limits Direct Observation of Cuvier’s Beaked Whales","slug":"zero-visibility-deep-water-habitat-limits-direct-observation-of-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/zero-visibility-deep-water-habitat-limits-direct-observation-of-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Most of Cuvier’s beaked whale life unfolds in near-total darkness beyond the reach of direct human observation."},{"title":"Ziphiid Fatty Tissue Composition Supports Sound Transmission in Cuvier’s Beaked Whales","slug":"ziphiid-fatty-tissue-composition-supports-sound-transmission-in-cuvier-s-beaked-whales","url":"/categories/deep-sea-giants/cuviers-beaked-whale/ziphiid-fatty-tissue-composition-supports-sound-transmission-in-cuvier-s-beaked-whales.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Specialized fatty tissues in the heads of Cuvier’s beaked whales channel and focus echolocation clicks with high precision."},{"title":"Ziphiidae Family Genetics Clarified Cuvier’s Beaked Whale Global Population Structure","slug":"ziphiidae-family-genetics-clarified-cuvier-s-beaked-whale-global-population-structure","url":"/categories/deep-sea-giants/cuviers-beaked-whale/ziphiidae-family-genetics-clarified-cuvier-s-beaked-whale-global-population-structure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Modern genetic analysis has revealed population structure in the Ziphiidae family that was invisible through morphology alone."},{"title":"Ziphioid Skull Air Sinuses Help Cuvier’s Beaked Whales Withstand Extreme Pressure","slug":"ziphioid-skull-air-sinuses-help-cuvier-s-beaked-whales-withstand-extreme-pressure","url":"/categories/deep-sea-giants/cuviers-beaked-whale/ziphioid-skull-air-sinuses-help-cuvier-s-beaked-whales-withstand-extreme-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whales possess specialized cranial air sinus structures that help protect them during dives approaching 3,000 meters."},{"title":"Ziphius cavirostris 1823 Taxonomic Classification Predated Live Observation by Decades","slug":"ziphius-cavirostris-1823-taxonomic-classification-predated-live-observation-by-decades","url":"/categories/deep-sea-giants/cuviers-beaked-whale/ziphius-cavirostris-1823-taxonomic-classification-predated-live-observation-by-decades.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whale was scientifically classified in 1823, long before researchers ever observed one alive at sea."},{"title":"Zoological Naming Honors Georges Cuvier in 1823 Species Description","slug":"zoological-naming-honors-georges-cuvier-in-1823-species-description","url":"/categories/deep-sea-giants/cuviers-beaked-whale/zoological-naming-honors-georges-cuvier-in-1823-species-description.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Cuvier’s beaked whale was formally described in 1823 and named after the French naturalist Georges Cuvier."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>African Wild Dog</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>African Wild Dog</h1>
+  <p>Explore all facts in "African Wild Dog".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>African Wild Dog</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Kafue National Park Dispersal Coalitions Travel Hundreds of Kilometers to Form New Packs","slug":"kafue-national-park-dispersal-coalitions-travel-hundreds-of-kilometers-to-form-new-packs","url":"/categories/endangered-predators/african-wild-dog/kafue-national-park-dispersal-coalitions-travel-hundreds-of-kilometers-to-form-new-packs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Young males abandon home and walk across provinces to start a new dynasty."},{"title":"Kalahari Camera Traps Recorded Hyena Packs Stealing Over 50 Percent of Wild Dog Kills in Some Areas","slug":"kalahari-camera-traps-recorded-hyena-packs-stealing-over-50-percent-of-wild-dog-kills-in-some-areas","url":"/categories/endangered-predators/african-wild-dog/kalahari-camera-traps-recorded-hyena-packs-stealing-over-50-percent-of-wild-dog-kills-in-some-areas.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Half their hard-earned meals vanish to scavengers within minutes."},{"title":"Kalahari Heat Waves Push Wild Dog Body Temperatures Near Physiological Limits During Hunts","slug":"kalahari-heat-waves-push-wild-dog-body-temperatures-near-physiological-limits-during-hunts","url":"/categories/endangered-predators/african-wild-dog/kalahari-heat-waves-push-wild-dog-body-temperatures-near-physiological-limits-during-hunts.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In peak summer, every chase risks lethal overheating."},{"title":"Kalahari Lion Encounters Kill Wild Dog Packs Despite Hunting Superiority","slug":"kalahari-lion-encounters-kill-wild-dog-packs-despite-hunting-superiority","url":"/categories/endangered-predators/african-wild-dog/kalahari-lion-encounters-kill-wild-dog-packs-despite-hunting-superiority.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The continent’s most efficient hunters are routinely killed by less efficient ones."},{"title":"Kavango-Zambezi Corridor Spans 520,000 Square Kilometers to Protect Wide-Ranging Predators","slug":"kavango-zambezi-corridor-spans-520-000-square-kilometers-to-protect-wide-ranging-predators","url":"/categories/endangered-predators/african-wild-dog/kavango-zambezi-corridor-spans-520-000-square-kilometers-to-protect-wide-ranging-predators.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A conservation zone larger than France exists to keep one predator moving."},{"title":"Kibale Forest Edge Studies Recorded Zero Wild Dog Dens After Agricultural Expansion","slug":"kibale-forest-edge-studies-recorded-zero-wild-dog-dens-after-agricultural-expansion","url":"/categories/endangered-predators/african-wild-dog/kibale-forest-edge-studies-recorded-zero-wild-dog-dens-after-agricultural-expansion.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Farmland replaced an entire predator nursery in less than a decade."},{"title":"Kruger National Park 1995 Rabies Epidemic Cut African Wild Dog Numbers in Half","slug":"kruger-national-park-1995-rabies-epidemic-cut-african-wild-dog-numbers-in-half","url":"/categories/endangered-predators/african-wild-dog/kruger-national-park-1995-rabies-epidemic-cut-african-wild-dog-numbers-in-half.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A virus smaller than a grain of dust erased half a national park’s top predators in a single year."},{"title":"Kwando Reserve 2018 Snare Removal Operations Saved Entire African Wild Dog Pack Within Weeks","slug":"kwando-reserve-2018-snare-removal-operations-saved-entire-african-wild-dog-pack-within-weeks","url":"/categories/endangered-predators/african-wild-dog/kwando-reserve-2018-snare-removal-operations-saved-entire-african-wild-dog-pack-within-weeks.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A loop of cheap wire nearly erased a predator that runs 60 kilometers a day."},{"title":"Okavango Delta Alpha Female Controls Reproduction for Entire Pack","slug":"okavango-delta-alpha-female-controls-reproduction-for-entire-pack","url":"/categories/endangered-predators/african-wild-dog/okavango-delta-alpha-female-controls-reproduction-for-entire-pack.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One female can silence reproduction in every other adult around her."},{"title":"Okavango Delta Mortality Data Show Lion Encounters Account for Majority of Adult Wild Dog Deaths","slug":"okavango-delta-mortality-data-show-lion-encounters-account-for-majority-of-adult-wild-dog-deaths","url":"/categories/endangered-predators/african-wild-dog/okavango-delta-mortality-data-show-lion-encounters-account-for-majority-of-adult-wild-dog-deaths.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"The greatest threat to this predator often has a mane."},{"title":"Quarantine Buffer Zones in Namibia Reduced Wild Dog-Livestock Contact by 80 Percent","slug":"quarantine-buffer-zones-in-namibia-reduced-wild-dog-livestock-contact-by-80-percent","url":"/categories/endangered-predators/african-wild-dog/quarantine-buffer-zones-in-namibia-reduced-wild-dog-livestock-contact-by-80-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A line on a map cut predator conflict almost overnight."},{"title":"Quarantine Vaccination Campaigns Around Serengeti Reduced Wild Dog Disease Spillover by 70 Percent","slug":"quarantine-vaccination-campaigns-around-serengeti-reduced-wild-dog-disease-spillover-by-70-percent","url":"/categories/endangered-predators/african-wild-dog/quarantine-vaccination-campaigns-around-serengeti-reduced-wild-dog-disease-spillover-by-70-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A ring of syringes around villages shielded predators miles away from extinction."},{"title":"Quorum-Based Hunting Signals Allow African Wild Dogs to Outvote Hesitant Pack Members","slug":"quorum-based-hunting-signals-allow-african-wild-dogs-to-outvote-hesitant-pack-members","url":"/categories/endangered-predators/african-wild-dog/quorum-based-hunting-signals-allow-african-wild-dogs-to-outvote-hesitant-pack-members.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Before a chase begins, these predators take a vote."},{"title":"QwaQwa Reserve Monitoring Showed Wild Dogs Avoid Areas with High Human Foot Traffic by Over 90 Percent","slug":"qwaqwa-reserve-monitoring-showed-wild-dogs-avoid-areas-with-high-human-foot-traffic-by-over-90-percent","url":"/categories/endangered-predators/african-wild-dog/qwaqwa-reserve-monitoring-showed-wild-dogs-avoid-areas-with-high-human-foot-traffic-by-over-90-percent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Footsteps alone can empty a predator’s territory."},{"title":"UAV Drone Surveillance in Zimbabwe Located Over 300 Illegal Snares in Single Dry Season","slug":"uav-drone-surveillance-in-zimbabwe-located-over-300-illegal-snares-in-single-dry-season","url":"/categories/endangered-predators/african-wild-dog/uav-drone-surveillance-in-zimbabwe-located-over-300-illegal-snares-in-single-dry-season.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A flying camera uncovered hundreds of traps invisible from the ground."},{"title":"Ugalla Ecosystem Surveys Found Fewer Than 20 Adult Wild Dogs Across 10,000 Square Kilometers","slug":"ugalla-ecosystem-surveys-found-fewer-than-20-adult-wild-dogs-across-10-000-square-kilometers","url":"/categories/endangered-predators/african-wild-dog/ugalla-ecosystem-surveys-found-fewer-than-20-adult-wild-dogs-across-10-000-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"An area larger than some countries holds fewer predators than a city bus."},{"title":"Ugandan Road Expansion Projects Increased Wild Dog Vehicle Collisions in Fragmented Habitats","slug":"ugandan-road-expansion-projects-increased-wild-dog-vehicle-collisions-in-fragmented-habitats","url":"/categories/endangered-predators/african-wild-dog/ugandan-road-expansion-projects-increased-wild-dog-vehicle-collisions-in-fragmented-habitats.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A strip of asphalt can kill faster than any rival predator."},{"title":"UHF Radio Collar Studies Revealed Packs Traveling Over 1,000 Square Kilometers Annually","slug":"uhf-radio-collar-studies-revealed-packs-traveling-over-1-000-square-kilometers-annually","url":"/categories/endangered-predators/african-wild-dog/uhf-radio-collar-studies-revealed-packs-traveling-over-1-000-square-kilometers-annually.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One pack can patrol a territory larger than many capital cities."},{"title":"X-Ray Studies Show African Wild Dogs Possess Enlarged Sinuses for Heat Dissipation During 50 km/h Chases","slug":"x-ray-studies-show-african-wild-dogs-possess-enlarged-sinuses-for-heat-dissipation-during-50-km-h-chases","url":"/categories/endangered-predators/african-wild-dog/x-ray-studies-show-african-wild-dogs-possess-enlarged-sinuses-for-heat-dissipation-during-50-km-h-chases.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Their skulls function like built-in radiators during lethal sprints."},{"title":"Xenarthra Comparison Study Found African Wild Dogs Outperform Wolves in Hunt Success Rates","slug":"xenarthra-comparison-study-found-african-wild-dogs-outperform-wolves-in-hunt-success-rates","url":"/categories/endangered-predators/african-wild-dog/xenarthra-comparison-study-found-african-wild-dogs-outperform-wolves-in-hunt-success-rates.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"They kill more efficiently than wolves despite being smaller and fewer."},{"title":"Xenovirus Canine Distemper Outbreaks Cross From Domestic Dogs Into Wild Packs","slug":"xenovirus-canine-distemper-outbreaks-cross-from-domestic-dogs-into-wild-packs","url":"/categories/endangered-predators/african-wild-dog/xenovirus-canine-distemper-outbreaks-cross-from-domestic-dogs-into-wild-packs.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A village pet can unknowingly trigger extinction-level damage miles away."},{"title":"Xeric Savanna Studies Show Wild Dogs Adjust Hunt Timing by Up to 4 Hours During Extreme Drought","slug":"xeric-savanna-studies-show-wild-dogs-adjust-hunt-timing-by-up-to-4-hours-during-extreme-drought","url":"/categories/endangered-predators/african-wild-dog/xeric-savanna-studies-show-wild-dogs-adjust-hunt-timing-by-up-to-4-hours-during-extreme-drought.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When drought strikes, even predators rewrite their daily clock."},{"title":"Xhosa Livestock Conflict Programs Cut Retaliatory Wild Dog Killings in Eastern Cape Reserves","slug":"xhosa-livestock-conflict-programs-cut-retaliatory-wild-dog-killings-in-eastern-cape-reserves","url":"/categories/endangered-predators/african-wild-dog/xhosa-livestock-conflict-programs-cut-retaliatory-wild-dog-killings-in-eastern-cape-reserves.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A single goat can cost a predator its entire bloodline."},{"title":"Y-Chromosome Genetic Bottlenecks Threaten African Wild Dog Recovery Across Fragmented Ranges","slug":"y-chromosome-genetic-bottlenecks-threaten-african-wild-dog-recovery-across-fragmented-ranges","url":"/categories/endangered-predators/african-wild-dog/y-chromosome-genetic-bottlenecks-threaten-african-wild-dog-recovery-across-fragmented-ranges.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Some surviving packs share so much DNA they are closer to clones than cousins."},{"title":"Yamabushi-Style Silent Coordination Allows Packs to Hunt Without Audible Cues","slug":"yamabushi-style-silent-coordination-allows-packs-to-hunt-without-audible-cues","url":"/categories/endangered-predators/african-wild-dog/yamabushi-style-silent-coordination-allows-packs-to-hunt-without-audible-cues.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"They coordinate lethal chases without roaring, barking, or visible commands."},{"title":"Yankari Game Reserve Surveys Recorded Pack Collapse After Loss of Single Breeding Female","slug":"yankari-game-reserve-surveys-recorded-pack-collapse-after-loss-of-single-breeding-female","url":"/categories/endangered-predators/african-wild-dog/yankari-game-reserve-surveys-recorded-pack-collapse-after-loss-of-single-breeding-female.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One death unraveled an entire predator society in months."},{"title":"Yellow Fever Research Facilities Used Wild Dog Blood Samples to Track Cross-Species Pathogens","slug":"yellow-fever-research-facilities-used-wild-dog-blood-samples-to-track-cross-species-pathogens","url":"/categories/endangered-predators/african-wild-dog/yellow-fever-research-facilities-used-wild-dog-blood-samples-to-track-cross-species-pathogens.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Blood drawn from a savanna hunter helps map viruses that threaten cities."},{"title":"Zambezi Flood Cycles Force Wild Dog Packs to Relocate Across International Borders","slug":"zambezi-flood-cycles-force-wild-dog-packs-to-relocate-across-international-borders","url":"/categories/endangered-predators/african-wild-dog/zambezi-flood-cycles-force-wild-dog-packs-to-relocate-across-international-borders.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Seasonal rivers can redraw a predator’s map overnight."},{"title":"Zambezi GPS Data Confirmed Nighttime River Crossings Up to 1 Kilometer Wide","slug":"zambezi-gps-data-confirmed-nighttime-river-crossings-up-to-1-kilometer-wide","url":"/categories/endangered-predators/african-wild-dog/zambezi-gps-data-confirmed-nighttime-river-crossings-up-to-1-kilometer-wide.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"They swim across rivers wider than some airport runways to survive."},{"title":"Zambezi Prey Depletion Events Forced Packs to Expand Ranges Beyond 2,000 Square Kilometers","slug":"zambezi-prey-depletion-events-forced-packs-to-expand-ranges-beyond-2-000-square-kilometers","url":"/categories/endangered-predators/african-wild-dog/zambezi-prey-depletion-events-forced-packs-to-expand-ranges-beyond-2-000-square-kilometers.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"When prey disappears, these predators double their territory overnight."},{"title":"Zambezi Valley Packs Run 60 Kilometers in a Single Hunting Day","slug":"zambezi-valley-packs-run-60-kilometers-in-a-single-hunting-day","url":"/categories/endangered-predators/african-wild-dog/zambezi-valley-packs-run-60-kilometers-in-a-single-hunting-day.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"These predators can outrun most city commuters before breakfast and still keep going."},{"title":"Zambia Census Estimated Fewer Than 6,600 African Wild Dogs Remain Across Entire Continent","slug":"zambia-census-estimated-fewer-than-6-600-african-wild-dogs-remain-across-entire-continent","url":"/categories/endangered-predators/african-wild-dog/zambia-census-estimated-fewer-than-6-600-african-wild-dogs-remain-across-entire-continent.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"Fewer individuals exist than seats in a single large stadium."},{"title":"Zoological Translocation in 2003 Reintroduced African Wild Dogs to KwaZulu-Natal After Local Extinction","slug":"zoological-translocation-in-2003-reintroduced-african-wild-dogs-to-kwazulu-natal-after-local-extinction","url":"/categories/endangered-predators/african-wild-dog/zoological-translocation-in-2003-reintroduced-african-wild-dogs-to-kwazulu-natal-after-local-extinction.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"A predator vanished from the region, then returned by helicopter."},{"title":"Zoonotic Rabies Models Show Single Infected Wild Dog Can Expose Entire 20-Member Pack in Days","slug":"zoonotic-rabies-models-show-single-infected-wild-dog-can-expose-entire-20-member-pack-in-days","url":"/categories/endangered-predators/african-wild-dog/zoonotic-rabies-models-show-single-infected-wild-dog-can-expose-entire-20-member-pack-in-days.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"One bite can doom an entire predator family within a week."},{"title":"Zulu Pack Cooperative Care Allows Injured Hunters to Eat Before Healthy Adults","slug":"zulu-pack-cooperative-care-allows-injured-hunters-to-eat-before-healthy-adults","url":"/categories/endangered-predators/african-wild-dog/zulu-pack-cooperative-care-allows-injured-hunters-to-eat-before-healthy-adults.html","color":"#eec95f","category":"endangered-predators","factCount":1,"factPreview":"In this predator society, the wounded eat first."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

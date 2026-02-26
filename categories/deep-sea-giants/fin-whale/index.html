@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fin Whale</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Fin Whale</h1>
+  <p>Explore all facts in "Fin Whale".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Fin Whale</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Balaenoptera physalus 2021 Population Estimate Suggests Over 100,000 Global Individuals","slug":"balaenoptera-physalus-2021-population-estimate-suggests-over-100-000-global-individuals","url":"/categories/deep-sea-giants/fin-whale/balaenoptera-physalus-2021-population-estimate-suggests-over-100-000-global-individuals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Despite historic industrial hunting, current global estimates suggest more than 100,000 fin whales may now exist worldwide."},{"title":"Fin Whale 27 Meter Maximum Length Makes It Second Largest Animal on Earth","slug":"fin-whale-27-meter-maximum-length-makes-it-second-largest-animal-on-earth","url":"/categories/deep-sea-giants/fin-whale/fin-whale-27-meter-maximum-length-makes-it-second-largest-animal-on-earth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"At up to 27 meters long, the fin whale ranks as the second largest animal ever known to have lived."},{"title":"Global Ship Strike Database 2020 Report Lists Fin Whales Among Most Frequently Impacted Baleen Species","slug":"global-ship-strike-database-2020-report-lists-fin-whales-among-most-frequently-impacted-baleen-species","url":"/categories/deep-sea-giants/fin-whale/global-ship-strike-database-2020-report-lists-fin-whales-among-most-frequently-impacted-baleen-species.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2020 global review of ship strikes identified fin whales as one of the baleen species most commonly killed by vessel collisions."},{"title":"Kelp Forest Foraging Observations Reveal Fin Whales Feeding Close to Shorelines in 2018","slug":"kelp-forest-foraging-observations-reveal-fin-whales-feeding-close-to-shorelines-in-2018","url":"/categories/deep-sea-giants/fin-whale/kelp-forest-foraging-observations-reveal-fin-whales-feeding-close-to-shorelines-in-2018.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2018, researchers observed fin whales feeding within visible range of coastal kelp forests, challenging assumptions about exclusively offshore behavior."},{"title":"Kerguelen Plateau 2018 Survey Identified Fin Whale Feeding Clusters Near Subantarctic Front","slug":"kerguelen-plateau-2018-survey-identified-fin-whale-feeding-clusters-near-subantarctic-front","url":"/categories/deep-sea-giants/fin-whale/kerguelen-plateau-2018-survey-identified-fin-whale-feeding-clusters-near-subantarctic-front.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2018 expedition near the Kerguelen Plateau recorded concentrated fin whale feeding along a dynamic ocean front."},{"title":"Killer Whale Predation Documented in 2019 Shows Coordinated Attacks on Fin Whale Calves","slug":"killer-whale-predation-documented-in-2019-shows-coordinated-attacks-on-fin-whale-calves","url":"/categories/deep-sea-giants/fin-whale/killer-whale-predation-documented-in-2019-shows-coordinated-attacks-on-fin-whale-calves.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2019, researchers documented coordinated killer whale attacks on fin whale calves, revealing that even giants face organized predation."},{"title":"Kinetic Energy Modeling Shows Fin Whale Lunges Generate Massive Drag Forces During Feeding","slug":"kinetic-energy-modeling-shows-fin-whale-lunges-generate-massive-drag-forces-during-feeding","url":"/categories/deep-sea-giants/fin-whale/kinetic-energy-modeling-shows-fin-whale-lunges-generate-massive-drag-forces-during-feeding.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Biomechanical analyses reveal that fin whale feeding lunges generate enormous hydrodynamic drag within seconds."},{"title":"Krill Biomass Decline Models Indicate Potential Feeding Stress for Fin Whales in Southern Ocean","slug":"krill-biomass-decline-models-indicate-potential-feeding-stress-for-fin-whales-in-southern-ocean","url":"/categories/deep-sea-giants/fin-whale/krill-biomass-decline-models-indicate-potential-feeding-stress-for-fin-whales-in-southern-ocean.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Modeling studies suggest that reductions in Antarctic krill biomass could directly affect fin whale feeding success."},{"title":"Krill Consumption Calculations Estimate a Single Fin Whale May Filter 2,000 Cubic Meters of Water Per Lunge","slug":"krill-consumption-calculations-estimate-a-single-fin-whale-may-filter-2-000-cubic-meters-of-water-per-lunge","url":"/categories/deep-sea-giants/fin-whale/krill-consumption-calculations-estimate-a-single-fin-whale-may-filter-2-000-cubic-meters-of-water-per-lunge.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Biomechanical models estimate that a single fin whale lunge can engulf nearly 2,000 cubic meters of seawater."},{"title":"Krill Density Mapping Using Satellite Data Helps Predict Fin Whale Feeding Aggregations","slug":"krill-density-mapping-using-satellite-data-helps-predict-fin-whale-feeding-aggregations","url":"/categories/deep-sea-giants/fin-whale/krill-density-mapping-using-satellite-data-helps-predict-fin-whale-feeding-aggregations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Satellite imagery of ocean color can indirectly predict where fin whales will gather to feed."},{"title":"Krill Fishery Quota Adjustments in 2022 Considered Fin Whale Prey Requirements Under CCAMLR Framework","slug":"krill-fishery-quota-adjustments-in-2022-considered-fin-whale-prey-requirements-under-ccamlr-framework","url":"/categories/deep-sea-giants/fin-whale/krill-fishery-quota-adjustments-in-2022-considered-fin-whale-prey-requirements-under-ccamlr-framework.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2022, krill harvest limits in parts of the Southern Ocean were evaluated partly in light of fin whale feeding needs."},{"title":"Krill Swarm Density Threshold Research Shows Fin Whale Feeding Becomes Energetically Efficient Above 0.15 Kilograms per Cubic Meter","slug":"krill-swarm-density-threshold-research-shows-fin-whale-feeding-becomes-energetically-efficient-above-0-15-kilograms-per-cubic-meter","url":"/categories/deep-sea-giants/fin-whale/krill-swarm-density-threshold-research-shows-fin-whale-feeding-becomes-energetically-efficient-above-0-15-kilograms-per-cubic-meter.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Energetic models indicate that fin whales require dense krill swarms above specific thresholds to make lunge feeding profitable."},{"title":"Long-Distance Migration Routes Exceed 10,000 Kilometers Annually for Some Fin Whale Populations","slug":"long-distance-migration-routes-exceed-10-000-kilometers-annually-for-some-fin-whale-populations","url":"/categories/deep-sea-giants/fin-whale/long-distance-migration-routes-exceed-10-000-kilometers-annually-for-some-fin-whale-populations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Satellite tracking shows that some fin whales travel more than 10,000 kilometers in a single year."},{"title":"Quaternary Fossil Evidence Shows Fin Whale Lineage Dates Back Over 2 Million Years","slug":"quaternary-fossil-evidence-shows-fin-whale-lineage-dates-back-over-2-million-years","url":"/categories/deep-sea-giants/fin-whale/quaternary-fossil-evidence-shows-fin-whale-lineage-dates-back-over-2-million-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fossil evidence indicates that the fin whale lineage has existed for more than 2 million years, surviving multiple ice ages."},{"title":"Queen Charlotte Basin 2007 Survey Recorded Fin Whale Density Higher Than Historical 1970s Baselines","slug":"queen-charlotte-basin-2007-survey-recorded-fin-whale-density-higher-than-historical-1970s-baselines","url":"/categories/deep-sea-giants/fin-whale/queen-charlotte-basin-2007-survey-recorded-fin-whale-density-higher-than-historical-1970s-baselines.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2007 marine survey off British Columbia documented fin whale densities exceeding some 1970s post-whaling baselines."},{"title":"Queen Charlotte Strait 2015 Study Linked Fin Whale Recovery to Reduced Commercial Whaling Pressure","slug":"queen-charlotte-strait-2015-study-linked-fin-whale-recovery-to-reduced-commercial-whaling-pressure","url":"/categories/deep-sea-giants/fin-whale/queen-charlotte-strait-2015-study-linked-fin-whale-recovery-to-reduced-commercial-whaling-pressure.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2015 analysis of fin whales off British Columbia showed measurable recovery decades after commercial whaling ended."},{"title":"Queen Elizabeth Islands 2021 Acoustic Detection Confirmed Fin Whale Presence in High Arctic Waters","slug":"queen-elizabeth-islands-2021-acoustic-detection-confirmed-fin-whale-presence-in-high-arctic-waters","url":"/categories/deep-sea-giants/fin-whale/queen-elizabeth-islands-2021-acoustic-detection-confirmed-fin-whale-presence-in-high-arctic-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2021, hydrophones near the Queen Elizabeth Islands recorded fin whale calls in waters once dominated by year-round ice."},{"title":"Queen Maud Land Antarctic Surveys in 2014 Recorded Fin Whale Feeding Resurgence After Decades of Absence","slug":"queen-maud-land-antarctic-surveys-in-2014-recorded-fin-whale-feeding-resurgence-after-decades-of-absence","url":"/categories/deep-sea-giants/fin-whale/queen-maud-land-antarctic-surveys-in-2014-recorded-fin-whale-feeding-resurgence-after-decades-of-absence.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2014, researchers observed fin whales feeding near Queen Maud Land in Antarctica after decades of minimal sightings."},{"title":"Underestimated Historical Catch Records Suggest Southern Hemisphere Fin Whale Losses Exceeded 400,000 Individuals","slug":"underestimated-historical-catch-records-suggest-southern-hemisphere-fin-whale-losses-exceeded-400-000-individuals","url":"/categories/deep-sea-giants/fin-whale/underestimated-historical-catch-records-suggest-southern-hemisphere-fin-whale-losses-exceeded-400-000-individuals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Revised catch reconstructions indicate that Southern Hemisphere fin whale removals during the 20th century may have exceeded 400,000 animals."},{"title":"Underwater 20 Hertz Calls Make Fin Whale One of the Loudest Low-Frequency Singers","slug":"underwater-20-hertz-calls-make-fin-whale-one-of-the-loudest-low-frequency-singers","url":"/categories/deep-sea-giants/fin-whale/underwater-20-hertz-calls-make-fin-whale-one-of-the-loudest-low-frequency-singers.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fin whales produce 20 hertz calls so low in frequency that humans cannot hear them without special equipment."},{"title":"Underwater Acoustic Array Networks Since 2005 Have Tracked Fin Whale Seasonal Movements Without Visual Contact","slug":"underwater-acoustic-array-networks-since-2005-have-tracked-fin-whale-seasonal-movements-without-visual-contact","url":"/categories/deep-sea-giants/fin-whale/underwater-acoustic-array-networks-since-2005-have-tracked-fin-whale-seasonal-movements-without-visual-contact.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Since 2005, underwater acoustic arrays have mapped fin whale migrations using sound alone across entire ocean basins."},{"title":"Underwater Body Temperature Regulation Studies Show Fin Whales Maintain Core Stability in Near-Freezing Waters","slug":"underwater-body-temperature-regulation-studies-show-fin-whales-maintain-core-stability-in-near-freezing-waters","url":"/categories/deep-sea-giants/fin-whale/underwater-body-temperature-regulation-studies-show-fin-whales-maintain-core-stability-in-near-freezing-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Despite inhabiting polar waters, fin whales maintain stable core body temperatures through specialized insulation and circulation control."},{"title":"Underwater Carbon Sequestration Studies Highlight Fin Whale Role in Nutrient Recycling","slug":"underwater-carbon-sequestration-studies-highlight-fin-whale-role-in-nutrient-recycling","url":"/categories/deep-sea-giants/fin-whale/underwater-carbon-sequestration-studies-highlight-fin-whale-role-in-nutrient-recycling.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientific studies show that fin whales contribute to ocean carbon cycling through feeding and nutrient release processes."},{"title":"Underwater Glider Missions in 2018 Extended Fin Whale Acoustic Monitoring to Remote Pacific Gyres","slug":"underwater-glider-missions-in-2018-extended-fin-whale-acoustic-monitoring-to-remote-pacific-gyres","url":"/categories/deep-sea-giants/fin-whale/underwater-glider-missions-in-2018-extended-fin-whale-acoustic-monitoring-to-remote-pacific-gyres.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Autonomous underwater gliders deployed in 2018 detected fin whale calls in remote Pacific regions rarely visited by research vessels."},{"title":"Underwater Heart Rate Monitoring in 2015 Measured Fin Whale Cardiac Slowdown During Deep Dives","slug":"underwater-heart-rate-monitoring-in-2015-measured-fin-whale-cardiac-slowdown-during-deep-dives","url":"/categories/deep-sea-giants/fin-whale/underwater-heart-rate-monitoring-in-2015-measured-fin-whale-cardiac-slowdown-during-deep-dives.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Biologging studies in 2015 recorded dramatic heart rate reductions in fin whales during deep foraging dives."},{"title":"Underwater Photographic Identification Catalogs Since 1990 Have Tracked Individual Fin Whales Across Decades","slug":"underwater-photographic-identification-catalogs-since-1990-have-tracked-individual-fin-whales-across-decades","url":"/categories/deep-sea-giants/fin-whale/underwater-photographic-identification-catalogs-since-1990-have-tracked-individual-fin-whales-across-decades.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Photo-identification catalogs have allowed scientists to track individual fin whales for more than 30 years."},{"title":"Underwater Seismic Surveys Shown to Overlap with Fin Whale 20 Hertz Communication Bands","slug":"underwater-seismic-surveys-shown-to-overlap-with-fin-whale-20-hertz-communication-bands","url":"/categories/deep-sea-giants/fin-whale/underwater-seismic-surveys-shown-to-overlap-with-fin-whale-20-hertz-communication-bands.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Industrial seismic airgun blasts operate in frequency ranges that partially overlap with the 20 hertz calls of fin whales."},{"title":"Underwater Tagging in 2018 Recorded Fin Whale Dive Depths Exceeding 470 Meters","slug":"underwater-tagging-in-2018-recorded-fin-whale-dive-depths-exceeding-470-meters","url":"/categories/deep-sea-giants/fin-whale/underwater-tagging-in-2018-recorded-fin-whale-dive-depths-exceeding-470-meters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Electronic tags have recorded fin whales diving deeper than 470 meters in search of prey."},{"title":"Underwater Vertical Mixing Research Shows Fin Whale Diving Contributes to Nutrient Redistribution at Depth","slug":"underwater-vertical-mixing-research-shows-fin-whale-diving-contributes-to-nutrient-redistribution-at-depth","url":"/categories/deep-sea-giants/fin-whale/underwater-vertical-mixing-research-shows-fin-whale-diving-contributes-to-nutrient-redistribution-at-depth.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Scientific studies indicate that repeated deep dives by fin whales help mix nutrients vertically within the water column."},{"title":"X-Chromosome Microsatellite Study in 2012 Revealed Genetic Connectivity Across North Atlantic Fin Whale Populations","slug":"x-chromosome-microsatellite-study-in-2012-revealed-genetic-connectivity-across-north-atlantic-fin-whale-populations","url":"/categories/deep-sea-giants/fin-whale/x-chromosome-microsatellite-study-in-2012-revealed-genetic-connectivity-across-north-atlantic-fin-whale-populations.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2012 genetic study found that fin whales across the North Atlantic share more connectivity than previously assumed."},{"title":"X-Ray Necropsy Imaging in 2019 Identified Blunt Force Trauma Patterns in Fin Whale Ship Strike Cases","slug":"x-ray-necropsy-imaging-in-2019-identified-blunt-force-trauma-patterns-in-fin-whale-ship-strike-cases","url":"/categories/deep-sea-giants/fin-whale/x-ray-necropsy-imaging-in-2019-identified-blunt-force-trauma-patterns-in-fin-whale-ship-strike-cases.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Advanced imaging in 2019 revealed distinct skeletal fracture patterns in fin whales killed by vessel collisions."},{"title":"X-Ray Photogrammetry in 2020 Improved Non-Invasive Fin Whale Body Condition Assessment","slug":"x-ray-photogrammetry-in-2020-improved-non-invasive-fin-whale-body-condition-assessment","url":"/categories/deep-sea-giants/fin-whale/x-ray-photogrammetry-in-2020-improved-non-invasive-fin-whale-body-condition-assessment.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2020, researchers refined drone-based photogrammetry to estimate fin whale health without physical contact."},{"title":"Xenobiotic Contaminant Studies Detect Persistent Organic Pollutants in Fin Whale Blubber","slug":"xenobiotic-contaminant-studies-detect-persistent-organic-pollutants-in-fin-whale-blubber","url":"/categories/deep-sea-giants/fin-whale/xenobiotic-contaminant-studies-detect-persistent-organic-pollutants-in-fin-whale-blubber.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Chemical analyses have found persistent organic pollutants stored in fin whale blubber decades after their widespread use was banned."},{"title":"Xenon-Based Sonar Calibration in 2016 Improved Detection of Fin Whale Low-Frequency Calls","slug":"xenon-based-sonar-calibration-in-2016-improved-detection-of-fin-whale-low-frequency-calls","url":"/categories/deep-sea-giants/fin-whale/xenon-based-sonar-calibration-in-2016-improved-detection-of-fin-whale-low-frequency-calls.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2016, refinements in acoustic calibration significantly improved the detection range of fin whale 20 hertz calls."},{"title":"Xiphias gladius Overlap Zones Reveal Shared Prey Corridors Between Fin Whales and Swordfish","slug":"xiphias-gladius-overlap-zones-reveal-shared-prey-corridors-between-fin-whales-and-swordfish","url":"/categories/deep-sea-giants/fin-whale/xiphias-gladius-overlap-zones-reveal-shared-prey-corridors-between-fin-whales-and-swordfish.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Tracking data show that fin whales and swordfish sometimes converge in the same high-productivity feeding corridors."},{"title":"Y-Pattern Asymmetrical Jaw Coloration Distinguishes Fin Whales from Other Baleen Species","slug":"y-pattern-asymmetrical-jaw-coloration-distinguishes-fin-whales-from-other-baleen-species","url":"/categories/deep-sea-giants/fin-whale/y-pattern-asymmetrical-jaw-coloration-distinguishes-fin-whales-from-other-baleen-species.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fin whales display a rare asymmetrical jaw coloration pattern, with one side lighter than the other."},{"title":"Yellow Sea 2016 Biopsy Sampling Revealed Elevated Stress Hormone Indicators in Fin Whales Near Heavy Shipping","slug":"yellow-sea-2016-biopsy-sampling-revealed-elevated-stress-hormone-indicators-in-fin-whales-near-heavy-shipping","url":"/categories/deep-sea-giants/fin-whale/yellow-sea-2016-biopsy-sampling-revealed-elevated-stress-hormone-indicators-in-fin-whales-near-heavy-shipping.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Biopsy analyses in 2016 detected stress-related hormone markers in fin whales inhabiting high-traffic waters."},{"title":"Yellow Sea 2022 Survey Recorded Unexpected Fin Whale Presence in High-Shipping Corridor","slug":"yellow-sea-2022-survey-recorded-unexpected-fin-whale-presence-in-high-shipping-corridor","url":"/categories/deep-sea-giants/fin-whale/yellow-sea-2022-survey-recorded-unexpected-fin-whale-presence-in-high-shipping-corridor.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2022 survey detected fin whales in the heavily trafficked Yellow Sea, an area dominated by commercial shipping."},{"title":"Yellow Sea Noise Mapping in 2019 Measured Elevated Ambient Sound Levels in Fin Whale Habitat","slug":"yellow-sea-noise-mapping-in-2019-measured-elevated-ambient-sound-levels-in-fin-whale-habitat","url":"/categories/deep-sea-giants/fin-whale/yellow-sea-noise-mapping-in-2019-measured-elevated-ambient-sound-levels-in-fin-whale-habitat.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2019 noise mapping study found elevated background sound levels in parts of the Yellow Sea used by fin whales."},{"title":"Yellowfin Tuna Fisheries Data Indirectly Track Fin Whale Distribution in Eastern Pacific","slug":"yellowfin-tuna-fisheries-data-indirectly-track-fin-whale-distribution-in-eastern-pacific","url":"/categories/deep-sea-giants/fin-whale/yellowfin-tuna-fisheries-data-indirectly-track-fin-whale-distribution-in-eastern-pacific.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fisheries catch records for yellowfin tuna have indirectly provided clues about fin whale feeding areas."},{"title":"Yellowstone Carbon Comparison Study in 2010 Estimated Whale Populations Enhance Ocean Productivity Through Nutrient Recycling","slug":"yellowstone-carbon-comparison-study-in-2010-estimated-whale-populations-enhance-ocean-productivity-through-nutrient-recycling","url":"/categories/deep-sea-giants/fin-whale/yellowstone-carbon-comparison-study-in-2010-estimated-whale-populations-enhance-ocean-productivity-through-nutrient-recycling.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A 2010 study calculated that restoring whale populations could enhance ocean productivity by redistributing nutrients vertically."},{"title":"Yellowstone Size Comparisons Show a Single Fin Whale Can Weigh as Much as 40 Adult Elephants","slug":"yellowstone-size-comparisons-show-a-single-fin-whale-can-weigh-as-much-as-40-adult-elephants","url":"/categories/deep-sea-giants/fin-whale/yellowstone-size-comparisons-show-a-single-fin-whale-can-weigh-as-much-as-40-adult-elephants.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"An adult fin whale can weigh roughly the same as 40 fully grown African elephants."},{"title":"Yellowtail Shipping Lane Adjustments in 2017 Reduced Fin Whale Collision Risk in Mediterranean","slug":"yellowtail-shipping-lane-adjustments-in-2017-reduced-fin-whale-collision-risk-in-mediterranean","url":"/categories/deep-sea-giants/fin-whale/yellowtail-shipping-lane-adjustments-in-2017-reduced-fin-whale-collision-risk-in-mediterranean.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In 2017, rerouting measures in parts of the Mediterranean were introduced to lower fin whale ship strike risk."},{"title":"Zeppelin Era Whaling Ships in Early 1900s Accelerated Fin Whale Decline in North Atlantic","slug":"zeppelin-era-whaling-ships-in-early-1900s-accelerated-fin-whale-decline-in-north-atlantic","url":"/categories/deep-sea-giants/fin-whale/zeppelin-era-whaling-ships-in-early-1900s-accelerated-fin-whale-decline-in-north-atlantic.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"By the early 1900s, steam-powered whaling ships dramatically increased the efficiency of fin whale hunting in the North Atlantic."},{"title":"Zero Catch Policy After 1986 IWC Moratorium Marked Turning Point for Fin Whale Survival","slug":"zero-catch-policy-after-1986-iwc-moratorium-marked-turning-point-for-fin-whale-survival","url":"/categories/deep-sea-giants/fin-whale/zero-catch-policy-after-1986-iwc-moratorium-marked-turning-point-for-fin-whale-survival.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"The 1986 International Whaling Commission moratorium effectively reduced commercial fin whale catches to near zero in most oceans."},{"title":"Zero Ice Years in Arctic Linked to Shifts in Fin Whale Northern Range Expansion","slug":"zero-ice-years-in-arctic-linked-to-shifts-in-fin-whale-northern-range-expansion","url":"/categories/deep-sea-giants/fin-whale/zero-ice-years-in-arctic-linked-to-shifts-in-fin-whale-northern-range-expansion.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Recent low-ice summers have coincided with fin whale sightings farther north than historically recorded."},{"title":"Zero-Inflated Catch Models Reconstructed Hidden Fin Whale Harvest in Soviet Antarctic Fleets","slug":"zero-inflated-catch-models-reconstructed-hidden-fin-whale-harvest-in-soviet-antarctic-fleets","url":"/categories/deep-sea-giants/fin-whale/zero-inflated-catch-models-reconstructed-hidden-fin-whale-harvest-in-soviet-antarctic-fleets.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Reanalysis of Soviet whaling archives revealed that reported fin whale catches were significantly lower than actual removals."},{"title":"Zoological Records Show 19th Century Steamship Collisions Frequently Killed Fin Whales in North Atlantic","slug":"zoological-records-show-19th-century-steamship-collisions-frequently-killed-fin-whales-in-north-atlantic","url":"/categories/deep-sea-giants/fin-whale/zoological-records-show-19th-century-steamship-collisions-frequently-killed-fin-whales-in-north-atlantic.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"In the late 1800s, expanding steamship traffic led to documented fin whale deaths long before modern shipping regulations existed."},{"title":"Zoological Research Confirms Fin Whale Gestation Lasts Approximately 11 Months","slug":"zoological-research-confirms-fin-whale-gestation-lasts-approximately-11-months","url":"/categories/deep-sea-giants/fin-whale/zoological-research-confirms-fin-whale-gestation-lasts-approximately-11-months.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Fin whale pregnancies last close to 11 months, resulting in calves already several meters long at birth."},{"title":"Zooplankton Bloom Forecasting in 2021 Improved Fin Whale Feeding Ground Predictions","slug":"zooplankton-bloom-forecasting-in-2021-improved-fin-whale-feeding-ground-predictions","url":"/categories/deep-sea-giants/fin-whale/zooplankton-bloom-forecasting-in-2021-improved-fin-whale-feeding-ground-predictions.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Advanced oceanographic forecasting models in 2021 enhanced prediction of fin whale feeding hotspots weeks in advance."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

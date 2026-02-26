@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elamite Kingdom</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Elamite Kingdom</h1>
+  <p>Explore all facts in "Elamite Kingdom".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Elamite Kingdom</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Anshan Treaty of 653 BCE and Elam’s First Recorded Interstate Diplomacy","slug":"anshan-treaty-of-653-bce-and-elam-s-first-recorded-interstate-diplomacy","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/anshan-treaty-of-653-bce-and-elam-s-first-recorded-interstate-diplomacy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 653 BCE, a regional power in southwestern Iran negotiated one of the earliest recorded interstate treaties in Near Eastern history."},{"title":"Dez River Canal Networks in 2nd Millennium BCE Supported Urban Population Growth","slug":"dez-river-canal-networks-in-2nd-millennium-bce-supported-urban-population-growth","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/dez-river-canal-networks-in-2nd-millennium-bce-supported-urban-population-growth.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 2nd millennium BCE, canal systems branching from the Dez River sustained expanding Elamite urban centers."},{"title":"Dur Untash Ziggurat Construction Costs Around 1250 BCE","slug":"dur-untash-ziggurat-construction-costs-around-1250-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/dur-untash-ziggurat-construction-costs-around-1250-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1250 BCE, Elamite rulers mobilized thousands of laborers to construct a massive ziggurat complex still standing in southwestern Iran."},{"title":"Foundation Deposits Beneath Susa Temples Contained Inscribed Bricks from 14th Century BCE","slug":"foundation-deposits-beneath-susa-temples-contained-inscribed-bricks-from-14th-century-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/foundation-deposits-beneath-susa-temples-contained-inscribed-bricks-from-14th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists have found inscribed foundation bricks deliberately buried beneath Elamite temples more than 3,300 years ago."},{"title":"Governance Titles in Elamite Inscriptions Reveal Multi-Tiered Political Hierarchy","slug":"governance-titles-in-elamite-inscriptions-reveal-multi-tiered-political-hierarchy","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/governance-titles-in-elamite-inscriptions-reveal-multi-tiered-political-hierarchy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elamite inscriptions list layered royal titles that reveal a structured political hierarchy rather than a simple kingship model."},{"title":"Humban-Numena Inscriptions Around 1350 BCE Detail Dynastic Legitimacy","slug":"humban-numena-inscriptions-around-1350-bce-detail-dynastic-legitimacy","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/humban-numena-inscriptions-around-1350-bce-detail-dynastic-legitimacy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1350 BCE, an Elamite ruler carved inscriptions explicitly linking his authority to divine mandate."},{"title":"Ishme-Dagan Correspondence in 18th Century BCE Letters Referenced Elamite Threats","slug":"ishme-dagan-correspondence-in-18th-century-bce-letters-referenced-elamite-threats","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/ishme-dagan-correspondence-in-18th-century-bce-letters-referenced-elamite-threats.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"18th century BCE diplomatic letters describe fear of advancing Elamite forces in Mesopotamia."},{"title":"Ivory Inlays from Susa Indicate 2nd Millennium BCE Luxury Trade Connections","slug":"ivory-inlays-from-susa-indicate-2nd-millennium-bce-luxury-trade-connections","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/ivory-inlays-from-susa-indicate-2nd-millennium-bce-luxury-trade-connections.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ivory fragments found at Susa show that Elam participated in long-distance luxury trade during the 2nd millennium BCE."},{"title":"Judicial Oath Rituals in 2nd Millennium BCE Elam Enforced Contract Compliance","slug":"judicial-oath-rituals-in-2nd-millennium-bce-elam-enforced-contract-compliance","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/judicial-oath-rituals-in-2nd-millennium-bce-elam-enforced-contract-compliance.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 2nd millennium BCE, legal disputes in Elam were settled through oath rituals that invoked divine punishment."},{"title":"Karintash Temple Complex and 14th Century BCE State-Sponsored Theology","slug":"karintash-temple-complex-and-14th-century-bce-state-sponsored-theology","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/karintash-temple-complex-and-14th-century-bce-state-sponsored-theology.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 14th century BCE, Elamite rulers financed temple complexes that doubled as political headquarters."},{"title":"Kutir-Nahhunte’s 12th Century BCE Babylonian Artifact Seizure","slug":"kutir-nahhunte-s-12th-century-bce-babylonian-artifact-seizure","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/kutir-nahhunte-s-12th-century-bce-babylonian-artifact-seizure.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 12th century BCE, an Elamite king removed some of Mesopotamia’s most sacred monuments and transported them hundreds of kilometers east."},{"title":"Lagamar Cult Practices and Elamite Underworld Theology","slug":"lagamar-cult-practices-and-elamite-underworld-theology","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/lagamar-cult-practices-and-elamite-underworld-theology.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elamite religion included a structured underworld theology centered on a deity named Lagamar."},{"title":"Lagash-Elam Conflict Records from 25th Century BCE Mark Early Interstate Warfare","slug":"lagash-elam-conflict-records-from-25th-century-bce-mark-early-interstate-warfare","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/lagash-elam-conflict-records-from-25th-century-bce-mark-early-interstate-warfare.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 25th century BCE, inscriptions from Lagash record armed conflict with Elamite forces."},{"title":"Liyan Port Settlements and Persian Gulf Trade in the 2nd Millennium BCE","slug":"liyan-port-settlements-and-persian-gulf-trade-in-the-2nd-millennium-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/liyan-port-settlements-and-persian-gulf-trade-in-the-2nd-millennium-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elamite influence extended to coastal settlements that connected inland cities to Persian Gulf maritime trade."},{"title":"Marhashi Campaigns of the 24th Century BCE Linked Elam to Early Mesopotamian Wars","slug":"marhashi-campaigns-of-the-24th-century-bce-linked-elam-to-early-mesopotamian-wars","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/marhashi-campaigns-of-the-24th-century-bce-linked-elam-to-early-mesopotamian-wars.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 24th century BCE, rulers of Mesopotamia were already launching military campaigns against territories identified with Elam and Marhashi."},{"title":"Metallurgical Workshops at Susa Produced Bronze Alloys by 2000 BCE","slug":"metallurgical-workshops-at-susa-produced-bronze-alloys-by-2000-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/metallurgical-workshops-at-susa-produced-bronze-alloys-by-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2000 BCE, Elamite workshops were producing controlled bronze alloys that required long-distance trade networks."},{"title":"Napir-Asu Statue Weighing Over 1,700 Kilograms Defied Ancient Looters","slug":"napir-asu-statue-weighing-over-1-700-kilograms-defied-ancient-looters","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/napir-asu-statue-weighing-over-1-700-kilograms-defied-ancient-looters.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An Elamite queen commissioned a bronze statue so heavy that ancient looters could not carry it away."},{"title":"Napirisha Cult Centers in Highland Anshan Anchored Regional Identity","slug":"napirisha-cult-centers-in-highland-anshan-anchored-regional-identity","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/napirisha-cult-centers-in-highland-anshan-anchored-regional-identity.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Highland sanctuaries dedicated to the god Napirisha reinforced regional cohesion within Elam."},{"title":"Ornamental Stele Fragments from Susa Show 12th Century BCE Victory Narratives","slug":"ornamental-stele-fragments-from-susa-show-12th-century-bce-victory-narratives","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/ornamental-stele-fragments-from-susa-show-12th-century-bce-victory-narratives.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Fragments of Elamite stelae reveal that kings commemorated military victories in carved stone by the 12th century BCE."},{"title":"Persepolis Fortification Tablets from 509–494 BCE Preserve Elamite Language Administration","slug":"persepolis-fortification-tablets-from-509-494-bce-preserve-elamite-language-administration","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/persepolis-fortification-tablets-from-509-494-bce-preserve-elamite-language-administration.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Between 509 and 494 BCE, thousands of administrative records were written in Elamite under Persian imperial rule."},{"title":"Qal’at Susa Excavations Beginning 1897 Revealed Multilayered Elamite Stratigraphy","slug":"qal-at-susa-excavations-beginning-1897-revealed-multilayered-elamite-stratigraphy","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/qal-at-susa-excavations-beginning-1897-revealed-multilayered-elamite-stratigraphy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When systematic excavations began in 1897 at Susa, archaeologists uncovered more than 4,000 years of continuous urban occupation."},{"title":"Qalʿeh Stratigraphic Layers at Susa Document Over 4,000 Years of Continuous Occupation","slug":"qal-eh-stratigraphic-layers-at-susa-document-over-4-000-years-of-continuous-occupation","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/qal-eh-stratigraphic-layers-at-susa-document-over-4-000-years-of-continuous-occupation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Susa reveal stratigraphic layers representing more than four millennia of uninterrupted settlement."},{"title":"Qalʿeh-ye Chogha Mish Tablets Dating to 3400 BCE Reveal Proto-Elamite Accounting","slug":"qal-eh-ye-chogha-mish-tablets-dating-to-3400-bce-reveal-proto-elamite-accounting","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/qal-eh-ye-chogha-mish-tablets-dating-to-3400-bce-reveal-proto-elamite-accounting.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 5,400 years ago, administrators in southwestern Iran were already tracking commodities with numerical tablets."},{"title":"Qudea of Lagash Inscriptions Mention Elamite Trade Materials in 22nd Century BCE","slug":"qudea-of-lagash-inscriptions-mention-elamite-trade-materials-in-22nd-century-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/qudea-of-lagash-inscriptions-mention-elamite-trade-materials-in-22nd-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 22nd century BCE, Mesopotamian inscriptions recorded the import of materials associated with Elamite territories."},{"title":"Queen Nahhunte-utu Inscriptions from 13th Century BCE Highlight Female Royal Authority","slug":"queen-nahhunte-utu-inscriptions-from-13th-century-bce-highlight-female-royal-authority","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/queen-nahhunte-utu-inscriptions-from-13th-century-bce-highlight-female-royal-authority.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 13th century BCE, Elamite inscriptions record a queen exercising independent religious patronage."},{"title":"Riverine Trade on the Karkheh and Dez Linked Elamite Cities in 2nd Millennium BCE","slug":"riverine-trade-on-the-karkheh-and-dez-linked-elamite-cities-in-2nd-millennium-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/riverine-trade-on-the-karkheh-and-dez-linked-elamite-cities-in-2nd-millennium-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Karkheh and Dez rivers functioned as commercial highways connecting Elamite urban centers."},{"title":"Royal Tomb Disturbances Recorded in 647 BCE Assyrian Inscriptions","slug":"royal-tomb-disturbances-recorded-in-647-bce-assyrian-inscriptions","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/royal-tomb-disturbances-recorded-in-647-bce-assyrian-inscriptions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Assyrian records claim that in 647 BCE, Elamite royal tombs were opened and desecrated as an act of political theater."},{"title":"Susa Administrative Tablets Reveal 2nd Millennium BCE Taxation Systems","slug":"susa-administrative-tablets-reveal-2nd-millennium-bce-taxation-systems","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/susa-administrative-tablets-reveal-2nd-millennium-bce-taxation-systems.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of clay tablets from Susa document taxation and labor management more than 3,500 years ago."},{"title":"Untash-Napirisha’s 13th Century BCE Religious Capital Experiment at Dur Untash","slug":"untash-napirisha-s-13th-century-bce-religious-capital-experiment-at-dur-untash","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/untash-napirisha-s-13th-century-bce-religious-capital-experiment-at-dur-untash.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 13th century BCE, an Elamite king attempted to shift divine authority by building an entirely new religious capital from scratch."},{"title":"Upriver Dez Agricultural Expansion Around 1500 BCE Increased Elamite Grain Output","slug":"upriver-dez-agricultural-expansion-around-1500-bce-increased-elamite-grain-output","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/upriver-dez-agricultural-expansion-around-1500-bce-increased-elamite-grain-output.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By around 1500 BCE, Elamite expansion along the Dez River significantly boosted agricultural productivity."},{"title":"Urban Craft Specialization at Susa by 2000 BCE Demonstrates Economic Differentiation","slug":"urban-craft-specialization-at-susa-by-2000-bce-demonstrates-economic-differentiation","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/urban-craft-specialization-at-susa-by-2000-bce-demonstrates-economic-differentiation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2000 BCE, archaeological evidence shows Susa supported specialized craft industries beyond basic subsistence."},{"title":"Votive Bronze Axes from 2nd Millennium BCE Susa Indicate Military Symbolism","slug":"votive-bronze-axes-from-2nd-millennium-bce-susa-indicate-military-symbolism","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/votive-bronze-axes-from-2nd-millennium-bce-susa-indicate-military-symbolism.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Decorated bronze axes discovered at Susa were never meant for battle yet symbolized organized military power."},{"title":"Warfare Campaign of 647 BCE and the Assyrian Sack of Susa","slug":"warfare-campaign-of-647-bce-and-the-assyrian-sack-of-susa","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/warfare-campaign-of-647-bce-and-the-assyrian-sack-of-susa.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 647 BCE, Assyrian forces leveled Susa, marking one of the most devastating episodes in Elamite history."},{"title":"Xenophon’s 401 BCE March of the Ten Thousand Crossed Former Elamite Territory","slug":"xenophon-s-401-bce-march-of-the-ten-thousand-crossed-former-elamite-territory","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/xenophon-s-401-bce-march-of-the-ten-thousand-crossed-former-elamite-territory.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 401 BCE, Greek mercenaries fleeing Persia marched across lands once ruled by Elamite kings."},{"title":"Xerographic Clay Sealings from Susa Preserve 3rd Millennium BCE Bureaucracy","slug":"xerographic-clay-sealings-from-susa-preserve-3rd-millennium-bce-bureaucracy","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/xerographic-clay-sealings-from-susa-preserve-3rd-millennium-bce-bureaucracy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of small clay sealings from 3rd millennium BCE Susa preserve fingerprints of ancient administrators."},{"title":"Xerxes I Palace Construction at Susa Reused Earlier Elamite Foundations","slug":"xerxes-i-palace-construction-at-susa-reused-earlier-elamite-foundations","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/xerxes-i-palace-construction-at-susa-reused-earlier-elamite-foundations.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the early 5th century BCE, Persian builders erected palaces at Susa atop earlier Elamite structural remains."},{"title":"Xerxes I’s 6th Century BCE Destruction of Elamite Political Independence","slug":"xerxes-i-s-6th-century-bce-destruction-of-elamite-political-independence","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/xerxes-i-s-6th-century-bce-destruction-of-elamite-political-independence.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the late 6th century BCE, Elam ceased to exist as an independent kingdom after incorporation into a rapidly expanding Persian Empire."},{"title":"Yalmeh Cylinder Seals from 2000 BCE Illustrate Cross-Cultural Iconography","slug":"yalmeh-cylinder-seals-from-2000-bce-illustrate-cross-cultural-iconography","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/yalmeh-cylinder-seals-from-2000-bce-illustrate-cross-cultural-iconography.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elamite cylinder seals from around 2000 BCE depict artistic motifs shared across Mesopotamia and Iran."},{"title":"Yamhad Conflict References Indicate Elam’s Influence in 18th Century BCE Syria","slug":"yamhad-conflict-references-indicate-elam-s-influence-in-18th-century-bce-syria","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/yamhad-conflict-references-indicate-elam-s-influence-in-18th-century-bce-syria.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Records from 18th century BCE Syria suggest Elamite power projections reached far beyond southwestern Iran."},{"title":"Yoked Chariot References in Assyrian Annals Describe Elamite Military Capacity in 7th Century BCE","slug":"yoked-chariot-references-in-assyrian-annals-describe-elamite-military-capacity-in-7th-century-bce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/yoked-chariot-references-in-assyrian-annals-describe-elamite-military-capacity-in-7th-century-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Assyrian annals from the 7th century BCE describe Elamite chariots deployed in organized battlefield formations."},{"title":"Yoktanite Trade Routes Linking Elam to Indus Valley Commerce","slug":"yoktanite-trade-routes-linking-elam-to-indus-valley-commerce","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/yoktanite-trade-routes-linking-elam-to-indus-valley-commerce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before classical trade empires, Elam participated in exchange networks stretching toward the Indus Valley."},{"title":"Zabshali Alliance Records Highlight 18th Century BCE Regional Diplomacy","slug":"zabshali-alliance-records-highlight-18th-century-bce-regional-diplomacy","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/zabshali-alliance-records-highlight-18th-century-bce-regional-diplomacy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 18th century BCE, Elamite rulers forged alliances that reshaped power balances across Mesopotamia."},{"title":"Zagros Mountain Fortifications Protecting Elamite Highlands","slug":"zagros-mountain-fortifications-protecting-elamite-highlands","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/zagros-mountain-fortifications-protecting-elamite-highlands.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elam’s survival often depended on mountain defenses that transformed geography into military strategy."},{"title":"Ziggurat Terrace Construction Techniques at Dur Untash Used Millions of Mudbricks","slug":"ziggurat-terrace-construction-techniques-at-dur-untash-used-millions-of-mudbricks","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/ziggurat-terrace-construction-techniques-at-dur-untash-used-millions-of-mudbricks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Elamite ziggurat at Dur Untash required millions of mudbricks arranged in carefully engineered terraces."},{"title":"Ziggurat Water Engineering at Dur Untash Demonstrated 13th Century BCE Hydraulic Planning","slug":"ziggurat-water-engineering-at-dur-untash-demonstrated-13th-century-bce-hydraulic-planning","url":"/categories/ancient-civilizations-secrets/elamite-kingdom/ziggurat-water-engineering-at-dur-untash-demonstrated-13th-century-bce-hydraulic-planning.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A 13th century BCE religious city in Elam engineered water supply systems capable of sustaining thousands of residents."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

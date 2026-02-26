@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minoan Civilization</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Minoan Civilization</h1>
+  <p>Explore all facts in "Minoan Civilization".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Minoan Civilization</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Akrotiri Ash Preservation from the Thera Eruption 1600 BCE","slug":"akrotiri-ash-preservation-from-the-thera-eruption-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/akrotiri-ash-preservation-from-the-thera-eruption-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A volcanic blast around 1600 BCE froze an entire Minoan town in ash without leaving behind bodies."},{"title":"Kamares Ware Pottery Innovation Circa 2000 BCE","slug":"kamares-ware-pottery-innovation-circa-2000-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/kamares-ware-pottery-innovation-circa-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Two thousand years before classical Greek art flourished, Minoan potters were firing eggshell-thin ceramics light enough to glow when held to the sun."},{"title":"Kato Zakros Rock-Cut Tomb Complexes Reflecting Coastal Elites 1500 BCE","slug":"kato-zakros-rock-cut-tomb-complexes-reflecting-coastal-elites-1500-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/kato-zakros-rock-cut-tomb-complexes-reflecting-coastal-elites-1500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rock-cut chamber tombs near Kato Zakros reveal burial investment by coastal elites tied to maritime trade."},{"title":"Knossos Gypsum Wall Panels Reflecting Seismic-Aware Construction 1700 BCE","slug":"knossos-gypsum-wall-panels-reflecting-seismic-aware-construction-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/knossos-gypsum-wall-panels-reflecting-seismic-aware-construction-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Soft gypsum blocks used in Knossos construction may have absorbed seismic shock during repeated earthquakes around 1700 BCE."},{"title":"Knossos North Entrance Bastion Overlooking Processional Route 1600 BCE","slug":"knossos-north-entrance-bastion-overlooking-processional-route-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/knossos-north-entrance-bastion-overlooking-processional-route-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A projecting bastion at Knossos framed ceremonial entry while also controlling access to the palace complex."},{"title":"Knossos Palace Plumbing System Circa 1700 BCE","slug":"knossos-palace-plumbing-system-circa-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/knossos-palace-plumbing-system-circa-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seventeen centuries before Rome built its grand aqueducts, Knossos was already flushing waste through terracotta pipes."},{"title":"Knossos Throne Room Fresco Program Dating to 1450 BCE","slug":"knossos-throne-room-fresco-program-dating-to-1450-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/knossos-throne-room-fresco-program-dating-to-1450-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The so-called Throne Room at Knossos featured wall paintings designed to frame authority within a staged visual narrative."},{"title":"Knossos West Magazines Containing Over 400 Storage Pithoi 1600 BCE","slug":"knossos-west-magazines-containing-over-400-storage-pithoi-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/knossos-west-magazines-containing-over-400-storage-pithoi-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 400 massive storage jars once stood in the west magazines of Knossos, forming an industrial-scale warehouse system."},{"title":"Kydonia Harbor Fortifications Before 1450 BCE","slug":"kydonia-harbor-fortifications-before-1450-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/kydonia-harbor-fortifications-before-1450-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before 1450 BCE, coastal defenses at Kydonia suggest that Minoan maritime power required protection as much as projection."},{"title":"Linear A Administrative Tablets from Bronze Age Crete","slug":"linear-a-administrative-tablets-from-bronze-age-crete","url":"/categories/ancient-civilizations-secrets/minoan-civilization/linear-a-administrative-tablets-from-bronze-age-crete.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Hundreds of clay tablets record Minoan transactions in a script that scholars still cannot read."},{"title":"Malia Palace Storage Magazines Holding Thousands of Pithoi 1700 BCE","slug":"malia-palace-storage-magazines-holding-thousands-of-pithoi-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/malia-palace-storage-magazines-holding-thousands-of-pithoi-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Malia, entire corridors were lined with massive storage jars capable of holding thousands of liters of agricultural surplus."},{"title":"Phaistos Court Orientation Aligning with Solar Movement 1700 BCE","slug":"phaistos-court-orientation-aligning-with-solar-movement-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/phaistos-court-orientation-aligning-with-solar-movement-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The central court at Phaistos appears aligned to maximize seasonal sunlight across ceremonial space around 1700 BCE."},{"title":"Phaistos Disc Undeciphered Script Dated Circa 1600 BCE","slug":"phaistos-disc-undeciphered-script-dated-circa-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/phaistos-disc-undeciphered-script-dated-circa-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A single fired clay disc stamped with 241 symbols has resisted every attempt at translation for more than a century."},{"title":"Quadripartite Minoan Shrine Layouts Identified at Gournia 1550 BCE","slug":"quadripartite-minoan-shrine-layouts-identified-at-gournia-1550-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/quadripartite-minoan-shrine-layouts-identified-at-gournia-1550-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists uncovered four-part shrine layouts at Gournia that suggest ritual design was mathematically structured rather than decorative."},{"title":"Quake Reconstruction Phases at Knossos Following 1700 BCE Earthquake","slug":"quake-reconstruction-phases-at-knossos-following-1700-bce-earthquake","url":"/categories/ancient-civilizations-secrets/minoan-civilization/quake-reconstruction-phases-at-knossos-following-1700-bce-earthquake.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A major earthquake around 1700 BCE leveled large sections of Knossos, only for the palace to be rebuilt on an even grander scale."},{"title":"Quarantine-Like Harbor Controls at Minoan Ports 1600 BCE","slug":"quarantine-like-harbor-controls-at-minoan-ports-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/quarantine-like-harbor-controls-at-minoan-ports-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Controlled docking procedures at major Minoan ports suggest early forms of regulated harbor management around 1600 BCE."},{"title":"Quarrying Operations at Poros Katsambas Supplying Palace Construction 1700 BCE","slug":"quarrying-operations-at-poros-katsambas-supplying-palace-construction-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/quarrying-operations-at-poros-katsambas-supplying-palace-construction-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Limestone blocks extracted at Poros Katsambas helped raise palace walls that still define Minoan architectural identity."},{"title":"Queen Puabi Trade Seals Found in Minoan Contexts 1500 BCE","slug":"queen-puabi-trade-seals-found-in-minoan-contexts-1500-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/queen-puabi-trade-seals-found-in-minoan-contexts-1500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Cylinder seals linked to Mesopotamian royal iconography have been unearthed in Minoan layers dated to around 1500 BCE."},{"title":"Ugarit Textual Archives Referencing Aegean Trade 1200 BCE","slug":"ugarit-textual-archives-referencing-aegean-trade-1200-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/ugarit-textual-archives-referencing-aegean-trade-1200-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Clay tablets from Ugarit mention maritime partners in the Aegean just decades before the Bronze Age collapse."},{"title":"Ulu Burun Copper Oxhide Ingots Linked to Cretan Demand 1300 BCE","slug":"ulu-burun-copper-oxhide-ingots-linked-to-cretan-demand-1300-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/ulu-burun-copper-oxhide-ingots-linked-to-cretan-demand-1300-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 6 tons of copper ingots shaped like stretched animal hides sank in a single Bronze Age shipwreck around 1300 BCE."},{"title":"Uluburun Shipwreck Cargo Linked to Minoan Trade Networks 1300 BCE","slug":"uluburun-shipwreck-cargo-linked-to-minoan-trade-networks-1300-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/uluburun-shipwreck-cargo-linked-to-minoan-trade-networks-1300-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A ship that sank around 1300 BCE carried cargo linking Crete to at least seven distinct cultural regions."},{"title":"Underground Cistern Systems at Tylissos Supporting Year-Round Water Supply 1600 BCE","slug":"underground-cistern-systems-at-tylissos-supporting-year-round-water-supply-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/underground-cistern-systems-at-tylissos-supporting-year-round-water-supply-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Beneath the settlement of Tylissos, underground cisterns stored water to buffer against Crete’s dry summer months."},{"title":"Unfired Clay Sealings at Knossos Indicating Short-Term Recordkeeping 1600 BCE","slug":"unfired-clay-sealings-at-knossos-indicating-short-term-recordkeeping-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/unfired-clay-sealings-at-knossos-indicating-short-term-recordkeeping-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Thousands of small clay sealings at Knossos were never meant to survive more than a single accounting cycle."},{"title":"Uphill Terraced Agriculture on Minoan Crete Supporting Palace Economies 1700 BCE","slug":"uphill-terraced-agriculture-on-minoan-crete-supporting-palace-economies-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/uphill-terraced-agriculture-on-minoan-crete-supporting-palace-economies-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone-built agricultural terraces climbing Cretan hillsides helped sustain palace economies during the Middle Bronze Age."},{"title":"Upright Stone Kernoi Used in Minoan Ritual Offerings 1700 BCE","slug":"upright-stone-kernoi-used-in-minoan-ritual-offerings-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/upright-stone-kernoi-used-in-minoan-ritual-offerings-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone vessels carved with multiple small cups were arranged in shrines to hold offerings measured in careful increments."},{"title":"Upright Stone Libation Tables Found in Peak Sanctuaries 1700 BCE","slug":"upright-stone-libation-tables-found-in-peak-sanctuaries-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/upright-stone-libation-tables-found-in-peak-sanctuaries-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"High-altitude sanctuaries across Crete contained upright stone tables used for ritual libations around 1700 BCE."},{"title":"Upriver Kato Zakros Gorge as a Defensive Access Route 1600 BCE","slug":"upriver-kato-zakros-gorge-as-a-defensive-access-route-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/upriver-kato-zakros-gorge-as-a-defensive-access-route-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A narrow gorge near Kato Zakros may have functioned as a controlled inland passage protecting one of Crete’s key trade ports."},{"title":"Urban Drainage Channels at Phaistos Engineered for Flash Flood Control 1700 BCE","slug":"urban-drainage-channels-at-phaistos-engineered-for-flash-flood-control-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/urban-drainage-channels-at-phaistos-engineered-for-flash-flood-control-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone-lined drainage channels at Phaistos were angled precisely to redirect sudden storm runoff away from palace courtyards."},{"title":"Urban Light Wells Enhancing Ventilation in Knossos Apartments 1700 BCE","slug":"urban-light-wells-enhancing-ventilation-in-knossos-apartments-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/urban-light-wells-enhancing-ventilation-in-knossos-apartments-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Vertical light wells built into Knossos apartments improved airflow and illumination centuries before mechanical ventilation."},{"title":"Urban Street Paving at Gournia Demonstrating Planned Civic Layout 1500 BCE","slug":"urban-street-paving-at-gournia-demonstrating-planned-civic-layout-1500-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/urban-street-paving-at-gournia-demonstrating-planned-civic-layout-1500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone-paved streets at Gournia reveal that even non-palatial Minoan towns followed deliberate urban planning principles."},{"title":"Use of Polythyra Pier-and-Door Partitions in Minoan Architecture 1700 BCE","slug":"use-of-polythyra-pier-and-door-partitions-in-minoan-architecture-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/use-of-polythyra-pier-and-door-partitions-in-minoan-architecture-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Movable pier-and-door partitions allowed Minoan halls to expand or contract depending on ceremony or season."},{"title":"Xanthoudides Cemetery Excavations Revealing Minoan Burial Practices 1903","slug":"xanthoudides-cemetery-excavations-revealing-minoan-burial-practices-1903","url":"/categories/ancient-civilizations-secrets/minoan-civilization/xanthoudides-cemetery-excavations-revealing-minoan-burial-practices-1903.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1903, systematic excavations exposed Minoan tombs containing carefully arranged communal burials spanning generations."},{"title":"Xenia-Style Gift Exchange Between Crete and Egypt 1600 BCE","slug":"xenia-style-gift-exchange-between-crete-and-egypt-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/xenia-style-gift-exchange-between-crete-and-egypt-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Luxury objects moving between Crete and Egypt around 1600 BCE reveal formalized diplomatic gift exchange beyond simple trade."},{"title":"Xerokampos Coastal Watchpoints Monitoring Maritime Approaches 1600 BCE","slug":"xerokampos-coastal-watchpoints-monitoring-maritime-approaches-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/xerokampos-coastal-watchpoints-monitoring-maritime-approaches-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Remote headlands near Xerokampos offered natural vantage points that could spot incoming ships hours before they reached Minoan harbors."},{"title":"Xerolithia Field Boundaries Structuring Minoan Rural Landscapes 1700 BCE","slug":"xerolithia-field-boundaries-structuring-minoan-rural-landscapes-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/xerolithia-field-boundaries-structuring-minoan-rural-landscapes-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Low stone field walls known as xerolithia carved invisible ownership lines across Minoan Crete around 1700 BCE."},{"title":"Xeste 3 Frescoes Depicting Ritual Processions Circa 1600 BCE","slug":"xeste-3-frescoes-depicting-ritual-processions-circa-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/xeste-3-frescoes-depicting-ritual-processions-circa-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In a building labeled Xeste 3, wall paintings captured a ceremonial procession just decades before volcanic ash sealed the town."},{"title":"Yiali Obsidian Trade Routes Supplying Minoan Crete 2000 BCE","slug":"yiali-obsidian-trade-routes-supplying-minoan-crete-2000-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/yiali-obsidian-trade-routes-supplying-minoan-crete-2000-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Sharp volcanic glass from a small Aegean island traveled hundreds of kilometers to supply Minoan workshops around 2000 BCE."},{"title":"Yoked Bull Leaping Fresco from Knossos Circa 1500 BCE","slug":"yoked-bull-leaping-fresco-from-knossos-circa-1500-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/yoked-bull-leaping-fresco-from-knossos-circa-1500-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A fresco from Knossos shows athletes vaulting over a charging bull in a maneuver that required split-second precision."},{"title":"Yoked Chariot Depictions in Late Minoan Seal Impressions 1450 BCE","slug":"yoked-chariot-depictions-in-late-minoan-seal-impressions-1450-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/yoked-chariot-depictions-in-late-minoan-seal-impressions-1450-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seal impressions from around 1450 BCE show yoked chariots, hinting at military or ceremonial transport during a period of transition."},{"title":"Yoked Double Axe Symbol Appearing in Minoan Administrative Seals 1700 BCE","slug":"yoked-double-axe-symbol-appearing-in-minoan-administrative-seals-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/yoked-double-axe-symbol-appearing-in-minoan-administrative-seals-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The double axe, or labrys, appears repeatedly on Minoan seals, merging religious symbolism with bureaucratic authority."},{"title":"Yoked Ox Plow Agriculture Expanding Minoan Grain Production 1700 BCE","slug":"yoked-ox-plow-agriculture-expanding-minoan-grain-production-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/yoked-ox-plow-agriculture-expanding-minoan-grain-production-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Paired oxen pulling wooden plows allowed Minoan farmers around 1700 BCE to cultivate heavier soils previously left untouched."},{"title":"Zakros Administrative Corridor System Separating Storage from Ceremony 1600 BCE","slug":"zakros-administrative-corridor-system-separating-storage-from-ceremony-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zakros-administrative-corridor-system-separating-storage-from-ceremony-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Zakros, narrow corridors separated storage magazines from ceremonial rooms, revealing deliberate spatial zoning within the palace."},{"title":"Zakros Ivory Workshops Processing Imported Raw Material 1600 BCE","slug":"zakros-ivory-workshops-processing-imported-raw-material-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zakros-ivory-workshops-processing-imported-raw-material-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Ivory fragments at Zakros reveal that exotic raw materials were carved locally into luxury goods around 1600 BCE."},{"title":"Zakros Linear A Archives Destroyed During Palace Conflagration 1450 BCE","slug":"zakros-linear-a-archives-destroyed-during-palace-conflagration-1450-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zakros-linear-a-archives-destroyed-during-palace-conflagration-1450-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1450 BCE, a palace fire at Zakros baked clay tablets hard enough to preserve administrative records for millennia."},{"title":"Zakros Palace International Trade Hub Circa 1600 BCE","slug":"zakros-palace-international-trade-hub-circa-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zakros-palace-international-trade-hub-circa-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"On Crete’s eastern coast, Zakros functioned as a gateway connecting Minoan commerce to the Near East around 1600 BCE."},{"title":"Zakros Storage Jars Bearing Linear A Commodity Marks 1600 BCE","slug":"zakros-storage-jars-bearing-linear-a-commodity-marks-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zakros-storage-jars-bearing-linear-a-commodity-marks-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Incised symbols on storage jars at Zakros suggest that inventory tracking extended beyond tablets to the containers themselves."},{"title":"Zephyros Wind Patterns Influencing Minoan Sailing Strategy 1700 BCE","slug":"zephyros-wind-patterns-influencing-minoan-sailing-strategy-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zephyros-wind-patterns-influencing-minoan-sailing-strategy-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Seasonal wind systems in the Aegean dictated when Minoan ships could safely dominate maritime trade routes."},{"title":"Zeus Cave on Mount Ida as a Minoan Cult Center 1700 BCE","slug":"zeus-cave-on-mount-ida-as-a-minoan-cult-center-1700-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zeus-cave-on-mount-ida-as-a-minoan-cult-center-1700-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A mountain cave later linked to Zeus once served as a ritual center centuries before Greek mythology formalized the story."},{"title":"Zominthos Mountain Palace at 1200 Meters Elevation","slug":"zominthos-mountain-palace-at-1200-meters-elevation","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zominthos-mountain-palace-at-1200-meters-elevation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At 1200 meters above sea level, a Minoan palace complex operated far from the coast that defined Cretan power."},{"title":"Zygouries-Style Weights Influencing Minoan Measurement Systems 1600 BCE","slug":"zygouries-style-weights-influencing-minoan-measurement-systems-1600-bce","url":"/categories/ancient-civilizations-secrets/minoan-civilization/zygouries-style-weights-influencing-minoan-measurement-systems-1600-bce.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Standardized stone weights circulating around 1600 BCE allowed Minoan traders to price goods with measurable precision."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nubian Kingdom</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Nubian Kingdom</h1>
+  <p>Explore all facts in "Nubian Kingdom".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Nubian Kingdom</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Alara Dynasty Foundations Strengthened Kushite Power in the 8th Century BCE","slug":"alara-dynasty-foundations-strengthened-kushite-power-in-the-8th-century-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/alara-dynasty-foundations-strengthened-kushite-power-in-the-8th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before conquering Egypt, Kushite authority was quietly consolidated by a ruler whose tomb still overlooks the Nile."},{"title":"Archaeological Rescue Campaigns of the 1960s Saved Nubian Monuments from Lake Nasser Flooding","slug":"archaeological-rescue-campaigns-of-the-1960s-saved-nubian-monuments-from-lake-nasser-flooding","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/archaeological-rescue-campaigns-of-the-1960s-saved-nubian-monuments-from-lake-nasser-flooding.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 1960s, rising waters threatened to erase thousands of years of Nubian history within a single reservoir."},{"title":"Baqt Treaty of 652 CE Created a 600-Year Peace Between Nubia and Muslim Egypt","slug":"baqt-treaty-of-652-ce-created-a-600-year-peace-between-nubia-and-muslim-egypt","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/baqt-treaty-of-652-ce-created-a-600-year-peace-between-nubia-and-muslim-egypt.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 652 CE, a diplomatic agreement between Nubia and Arab-ruled Egypt lasted nearly six centuries."},{"title":"Blemmyes Raids Challenged Nubian and Roman Authority in the 3rd Century CE","slug":"blemmyes-raids-challenged-nubian-and-roman-authority-in-the-3rd-century-ce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/blemmyes-raids-challenged-nubian-and-roman-authority-in-the-3rd-century-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 3rd century CE, nomadic Blemmyes disrupted trade routes linking Roman Egypt and Nubian territories."},{"title":"Buhen Fortress Controlled Second Cataract Trade During Egypt’s Middle Kingdom","slug":"buhen-fortress-controlled-second-cataract-trade-during-egypt-s-middle-kingdom","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/buhen-fortress-controlled-second-cataract-trade-during-egypt-s-middle-kingdom.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1800 BCE, a fortress at Buhen monitored every shipment moving between Egypt and Nubia."},{"title":"Cataract Border System Divided Egypt and Nubia for Over 2,000 Years","slug":"cataract-border-system-divided-egypt-and-nubia-for-over-2-000-years","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/cataract-border-system-divided-egypt-and-nubia-for-over-2-000-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Natural river rapids along the Nile created a geopolitical boundary that shaped two civilizations for millennia."},{"title":"Central Nile Corridor Enabled Nubian States to Control 2,000 Kilometers of Trade Artery","slug":"central-nile-corridor-enabled-nubian-states-to-control-2-000-kilometers-of-trade-artery","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/central-nile-corridor-enabled-nubian-states-to-control-2-000-kilometers-of-trade-artery.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For centuries, Nubian kingdoms controlled nearly 2,000 kilometers of the Nile’s most strategic corridor."},{"title":"Christian Kingdom of Makuria Maintained Diplomatic Relations with Fatimid Egypt in the 11th Century","slug":"christian-kingdom-of-makuria-maintained-diplomatic-relations-with-fatimid-egypt-in-the-11th-century","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/christian-kingdom-of-makuria-maintained-diplomatic-relations-with-fatimid-egypt-in-the-11th-century.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 11th century, a Christian Nubian kingdom negotiated with an Islamic caliphate as a political equal."},{"title":"Dongola Cathedral Ruins Reveal Medieval Nubia’s Christian Urban Planning","slug":"dongola-cathedral-ruins-reveal-medieval-nubia-s-christian-urban-planning","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/dongola-cathedral-ruins-reveal-medieval-nubia-s-christian-urban-planning.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In medieval Dongola, cathedral complexes anchored a Christian kingdom that rivaled neighboring powers in organization."},{"title":"Dongola Reach Agricultural Systems Sustained Nubian States for Over 1,500 Years","slug":"dongola-reach-agricultural-systems-sustained-nubian-states-for-over-1-500-years","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/dongola-reach-agricultural-systems-sustained-nubian-states-for-over-1-500-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"A fertile stretch of the Nile known as the Dongola Reach supported continuous Nubian settlement for more than 1,500 years."},{"title":"Dongola Throne Hall Murals Depict Nubian Kings in Byzantine-Style Regalia","slug":"dongola-throne-hall-murals-depict-nubian-kings-in-byzantine-style-regalia","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/dongola-throne-hall-murals-depict-nubian-kings-in-byzantine-style-regalia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Wall paintings in Dongola’s throne hall show Nubian rulers wearing regalia influenced by Byzantine artistic traditions."},{"title":"Gebel Adda Fortress Guarded Lower Nubia During Late Antiquity","slug":"gebel-adda-fortress-guarded-lower-nubia-during-late-antiquity","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/gebel-adda-fortress-guarded-lower-nubia-during-late-antiquity.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Perched above the Nile, Gebel Adda functioned as a defensive stronghold during Nubia’s transitional centuries."},{"title":"Gebel Barkal Oracle Rituals Anchored Nubian Political Legitimacy for 1,000 Years","slug":"gebel-barkal-oracle-rituals-anchored-nubian-political-legitimacy-for-1-000-years","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/gebel-barkal-oracle-rituals-anchored-nubian-political-legitimacy-for-1-000-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For nearly a millennium, Nubian kings grounded their authority in an oracle believed to speak from a sandstone mountain."},{"title":"Kandake Amanishakheto’s Treasury Contained Hundreds of Gold Jewelry Pieces","slug":"kandake-amanishakheto-s-treasury-contained-hundreds-of-gold-jewelry-pieces","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/kandake-amanishakheto-s-treasury-contained-hundreds-of-gold-jewelry-pieces.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When 19th-century explorers opened a Nubian queen’s tomb, they found hundreds of intricately worked gold artifacts."},{"title":"Kawa Temple Inscriptions Reveal Kushite Control Over Upper Egypt in 680 BCE","slug":"kawa-temple-inscriptions-reveal-kushite-control-over-upper-egypt-in-680-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/kawa-temple-inscriptions-reveal-kushite-control-over-upper-egypt-in-680-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone inscriptions at Kawa record Nubian kings governing territory deep inside Egypt by 680 BCE."},{"title":"Kerma Capital Trade Network Controlled 1,000 Kilometers of Nile Commerce","slug":"kerma-capital-trade-network-controlled-1-000-kilometers-of-nile-commerce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/kerma-capital-trade-network-controlled-1-000-kilometers-of-nile-commerce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Kerma built a commercial empire stretching nearly 1,000 kilometers along the Nile before Rome was even a village."},{"title":"Kerma-Egyptian Hyksos Alliance Altered Nile Politics in the 17th Century BCE","slug":"kerma-egyptian-hyksos-alliance-altered-nile-politics-in-the-17th-century-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/kerma-egyptian-hyksos-alliance-altered-nile-politics-in-the-17th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"During Egypt’s Second Intermediate Period, Nubia and the Hyksos formed alliances that reshaped Nile power balances."},{"title":"Meroë Decline Around 350 CE Coincided with Shifts in Red Sea Trade Networks","slug":"mero-decline-around-350-ce-coincided-with-shifts-in-red-sea-trade-networks","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/mero-decline-around-350-ce-coincided-with-shifts-in-red-sea-trade-networks.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 350 CE, the fall of Meroë aligned with broader disruptions in African and Mediterranean trade routes."},{"title":"Meroë Iron Production Turned Nubia into an African Industrial Powerhouse","slug":"mero-iron-production-turned-nubia-into-an-african-industrial-powerhouse","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/mero-iron-production-turned-nubia-into-an-african-industrial-powerhouse.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 300 BCE, Meroë was producing iron on a scale so large that archaeologists still find mountains of slag."},{"title":"Meroitic Script Developed as an Independent Writing System by 300 BCE","slug":"meroitic-script-developed-as-an-independent-writing-system-by-300-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/meroitic-script-developed-as-an-independent-writing-system-by-300-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 300 BCE, Nubia created its own written script rather than relying entirely on Egyptian hieroglyphs."},{"title":"Musawwarat es-Sufra Complex Housed Monumental Structures Without Defensive Walls","slug":"musawwarat-es-sufra-complex-housed-monumental-structures-without-defensive-walls","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/musawwarat-es-sufra-complex-housed-monumental-structures-without-defensive-walls.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the desert plains of Sudan, a vast Meroitic complex was built with no obvious fortifications."},{"title":"Napata Religious Reforms Elevated Amun Cult Power in 700 BCE","slug":"napata-religious-reforms-elevated-amun-cult-power-in-700-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/napata-religious-reforms-elevated-amun-cult-power-in-700-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 700 BCE, Nubian kings reshaped Egyptian religion by placing the god Amun at the center of imperial rule."},{"title":"Napatan Succession Customs Elevated Royal Women to Core Political Authority","slug":"napatan-succession-customs-elevated-royal-women-to-core-political-authority","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/napatan-succession-customs-elevated-royal-women-to-core-political-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In Napatan Nubia, royal women were not symbolic figures but central architects of dynastic continuity."},{"title":"Nuri Pyramid Field Contained Over 20 Royal Tombs of the Napatan Dynasty","slug":"nuri-pyramid-field-contained-over-20-royal-tombs-of-the-napatan-dynasty","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/nuri-pyramid-field-contained-over-20-royal-tombs-of-the-napatan-dynasty.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 20 Nubian kings and queens were buried beneath pyramids at Nuri, creating one of Africa’s largest royal cemeteries."},{"title":"Piye Victory Stela of 728 BCE Records a Nubian Conquest of Egypt","slug":"piye-victory-stela-of-728-bce-records-a-nubian-conquest-of-egypt","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/piye-victory-stela-of-728-bce-records-a-nubian-conquest-of-egypt.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 728 BCE, a Nubian king carved his conquest of Egypt into stone and described Egyptian rulers begging for mercy."},{"title":"Qalhata Temple Ruins Preserve Royal Kushite Architecture from 650 BCE","slug":"qalhata-temple-ruins-preserve-royal-kushite-architecture-from-650-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/qalhata-temple-ruins-preserve-royal-kushite-architecture-from-650-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Stone blocks at Qalhata reveal a royal temple complex built by Nubian rulers around 650 BCE."},{"title":"Qasr Ibrim Archives Preserved Nubian Christian Governance Until the 14th Century","slug":"qasr-ibrim-archives-preserved-nubian-christian-governance-until-the-14th-century","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/qasr-ibrim-archives-preserved-nubian-christian-governance-until-the-14th-century.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Qasr Ibrim, written records show Nubian Christian kingdoms functioning centuries after much of North Africa converted to Islam."},{"title":"Queen Amanirenas Defied Rome in the Nubian War of 25 BCE","slug":"queen-amanirenas-defied-rome-in-the-nubian-war-of-25-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/queen-amanirenas-defied-rome-in-the-nubian-war-of-25-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 25 BCE, a one-eyed Nubian queen forced the Roman Empire into a negotiated peace."},{"title":"Qurta Rock Art Predates Pharaonic Egypt by Thousands of Years","slug":"qurta-rock-art-predates-pharaonic-egypt-by-thousands-of-years","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/qurta-rock-art-predates-pharaonic-egypt-by-thousands-of-years.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Petroglyphs at Qurta along the Nile may predate Egypt’s pyramids by nearly 4,000 years."},{"title":"Qustul Incense Burner Suggests Nubian Royal Iconography Before Egypt’s First Dynasty","slug":"qustul-incense-burner-suggests-nubian-royal-iconography-before-egypt-s-first-dynasty","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/qustul-incense-burner-suggests-nubian-royal-iconography-before-egypt-s-first-dynasty.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"An incense burner found at Qustul may depict royal imagery predating Egypt’s earliest pharaohs."},{"title":"Sedeinga Pyramid Field Contains Over 80 Nubian Pyramids in a Single Cemetery","slug":"sedeinga-pyramid-field-contains-over-80-nubian-pyramids-in-a-single-cemetery","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/sedeinga-pyramid-field-contains-over-80-nubian-pyramids-in-a-single-cemetery.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One cemetery at Sedeinga contains more than 80 small pyramids clustered within a compact burial zone."},{"title":"Sedeinga Temple Complex Demonstrates Nubian Adaptation of Egyptian Architecture","slug":"sedeinga-temple-complex-demonstrates-nubian-adaptation-of-egyptian-architecture","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/sedeinga-temple-complex-demonstrates-nubian-adaptation-of-egyptian-architecture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Sedeinga, Nubian builders recreated Egyptian-style temples hundreds of kilometers south of Thebes."},{"title":"Soba Capital of Alodia Governed Southern Nubia Until the 14th Century","slug":"soba-capital-of-alodia-governed-southern-nubia-until-the-14th-century","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/soba-capital-of-alodia-governed-southern-nubia-until-the-14th-century.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"For nearly 800 years, the city of Soba served as the administrative heart of a Christian Nubian kingdom."},{"title":"Taharka Military Campaigns Extended Nubian Rule from Sudan to the Levant in 690 BCE","slug":"taharka-military-campaigns-extended-nubian-rule-from-sudan-to-the-levant-in-690-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/taharka-military-campaigns-extended-nubian-rule-from-sudan-to-the-levant-in-690-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 690 BCE, a Nubian king commanded armies that marched from central Sudan to the borders of the Levant."},{"title":"Temple of Naqa Showcases Greco-Roman Influence in Meroitic Architecture","slug":"temple-of-naqa-showcases-greco-roman-influence-in-meroitic-architecture","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/temple-of-naqa-showcases-greco-roman-influence-in-meroitic-architecture.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At Naqa, Nubian builders fused African, Egyptian, and Greco-Roman styles into a single monumental complex."},{"title":"Temple Reliefs at Soleb Depict Nubians Within Egypt’s Imperial Sphere in 1400 BCE","slug":"temple-reliefs-at-soleb-depict-nubians-within-egypt-s-imperial-sphere-in-1400-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/temple-reliefs-at-soleb-depict-nubians-within-egypt-s-imperial-sphere-in-1400-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Reliefs carved around 1400 BCE show Nubian leaders portrayed inside Egypt’s imperial narrative."},{"title":"Umm el-Qaab Trade Contacts Linked Early Nubia to Predynastic Egypt","slug":"umm-el-qaab-trade-contacts-linked-early-nubia-to-predynastic-egypt","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/umm-el-qaab-trade-contacts-linked-early-nubia-to-predynastic-egypt.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Artifacts found in royal cemeteries at Umm el-Qaab suggest trade connections with Nubian groups before 3000 BCE."},{"title":"Umm Ruweim Fort Demonstrates Meroitic Defensive Planning in the 3rd Century BCE","slug":"umm-ruweim-fort-demonstrates-meroitic-defensive-planning-in-the-3rd-century-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/umm-ruweim-fort-demonstrates-meroitic-defensive-planning-in-the-3rd-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 3rd century BCE, Meroitic engineers constructed fortified complexes like Umm Ruweim to secure desert approaches."},{"title":"University of Chicago Excavations at Kerma Uncovered 30-Meter Royal Tumuli","slug":"university-of-chicago-excavations-at-kerma-uncovered-30-meter-royal-tumuli","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/university-of-chicago-excavations-at-kerma-uncovered-30-meter-royal-tumuli.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Kerma revealed royal burial mounds nearly 30 meters in diameter, rivaling monumental traditions elsewhere in Africa."},{"title":"Uronarti Fortress Reveals Egypt’s Defensive Anxiety Toward Nubia in 1850 BCE","slug":"uronarti-fortress-reveals-egypt-s-defensive-anxiety-toward-nubia-in-1850-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/uronarti-fortress-reveals-egypt-s-defensive-anxiety-toward-nubia-in-1850-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 1850 BCE, Egypt built massive fortresses along the Nile not to expand into Nubia, but to contain it."},{"title":"X-Group Ballana Tombs Contained Sacrificial Retainers in 5th Century CE Nubia","slug":"x-group-ballana-tombs-contained-sacrificial-retainers-in-5th-century-ce-nubia","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/x-group-ballana-tombs-contained-sacrificial-retainers-in-5th-century-ce-nubia.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Royal burials in 5th century CE Nubia included human retainers interred alongside elite rulers."},{"title":"X-Group Culture Emerged in Nubia After Meroë Collapsed Around 350 CE","slug":"x-group-culture-emerged-in-nubia-after-mero-collapsed-around-350-ce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/x-group-culture-emerged-in-nubia-after-mero-collapsed-around-350-ce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Kingdom of Meroë fell around 350 CE, a mysterious society archaeologists call the X-Group rose in its place."},{"title":"Xeric Desert Trade Routes Linked Meroë to the Red Sea Ports by 200 BCE","slug":"xeric-desert-trade-routes-linked-mero-to-the-red-sea-ports-by-200-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/xeric-desert-trade-routes-linked-mero-to-the-red-sea-ports-by-200-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 200 BCE, Nubian caravans were crossing arid deserts to connect Meroë with Red Sea trade hubs."},{"title":"Xerophyte Agriculture Helped Nubian Farmers Survive Harsh Desert Margins","slug":"xerophyte-agriculture-helped-nubian-farmers-survive-harsh-desert-margins","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/xerophyte-agriculture-helped-nubian-farmers-survive-harsh-desert-margins.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nubian farmers cultivated drought-resistant crops to survive in regions where rainfall was nearly nonexistent."},{"title":"Yam Inscription of Harkhuf Records a 1,200-Kilometer Trade Expedition in 2250 BCE","slug":"yam-inscription-of-harkhuf-records-a-1-200-kilometer-trade-expedition-in-2250-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/yam-inscription-of-harkhuf-records-a-1-200-kilometer-trade-expedition-in-2250-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Around 2250 BCE, an Egyptian official recorded a trade journey of roughly 1,200 kilometers into Nubian-controlled territory."},{"title":"Yam Trade Expeditions Linked Nubia to Central Africa by 2300 BCE","slug":"yam-trade-expeditions-linked-nubia-to-central-africa-by-2300-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/yam-trade-expeditions-linked-nubia-to-central-africa-by-2300-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 2300 BCE, Egyptian records described dangerous journeys to a land called Yam deep in Nubian-controlled territory."},{"title":"Yasmina Cemetery at Meroë Revealed 1,000 Years of Continuous Nubian Burial Practices","slug":"yasmina-cemetery-at-mero-revealed-1-000-years-of-continuous-nubian-burial-practices","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/yasmina-cemetery-at-mero-revealed-1-000-years-of-continuous-nubian-burial-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations near Meroë uncovered cemetery layers showing nearly 1,000 years of evolving Nubian funerary ritual."},{"title":"Yebu Island Settlements Reveal Continuous Nubian Occupation Across Three Eras","slug":"yebu-island-settlements-reveal-continuous-nubian-occupation-across-three-eras","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/yebu-island-settlements-reveal-continuous-nubian-occupation-across-three-eras.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological layers on Yebu Island show Nubian habitation spanning Napatan, Meroitic, and Christian periods."},{"title":"Zawyet el-Aryan Reliefs Confirm Nubian Military Service in Egypt’s Old Kingdom","slug":"zawyet-el-aryan-reliefs-confirm-nubian-military-service-in-egypt-s-old-kingdom","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/zawyet-el-aryan-reliefs-confirm-nubian-military-service-in-egypt-s-old-kingdom.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Old Kingdom reliefs show Nubian archers serving inside Egypt’s royal armies as early as 2500 BCE."},{"title":"Zeriba Fortifications Shielded Nubian Gold Routes in the 8th Century BCE","slug":"zeriba-fortifications-shielded-nubian-gold-routes-in-the-8th-century-bce","url":"/categories/ancient-civilizations-secrets/nubian-kingdom/zeriba-fortifications-shielded-nubian-gold-routes-in-the-8th-century-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Nubian rulers built fortified zeribas to defend gold routes that funded a dynasty powerful enough to conquer Egypt."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

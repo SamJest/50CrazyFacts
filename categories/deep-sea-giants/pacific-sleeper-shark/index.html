@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pacific Sleeper Shark</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Pacific Sleeper Shark</h1>
+  <p>Explore all facts in "Pacific Sleeper Shark".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Pacific Sleeper Shark</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Arctic Pacific Sleeper Sharks Reach Lengths Comparable to a London Double-Decker Bus","slug":"arctic-pacific-sleeper-sharks-reach-lengths-comparable-to-a-london-double-decker-bus","url":"/categories/deep-sea-giants/pacific-sleeper-shark/arctic-pacific-sleeper-sharks-reach-lengths-comparable-to-a-london-double-decker-bus.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"An Arctic shark grows as long as a city bus in near-freezing darkness."},{"title":"Arctic-to-Abyss Range Makes Pacific Sleeper Sharks True Vertical Migrants","slug":"arctic-to-abyss-range-makes-pacific-sleeper-sharks-true-vertical-migrants","url":"/categories/deep-sea-giants/pacific-sleeper-shark/arctic-to-abyss-range-makes-pacific-sleeper-sharks-true-vertical-migrants.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single shark spans ocean layers separated by crushing physics."},{"title":"Basin-Scale Predator: Pacific Sleeper Sharks Influence Multiple National Waters","slug":"basin-scale-predator-pacific-sleeper-sharks-influence-multiple-national-waters","url":"/categories/deep-sea-giants/pacific-sleeper-shark/basin-scale-predator-pacific-sleeper-sharks-influence-multiple-national-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One slow-moving shark crosses international boundaries in darkness."},{"title":"Bering Sea Pacific Sleeper Sharks Withstand Pressures Over 200 Times Surface Levels","slug":"bering-sea-pacific-sleeper-sharks-withstand-pressures-over-200-times-surface-levels","url":"/categories/deep-sea-giants/pacific-sleeper-shark/bering-sea-pacific-sleeper-sharks-withstand-pressures-over-200-times-surface-levels.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This shark endures pressure that would implode unprotected metal."},{"title":"Cold-Blooded but Cold-Resistant: Pacific Sleeper Sharks Thrive Near 0°C","slug":"cold-blooded-but-cold-resistant-pacific-sleeper-sharks-thrive-near-0-c","url":"/categories/deep-sea-giants/pacific-sleeper-shark/cold-blooded-but-cold-resistant-pacific-sleeper-sharks-thrive-near-0-c.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A giant predator cruises water cold enough to freeze human skin."},{"title":"Cold-Dark Specialist: Pacific Sleeper Sharks Thrive Where Photosynthesis Fails","slug":"cold-dark-specialist-pacific-sleeper-sharks-thrive-where-photosynthesis-fails","url":"/categories/deep-sea-giants/pacific-sleeper-shark/cold-dark-specialist-pacific-sleeper-sharks-thrive-where-photosynthesis-fails.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-sized predator survives where sunlight cannot fuel life."},{"title":"Deep Pacific Sleeper Sharks Consume Prey Larger Than Adult Seals","slug":"deep-pacific-sleeper-sharks-consume-prey-larger-than-adult-seals","url":"/categories/deep-sea-giants/pacific-sleeper-shark/deep-pacific-sleeper-sharks-consume-prey-larger-than-adult-seals.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This slow-moving shark swallows animals heavier than a motorcycle."},{"title":"Energy-Efficient Giant: Pacific Sleeper Sharks Glide Instead of Constantly Swimming","slug":"energy-efficient-giant-pacific-sleeper-sharks-glide-instead-of-constantly-swimming","url":"/categories/deep-sea-giants/pacific-sleeper-shark/energy-efficient-giant-pacific-sleeper-sharks-glide-instead-of-constantly-swimming.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A one-ton shark hovers almost motionless in crushing darkness."},{"title":"Extreme Pressure Survivor: Pacific Sleeper Sharks Withstand Forces Fatal to Humans","slug":"extreme-pressure-survivor-pacific-sleeper-sharks-withstand-forces-fatal-to-humans","url":"/categories/deep-sea-giants/pacific-sleeper-shark/extreme-pressure-survivor-pacific-sleeper-sharks-withstand-forces-fatal-to-humans.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant fish endures pressures that would collapse human lungs instantly."},{"title":"From Alaska to Japan: Pacific Sleeper Sharks Span the Entire North Pacific","slug":"from-alaska-to-japan-pacific-sleeper-sharks-span-the-entire-north-pacific","url":"/categories/deep-sea-giants/pacific-sleeper-shark/from-alaska-to-japan-pacific-sleeper-sharks-span-the-entire-north-pacific.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One shark species ranges across an ocean basin wider than continents."},{"title":"Gigantic Yet Gentle-Moving: Pacific Sleeper Sharks Defy the Speed-Predator Model","slug":"gigantic-yet-gentle-moving-pacific-sleeper-sharks-defy-the-speed-predator-model","url":"/categories/deep-sea-giants/pacific-sleeper-shark/gigantic-yet-gentle-moving-pacific-sleeper-sharks-defy-the-speed-predator-model.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-sized predator hunts without bursts of speed."},{"title":"High-Latitude Giant: Pacific Sleeper Sharks Patrol Under Arctic Sea Ice","slug":"high-latitude-giant-pacific-sleeper-sharks-patrol-under-arctic-sea-ice","url":"/categories/deep-sea-giants/pacific-sleeper-shark/high-latitude-giant-pacific-sleeper-sharks-patrol-under-arctic-sea-ice.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A massive shark cruises beneath solid Arctic ice sheets."},{"title":"Immense Oil Stores Let Pacific Sleeper Sharks Float Without Imploding","slug":"immense-oil-stores-let-pacific-sleeper-sharks-float-without-imploding","url":"/categories/deep-sea-giants/pacific-sleeper-shark/immense-oil-stores-let-pacific-sleeper-sharks-float-without-imploding.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Hundreds of kilograms of oil keep this giant from sinking."},{"title":"Juvenile Pacific Sleeper Sharks Begin Life in the Same Crushing Depths as Adults","slug":"juvenile-pacific-sleeper-sharks-begin-life-in-the-same-crushing-depths-as-adults","url":"/categories/deep-sea-giants/pacific-sleeper-shark/juvenile-pacific-sleeper-sharks-begin-life-in-the-same-crushing-depths-as-adults.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"Even newborns face pressure that would shatter human lungs."},{"title":"Killer-Scale Bite Force: Pacific Sleeper Sharks Crush Prey in Total Darkness","slug":"killer-scale-bite-force-pacific-sleeper-sharks-crush-prey-in-total-darkness","url":"/categories/deep-sea-giants/pacific-sleeper-shark/killer-scale-bite-force-pacific-sleeper-sharks-crush-prey-in-total-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A slow-moving shark delivers crushing bites two kilometers below sunlight."},{"title":"Late-Maturing Pacific Sleeper Sharks Can Take Decades to Reach Full Size","slug":"late-maturing-pacific-sleeper-sharks-can-take-decades-to-reach-full-size","url":"/categories/deep-sea-giants/pacific-sleeper-shark/late-maturing-pacific-sleeper-sharks-can-take-decades-to-reach-full-size.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This bus-length shark may spend decades just growing up."},{"title":"Massive Vertical Range: Pacific Sleeper Sharks Move Between Surface and Abyss","slug":"massive-vertical-range-pacific-sleeper-sharks-move-between-surface-and-abyss","url":"/categories/deep-sea-giants/pacific-sleeper-shark/massive-vertical-range-pacific-sleeper-sharks-move-between-surface-and-abyss.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One shark travels from icy shallows to crushing abyssal depths."},{"title":"Near-Neutral Buoyancy Lets Pacific Sleeper Sharks Drift Like Submarines","slug":"near-neutral-buoyancy-lets-pacific-sleeper-sharks-drift-like-submarines","url":"/categories/deep-sea-giants/pacific-sleeper-shark/near-neutral-buoyancy-lets-pacific-sleeper-sharks-drift-like-submarines.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A one-ton predator hovers with almost no effort."},{"title":"Ocean-Basin Traveler: Pacific Sleeper Sharks Span Thousands of Kilometers","slug":"ocean-basin-traveler-pacific-sleeper-sharks-span-thousands-of-kilometers","url":"/categories/deep-sea-giants/pacific-sleeper-shark/ocean-basin-traveler-pacific-sleeper-sharks-span-thousands-of-kilometers.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-sea giant ranges across an ocean wider than the United States."},{"title":"Pacific Sleeper Shark Can Grow Beyond 7 Meters in Cold Depths","slug":"pacific-sleeper-shark-can-grow-beyond-7-meters-in-cold-depths","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-shark-can-grow-beyond-7-meters-in-cold-depths.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This Arctic shark rivals great whites while cruising in darkness."},{"title":"Pacific Sleeper Shark Liver Oil Makes Up Nearly One-Third of Its Body Weight","slug":"pacific-sleeper-shark-liver-oil-makes-up-nearly-one-third-of-its-body-weight","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-shark-liver-oil-makes-up-nearly-one-third-of-its-body-weight.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One-third of this massive shark is essentially a floating oil tank."},{"title":"Pacific Sleeper Shark: The 7-Meter Arctic Predator That Devours Polar Bears","slug":"pacific-sleeper-shark-the-7-meter-arctic-predator-that-devours-polar-bears","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-shark-the-7-meter-arctic-predator-that-devours-polar-bears.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A shark longer than a bus has been found with polar bear remains in its stomach."},{"title":"Pacific Sleeper Sharks Bridge Arctic Ice and the Deep Pacific Basin","slug":"pacific-sleeper-sharks-bridge-arctic-ice-and-the-deep-pacific-basin","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-bridge-arctic-ice-and-the-deep-pacific-basin.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One shark roams from sea ice to abyssal trenches."},{"title":"Pacific Sleeper Sharks Can Weigh Over a Metric Ton Without a Swim Bladder","slug":"pacific-sleeper-sharks-can-weigh-over-a-metric-ton-without-a-swim-bladder","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-can-weigh-over-a-metric-ton-without-a-swim-bladder.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A one-ton fish floats effortlessly without the organ most fish need."},{"title":"Pacific Sleeper Sharks Grow So Slowly They May Live Over 100 Years","slug":"pacific-sleeper-sharks-grow-so-slowly-they-may-live-over-100-years","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-grow-so-slowly-they-may-live-over-100-years.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator ages slower than most house cats."},{"title":"Pacific Sleeper Sharks Have Been Filmed Circling Submersibles in the Abyss","slug":"pacific-sleeper-sharks-have-been-filmed-circling-submersibles-in-the-abyss","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-have-been-filmed-circling-submersibles-in-the-abyss.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-sized shark glides past human explorers two kilometers down."},{"title":"Pacific Sleeper Sharks Have Been Found Feeding on Entire Whale Carcasses","slug":"pacific-sleeper-sharks-have-been-found-feeding-on-entire-whale-carcasses","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-have-been-found-feeding-on-entire-whale-carcasses.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single shark can strip flesh from a whale corpse in the abyss."},{"title":"Pacific Sleeper Sharks Hunt in Total Darkness Below 2,000 Meters","slug":"pacific-sleeper-sharks-hunt-in-total-darkness-below-2-000-meters","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-hunt-in-total-darkness-below-2-000-meters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A multi-ton predator hunts where sunlight has never reached."},{"title":"Pacific Sleeper Sharks Mature So Late That Decades Pass Before Reproduction","slug":"pacific-sleeper-sharks-mature-so-late-that-decades-pass-before-reproduction","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-mature-so-late-that-decades-pass-before-reproduction.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator may wait decades before having its first offspring."},{"title":"Pacific Sleeper Sharks Survive Near-Freezing Waters That Paralyze Most Fish","slug":"pacific-sleeper-sharks-survive-near-freezing-waters-that-paralyze-most-fish","url":"/categories/deep-sea-giants/pacific-sleeper-shark/pacific-sleeper-sharks-survive-near-freezing-waters-that-paralyze-most-fish.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant shark swims in water cold enough to stop a human heart."},{"title":"Polar Predator: Pacific Sleeper Sharks Feed in Subzero Arctic Waters","slug":"polar-predator-pacific-sleeper-sharks-feed-in-subzero-arctic-waters","url":"/categories/deep-sea-giants/pacific-sleeper-shark/polar-predator-pacific-sleeper-sharks-feed-in-subzero-arctic-waters.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A massive shark hunts where seawater hovers at freezing point."},{"title":"Quiet Apex: Pacific Sleeper Sharks Dominate Without Speed","slug":"quiet-apex-pacific-sleeper-sharks-dominate-without-speed","url":"/categories/deep-sea-giants/pacific-sleeper-shark/quiet-apex-pacific-sleeper-sharks-dominate-without-speed.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator hunts without chasing its prey."},{"title":"Record-Depth Encounters Show Pacific Sleeper Sharks Beside Human Submersibles","slug":"record-depth-encounters-show-pacific-sleeper-sharks-beside-human-submersibles","url":"/categories/deep-sea-giants/pacific-sleeper-shark/record-depth-encounters-show-pacific-sleeper-sharks-beside-human-submersibles.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length shark appears outside a steel sub at crushing depth."},{"title":"Slow-Growth Strategy Makes Pacific Sleeper Sharks Biologically Fragile Giants","slug":"slow-growth-strategy-makes-pacific-sleeper-sharks-biologically-fragile-giants","url":"/categories/deep-sea-giants/pacific-sleeper-shark/slow-growth-strategy-makes-pacific-sleeper-sharks-biologically-fragile-giants.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This massive shark can disappear faster than it can replace itself."},{"title":"Trans-Abyssal Scavenger: Pacific Sleeper Sharks Exploit Whale Falls","slug":"trans-abyssal-scavenger-pacific-sleeper-sharks-exploit-whale-falls","url":"/categories/deep-sea-giants/pacific-sleeper-shark/trans-abyssal-scavenger-pacific-sleeper-sharks-exploit-whale-falls.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A single shark feeds on carcasses heavier than small trucks."},{"title":"Under-Ice Hunter: Pacific Sleeper Sharks Navigate Months of Polar Darkness","slug":"under-ice-hunter-pacific-sleeper-sharks-navigate-months-of-polar-darkness","url":"/categories/deep-sea-giants/pacific-sleeper-shark/under-ice-hunter-pacific-sleeper-sharks-navigate-months-of-polar-darkness.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A bus-length shark hunts beneath ice in months-long darkness."},{"title":"Vast Energy Reserves Let Pacific Sleeper Sharks Survive Long Food Gaps","slug":"vast-energy-reserves-let-pacific-sleeper-sharks-survive-long-food-gaps","url":"/categories/deep-sea-giants/pacific-sleeper-shark/vast-energy-reserves-let-pacific-sleeper-sharks-survive-long-food-gaps.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This one-ton shark can endure scarcity in a food-poor abyss."},{"title":"Wide Thermal Tolerance Allows Pacific Sleeper Sharks Across Polar and Temperate Seas","slug":"wide-thermal-tolerance-allows-pacific-sleeper-sharks-across-polar-and-temperate-seas","url":"/categories/deep-sea-giants/pacific-sleeper-shark/wide-thermal-tolerance-allows-pacific-sleeper-sharks-across-polar-and-temperate-seas.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"One giant shark tolerates temperatures from near-freezing to milder depths."},{"title":"X-Factor Longevity: Pacific Sleeper Sharks May Outlive a Human Lifetime","slug":"x-factor-longevity-pacific-sleeper-sharks-may-outlive-a-human-lifetime","url":"/categories/deep-sea-giants/pacific-sleeper-shark/x-factor-longevity-pacific-sleeper-sharks-may-outlive-a-human-lifetime.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This deep-sea giant may patrol oceans for over a century."},{"title":"Yawning Gape: Pacific Sleeper Sharks Swallow Large Prey Whole","slug":"yawning-gape-pacific-sleeper-sharks-swallow-large-prey-whole","url":"/categories/deep-sea-giants/pacific-sleeper-shark/yawning-gape-pacific-sleeper-sharks-swallow-large-prey-whole.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"A massive shark engulfs prey nearly its own size in darkness."},{"title":"Zero-Light Navigation: Pacific Sleeper Sharks Rely on Non-Visual Senses","slug":"zero-light-navigation-pacific-sleeper-sharks-rely-on-non-visual-senses","url":"/categories/deep-sea-giants/pacific-sleeper-shark/zero-light-navigation-pacific-sleeper-sharks-rely-on-non-visual-senses.html","color":"#7914bb","category":"deep-sea-giants","factCount":1,"factPreview":"This giant predator hunts where sight becomes nearly useless."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

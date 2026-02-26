@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shang Dynasty</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Shang Dynasty</h1>
+  <p>Explore all facts in "Shang Dynasty".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Shang Dynasty</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Anyang Capital Excavations Revealed 11 Royal Shang Tombs With Human Sacrifices","slug":"anyang-capital-excavations-revealed-11-royal-shang-tombs-with-human-sacrifices","url":"/categories/ancient-civilizations-secrets/shang-dynasty/anyang-capital-excavations-revealed-11-royal-shang-tombs-with-human-sacrifices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists at Anyang uncovered 11 massive royal tombs containing hundreds of human sacrifice victims from the late Shang Dynasty."},{"title":"Bronze Casting Technology of Shang Dynasty Surpassed Contemporary Civilizations","slug":"bronze-casting-technology-of-shang-dynasty-surpassed-contemporary-civilizations","url":"/categories/ancient-civilizations-secrets/shang-dynasty/bronze-casting-technology-of-shang-dynasty-surpassed-contemporary-civilizations.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang bronze vessels weighing hundreds of kilograms were cast in single pieces using advanced sectional mold techniques."},{"title":"Chariot Warfare Introduced to China During Late Shang Period","slug":"chariot-warfare-introduced-to-china-during-late-shang-period","url":"/categories/ancient-civilizations-secrets/shang-dynasty/chariot-warfare-introduced-to-china-during-late-shang-period.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Horse-drawn chariots appeared in China during the late Shang Dynasty, transforming elite warfare strategy."},{"title":"Ding Vessels Used in Shang Rituals Symbolized Political Authority","slug":"ding-vessels-used-in-shang-rituals-symbolized-political-authority","url":"/categories/ancient-civilizations-secrets/shang-dynasty/ding-vessels-used-in-shang-rituals-symbolized-political-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bronze ding cauldrons were central to Shang ceremonial life, representing elite status and governance."},{"title":"Divination Cracks on Shang Oracle Bones Determined Military Decisions","slug":"divination-cracks-on-shang-oracle-bones-determined-military-decisions","url":"/categories/ancient-civilizations-secrets/shang-dynasty/divination-cracks-on-shang-oracle-bones-determined-military-decisions.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before launching wars, Shang kings heated turtle shells until they cracked and treated the fractures as strategic advice."},{"title":"Divination Predictions on Agriculture Shaped Shang Food Security","slug":"divination-predictions-on-agriculture-shaped-shang-food-security","url":"/categories/ancient-civilizations-secrets/shang-dynasty/divination-predictions-on-agriculture-shaped-shang-food-security.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang kings used oracle bones to predict harvest success and plan agricultural labor distribution."},{"title":"Divination Recorded on Ox Scapulae Standardized Governance","slug":"divination-recorded-on-ox-scapulae-standardized-governance","url":"/categories/ancient-civilizations-secrets/shang-dynasty/divination-recorded-on-ox-scapulae-standardized-governance.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang administrators used repeated divination inscriptions on ox scapulae to formalize political and ritual decisions."},{"title":"Fang Fang Ritual Axes Symbolized Elite Authority","slug":"fang-fang-ritual-axes-symbolized-elite-authority","url":"/categories/ancient-civilizations-secrets/shang-dynasty/fang-fang-ritual-axes-symbolized-elite-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang elite tombs contain ritual axes used in ceremonial contexts rather than warfare."},{"title":"Feng and Shan Ritual Precursors Emerged in Shang Ancestral Worship","slug":"feng-and-shan-ritual-precursors-emerged-in-shang-ancestral-worship","url":"/categories/ancient-civilizations-secrets/shang-dynasty/feng-and-shan-ritual-precursors-emerged-in-shang-ancestral-worship.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"State rituals performed by Shang kings laid foundations for later imperial ceremonies in Chinese history."},{"title":"Fu Hao’s Tomb Contained 468 Bronze Weapons Indicating Military Rank","slug":"fu-hao-s-tomb-contained-468-bronze-weapons-indicating-military-rank","url":"/categories/ancient-civilizations-secrets/shang-dynasty/fu-hao-s-tomb-contained-468-bronze-weapons-indicating-military-rank.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists discovered 468 bronze weapons in the burial of Shang general Fu Hao, reflecting her elite military status."},{"title":"Haojing City Walls Demonstrate Early Chinese Defensive Engineering","slug":"haojing-city-walls-demonstrate-early-chinese-defensive-engineering","url":"/categories/ancient-civilizations-secrets/shang-dynasty/haojing-city-walls-demonstrate-early-chinese-defensive-engineering.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Shang capital at Haojing included rammed-earth fortifications extending several kilometers to protect the city."},{"title":"Haojing Oracle Bones Provide Insight Into Shang Political Bureaucracy","slug":"haojing-oracle-bones-provide-insight-into-shang-political-bureaucracy","url":"/categories/ancient-civilizations-secrets/shang-dynasty/haojing-oracle-bones-provide-insight-into-shang-political-bureaucracy.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Inscriptions on oracle bones reveal bureaucratic structure and record-keeping practices under Shang kings."},{"title":"Huan River Location Gave Late Shang Capital Strategic Agricultural Access","slug":"huan-river-location-gave-late-shang-capital-strategic-agricultural-access","url":"/categories/ancient-civilizations-secrets/shang-dynasty/huan-river-location-gave-late-shang-capital-strategic-agricultural-access.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The final Shang capital at Anyang was built near the Huan River, securing water, farmland, and transport advantages."},{"title":"Huang He Flood Cycles Influenced Shang Agricultural Stability","slug":"huang-he-flood-cycles-influenced-shang-agricultural-stability","url":"/categories/ancient-civilizations-secrets/shang-dynasty/huang-he-flood-cycles-influenced-shang-agricultural-stability.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The unpredictable flooding of the Yellow River shaped the Shang Dynasty’s agricultural planning and settlement patterns."},{"title":"Human Sacrifice Declined After Shang Dynasty Conquest by Zhou","slug":"human-sacrifice-declined-after-shang-dynasty-conquest-by-zhou","url":"/categories/ancient-civilizations-secrets/shang-dynasty/human-sacrifice-declined-after-shang-dynasty-conquest-by-zhou.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Zhou Dynasty overthrew the Shang around 1046 BCE, large-scale human sacrifice practices were drastically reduced."},{"title":"Human Sacrifice Rituals Reinforced Political and Religious Authority","slug":"human-sacrifice-rituals-reinforced-political-and-religious-authority","url":"/categories/ancient-civilizations-secrets/shang-dynasty/human-sacrifice-rituals-reinforced-political-and-religious-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang kings used human sacrifices during rituals to demonstrate power and appease ancestors."},{"title":"King Wu Ding’s 59-Year Reign Marked Shang Military Expansion","slug":"king-wu-ding-s-59-year-reign-marked-shang-military-expansion","url":"/categories/ancient-civilizations-secrets/shang-dynasty/king-wu-ding-s-59-year-reign-marked-shang-military-expansion.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"King Wu Ding ruled for nearly six decades and expanded Shang military campaigns across northern China."},{"title":"Lapis Lazuli Imported From Central Asia Demonstrates Shang Trade Networks","slug":"lapis-lazuli-imported-from-central-asia-demonstrates-shang-trade-networks","url":"/categories/ancient-civilizations-secrets/shang-dynasty/lapis-lazuli-imported-from-central-asia-demonstrates-shang-trade-networks.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang elite tombs contain lapis lazuli, indicating long-distance trade with Central Asia."},{"title":"Large-Scale Human Sacrifice Declined After the Shang Dynasty’s Fall","slug":"large-scale-human-sacrifice-declined-after-the-shang-dynasty-s-fall","url":"/categories/ancient-civilizations-secrets/shang-dynasty/large-scale-human-sacrifice-declined-after-the-shang-dynasty-s-fall.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When the Zhou Dynasty replaced the Shang around 1046 BCE, mass human sacrifice sharply decreased in royal burials."},{"title":"Loess Soil Fertility Enabled Sustained Shang Urban Centers","slug":"loess-soil-fertility-enabled-sustained-shang-urban-centers","url":"/categories/ancient-civilizations-secrets/shang-dynasty/loess-soil-fertility-enabled-sustained-shang-urban-centers.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The loess plains along the Yellow River provided fertile land that supported dense Shang populations and craft specialization."},{"title":"Loyalty Oaths on Oracle Bones Strengthened Shang Administrative Control","slug":"loyalty-oaths-on-oracle-bones-strengthened-shang-administrative-control","url":"/categories/ancient-civilizations-secrets/shang-dynasty/loyalty-oaths-on-oracle-bones-strengthened-shang-administrative-control.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Inscriptions record that subjects swore allegiance to kings through formal divination rituals on bones and shells."},{"title":"Lunar Calendars Derived From Shang Divination Practices","slug":"lunar-calendars-derived-from-shang-divination-practices","url":"/categories/ancient-civilizations-secrets/shang-dynasty/lunar-calendars-derived-from-shang-divination-practices.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Shang developed early lunar calendars recorded on oracle bones to guide agriculture and ritual."},{"title":"Mass Production of Bronze Ritual Objects Required Centralized Shang Authority","slug":"mass-production-of-bronze-ritual-objects-required-centralized-shang-authority","url":"/categories/ancient-civilizations-secrets/shang-dynasty/mass-production-of-bronze-ritual-objects-required-centralized-shang-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Late Shang governments oversaw large-scale production of bronze ritual vessels, reinforcing elite power."},{"title":"Mass Production of Bronze Weapons Strengthened Shang Military Power","slug":"mass-production-of-bronze-weapons-strengthened-shang-military-power","url":"/categories/ancient-civilizations-secrets/shang-dynasty/mass-production-of-bronze-weapons-strengthened-shang-military-power.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Standardized bronze axes and spearheads from Shang sites reveal early forms of military mass production."},{"title":"Mature Urban Planning at Yanshi Shang City Included Palace Foundations","slug":"mature-urban-planning-at-yanshi-shang-city-included-palace-foundations","url":"/categories/ancient-civilizations-secrets/shang-dynasty/mature-urban-planning-at-yanshi-shang-city-included-palace-foundations.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Yanshi revealed palace foundations arranged along planned axes dating to early Shang rule."},{"title":"Military Bronze Ge Axes Standardized Across Shang Armies","slug":"military-bronze-ge-axes-standardized-across-shang-armies","url":"/categories/ancient-civilizations-secrets/shang-dynasty/military-bronze-ge-axes-standardized-across-shang-armies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang armies used bronze ge axes with consistent design, reflecting early military standardization."},{"title":"Musical Bells in Shang Tombs Served Religious and State Functions","slug":"musical-bells-in-shang-tombs-served-religious-and-state-functions","url":"/categories/ancient-civilizations-secrets/shang-dynasty/musical-bells-in-shang-tombs-served-religious-and-state-functions.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bronze bells found in Shang royal tombs were used for ritual music and reinforcing political hierarchy."},{"title":"Oracle Bone Inscriptions From 1200 BCE Form China’s Earliest Writing System","slug":"oracle-bone-inscriptions-from-1200-bce-form-china-s-earliest-writing-system","url":"/categories/ancient-civilizations-secrets/shang-dynasty/oracle-bone-inscriptions-from-1200-bce-form-china-s-earliest-writing-system.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 150,000 oracle bones from the Shang Dynasty preserve the earliest known examples of Chinese writing."},{"title":"Qin Archaeologists Linked Shang Legacy to Early Chinese Script Evolution","slug":"qin-archaeologists-linked-shang-legacy-to-early-chinese-script-evolution","url":"/categories/ancient-civilizations-secrets/shang-dynasty/qin-archaeologists-linked-shang-legacy-to-early-chinese-script-evolution.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Oracle bone inscriptions from the Shang Dynasty reveal the earliest systematic form of Chinese writing, foundational to later scripts."},{"title":"Qing Dynasty Scholars Rediscovered Shang History Through Oracle Bones in 1899","slug":"qing-dynasty-scholars-rediscovered-shang-history-through-oracle-bones-in-1899","url":"/categories/ancient-civilizations-secrets/shang-dynasty/qing-dynasty-scholars-rediscovered-shang-history-through-oracle-bones-in-1899.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1899, scholars recognized mysterious 'dragon bones' sold as medicine as ancient Shang inscriptions."},{"title":"Queen Fu Hao Led Military Campaigns and Ruled as Shang General Around 1200 BCE","slug":"queen-fu-hao-led-military-campaigns-and-ruled-as-shang-general-around-1200-bce","url":"/categories/ancient-civilizations-secrets/shang-dynasty/queen-fu-hao-led-military-campaigns-and-ruled-as-shang-general-around-1200-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One Shang Dynasty consort commanded armies of up to 13,000 soldiers and was buried with more than 1,600 grave goods."},{"title":"Ritual Music Accompanied Shang Sacrificial Ceremonies","slug":"ritual-music-accompanied-shang-sacrificial-ceremonies","url":"/categories/ancient-civilizations-secrets/shang-dynasty/ritual-music-accompanied-shang-sacrificial-ceremonies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Bronze bells and chimes were played during Shang rituals to communicate with ancestors and reinforce social hierarchy."},{"title":"Ritual Music Instruments From Shang Sites Include Bells and Chimes","slug":"ritual-music-instruments-from-shang-sites-include-bells-and-chimes","url":"/categories/ancient-civilizations-secrets/shang-dynasty/ritual-music-instruments-from-shang-sites-include-bells-and-chimes.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang burials frequently contain bronze bells and chimes used in court and religious ceremonies."},{"title":"Sacrificial Pits at Anyang Include Captives and Animals as Royal Offerings","slug":"sacrificial-pits-at-anyang-include-captives-and-animals-as-royal-offerings","url":"/categories/ancient-civilizations-secrets/shang-dynasty/sacrificial-pits-at-anyang-include-captives-and-animals-as-royal-offerings.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations reveal pits with both human and animal sacrifices accompanying elite burials."},{"title":"Sacrificial Practices at Anyang Included Both Humans and Animals","slug":"sacrificial-practices-at-anyang-included-both-humans-and-animals","url":"/categories/ancient-civilizations-secrets/shang-dynasty/sacrificial-practices-at-anyang-included-both-humans-and-animals.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang elites buried humans and animals together in sacrificial pits to accompany royal tombs."},{"title":"Taotie Mask Motifs on Shang Bronzes Reflected Ritual Cosmology","slug":"taotie-mask-motifs-on-shang-bronzes-reflected-ritual-cosmology","url":"/categories/ancient-civilizations-secrets/shang-dynasty/taotie-mask-motifs-on-shang-bronzes-reflected-ritual-cosmology.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang bronze vessels feature recurring taotie mask designs whose meaning remains debated more than 3,000 years later."},{"title":"Tombs of Shang Elite Contain Over 1,000 Ritual Bronze Vessels","slug":"tombs-of-shang-elite-contain-over-1-000-ritual-bronze-vessels","url":"/categories/ancient-civilizations-secrets/shang-dynasty/tombs-of-shang-elite-contain-over-1-000-ritual-bronze-vessels.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Some Shang burials contained more than a thousand bronze vessels used in ancestral rituals."},{"title":"Upright Jade Bi Discs in Shang Tombs Signaled Elite Spiritual Authority","slug":"upright-jade-bi-discs-in-shang-tombs-signaled-elite-spiritual-authority","url":"/categories/ancient-civilizations-secrets/shang-dynasty/upright-jade-bi-discs-in-shang-tombs-signaled-elite-spiritual-authority.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Circular jade discs placed in Shang tombs symbolized cosmic order and elite access to spiritual power."},{"title":"Vast Shang Bronze Workshops Required Coordinated Labor and Resource Allocation","slug":"vast-shang-bronze-workshops-required-coordinated-labor-and-resource-allocation","url":"/categories/ancient-civilizations-secrets/shang-dynasty/vast-shang-bronze-workshops-required-coordinated-labor-and-resource-allocation.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Late Shang capitals featured extensive bronze workshops capable of producing ritual vessels and weapons at scale."},{"title":"Veneration of Ancestors Guided Shang Political Decisions","slug":"veneration-of-ancestors-guided-shang-political-decisions","url":"/categories/ancient-civilizations-secrets/shang-dynasty/veneration-of-ancestors-guided-shang-political-decisions.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Shang rulers consulted ancestors for guidance on governance, warfare, and resource management through ritual divination."},{"title":"Victory Rituals in Shang Warfare Integrated Ancestral Divination","slug":"victory-rituals-in-shang-warfare-integrated-ancestral-divination","url":"/categories/ancient-civilizations-secrets/shang-dynasty/victory-rituals-in-shang-warfare-integrated-ancestral-divination.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before and after battles, Shang generals consulted oracle bones to secure ancestral approval for military campaigns."},{"title":"Xia-Shang Cultural Continuity Reflected in Bronze Casting Techniques","slug":"xia-shang-cultural-continuity-reflected-in-bronze-casting-techniques","url":"/categories/ancient-civilizations-secrets/shang-dynasty/xia-shang-cultural-continuity-reflected-in-bronze-casting-techniques.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Early Shang bronze methods show influence from preceding Xia cultural sites like Erlitou."},{"title":"Xia-Shang Transition Remains Archaeologically Debated in Chinese History","slug":"xia-shang-transition-remains-archaeologically-debated-in-chinese-history","url":"/categories/ancient-civilizations-secrets/shang-dynasty/xia-shang-transition-remains-archaeologically-debated-in-chinese-history.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeologists continue to debate where legend ends and the Shang Dynasty’s documented history begins."},{"title":"Xiang Rivers Enabled Transportation of Shang Bronze and Ritual Goods","slug":"xiang-rivers-enabled-transportation-of-shang-bronze-and-ritual-goods","url":"/categories/ancient-civilizations-secrets/shang-dynasty/xiang-rivers-enabled-transportation-of-shang-bronze-and-ritual-goods.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Waterways like the Xiang facilitated movement of heavy bronze vessels and raw materials across Shang territories."},{"title":"Xing Tomb at Anyang Contained Chariots and Sacrificial Horses","slug":"xing-tomb-at-anyang-contained-chariots-and-sacrificial-horses","url":"/categories/ancient-civilizations-secrets/shang-dynasty/xing-tomb-at-anyang-contained-chariots-and-sacrificial-horses.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"One Shang burial pit at Anyang preserved complete chariots alongside sacrificed horses and attendants."},{"title":"Xuanwu Rituals Later Adopted Themes Seen in Shang Ancestor Worship","slug":"xuanwu-rituals-later-adopted-themes-seen-in-shang-ancestor-worship","url":"/categories/ancient-civilizations-secrets/shang-dynasty/xuanwu-rituals-later-adopted-themes-seen-in-shang-ancestor-worship.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elements of Shang sacrificial and divination practices influenced religious rituals in subsequent Chinese dynasties."},{"title":"Yin Ruins Archaeology Confirms Complex Urban Planning in Late Shang Capital","slug":"yin-ruins-archaeology-confirms-complex-urban-planning-in-late-shang-capital","url":"/categories/ancient-civilizations-secrets/shang-dynasty/yin-ruins-archaeology-confirms-complex-urban-planning-in-late-shang-capital.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations at Yin Xu reveal a city with planned streets, palace foundations, and defensive structures."},{"title":"Yin Xu Excavations Reveal Ritual Sacrifice of Dogs and Pigs","slug":"yin-xu-excavations-reveal-ritual-sacrifice-of-dogs-and-pigs","url":"/categories/ancient-civilizations-secrets/shang-dynasty/yin-xu-excavations-reveal-ritual-sacrifice-of-dogs-and-pigs.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Animal remains, including dogs and pigs, were discovered in Shang sacrificial pits, complementing human offerings."},{"title":"Yin Xu Oracle Pits Contain Over 150,000 Inscribed Bones","slug":"yin-xu-oracle-pits-contain-over-150-000-inscribed-bones","url":"/categories/ancient-civilizations-secrets/shang-dynasty/yin-xu-oracle-pits-contain-over-150-000-inscribed-bones.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"More than 150,000 inscribed bones have been recovered from the last Shang capital at Yin Xu."},{"title":"Yin Xu Tomb Excavations Reveal Complex Burial Hierarchies","slug":"yin-xu-tomb-excavations-reveal-complex-burial-hierarchies","url":"/categories/ancient-civilizations-secrets/shang-dynasty/yin-xu-tomb-excavations-reveal-complex-burial-hierarchies.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Royal tombs at Yin Xu show stratified burial practices including human and animal sacrifices and multiple ritual layers."},{"title":"Zhengzhou Shang City Walls Extended Over 7 Kilometers in Length","slug":"zhengzhou-shang-city-walls-extended-over-7-kilometers-in-length","url":"/categories/ancient-civilizations-secrets/shang-dynasty/zhengzhou-shang-city-walls-extended-over-7-kilometers-in-length.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The early Shang capital at Zhengzhou was protected by massive rammed-earth walls stretching more than 7 kilometers."},{"title":"Zhongyuan Plain Fertility Supported High Shang Population Density","slug":"zhongyuan-plain-fertility-supported-high-shang-population-density","url":"/categories/ancient-civilizations-secrets/shang-dynasty/zhongyuan-plain-fertility-supported-high-shang-population-density.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The fertile central plains of the Yellow River allowed the Shang Dynasty to sustain large urban populations and craft specialization."},{"title":"Zhou Conquest Ended Shang Dynasty Around 1046 BCE","slug":"zhou-conquest-ended-shang-dynasty-around-1046-bce","url":"/categories/ancient-civilizations-secrets/shang-dynasty/zhou-conquest-ended-shang-dynasty-around-1046-bce.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Shang Dynasty fell when the Zhou overthrew the last king, establishing a new dynastic order."},{"title":"Zhou Justified Conquest Using Moral Evaluation of Shang Ritual Failures","slug":"zhou-justified-conquest-using-moral-evaluation-of-shang-ritual-failures","url":"/categories/ancient-civilizations-secrets/shang-dynasty/zhou-justified-conquest-using-moral-evaluation-of-shang-ritual-failures.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Zhou Dynasty framed the Shang fall as a consequence of ritual and ethical failings, legitimizing their takeover."},{"title":"Zhou Mandate Concept Rooted in Moral Interpretation of Shang Decline","slug":"zhou-mandate-concept-rooted-in-moral-interpretation-of-shang-decline","url":"/categories/ancient-civilizations-secrets/shang-dynasty/zhou-mandate-concept-rooted-in-moral-interpretation-of-shang-decline.html","color":"#8eb58a","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Zhou justified overthrowing the Shang through the Mandate of Heaven, interpreting failure of ritual as loss of divine favor."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

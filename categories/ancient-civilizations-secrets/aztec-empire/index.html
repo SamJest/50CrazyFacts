@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aztec Empire</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Aztec Empire</h1>
+  <p>Explore all facts in "Aztec Empire".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Aztec Empire</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Acamapichtli 1375 Election Established Dynastic Legitimacy in Early Aztec Rule","slug":"acamapichtli-1375-election-established-dynastic-legitimacy-in-early-aztec-rule","url":"/categories/ancient-civilizations-secrets/aztec-empire/acamapichtli-1375-election-established-dynastic-legitimacy-in-early-aztec-rule.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1375, the selection of Acamapichtli as ruler marked the beginning of dynastic continuity in Tenochtitlan."},{"title":"Atlatl Spear-Thrower Technology Enhanced Aztec Military Range Before Spanish Contact","slug":"atlatl-spear-thrower-technology-enhanced-aztec-military-range-before-spanish-contact","url":"/categories/ancient-civilizations-secrets/aztec-empire/atlatl-spear-thrower-technology-enhanced-aztec-military-range-before-spanish-contact.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before firearms appeared in Mesoamerica, Aztec warriors used the atlatl to launch darts with lethal velocity."},{"title":"Axayacatl 1478 Defeat at Tzintzuntzan Marked Aztec Empire’s First Major Military Setback","slug":"axayacatl-1478-defeat-at-tzintzuntzan-marked-aztec-empire-s-first-major-military-setback","url":"/categories/ancient-civilizations-secrets/aztec-empire/axayacatl-1478-defeat-at-tzintzuntzan-marked-aztec-empire-s-first-major-military-setback.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In 1478, Aztec emperor Axayacatl marched west and suffered a rare and humiliating defeat that exposed limits to imperial expansion."},{"title":"Basin Causeway Bridges Designed with Removable Sections Improved Defensive Strategy","slug":"basin-causeway-bridges-designed-with-removable-sections-improved-defensive-strategy","url":"/categories/ancient-civilizations-secrets/aztec-empire/basin-causeway-bridges-designed-with-removable-sections-improved-defensive-strategy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Aztec causeways incorporated removable wooden bridges that could be withdrawn during invasion."},{"title":"Basin of Mexico Aqueduct 15th Century Engineering Supplied Tenochtitlan With Fresh Water","slug":"basin-of-mexico-aqueduct-15th-century-engineering-supplied-tenochtitlan-with-fresh-water","url":"/categories/ancient-civilizations-secrets/aztec-empire/basin-of-mexico-aqueduct-15th-century-engineering-supplied-tenochtitlan-with-fresh-water.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 15th century, Aztec engineers constructed dual-channel aqueducts to transport freshwater across a lake to their island capital."},{"title":"Breech Birth Omens in 15th Century Aztec Society Carried Political Significance","slug":"breech-birth-omens-in-15th-century-aztec-society-carried-political-significance","url":"/categories/ancient-civilizations-secrets/aztec-empire/breech-birth-omens-in-15th-century-aztec-society-carried-political-significance.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In Aztec belief systems, unusual births were interpreted as omens with potential political implications."},{"title":"Cuauhtemoc 1521 Capture Ended Organized Aztec Resistance After 93-Day Siege","slug":"cuauhtemoc-1521-capture-ended-organized-aztec-resistance-after-93-day-siege","url":"/categories/ancient-civilizations-secrets/aztec-empire/cuauhtemoc-1521-capture-ended-organized-aztec-resistance-after-93-day-siege.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"After a 93-day siege in 1521, the capture of Emperor Cuauhtemoc marked the collapse of centralized Aztec resistance."},{"title":"Kauil Obsidian Trade 15th Century Supplied Weapons and Ritual Blades Across the Empire","slug":"kauil-obsidian-trade-15th-century-supplied-weapons-and-ritual-blades-across-the-empire","url":"/categories/ancient-civilizations-secrets/aztec-empire/kauil-obsidian-trade-15th-century-supplied-weapons-and-ritual-blades-across-the-empire.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Obsidian from central Mexican quarries armed Aztec warriors and priests with razor-sharp blades."},{"title":"Kauil Tribute Caravans Demonstrated Long-Distance Logistical Coordination Before 1521","slug":"kauil-tribute-caravans-demonstrated-long-distance-logistical-coordination-before-1521","url":"/categories/ancient-civilizations-secrets/aztec-empire/kauil-tribute-caravans-demonstrated-long-distance-logistical-coordination-before-1521.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Before European contact, the Aztec Empire coordinated tribute caravans across hundreds of kilometers without draft animals or wheeled transport."},{"title":"Kauil Tribute Redistribution Supported Temple Construction Across the Basin of Mexico","slug":"kauil-tribute-redistribution-supported-temple-construction-across-the-basin-of-mexico","url":"/categories/ancient-civilizations-secrets/aztec-empire/kauil-tribute-redistribution-supported-temple-construction-across-the-basin-of-mexico.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Imperial tribute did not remain static in the capital but was redistributed to sustain temple networks across allied cities."},{"title":"Ketzal Feather Tribute 15th Century Symbolized Imperial Wealth and Ecological Reach","slug":"ketzal-feather-tribute-15th-century-symbolized-imperial-wealth-and-ecological-reach","url":"/categories/ancient-civilizations-secrets/aztec-empire/ketzal-feather-tribute-15th-century-symbolized-imperial-wealth-and-ecological-reach.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Brilliant quetzal feathers traveled hundreds of kilometers to adorn Aztec rulers as symbols of imperial reach."},{"title":"Ketzalcoatl Mythology 1519 Influenced Spanish Interpretations of Moctezuma II","slug":"ketzalcoatl-mythology-1519-influenced-spanish-interpretations-of-moctezuma-ii","url":"/categories/ancient-civilizations-secrets/aztec-empire/ketzalcoatl-mythology-1519-influenced-spanish-interpretations-of-moctezuma-ii.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"When Hernan Cortes arrived in 1519, later accounts claimed Moctezuma II linked him to the returning deity Quetzalcoatl."},{"title":"Qauhtli Eagle Warrior Orders Formed Elite Aztec Military Societies in the 15th Century","slug":"qauhtli-eagle-warrior-orders-formed-elite-aztec-military-societies-in-the-15th-century","url":"/categories/ancient-civilizations-secrets/aztec-empire/qauhtli-eagle-warrior-orders-formed-elite-aztec-military-societies-in-the-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 15th century, Aztec military prestige depended on admission into elite warrior orders such as the Eagle and Jaguar societies."},{"title":"Quauhnahuac 1450 Famine Exposed Limits of Aztec Agricultural Resilience","slug":"quauhnahuac-1450-famine-exposed-limits-of-aztec-agricultural-resilience","url":"/categories/ancient-civilizations-secrets/aztec-empire/quauhnahuac-1450-famine-exposed-limits-of-aztec-agricultural-resilience.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the mid-15th century, a devastating famine forced Aztec rulers to confront the fragility beneath imperial abundance."},{"title":"Quetzalapanecayotl Prophecy Traditions Influenced Late Aztec Political Interpretation","slug":"quetzalapanecayotl-prophecy-traditions-influenced-late-aztec-political-interpretation","url":"/categories/ancient-civilizations-secrets/aztec-empire/quetzalapanecayotl-prophecy-traditions-influenced-late-aztec-political-interpretation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"On the eve of conquest, Aztec elites interpreted unusual natural events through long-standing prophetic traditions."},{"title":"Quetzalcoatl Cult Reform 15th Century Reshaped Aztec Religious Policy","slug":"quetzalcoatl-cult-reform-15th-century-reshaped-aztec-religious-policy","url":"/categories/ancient-civilizations-secrets/aztec-empire/quetzalcoatl-cult-reform-15th-century-reshaped-aztec-religious-policy.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 15th century, Aztec rulers elevated the cult of Quetzalcoatl to balance the militaristic dominance of other deities."},{"title":"Quiauhteopan Temple 15th Century Honored Rain Deity Tlaloc in Mountain Highlands","slug":"quiauhteopan-temple-15th-century-honored-rain-deity-tlaloc-in-mountain-highlands","url":"/categories/ancient-civilizations-secrets/aztec-empire/quiauhteopan-temple-15th-century-honored-rain-deity-tlaloc-in-mountain-highlands.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"High in the mountains surrounding the Basin of Mexico, Aztec priests conducted ceremonies to secure rainfall from Tlaloc."},{"title":"Sacred Eagle and Jaguar Iconography Unified Military and Religious Identity in the 15th Century","slug":"sacred-eagle-and-jaguar-iconography-unified-military-and-religious-identity-in-the-15th-century","url":"/categories/ancient-civilizations-secrets/aztec-empire/sacred-eagle-and-jaguar-iconography-unified-military-and-religious-identity-in-the-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Across Aztec temples and battlefields, eagle and jaguar imagery symbolized the fusion of faith and warfare."},{"title":"Sun Stone 1479 Carving Encoded Aztec Cosmology in Monumental Basalt","slug":"sun-stone-1479-carving-encoded-aztec-cosmology-in-monumental-basalt","url":"/categories/ancient-civilizations-secrets/aztec-empire/sun-stone-1479-carving-encoded-aztec-cosmology-in-monumental-basalt.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Carved in the late 15th century, the Aztec Sun Stone compresses centuries of cosmological belief into a single circular monument."},{"title":"Tenochtitlan 1519 Population Reached 200000 Before Spanish Arrival","slug":"tenochtitlan-1519-population-reached-200000-before-spanish-arrival","url":"/categories/ancient-civilizations-secrets/aztec-empire/tenochtitlan-1519-population-reached-200000-before-spanish-arrival.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By 1519, Tenochtitlan’s population rivaled the largest European cities, reaching an estimated 200000 residents."},{"title":"Tetzcoco Legal Reforms Under Nezahualcoyotl Established Formalized Aztec Law Codes","slug":"tetzcoco-legal-reforms-under-nezahualcoyotl-established-formalized-aztec-law-codes","url":"/categories/ancient-civilizations-secrets/aztec-empire/tetzcoco-legal-reforms-under-nezahualcoyotl-established-formalized-aztec-law-codes.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 15th century, Texcoco’s ruler Nezahualcoyotl codified laws that influenced governance across the Triple Alliance."},{"title":"Tlatocan Council Governed the Aztec Empire Through Noble Deliberation","slug":"tlatocan-council-governed-the-aztec-empire-through-noble-deliberation","url":"/categories/ancient-civilizations-secrets/aztec-empire/tlatocan-council-governed-the-aztec-empire-through-noble-deliberation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Despite imperial authority, the Aztec ruler governed alongside a council known as the Tlatocan."},{"title":"Uey Teocalli Construction Phases Show Seven Major Expansions Before 1521","slug":"uey-teocalli-construction-phases-show-seven-major-expansions-before-1521","url":"/categories/ancient-civilizations-secrets/aztec-empire/uey-teocalli-construction-phases-show-seven-major-expansions-before-1521.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Archaeological studies reveal that the Great Temple of Tenochtitlan was rebuilt and expanded at least seven times before its fall."},{"title":"Uey Tlatoani Title Reflected Elective Monarchy at the Center of Aztec Governance","slug":"uey-tlatoani-title-reflected-elective-monarchy-at-the-center-of-aztec-governance","url":"/categories/ancient-civilizations-secrets/aztec-empire/uey-tlatoani-title-reflected-elective-monarchy-at-the-center-of-aztec-governance.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Aztec emperor carried the title Uey Tlatoani, meaning Great Speaker, emphasizing authority through voice and counsel."},{"title":"Uitzilopochtli Temple Iconography Reinforced Aztec Military Expansion in the 15th Century","slug":"uitzilopochtli-temple-iconography-reinforced-aztec-military-expansion-in-the-15th-century","url":"/categories/ancient-civilizations-secrets/aztec-empire/uitzilopochtli-temple-iconography-reinforced-aztec-military-expansion-in-the-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"At the summit of the Templo Mayor, imagery of Huitzilopochtli broadcast a theology that justified relentless expansion."},{"title":"Ullamaliztli Ballgame Courts Structured Aztec Ritual Competition and Political Messaging","slug":"ullamaliztli-ballgame-courts-structured-aztec-ritual-competition-and-political-messaging","url":"/categories/ancient-civilizations-secrets/aztec-empire/ullamaliztli-ballgame-courts-structured-aztec-ritual-competition-and-political-messaging.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Aztec ceremonial ballgames were staged on monumental courts that doubled as arenas of political symbolism."},{"title":"Uxmal and Central Mexican Exchange Networks Linked Maya and Aztec Economies","slug":"uxmal-and-central-mexican-exchange-networks-linked-maya-and-aztec-economies","url":"/categories/ancient-civilizations-secrets/aztec-empire/uxmal-and-central-mexican-exchange-networks-linked-maya-and-aztec-economies.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Spanish arrival, trade corridors connected Aztec markets with distant Maya cities such as Uxmal."},{"title":"Xochimilco Chinampa System Produced Up to Seven Harvests Per Year in the 15th Century","slug":"xochimilco-chinampa-system-produced-up-to-seven-harvests-per-year-in-the-15th-century","url":"/categories/ancient-civilizations-secrets/aztec-empire/xochimilco-chinampa-system-produced-up-to-seven-harvests-per-year-in-the-15th-century.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"By the 15th century, Aztec farmers were producing multiple annual harvests on artificial islands built from lake sediment."},{"title":"Xochiyaoyotl Flower Wars Institutionalized Ritual Combat Between Rival States","slug":"xochiyaoyotl-flower-wars-institutionalized-ritual-combat-between-rival-states","url":"/categories/ancient-civilizations-secrets/aztec-empire/xochiyaoyotl-flower-wars-institutionalized-ritual-combat-between-rival-states.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"The Aztec engaged in formalized conflicts known as Flower Wars that prioritized captive-taking over territorial conquest."},{"title":"Xolotl Underworld Myth Guided Aztec Beliefs About Death and Transformation","slug":"xolotl-underworld-myth-guided-aztec-beliefs-about-death-and-transformation","url":"/categories/ancient-civilizations-secrets/aztec-empire/xolotl-underworld-myth-guided-aztec-beliefs-about-death-and-transformation.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In Aztec cosmology, the god Xolotl escorted souls through the underworld’s trials toward their final destination."},{"title":"Yacatecuhtli Merchant Guilds 15th Century Controlled Long-Distance Aztec Trade","slug":"yacatecuhtli-merchant-guilds-15th-century-controlled-long-distance-aztec-trade","url":"/categories/ancient-civilizations-secrets/aztec-empire/yacatecuhtli-merchant-guilds-15th-century-controlled-long-distance-aztec-trade.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Elite Aztec merchants operated under the patronage of Yacatecuhtli, transforming commerce into organized political influence."},{"title":"Yancuitlalpan Provincial Governance Model Balanced Local Nobility with Imperial Oversight","slug":"yancuitlalpan-provincial-governance-model-balanced-local-nobility-with-imperial-oversight","url":"/categories/ancient-civilizations-secrets/aztec-empire/yancuitlalpan-provincial-governance-model-balanced-local-nobility-with-imperial-oversight.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Aztec provincial administration often preserved local rulers while imposing tribute and military obligations."},{"title":"Yauhquemehkan Military Campaigns Extended Aztec Influence into Gulf Coast Regions","slug":"yauhquemehkan-military-campaigns-extended-aztec-influence-into-gulf-coast-regions","url":"/categories/ancient-civilizations-secrets/aztec-empire/yauhquemehkan-military-campaigns-extended-aztec-influence-into-gulf-coast-regions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Aztec armies marched eastward toward Gulf Coast territories to secure tribute and trade access."},{"title":"Yollotl Heart Symbolism Shaped Aztec Conceptions of Life Force and Sacrifice","slug":"yollotl-heart-symbolism-shaped-aztec-conceptions-of-life-force-and-sacrifice","url":"/categories/ancient-civilizations-secrets/aztec-empire/yollotl-heart-symbolism-shaped-aztec-conceptions-of-life-force-and-sacrifice.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In Aztec thought, the heart represented the animating force that sustained both individuals and the cosmos."},{"title":"Yopico Temple Precinct in Tenochtitlan Was Dedicated to Xipe Totec Rituals","slug":"yopico-temple-precinct-in-tenochtitlan-was-dedicated-to-xipe-totec-rituals","url":"/categories/ancient-civilizations-secrets/aztec-empire/yopico-temple-precinct-in-tenochtitlan-was-dedicated-to-xipe-totec-rituals.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Within the ceremonial heart of Tenochtitlan stood a specialized precinct devoted to the cult of Xipe Totec."},{"title":"Zacatecas Trade Routes Connected Aztec Markets to Northern Mineral Regions","slug":"zacatecas-trade-routes-connected-aztec-markets-to-northern-mineral-regions","url":"/categories/ancient-civilizations-secrets/aztec-empire/zacatecas-trade-routes-connected-aztec-markets-to-northern-mineral-regions.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Long before Spanish mining booms, Aztec trade networks extended northward toward mineral-rich regions such as Zacatecas."},{"title":"Zacatenco Archaeological Layers Reveal Pre-Aztec Foundations Beneath Imperial Capital","slug":"zacatenco-archaeological-layers-reveal-pre-aztec-foundations-beneath-imperial-capital","url":"/categories/ancient-civilizations-secrets/aztec-empire/zacatenco-archaeological-layers-reveal-pre-aztec-foundations-beneath-imperial-capital.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Excavations around the Basin of Mexico reveal that Aztec dominance rose atop centuries of earlier settlement."},{"title":"Zapotlan Incorporation Demonstrated Aztec Strategy of Peripheral Alliance Building","slug":"zapotlan-incorporation-demonstrated-aztec-strategy-of-peripheral-alliance-building","url":"/categories/ancient-civilizations-secrets/aztec-empire/zapotlan-incorporation-demonstrated-aztec-strategy-of-peripheral-alliance-building.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Rather than conquering every territory outright, Aztec rulers often secured peripheral regions through negotiated alliance."},{"title":"Zinacantepec Obsidian Workshops Supplied Imperial Weapon Production Networks","slug":"zinacantepec-obsidian-workshops-supplied-imperial-weapon-production-networks","url":"/categories/ancient-civilizations-secrets/aztec-empire/zinacantepec-obsidian-workshops-supplied-imperial-weapon-production-networks.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"Workshops near volcanic regions such as Zinacantepec supplied the sharp obsidian blades that armed Aztec warriors."},{"title":"Zumpango Causeway 15th Century Fortifications Protected Northern Access to Tenochtitlan","slug":"zumpango-causeway-15th-century-fortifications-protected-northern-access-to-tenochtitlan","url":"/categories/ancient-civilizations-secrets/aztec-empire/zumpango-causeway-15th-century-fortifications-protected-northern-access-to-tenochtitlan.html","color":"#ec0b1e","category":"ancient-civilizations-secrets","factCount":1,"factPreview":"In the 15th century, fortified causeways connected Tenochtitlan to the mainland while doubling as defensive choke points."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

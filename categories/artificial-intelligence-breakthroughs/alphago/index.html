@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alphago</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Alphago</h1>
+  <p>Explore all facts in "Alphago".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Alphago</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"AlphaGo Combined Deep Neural Networks With Monte Carlo Tree Search","slug":"alphago-combined-deep-neural-networks-with-monte-carlo-tree-search","url":"/categories/artificial-intelligence-breakthroughs/alphago/alphago-combined-deep-neural-networks-with-monte-carlo-tree-search.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s unique architecture fused pattern recognition with probabilistic search to master Go strategies."},{"title":"AlphaGo Defeated World Champion Lee Sedol in 2016","slug":"alphago-defeated-world-champion-lee-sedol-in-2016","url":"/categories/artificial-intelligence-breakthroughs/alphago/alphago-defeated-world-champion-lee-sedol-in-2016.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In March 2016, AlphaGo achieved a historic victory over Go legend Lee Sedol, shocking the global AI community."},{"title":"AlphaGo Inspired Ethical Debate Over AI Decision-Making Autonomy","slug":"alphago-inspired-ethical-debate-over-ai-decision-making-autonomy","url":"/categories/artificial-intelligence-breakthroughs/alphago/alphago-inspired-ethical-debate-over-ai-decision-making-autonomy.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s self-learning strategies prompted global discussions about AI autonomy and moral responsibility."},{"title":"AlphaGo Victory Accelerated AI Investment Globally","slug":"alphago-victory-accelerated-ai-investment-globally","url":"/categories/artificial-intelligence-breakthroughs/alphago/alphago-victory-accelerated-ai-investment-globally.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Following AlphaGo’s defeat of Lee Sedol, venture capital and government funding for AI research surged worldwide."},{"title":"AlphaGo Zero Learned Go Without Human Data","slug":"alphago-zero-learned-go-without-human-data","url":"/categories/artificial-intelligence-breakthroughs/alphago/alphago-zero-learned-go-without-human-data.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"In 2017, DeepMind introduced AlphaGo Zero, an AI that mastered Go using only self-play without any human game input."},{"title":"Deep Reinforcement Learning in AlphaGo Inspired Robotics Applications","slug":"deep-reinforcement-learning-in-alphago-inspired-robotics-applications","url":"/categories/artificial-intelligence-breakthroughs/alphago/deep-reinforcement-learning-in-alphago-inspired-robotics-applications.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s reinforcement learning architecture has been adapted to teach robots complex tasks autonomously."},{"title":"DeepMind Published AlphaGo’s Architecture to Advance AI Research","slug":"deepmind-published-alphago-s-architecture-to-advance-ai-research","url":"/categories/artificial-intelligence-breakthroughs/alphago/deepmind-published-alphago-s-architecture-to-advance-ai-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Detailed papers on AlphaGo’s neural networks and Monte Carlo tree search strategy enabled global AI research replication."},{"title":"Faster Neural Network Inference Accelerated AlphaGo’s Real-Time Play","slug":"faster-neural-network-inference-accelerated-alphago-s-real-time-play","url":"/categories/artificial-intelligence-breakthroughs/alphago/faster-neural-network-inference-accelerated-alphago-s-real-time-play.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Optimized neural network computation enabled AlphaGo to make complex decisions within human-level time constraints."},{"title":"Financial Trading Algorithms Adapted AlphaGo Self-Play Techniques","slug":"financial-trading-algorithms-adapted-alphago-self-play-techniques","url":"/categories/artificial-intelligence-breakthroughs/alphago/financial-trading-algorithms-adapted-alphago-self-play-techniques.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Reinforcement learning methods from AlphaGo are now used to optimize high-frequency and algorithmic trading strategies."},{"title":"Hardware Acceleration With TPUs Enabled AlphaGo to Evaluate Millions of Moves","slug":"hardware-acceleration-with-tpus-enabled-alphago-to-evaluate-millions-of-moves","url":"/categories/artificial-intelligence-breakthroughs/alphago/hardware-acceleration-with-tpus-enabled-alphago-to-evaluate-millions-of-moves.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Custom tensor processing units allowed AlphaGo to perform real-time calculations across millions of Go board positions."},{"title":"Hardware Acceleration With TPUs Enabled AlphaGo’s Deep Learning","slug":"hardware-acceleration-with-tpus-enabled-alphago-s-deep-learning","url":"/categories/artificial-intelligence-breakthroughs/alphago/hardware-acceleration-with-tpus-enabled-alphago-s-deep-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo leveraged specialized tensor processing units (TPUs) to accelerate deep neural network computations."},{"title":"Hardware Optimization Through TPUs Accelerated AlphaGo’s Computation","slug":"hardware-optimization-through-tpus-accelerated-alphago-s-computation","url":"/categories/artificial-intelligence-breakthroughs/alphago/hardware-optimization-through-tpus-accelerated-alphago-s-computation.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s real-time decision-making was enabled by custom tensor processing units designed for deep learning tasks."},{"title":"Hardware-Software Co-Design Enabled Real-Time AlphaGo Decision-Making","slug":"hardware-software-co-design-enabled-real-time-alphago-decision-making","url":"/categories/artificial-intelligence-breakthroughs/alphago/hardware-software-co-design-enabled-real-time-alphago-decision-making.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Custom TPUs and optimized algorithms allowed AlphaGo to compute millions of positions in seconds."},{"title":"Hardware-Software Integration in AlphaGo Set New AI Benchmarks","slug":"hardware-software-integration-in-alphago-set-new-ai-benchmarks","url":"/categories/artificial-intelligence-breakthroughs/alphago/hardware-software-integration-in-alphago-set-new-ai-benchmarks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Co-design of specialized hardware and neural network algorithms enabled AlphaGo’s strategic depth and speed."},{"title":"Human Perception of AI Creativity Shifted After AlphaGo’s Innovative Moves","slug":"human-perception-of-ai-creativity-shifted-after-alphago-s-innovative-moves","url":"/categories/artificial-intelligence-breakthroughs/alphago/human-perception-of-ai-creativity-shifted-after-alphago-s-innovative-moves.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s unconventional strategies challenged traditional views on machine creativity and intuition."},{"title":"Human Players Adopted AI-Inspired Opening Moves From AlphaGo","slug":"human-players-adopted-ai-inspired-opening-moves-from-alphago","url":"/categories/artificial-intelligence-breakthroughs/alphago/human-players-adopted-ai-inspired-opening-moves-from-alphago.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Professional Go players incorporated AlphaGo’s unconventional opening strategies into competitive play."},{"title":"Human-AI Collaboration Emerged From Studying AlphaGo Games","slug":"human-ai-collaboration-emerged-from-studying-alphago-games","url":"/categories/artificial-intelligence-breakthroughs/alphago/human-ai-collaboration-emerged-from-studying-alphago-games.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Players began combining AlphaGo strategies with traditional human approaches to develop hybrid gameplay."},{"title":"Learning Efficiency Improved With AlphaGo’s Reinforcement Architecture","slug":"learning-efficiency-improved-with-alphago-s-reinforcement-architecture","url":"/categories/artificial-intelligence-breakthroughs/alphago/learning-efficiency-improved-with-alphago-s-reinforcement-architecture.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s combination of supervised learning and reinforcement learning enabled rapid improvement beyond human gameplay patterns."},{"title":"Learning From Self-Play Enabled AlphaGo to Innovate Beyond Human Knowledge","slug":"learning-from-self-play-enabled-alphago-to-innovate-beyond-human-knowledge","url":"/categories/artificial-intelligence-breakthroughs/alphago/learning-from-self-play-enabled-alphago-to-innovate-beyond-human-knowledge.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s self-play learning strategy allowed it to discover novel Go moves not present in historical human games."},{"title":"Monte Carlo Tree Search From AlphaGo Optimizes Supply Chain Simulations","slug":"monte-carlo-tree-search-from-alphago-optimizes-supply-chain-simulations","url":"/categories/artificial-intelligence-breakthroughs/alphago/monte-carlo-tree-search-from-alphago-optimizes-supply-chain-simulations.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s Monte Carlo Tree Search technique is applied to logistics, enabling AI to predict and optimize complex supply chain decisions."},{"title":"Multi-Phase Training Combined Human Knowledge and Self-Play in AlphaGo","slug":"multi-phase-training-combined-human-knowledge-and-self-play-in-alphago","url":"/categories/artificial-intelligence-breakthroughs/alphago/multi-phase-training-combined-human-knowledge-and-self-play-in-alphago.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo used both supervised learning from human games and reinforcement learning from self-play to achieve superhuman performance."},{"title":"Quantum-Inspired Algorithms Boosted AlphaGo’s Efficiency","slug":"quantum-inspired-algorithms-boosted-alphago-s-efficiency","url":"/categories/artificial-intelligence-breakthroughs/alphago/quantum-inspired-algorithms-boosted-alphago-s-efficiency.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"DeepMind implemented techniques inspired by quantum probability theory to improve AlphaGo’s decision evaluation speed."},{"title":"Value Networks in AlphaGo Enabled Accurate Game Outcome Prediction","slug":"value-networks-in-alphago-enabled-accurate-game-outcome-prediction","url":"/categories/artificial-intelligence-breakthroughs/alphago/value-networks-in-alphago-enabled-accurate-game-outcome-prediction.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo used value networks to estimate the probability of winning from any board position, enhancing decision-making."},{"title":"Victory Against Lee Sedol Influenced AI Public Perception Worldwide","slug":"victory-against-lee-sedol-influenced-ai-public-perception-worldwide","url":"/categories/artificial-intelligence-breakthroughs/alphago/victory-against-lee-sedol-influenced-ai-public-perception-worldwide.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s defeat of a top human Go player in 2016 dramatically shifted public perception of AI capabilities."},{"title":"Victory in Go Boosted Global AI Funding and Research","slug":"victory-in-go-boosted-global-ai-funding-and-research","url":"/categories/artificial-intelligence-breakthroughs/alphago/victory-in-go-boosted-global-ai-funding-and-research.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s wins against top human players triggered a surge in international AI research investment."},{"title":"Virtual Go Training Platforms Emerged Inspired by AlphaGo","slug":"virtual-go-training-platforms-emerged-inspired-by-alphago","url":"/categories/artificial-intelligence-breakthroughs/alphago/virtual-go-training-platforms-emerged-inspired-by-alphago.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"After AlphaGo’s victory, online Go platforms incorporated AI analysis to enhance player learning and skill assessment."},{"title":"XPRIZE AI Challenges Adopt Reinforcement Learning Inspired by AlphaGo","slug":"xprize-ai-challenges-adopt-reinforcement-learning-inspired-by-alphago","url":"/categories/artificial-intelligence-breakthroughs/alphago/xprize-ai-challenges-adopt-reinforcement-learning-inspired-by-alphago.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"The design of AI competitions was influenced by AlphaGo’s self-play and reinforcement learning methodology."},{"title":"XPRIZE Challenges Took Inspiration From AlphaGo’s Reinforcement Learning","slug":"xprize-challenges-took-inspiration-from-alphago-s-reinforcement-learning","url":"/categories/artificial-intelligence-breakthroughs/alphago/xprize-challenges-took-inspiration-from-alphago-s-reinforcement-learning.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s success influenced the design of competitive AI challenges, including those promoting reinforcement learning in complex environments."},{"title":"Yeomans and AlphaGo Highlighted Human-AI Collaboration Potential","slug":"yeomans-and-alphago-highlighted-human-ai-collaboration-potential","url":"/categories/artificial-intelligence-breakthroughs/alphago/yeomans-and-alphago-highlighted-human-ai-collaboration-potential.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s techniques demonstrated how human intuition and AI computation can complement each other in decision-making."},{"title":"Yin Xu Archives Enabled DeepMind to Train AlphaGo on Historical Human Moves","slug":"yin-xu-archives-enabled-deepmind-to-train-alphago-on-historical-human-moves","url":"/categories/artificial-intelligence-breakthroughs/alphago/yin-xu-archives-enabled-deepmind-to-train-alphago-on-historical-human-moves.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Early Go datasets from historical games were used to teach AlphaGo foundational strategies before self-play."},{"title":"Young Go Players Integrated AlphaGo Moves Into Human Playbooks","slug":"young-go-players-integrated-alphago-moves-into-human-playbooks","url":"/categories/artificial-intelligence-breakthroughs/alphago/young-go-players-integrated-alphago-moves-into-human-playbooks.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"Professional players began studying AlphaGo’s strategies to enhance human gameplay and training methods."},{"title":"Young Professionals Studying AlphaGo Learned New Go Strategies","slug":"young-professionals-studying-alphago-learned-new-go-strategies","url":"/categories/artificial-intelligence-breakthroughs/alphago/young-professionals-studying-alphago-learned-new-go-strategies.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s novel move sequences reshaped training practices for professional Go players worldwide."},{"title":"Zenith of AI Creativity Demonstrated by AlphaGo’s Unconventional Moves","slug":"zenith-of-ai-creativity-demonstrated-by-alphago-s-unconventional-moves","url":"/categories/artificial-intelligence-breakthroughs/alphago/zenith-of-ai-creativity-demonstrated-by-alphago-s-unconventional-moves.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo executed novel strategies previously unimagined by human Go experts, reshaping the concept of machine creativity."},{"title":"Zero Human Supervision Enabled AlphaGo Zero to Surpass AlphaGo Lee Sedol","slug":"zero-human-supervision-enabled-alphago-zero-to-surpass-alphago-lee-sedol","url":"/categories/artificial-intelligence-breakthroughs/alphago/zero-human-supervision-enabled-alphago-zero-to-surpass-alphago-lee-sedol.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo Zero achieved superhuman performance without any human game data, surpassing all previous versions."},{"title":"Zero-Human Input Approach Demonstrated Algorithmic Autonomy in AlphaGo Zero","slug":"zero-human-input-approach-demonstrated-algorithmic-autonomy-in-alphago-zero","url":"/categories/artificial-intelligence-breakthroughs/alphago/zero-human-input-approach-demonstrated-algorithmic-autonomy-in-alphago-zero.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo Zero mastered Go without relying on historical human games, showing autonomous strategy creation."},{"title":"Zero-Human-Input Approach in AlphaGo Zero Eliminated Dataset Bias","slug":"zero-human-input-approach-in-alphago-zero-eliminated-dataset-bias","url":"/categories/artificial-intelligence-breakthroughs/alphago/zero-human-input-approach-in-alphago-zero-eliminated-dataset-bias.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo Zero learned Go entirely from self-play, avoiding biases inherent in human game data."},{"title":"Zero-Input Learning Enabled AlphaGo Zero to Surpass Human Knowledge","slug":"zero-input-learning-enabled-alphago-zero-to-surpass-human-knowledge","url":"/categories/artificial-intelligence-breakthroughs/alphago/zero-input-learning-enabled-alphago-zero-to-surpass-human-knowledge.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo Zero mastered Go entirely through self-play without any human game data."},{"title":"Zero-Input Learning in AlphaGo Zero Eliminated Human Bias","slug":"zero-input-learning-in-alphago-zero-eliminated-human-bias","url":"/categories/artificial-intelligence-breakthroughs/alphago/zero-input-learning-in-alphago-zero-eliminated-human-bias.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo Zero’s self-play approach prevented reliance on human historical game data, reducing bias in strategy development."},{"title":"Zhejiang University Adopted AlphaGo Strategies in AI Curriculum","slug":"zhejiang-university-adopted-alphago-strategies-in-ai-curriculum","url":"/categories/artificial-intelligence-breakthroughs/alphago/zhejiang-university-adopted-alphago-strategies-in-ai-curriculum.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s architecture and self-play methodology became a teaching model in Chinese AI programs."},{"title":"Zhongguo AI Research Accelerated After AlphaGo’s 2016 Victory","slug":"zhongguo-ai-research-accelerated-after-alphago-s-2016-victory","url":"/categories/artificial-intelligence-breakthroughs/alphago/zhongguo-ai-research-accelerated-after-alphago-s-2016-victory.html","color":"#94f1fc","category":"artificial-intelligence-breakthroughs","factCount":1,"factPreview":"AlphaGo’s win over Lee Sedol sparked a surge in AI research investment and development in China."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
