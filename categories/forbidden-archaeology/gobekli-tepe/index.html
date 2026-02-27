@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gobekli Tepe</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Gobekli Tepe</h1>
+  <p>Explore all facts in "Gobekli Tepe".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Gobekli Tepe</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Limestone Hilltop Was Sculpted Into a Sacred Megastructure","slug":"a-limestone-hilltop-was-sculpted-into-a-sacred-megastructure","url":"/categories/forbidden-archaeology/gobekli-tepe/a-limestone-hilltop-was-sculpted-into-a-sacred-megastructure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire hill was reshaped to host Ice Age stone giants."},{"title":"Agriculture May Have Emerged to Feed Ritual Crowds at Göbekli Tepe","slug":"agriculture-may-have-emerged-to-feed-ritual-crowds-at-g-bekli-tepe","url":"/categories/forbidden-archaeology/gobekli-tepe/agriculture-may-have-emerged-to-feed-ritual-crowds-at-g-bekli-tepe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Farming may have started to supply a temple, not a village."},{"title":"Animal Imagery at Göbekli Tepe Suggests Predator Worship","slug":"animal-imagery-at-g-bekli-tepe-suggests-predator-worship","url":"/categories/forbidden-archaeology/gobekli-tepe/animal-imagery-at-g-bekli-tepe-suggests-predator-worship.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The most dangerous Ice Age predators were carved larger than humans."},{"title":"Bas-Relief Scorpions and Snakes Dominate Entire Pillar Surfaces","slug":"bas-relief-scorpions-and-snakes-dominate-entire-pillar-surfaces","url":"/categories/forbidden-archaeology/gobekli-tepe/bas-relief-scorpions-and-snakes-dominate-entire-pillar-surfaces.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Venomous creatures were immortalized at monumental scale."},{"title":"Bedrock Floors Were Polished Flat Without Metal Tools","slug":"bedrock-floors-were-polished-flat-without-metal-tools","url":"/categories/forbidden-archaeology/gobekli-tepe/bedrock-floors-were-polished-flat-without-metal-tools.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ice Age builders leveled solid limestone into smooth ritual floors."},{"title":"Bone Tools Suggest Early Ritual Craft Beyond Hunting Needs","slug":"bone-tools-suggest-early-ritual-craft-beyond-hunting-needs","url":"/categories/forbidden-archaeology/gobekli-tepe/bone-tools-suggest-early-ritual-craft-beyond-hunting-needs.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Animal bones were shaped into tools within sacred enclosures."},{"title":"Buried Human Skulls at Göbekli Tepe Show Evidence of Ritual Modification","slug":"buried-human-skulls-at-g-bekli-tepe-show-evidence-of-ritual-modification","url":"/categories/forbidden-archaeology/gobekli-tepe/buried-human-skulls-at-g-bekli-tepe-show-evidence-of-ritual-modification.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ice Age skulls were carved with deliberate grooves after death."},{"title":"Carbon Dating Places Construction Near the End of the Last Ice Age","slug":"carbon-dating-places-construction-near-the-end-of-the-last-ice-age","url":"/categories/forbidden-archaeology/gobekli-tepe/carbon-dating-places-construction-near-the-end-of-the-last-ice-age.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"These monuments rose while glaciers still dominated the Northern Hemisphere."},{"title":"Carved Pillars Weigh More Than Modern African Elephants","slug":"carved-pillars-weigh-more-than-modern-african-elephants","url":"/categories/forbidden-archaeology/gobekli-tepe/carved-pillars-weigh-more-than-modern-african-elephants.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Single stones at the site outweigh the largest land animals alive today."},{"title":"Carved Wild Boars Appear in Aggressive Dynamic Postures","slug":"carved-wild-boars-appear-in-aggressive-dynamic-postures","url":"/categories/forbidden-archaeology/gobekli-tepe/carved-wild-boars-appear-in-aggressive-dynamic-postures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Twelve-thousand-year-old stone animals seem ready to charge."},{"title":"Chemical Analysis Shows Massive Feasting at Göbekli Tepe","slug":"chemical-analysis-shows-massive-feasting-at-g-bekli-tepe","url":"/categories/forbidden-archaeology/gobekli-tepe/chemical-analysis-shows-massive-feasting-at-g-bekli-tepe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hunter-gatherers slaughtered hundreds of gazelles for ritual gatherings."},{"title":"Deep Pillar Sockets Were Engineered to Withstand Lateral Stress","slug":"deep-pillar-sockets-were-engineered-to-withstand-lateral-stress","url":"/categories/forbidden-archaeology/gobekli-tepe/deep-pillar-sockets-were-engineered-to-withstand-lateral-stress.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ice Age builders designed foundations to resist stone collapse."},{"title":"Distinct Enclosures Suggest Competing Ritual Groups Shared the Site","slug":"distinct-enclosures-suggest-competing-ritual-groups-shared-the-site","url":"/categories/forbidden-archaeology/gobekli-tepe/distinct-enclosures-suggest-competing-ritual-groups-shared-the-site.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Separate stone circles hint at parallel belief systems in one sanctuary."},{"title":"Enclosure D Contains the Tallest and Most Elaborate Pillars","slug":"enclosure-d-contains-the-tallest-and-most-elaborate-pillars","url":"/categories/forbidden-archaeology/gobekli-tepe/enclosure-d-contains-the-tallest-and-most-elaborate-pillars.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One stone circle dwarfs the others in scale and symbolism."},{"title":"Excavations Reveal Multiple Construction Phases Over Centuries","slug":"excavations-reveal-multiple-construction-phases-over-centuries","url":"/categories/forbidden-archaeology/gobekli-tepe/excavations-reveal-multiple-construction-phases-over-centuries.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The site was rebuilt repeatedly across generations of hunter-gatherers."},{"title":"Flint Tool Debris Indicates On-Site Industrial-Scale Crafting","slug":"flint-tool-debris-indicates-on-site-industrial-scale-crafting","url":"/categories/forbidden-archaeology/gobekli-tepe/flint-tool-debris-indicates-on-site-industrial-scale-crafting.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Thousands of stone blades were produced beside sacred pillars."},{"title":"Fox Imagery Appears More Frequently Than Any Other Animal","slug":"fox-imagery-appears-more-frequently-than-any-other-animal","url":"/categories/forbidden-archaeology/gobekli-tepe/fox-imagery-appears-more-frequently-than-any-other-animal.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A small cunning predator dominates massive sacred pillars."},{"title":"Göbekli Tepe Aligns With Cardinal Directions With Surprising Precision","slug":"g-bekli-tepe-aligns-with-cardinal-directions-with-surprising-precision","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-aligns-with-cardinal-directions-with-surprising-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ice Age builders oriented stone circles toward the horizon with striking accuracy."},{"title":"Göbekli Tepe Is 6,000 Years Older Than Stonehenge","slug":"g-bekli-tepe-is-6-000-years-older-than-stonehenge","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-is-6-000-years-older-than-stonehenge.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Humanity built monumental stone temples before farming existed."},{"title":"Göbekli Tepe May Record One of the Oldest Known Cosmologies","slug":"g-bekli-tepe-may-record-one-of-the-oldest-known-cosmologies","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-may-record-one-of-the-oldest-known-cosmologies.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ice Age hunters may have encoded star knowledge in stone pillars."},{"title":"Göbekli Tepe Predates Pottery by Nearly 2,000 Years","slug":"g-bekli-tepe-predates-pottery-by-nearly-2-000-years","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-predates-pottery-by-nearly-2-000-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Monumental temples existed before humans even fired clay pots."},{"title":"Göbekli Tepe Required Regional Cooperation 12,000 Years Ago","slug":"g-bekli-tepe-required-regional-cooperation-12-000-years-ago","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-required-regional-cooperation-12-000-years-ago.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Nomadic bands gathered in numbers rivaling small towns."},{"title":"Göbekli Tepe Was Hidden in Plain Sight Until 1994","slug":"g-bekli-tepe-was-hidden-in-plain-sight-until-1994","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-was-hidden-in-plain-sight-until-1994.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The world’s oldest temple complex lay unnoticed for millennia."},{"title":"Göbekli Tepe’s Builders Moved 20-Ton Stones Without Wheels","slug":"g-bekli-tepe-s-builders-moved-20-ton-stones-without-wheels","url":"/categories/forbidden-archaeology/gobekli-tepe/g-bekli-tepe-s-builders-moved-20-ton-stones-without-wheels.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Twenty-ton limestone pillars were raised without metal, wheels, or beasts of burden."},{"title":"Ground Surveys Reveal Additional Pillars Still Standing Underground","slug":"ground-surveys-reveal-additional-pillars-still-standing-underground","url":"/categories/forbidden-archaeology/gobekli-tepe/ground-surveys-reveal-additional-pillars-still-standing-underground.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Entire stone circles remain upright but hidden beneath soil."},{"title":"Ground-Penetrating Radar Suggests Most of Göbekli Tepe Remains Buried","slug":"ground-penetrating-radar-suggests-most-of-g-bekli-tepe-remains-buried","url":"/categories/forbidden-archaeology/gobekli-tepe/ground-penetrating-radar-suggests-most-of-g-bekli-tepe-remains-buried.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Over 90 percent of the ancient complex still lies underground."},{"title":"Hidden Reliefs Suggest Narrative Storytelling in Stone","slug":"hidden-reliefs-suggest-narrative-storytelling-in-stone","url":"/categories/forbidden-archaeology/gobekli-tepe/hidden-reliefs-suggest-narrative-storytelling-in-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some pillars carry scenes that read like Ice Age graphic novels."},{"title":"High-Relief Carvings Project Several Centimeters From the Stone Surface","slug":"high-relief-carvings-project-several-centimeters-from-the-stone-surface","url":"/categories/forbidden-archaeology/gobekli-tepe/high-relief-carvings-project-several-centimeters-from-the-stone-surface.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Prehistoric artists sculpted animals that physically protrude from pillars."},{"title":"Ice Age Climate Instability Coincided With Monument Construction","slug":"ice-age-climate-instability-coincided-with-monument-construction","url":"/categories/forbidden-archaeology/gobekli-tepe/ice-age-climate-instability-coincided-with-monument-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"These temples rose during one of Earth’s most abrupt climate swings."},{"title":"Intensive Quarry Marks Remain Visible Around the Hill","slug":"intensive-quarry-marks-remain-visible-around-the-hill","url":"/categories/forbidden-archaeology/gobekli-tepe/intensive-quarry-marks-remain-visible-around-the-hill.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The builders left scars in bedrock where monoliths were extracted."},{"title":"Just One Enclosure Required Moving Over 100 Tons of Stone","slug":"just-one-enclosure-required-moving-over-100-tons-of-stone","url":"/categories/forbidden-archaeology/gobekli-tepe/just-one-enclosure-required-moving-over-100-tons-of-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single Ice Age ritual circle demanded geological-scale effort."},{"title":"Known as Potbelly Hill, the Site Was Once Dismissed as Medieval","slug":"known-as-potbelly-hill-the-site-was-once-dismissed-as-medieval","url":"/categories/forbidden-archaeology/gobekli-tepe/known-as-potbelly-hill-the-site-was-once-dismissed-as-medieval.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The world’s oldest temple was misidentified for decades."},{"title":"Limestone Pillars Were Carved From a Single Geological Formation","slug":"limestone-pillars-were-carved-from-a-single-geological-formation","url":"/categories/forbidden-archaeology/gobekli-tepe/limestone-pillars-were-carved-from-a-single-geological-formation.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The sacred monoliths were cut directly from the hill itself."},{"title":"Massive Central Pillars Tower Above Human Height by Meters","slug":"massive-central-pillars-tower-above-human-height-by-meters","url":"/categories/forbidden-archaeology/gobekli-tepe/massive-central-pillars-tower-above-human-height-by-meters.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Faceless stone figures stand nearly twice as tall as humans."},{"title":"Multiple Species of Birds Are Depicted With Extended Wingspans","slug":"multiple-species-of-birds-are-depicted-with-extended-wingspans","url":"/categories/forbidden-archaeology/gobekli-tepe/multiple-species-of-birds-are-depicted-with-extended-wingspans.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone birds stretch their wings across towering pillars."},{"title":"No Domestic Houses Have Been Found at the Core Sanctuary","slug":"no-domestic-houses-have-been-found-at-the-core-sanctuary","url":"/categories/forbidden-archaeology/gobekli-tepe/no-domestic-houses-have-been-found-at-the-core-sanctuary.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A monumental complex exists without evidence of ordinary homes."},{"title":"No Evidence of Metalworking Exists at the Site’s Earliest Phase","slug":"no-evidence-of-metalworking-exists-at-the-site-s-earliest-phase","url":"/categories/forbidden-archaeology/gobekli-tepe/no-evidence-of-metalworking-exists-at-the-site-s-earliest-phase.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"These megaliths rose without a single metal tool."},{"title":"Ornamental Belts and Fox Pelts Are Carved Into Stone Figures","slug":"ornamental-belts-and-fox-pelts-are-carved-into-stone-figures","url":"/categories/forbidden-archaeology/gobekli-tepe/ornamental-belts-and-fox-pelts-are-carved-into-stone-figures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Twelve-thousand-year-old fashion details survive in limestone."},{"title":"Over 200 Pillars Have Been Identified Across the Site","slug":"over-200-pillars-have-been-identified-across-the-site","url":"/categories/forbidden-archaeology/gobekli-tepe/over-200-pillars-have-been-identified-across-the-site.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of massive monoliths once stood on a single hill."},{"title":"Pillar Surfaces Show Evidence of Intentional Smoothing After Carving","slug":"pillar-surfaces-show-evidence-of-intentional-smoothing-after-carving","url":"/categories/forbidden-archaeology/gobekli-tepe/pillar-surfaces-show-evidence-of-intentional-smoothing-after-carving.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Artists polished massive monoliths for visual refinement."},{"title":"Pillars Lack Facial Features Despite Anthropomorphic Form","slug":"pillars-lack-facial-features-despite-anthropomorphic-form","url":"/categories/forbidden-archaeology/gobekli-tepe/pillars-lack-facial-features-despite-anthropomorphic-form.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Towering stone beings have bodies but no faces."},{"title":"Radiocarbon Dates Cluster Tightly Around the 10th Millennium BCE","slug":"radiocarbon-dates-cluster-tightly-around-the-10th-millennium-bce","url":"/categories/forbidden-archaeology/gobekli-tepe/radiocarbon-dates-cluster-tightly-around-the-10th-millennium-bce.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Multiple samples independently confirm extreme antiquity."},{"title":"Rectangular Buildings Replaced Circular Enclosures in Later Phases","slug":"rectangular-buildings-replaced-circular-enclosures-in-later-phases","url":"/categories/forbidden-archaeology/gobekli-tepe/rectangular-buildings-replaced-circular-enclosures-in-later-phases.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sacred architecture shifted shape within a few centuries."},{"title":"Some Göbekli Tepe Pillars Depict Stylized Human Forms","slug":"some-g-bekli-tepe-pillars-depict-stylized-human-forms","url":"/categories/forbidden-archaeology/gobekli-tepe/some-g-bekli-tepe-pillars-depict-stylized-human-forms.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone monoliths appear to represent towering faceless beings."},{"title":"Symbolic Vultures Appear Prominently Across Multiple Enclosures","slug":"symbolic-vultures-appear-prominently-across-multiple-enclosures","url":"/categories/forbidden-archaeology/gobekli-tepe/symbolic-vultures-appear-prominently-across-multiple-enclosures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Carrion birds were carved as towering sacred icons."},{"title":"The Oldest Known Stone Carvings Predate Writing by 7,000 Years","slug":"the-oldest-known-stone-carvings-predate-writing-by-7-000-years","url":"/categories/forbidden-archaeology/gobekli-tepe/the-oldest-known-stone-carvings-predate-writing-by-7-000-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Detailed animal reliefs were carved before the wheel even existed."},{"title":"The Site Was Intentionally Buried by Its Own Builders","slug":"the-site-was-intentionally-buried-by-its-own-builders","url":"/categories/forbidden-archaeology/gobekli-tepe/the-site-was-intentionally-buried-by-its-own-builders.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"After centuries of use, the entire complex was deliberately entombed."},{"title":"Transporting Monoliths Required Coordinated Muscle Power Alone","slug":"transporting-monoliths-required-coordinated-muscle-power-alone","url":"/categories/forbidden-archaeology/gobekli-tepe/transporting-monoliths-required-coordinated-muscle-power-alone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Dozens of humans hauled elephant-weight stones without machines."},{"title":"Ziggurat-Scale Monumentality Appeared 7,000 Years Earlier Than Mesopotamia","slug":"ziggurat-scale-monumentality-appeared-7-000-years-earlier-than-mesopotamia","url":"/categories/forbidden-archaeology/gobekli-tepe/ziggurat-scale-monumentality-appeared-7-000-years-earlier-than-mesopotamia.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Temple-scale architecture existed long before cities or writing."},{"title":"Zoological Diversity in Carvings Reflects a Broad Ice Age Ecosystem","slug":"zoological-diversity-in-carvings-reflects-a-broad-ice-age-ecosystem","url":"/categories/forbidden-archaeology/gobekli-tepe/zoological-diversity-in-carvings-reflects-a-broad-ice-age-ecosystem.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Dozens of species were immortalized on a single hilltop."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

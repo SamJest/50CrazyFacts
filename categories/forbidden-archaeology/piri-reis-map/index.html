@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piri Reis Map</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Piri Reis Map</h1>
+  <p>Explore all facts in "Piri Reis Map".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Piri Reis Map</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Single Surviving Fragment Makes the Piri Reis Map a Cartographic Outlier in World History","slug":"a-single-surviving-fragment-makes-the-piri-reis-map-a-cartographic-outlier-in-world-history","url":"/categories/forbidden-archaeology/piri-reis-map/a-single-surviving-fragment-makes-the-piri-reis-map-a-cartographic-outlier-in-world-history.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One torn parchment fragment carries five centuries of global controversy."},{"title":"A U.S. Air Force Analysis Concluded the Piri Reis Map Matched Subglacial Antarctica Contours","slug":"a-u-s-air-force-analysis-concluded-the-piri-reis-map-matched-subglacial-antarctica-contours","url":"/categories/forbidden-archaeology/piri-reis-map/a-u-s-air-force-analysis-concluded-the-piri-reis-map-matched-subglacial-antarctica-contours.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A Cold War military analysis claimed a 1513 map matches Antarctica hidden under miles of ice."},{"title":"Before Accurate Marine Chronometers, Longitude Errors Could Shift Landfall by Hundreds of Miles","slug":"before-accurate-marine-chronometers-longitude-errors-could-shift-landfall-by-hundreds-of-miles","url":"/categories/forbidden-archaeology/piri-reis-map/before-accurate-marine-chronometers-longitude-errors-could-shift-landfall-by-hundreds-of-miles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sail a few minutes off schedule in 1513 and you miss a continent."},{"title":"Beneath the Piri Reis Map’s Annotations Lies a Record of 20 Separate Source Charts","slug":"beneath-the-piri-reis-map-s-annotations-lies-a-record-of-20-separate-source-charts","url":"/categories/forbidden-archaeology/piri-reis-map/beneath-the-piri-reis-map-s-annotations-lies-a-record-of-20-separate-source-charts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This single parchment secretly compresses information from at least 20 older maps."},{"title":"Cartographic Intelligence Circulated Across Empires Faster Than Official Diplomatic Channels","slug":"cartographic-intelligence-circulated-across-empires-faster-than-official-diplomatic-channels","url":"/categories/forbidden-archaeology/piri-reis-map/cartographic-intelligence-circulated-across-empires-faster-than-official-diplomatic-channels.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Maps crossed enemy borders faster than ambassadors ever could."},{"title":"Cartographic Projection Distortions on the Piri Reis Map Mirror Modern Spherical Calculations","slug":"cartographic-projection-distortions-on-the-piri-reis-map-mirror-modern-spherical-calculations","url":"/categories/forbidden-archaeology/piri-reis-map/cartographic-projection-distortions-on-the-piri-reis-map-mirror-modern-spherical-calculations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A Renaissance parchment distorts continents in ways modern spherical math predicts."},{"title":"Dead Reckoning Calculations Under Extreme Storm Conditions Fed Data Into the Piri Reis Map","slug":"dead-reckoning-calculations-under-extreme-storm-conditions-fed-data-into-the-piri-reis-map","url":"/categories/forbidden-archaeology/piri-reis-map/dead-reckoning-calculations-under-extreme-storm-conditions-fed-data-into-the-piri-reis-map.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Storm-tossed sailors guessed their position in darkness and still mapped continents."},{"title":"During the International Geophysical Year, Scientists Compared the Piri Reis Map to Seismic Antarctic Surveys","slug":"during-the-international-geophysical-year-scientists-compared-the-piri-reis-map-to-seismic-antarctic-surveys","url":"/categories/forbidden-archaeology/piri-reis-map/during-the-international-geophysical-year-scientists-compared-the-piri-reis-map-to-seismic-antarctic-surveys.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern seismic surveys of Antarctica were compared to a map drawn 450 years earlier."},{"title":"Early 16th Century Ottoman Cartography Incorporated Newly Discovered Brazil Within Years","slug":"early-16th-century-ottoman-cartography-incorporated-newly-discovered-brazil-within-years","url":"/categories/forbidden-archaeology/piri-reis-map/early-16th-century-ottoman-cartography-incorporated-newly-discovered-brazil-within-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Brazil’s coastline appeared on an Ottoman map almost as soon as Europe found it."},{"title":"Early Modern Mapmakers Knew Earth Was Spherical, Yet Flattening It Warped Reality","slug":"early-modern-mapmakers-knew-earth-was-spherical-yet-flattening-it-warped-reality","url":"/categories/forbidden-archaeology/piri-reis-map/early-modern-mapmakers-knew-earth-was-spherical-yet-flattening-it-warped-reality.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Everyone knew Earth was round, but every map still lies."},{"title":"Fragments of the Piri Reis Map Suggest the Original Once Depicted the Entire World","slug":"fragments-of-the-piri-reis-map-suggest-the-original-once-depicted-the-entire-world","url":"/categories/forbidden-archaeology/piri-reis-map/fragments-of-the-piri-reis-map-suggest-the-original-once-depicted-the-entire-world.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Only one-third survives, yet scholars believe the original map spanned the known world."},{"title":"Geographic Coordinates on the Piri Reis Map Predate Standardized Global Meridians","slug":"geographic-coordinates-on-the-piri-reis-map-predate-standardized-global-meridians","url":"/categories/forbidden-archaeology/piri-reis-map/geographic-coordinates-on-the-piri-reis-map-predate-standardized-global-meridians.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This 1513 map uses coordinate logic before the world agreed on a prime meridian."},{"title":"Hidden Within the Piri Reis Map Are Detailed Illustrations of Indigenous American Fauna","slug":"hidden-within-the-piri-reis-map-are-detailed-illustrations-of-indigenous-american-fauna","url":"/categories/forbidden-archaeology/piri-reis-map/hidden-within-the-piri-reis-map-are-detailed-illustrations-of-indigenous-american-fauna.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 1513 Ottoman map includes drawings of animals Europeans barely understood."},{"title":"Ice Age Sea Levels Were 400 Feet Lower, Raising Antarctica Questions About the Piri Reis Map","slug":"ice-age-sea-levels-were-400-feet-lower-raising-antarctica-questions-about-the-piri-reis-map","url":"/categories/forbidden-archaeology/piri-reis-map/ice-age-sea-levels-were-400-feet-lower-raising-antarctica-questions-about-the-piri-reis-map.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"During the last Ice Age, sea levels dropped 400 feet, exposing coastlines now drowned."},{"title":"Judging by Its Scale, the Piri Reis Map Compresses Thousands of Miles Into Inches","slug":"judging-by-its-scale-the-piri-reis-map-compresses-thousands-of-miles-into-inches","url":"/categories/forbidden-archaeology/piri-reis-map/judging-by-its-scale-the-piri-reis-map-compresses-thousands-of-miles-into-inches.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This palm-sized parchment shrinks entire continents into a few inches of ink."},{"title":"Known Portuguese Charts Captured in Naval Battles Fed Into the Piri Reis Map","slug":"known-portuguese-charts-captured-in-naval-battles-fed-into-the-piri-reis-map","url":"/categories/forbidden-archaeology/piri-reis-map/known-portuguese-charts-captured-in-naval-battles-fed-into-the-piri-reis-map.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Captured enemy maps helped build one of history’s most controversial charts."},{"title":"Long Before Antarctica Was Named, the Piri Reis Map Depicted a Southern Landmass","slug":"long-before-antarctica-was-named-the-piri-reis-map-depicted-a-southern-landmass","url":"/categories/forbidden-archaeology/piri-reis-map/long-before-antarctica-was-named-the-piri-reis-map-depicted-a-southern-landmass.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Three centuries before Antarctica’s official sighting, a southern continent appeared on parchment."},{"title":"Long Before Satellite Imaging, the Piri Reis Map Attempted a Continuous Atlantic Coastline","slug":"long-before-satellite-imaging-the-piri-reis-map-attempted-a-continuous-atlantic-coastline","url":"/categories/forbidden-archaeology/piri-reis-map/long-before-satellite-imaging-the-piri-reis-map-attempted-a-continuous-atlantic-coastline.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This Renaissance chart connects continents across an ocean no one had fully crossed."},{"title":"Mapping the Atlantic Required Conceptualizing an Ocean Wider Than 3,000 Miles","slug":"mapping-the-atlantic-required-conceptualizing-an-ocean-wider-than-3-000-miles","url":"/categories/forbidden-archaeology/piri-reis-map/mapping-the-atlantic-required-conceptualizing-an-ocean-wider-than-3-000-miles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Cartographers in 1513 drew an ocean over 3,000 miles wide from scattered reports."},{"title":"Modern Scholars Still Debate Whether the Piri Reis Map’s Southern Landmass Is Antarctica or South America","slug":"modern-scholars-still-debate-whether-the-piri-reis-map-s-southern-landmass-is-antarctica-or-south-america","url":"/categories/forbidden-archaeology/piri-reis-map/modern-scholars-still-debate-whether-the-piri-reis-map-s-southern-landmass-is-antarctica-or-south-america.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Five centuries later, experts still argue over one mysterious coastline."},{"title":"Navigation by Stars and Dead Reckoning Underpins the Piri Reis Map’s Ocean Geometry","slug":"navigation-by-stars-and-dead-reckoning-underpins-the-piri-reis-map-s-ocean-geometry","url":"/categories/forbidden-archaeology/piri-reis-map/navigation-by-stars-and-dead-reckoning-underpins-the-piri-reis-map-s-ocean-geometry.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sailors without clocks or GPS crossed oceans using stars and guesswork."},{"title":"Ocean Currents Implied on the Piri Reis Map Anticipate Later Atlantic Trade Routes","slug":"ocean-currents-implied-on-the-piri-reis-map-anticipate-later-atlantic-trade-routes","url":"/categories/forbidden-archaeology/piri-reis-map/ocean-currents-implied-on-the-piri-reis-map-anticipate-later-atlantic-trade-routes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This 1513 map reflects ocean patterns that would power centuries of trade."},{"title":"Projection Comparisons Show the Piri Reis Map Can Be Fitted to Multiple Modern Map Systems","slug":"projection-comparisons-show-the-piri-reis-map-can-be-fitted-to-multiple-modern-map-systems","url":"/categories/forbidden-archaeology/piri-reis-map/projection-comparisons-show-the-piri-reis-map-can-be-fitted-to-multiple-modern-map-systems.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The same 1513 coastline can be warped to match different modern projections."},{"title":"Rare Ottoman Script Notes on the Piri Reis Map Provide Direct Author Commentary","slug":"rare-ottoman-script-notes-on-the-piri-reis-map-provide-direct-author-commentary","url":"/categories/forbidden-archaeology/piri-reis-map/rare-ottoman-script-notes-on-the-piri-reis-map-provide-direct-author-commentary.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Unlike most Renaissance charts, this map contains the cartographer’s own voice."},{"title":"Subsequent Ottoman Maps Did Not Replicate the Piri Reis Southern Landmass","slug":"subsequent-ottoman-maps-did-not-replicate-the-piri-reis-southern-landmass","url":"/categories/forbidden-archaeology/piri-reis-map/subsequent-ottoman-maps-did-not-replicate-the-piri-reis-southern-landmass.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Later Ottoman charts quietly abandoned the map’s most controversial feature."},{"title":"The Piri Reis Map Combines Islamic and European Cartographic Traditions","slug":"the-piri-reis-map-combines-islamic-and-european-cartographic-traditions","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-combines-islamic-and-european-cartographic-traditions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This single map merges Islamic scholarship with captured European exploration data."},{"title":"The Piri Reis Map Depicts Atlantic Islands That Later Vanished","slug":"the-piri-reis-map-depicts-atlantic-islands-that-later-vanished","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-depicts-atlantic-islands-that-later-vanished.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This 1513 map shows Atlantic islands that do not appear on modern charts."},{"title":"The Piri Reis Map Fragment That Shows Antarctica 300 Years Before Discovery","slug":"the-piri-reis-map-fragment-that-shows-antarctica-300-years-before-discovery","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-fragment-that-shows-antarctica-300-years-before-discovery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 1513 Ottoman map appears to show Antarctica ice-free centuries before humans officially found it."},{"title":"The Piri Reis Map Includes Detailed Compass Roses Across Open Ocean","slug":"the-piri-reis-map-includes-detailed-compass-roses-across-open-ocean","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-includes-detailed-compass-roses-across-open-ocean.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This 16th-century map charts open ocean with intricate compass systems sailors trusted with their lives."},{"title":"The Piri Reis Map Mentions Source Charts Dating Back to Alexander the Great","slug":"the-piri-reis-map-mentions-source-charts-dating-back-to-alexander-the-great","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-mentions-source-charts-dating-back-to-alexander-the-great.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 16th-century admiral claimed his map used charts from the era of Alexander the Great."},{"title":"The Piri Reis Map Shows South America Decades After Columbus With Startling Detail","slug":"the-piri-reis-map-shows-south-america-decades-after-columbus-with-startling-detail","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-shows-south-america-decades-after-columbus-with-startling-detail.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Only 21 years after Columbus sailed, this map outlines South America with eerie precision."},{"title":"The Piri Reis Map Survived Empire Collapse and Two World Wars","slug":"the-piri-reis-map-survived-empire-collapse-and-two-world-wars","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-survived-empire-collapse-and-two-world-wars.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Empires fell and world wars erupted, yet this fragile 1513 map endured."},{"title":"The Piri Reis Map Uses Longitude Accuracy Europe Had Not Yet Solved","slug":"the-piri-reis-map-uses-longitude-accuracy-europe-had-not-yet-solved","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-uses-longitude-accuracy-europe-had-not-yet-solved.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This 1513 map plots coastlines with a longitude precision Europe would not master for centuries."},{"title":"The Piri Reis Map Was Drawn on Gazelle Skin for Ocean-Scale Precision","slug":"the-piri-reis-map-was-drawn-on-gazelle-skin-for-ocean-scale-precision","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-was-drawn-on-gazelle-skin-for-ocean-scale-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A map spanning continents was etched onto a single piece of gazelle skin."},{"title":"The Piri Reis Map Was Rediscovered in a Palace Library After 400 Years","slug":"the-piri-reis-map-was-rediscovered-in-a-palace-library-after-400-years","url":"/categories/forbidden-archaeology/piri-reis-map/the-piri-reis-map-was-rediscovered-in-a-palace-library-after-400-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One of history’s most controversial maps sat forgotten in a palace library for four centuries."},{"title":"Using Hand-Drawn Ink Lines, the Piri Reis Map Encoded Thousands of Nautical Miles","slug":"using-hand-drawn-ink-lines-the-piri-reis-map-encoded-thousands-of-nautical-miles","url":"/categories/forbidden-archaeology/piri-reis-map/using-hand-drawn-ink-lines-the-piri-reis-map-encoded-thousands-of-nautical-miles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Every inch of ink represents months of dangerous sea travel."},{"title":"Using Only Magnetic Compasses, Sailors Generated Data That Fed Into the Piri Reis Map","slug":"using-only-magnetic-compasses-sailors-generated-data-that-fed-into-the-piri-reis-map","url":"/categories/forbidden-archaeology/piri-reis-map/using-only-magnetic-compasses-sailors-generated-data-that-fed-into-the-piri-reis-map.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"With nothing but magnets and stars, sailors charted continents."},{"title":"When Overlaid Digitally, the Piri Reis Map Sparks Debate Across Academic Disciplines","slug":"when-overlaid-digitally-the-piri-reis-map-sparks-debate-across-academic-disciplines","url":"/categories/forbidden-archaeology/piri-reis-map/when-overlaid-digitally-the-piri-reis-map-sparks-debate-across-academic-disciplines.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 16th-century parchment now undergoes 21st-century digital scrutiny."},{"title":"Zero Direct Evidence Confirms Antarctica on the Piri Reis Map, Yet the Debate Persists","slug":"zero-direct-evidence-confirms-antarctica-on-the-piri-reis-map-yet-the-debate-persists","url":"/categories/forbidden-archaeology/piri-reis-map/zero-direct-evidence-confirms-antarctica-on-the-piri-reis-map-yet-the-debate-persists.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"There is no direct proof it shows Antarctica, yet arguments refuse to die."},{"title":"Zero Surviving Pre-1513 World Maps Combine the Americas and Africa With Comparable Detail","slug":"zero-surviving-pre-1513-world-maps-combine-the-americas-and-africa-with-comparable-detail","url":"/categories/forbidden-archaeology/piri-reis-map/zero-surviving-pre-1513-world-maps-combine-the-americas-and-africa-with-comparable-detail.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Few maps before 1513 dared connect Africa and the Americas on one surface."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

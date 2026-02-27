@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puma Punku</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Puma Punku</h1>
+  <p>Explore all facts in "Puma Punku".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Puma Punku</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Builders Transported 100-Ton Stones to Puma Punku Without Wheels","slug":"ancient-builders-transported-100-ton-stones-to-puma-punku-without-wheels","url":"/categories/forbidden-archaeology/puma-punku/ancient-builders-transported-100-ton-stones-to-puma-punku-without-wheels.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 100-ton stone was hauled across the Andes without wheels, horses, or iron."},{"title":"Ancient Surveying at Puma Punku Achieved Near-Perfect Right Angles","slug":"ancient-surveying-at-puma-punku-achieved-near-perfect-right-angles","url":"/categories/forbidden-archaeology/puma-punku/ancient-surveying-at-puma-punku-achieved-near-perfect-right-angles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Multi-ton volcanic blocks meet at right angles sharper than modern drywall corners."},{"title":"Baffling Precision: Puma Punku’s Andesite Blocks Fit With Millimeter Accuracy","slug":"baffling-precision-puma-punku-s-andesite-blocks-fit-with-millimeter-accuracy","url":"/categories/forbidden-archaeology/puma-punku/baffling-precision-puma-punku-s-andesite-blocks-fit-with-millimeter-accuracy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone blocks carved a millennium ago align with machine-like precision."},{"title":"Basalt and Andesite Selection Reflects Intentional Material Engineering","slug":"basalt-and-andesite-selection-reflects-intentional-material-engineering","url":"/categories/forbidden-archaeology/puma-punku/basalt-and-andesite-selection-reflects-intentional-material-engineering.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Builders chose different volcanic stones for strength, not convenience."},{"title":"Climate Shifts Around 1000 CE Coincided With Puma Punku’s Decline","slug":"climate-shifts-around-1000-ce-coincided-with-puma-punku-s-decline","url":"/categories/forbidden-archaeology/puma-punku/climate-shifts-around-1000-ce-coincided-with-puma-punku-s-decline.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A high-altitude empire faltered when rainfall patterns abruptly shifted."},{"title":"Colossal Architecture at 13,000 Feet Defies Human Physiology","slug":"colossal-architecture-at-13-000-feet-defies-human-physiology","url":"/categories/forbidden-archaeology/puma-punku/colossal-architecture-at-13-000-feet-defies-human-physiology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A monumental stone complex rises where oxygen drops nearly 40 percent."},{"title":"Deep Foundation Platforms Suggest Puma Punku Was Once Even Taller","slug":"deep-foundation-platforms-suggest-puma-punku-was-once-even-taller","url":"/categories/forbidden-archaeology/puma-punku/deep-foundation-platforms-suggest-puma-punku-was-once-even-taller.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Excavations reveal buried stone layers beneath the visible ruins."},{"title":"Dry-Stone Engineering at Puma Punku Increased Earthquake Flexibility","slug":"dry-stone-engineering-at-puma-punku-increased-earthquake-flexibility","url":"/categories/forbidden-archaeology/puma-punku/dry-stone-engineering-at-puma-punku-increased-earthquake-flexibility.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Massive blocks were fitted to move slightly instead of shattering."},{"title":"Enormous Red Sandstone Blocks Were Quarried Miles Away Across Water","slug":"enormous-red-sandstone-blocks-were-quarried-miles-away-across-water","url":"/categories/forbidden-archaeology/puma-punku/enormous-red-sandstone-blocks-were-quarried-miles-away-across-water.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Multi-ton stones crossed a high-altitude lake long before industrial boats."},{"title":"Experimental Archaeology Recreated Puma Punku Stone Techniques","slug":"experimental-archaeology-recreated-puma-punku-stone-techniques","url":"/categories/forbidden-archaeology/puma-punku/experimental-archaeology-recreated-puma-punku-stone-techniques.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern researchers shaped volcanic rock using only ancient-style tools."},{"title":"Extensive Craft Specialization Fueled Puma Punku’s Precision","slug":"extensive-craft-specialization-fueled-puma-punku-s-precision","url":"/categories/forbidden-archaeology/puma-punku/extensive-craft-specialization-fueled-puma-punku-s-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Teams of specialists carved volcanic stone like a coordinated workshop."},{"title":"Finely Cut H-Blocks Suggest Modular Pre-Fabrication in the Andes","slug":"finely-cut-h-blocks-suggest-modular-pre-fabrication-in-the-andes","url":"/categories/forbidden-archaeology/puma-punku/finely-cut-h-blocks-suggest-modular-pre-fabrication-in-the-andes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Identical stone modules were produced like components in a factory."},{"title":"Foundations Extend Beneath Today’s Surface, Concealing Additional Mass","slug":"foundations-extend-beneath-today-s-surface-concealing-additional-mass","url":"/categories/forbidden-archaeology/puma-punku/foundations-extend-beneath-today-s-surface-concealing-additional-mass.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"What visitors see is only a fraction of the original stone volume."},{"title":"Geochemical Fingerprinting Precisely Matches Blocks to Distant Quarries","slug":"geochemical-fingerprinting-precisely-matches-blocks-to-distant-quarries","url":"/categories/forbidden-archaeology/puma-punku/geochemical-fingerprinting-precisely-matches-blocks-to-distant-quarries.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Trace minerals inside the stone reveal journeys across mountains and water."},{"title":"Gigantic Stone Clamps Once Locked Puma Punku Together With Metal","slug":"gigantic-stone-clamps-once-locked-puma-punku-together-with-metal","url":"/categories/forbidden-archaeology/puma-punku/gigantic-stone-clamps-once-locked-puma-punku-together-with-metal.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient builders fused megaliths using poured metal clamps."},{"title":"Hidden Astronomical Alignments May Be Embedded in Puma Punku’s Layout","slug":"hidden-astronomical-alignments-may-be-embedded-in-puma-punku-s-layout","url":"/categories/forbidden-archaeology/puma-punku/hidden-astronomical-alignments-may-be-embedded-in-puma-punku-s-layout.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Massive stone platforms align with solar events in thin air."},{"title":"High-Altitude Solar Exposure Accelerated Stone Weathering Over Centuries","slug":"high-altitude-solar-exposure-accelerated-stone-weathering-over-centuries","url":"/categories/forbidden-archaeology/puma-punku/high-altitude-solar-exposure-accelerated-stone-weathering-over-centuries.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Intense ultraviolet radiation bathed Puma Punku’s stones for a millennium."},{"title":"Immense Agricultural Systems Fed the Workforce Behind Puma Punku","slug":"immense-agricultural-systems-fed-the-workforce-behind-puma-punku","url":"/categories/forbidden-archaeology/puma-punku/immense-agricultural-systems-fed-the-workforce-behind-puma-punku.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A high-altitude desert sustained thousands building stone monuments."},{"title":"Interlocking Stone Geometry Forms a Three-Dimensional Puzzle System","slug":"interlocking-stone-geometry-forms-a-three-dimensional-puzzle-system","url":"/categories/forbidden-archaeology/puma-punku/interlocking-stone-geometry-forms-a-three-dimensional-puzzle-system.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Each block was carved to connect in multiple directions simultaneously."},{"title":"Jagged Earthquakes Likely Toppled a Once Towering Stone Complex","slug":"jagged-earthquakes-likely-toppled-a-once-towering-stone-complex","url":"/categories/forbidden-archaeology/puma-punku/jagged-earthquakes-likely-toppled-a-once-towering-stone-complex.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The chaos of fallen blocks may be the aftermath of seismic violence."},{"title":"Joints Between Puma Punku Blocks Show Evidence of Precision Leveling","slug":"joints-between-puma-punku-blocks-show-evidence-of-precision-leveling","url":"/categories/forbidden-archaeology/puma-punku/joints-between-puma-punku-blocks-show-evidence-of-precision-leveling.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Multi-ton stones were leveled so precisely that gaps remain razor thin."},{"title":"Kilns at High Altitude Reached Temperatures Needed for Metal Casting","slug":"kilns-at-high-altitude-reached-temperatures-needed-for-metal-casting","url":"/categories/forbidden-archaeology/puma-punku/kilns-at-high-altitude-reached-temperatures-needed-for-metal-casting.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Molten metal was poured at nearly 13,000 feet despite thin air."},{"title":"Kilometer-Scale Urban Planning Linked Puma Punku to a Vast Ceremonial Capital","slug":"kilometer-scale-urban-planning-linked-puma-punku-to-a-vast-ceremonial-capital","url":"/categories/forbidden-archaeology/puma-punku/kilometer-scale-urban-planning-linked-puma-punku-to-a-vast-ceremonial-capital.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A shattered stone platform was once part of a city spanning several square kilometers."},{"title":"Labor Mobilization at Puma Punku Required Coordinated Seasonal Scheduling","slug":"labor-mobilization-at-puma-punku-required-coordinated-seasonal-scheduling","url":"/categories/forbidden-archaeology/puma-punku/labor-mobilization-at-puma-punku-required-coordinated-seasonal-scheduling.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone hauling at 13,000 feet likely followed strict seasonal windows."},{"title":"Laser Scans Reveal Geometric Consistency Across Displaced Puma Punku Blocks","slug":"laser-scans-reveal-geometric-consistency-across-displaced-puma-punku-blocks","url":"/categories/forbidden-archaeology/puma-punku/laser-scans-reveal-geometric-consistency-across-displaced-puma-punku-blocks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Even after collapse, scattered stones preserve hidden geometric order."},{"title":"Massive Andesite Blocks Required Quarrying One of the Hardest Local Stones","slug":"massive-andesite-blocks-required-quarrying-one-of-the-hardest-local-stones","url":"/categories/forbidden-archaeology/puma-punku/massive-andesite-blocks-required-quarrying-one-of-the-hardest-local-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Builders shaped volcanic rock harder than many modern construction materials."},{"title":"Monument Orientation Aligns With Cardinal Directions on the Altiplano","slug":"monument-orientation-aligns-with-cardinal-directions-on-the-altiplano","url":"/categories/forbidden-archaeology/puma-punku/monument-orientation-aligns-with-cardinal-directions-on-the-altiplano.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Massive stone platforms were squared to the compass in thin air."},{"title":"Natural Bedrock Preparation Stabilized Puma Punku’s Massive Platform","slug":"natural-bedrock-preparation-stabilized-puma-punku-s-massive-platform","url":"/categories/forbidden-archaeology/puma-punku/natural-bedrock-preparation-stabilized-puma-punku-s-massive-platform.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Before stones rose skyward, builders reshaped the ground beneath them."},{"title":"No Mortar Holds Puma Punku Together, Yet Blocks Lock With Precision","slug":"no-mortar-holds-puma-punku-together-yet-blocks-lock-with-precision","url":"/categories/forbidden-archaeology/puma-punku/no-mortar-holds-puma-punku-together-yet-blocks-lock-with-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Gigantic stones stand flush without a trace of cement."},{"title":"Orientation Toward Solar Events Amplified Puma Punku’s Ceremonial Power","slug":"orientation-toward-solar-events-amplified-puma-punku-s-ceremonial-power","url":"/categories/forbidden-archaeology/puma-punku/orientation-toward-solar-events-amplified-puma-punku-s-ceremonial-power.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Massive stone alignments tracked the sun across the Andean sky."},{"title":"Original Monument May Have Formed a Multi-Level Ceremonial Platform","slug":"original-monument-may-have-formed-a-multi-level-ceremonial-platform","url":"/categories/forbidden-archaeology/puma-punku/original-monument-may-have-formed-a-multi-level-ceremonial-platform.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Today’s scattered blocks once supported stacked architectural tiers."},{"title":"Platform Volume Suggests Tens of Thousands of Man-Hours of Labor","slug":"platform-volume-suggests-tens-of-thousands-of-man-hours-of-labor","url":"/categories/forbidden-archaeology/puma-punku/platform-volume-suggests-tens-of-thousands-of-man-hours-of-labor.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Moving Puma Punku’s stones demanded labor on a near-industrial scale."},{"title":"Population Density at Extreme Altitude Sustained Monumental Construction","slug":"population-density-at-extreme-altitude-sustained-monumental-construction","url":"/categories/forbidden-archaeology/puma-punku/population-density-at-extreme-altitude-sustained-monumental-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tens of thousands thrived where oxygen drops and frost strikes nightly."},{"title":"Precision-Drilled Stone Holes Appear in Hard Volcanic Rock","slug":"precision-drilled-stone-holes-appear-in-hard-volcanic-rock","url":"/categories/forbidden-archaeology/puma-punku/precision-drilled-stone-holes-appear-in-hard-volcanic-rock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Perfect cylindrical holes pierce stone that resists modern chisels."},{"title":"Quarry Extraction Required Detaching Multi-Ton Blocks Without Iron Tools","slug":"quarry-extraction-required-detaching-multi-ton-blocks-without-iron-tools","url":"/categories/forbidden-archaeology/puma-punku/quarry-extraction-required-detaching-multi-ton-blocks-without-iron-tools.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Volcanic rock was separated from bedrock using stone and copper alone."},{"title":"Quarry Sources Reveal Long-Distance Material Networks","slug":"quarry-sources-reveal-long-distance-material-networks","url":"/categories/forbidden-archaeology/puma-punku/quarry-sources-reveal-long-distance-material-networks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone at Puma Punku traveled farther than many medieval trade goods."},{"title":"Raised Field Agriculture Engineered Microclimates Near Puma Punku","slug":"raised-field-agriculture-engineered-microclimates-near-puma-punku","url":"/categories/forbidden-archaeology/puma-punku/raised-field-agriculture-engineered-microclimates-near-puma-punku.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Farmers at 13,000 feet created artificial climates to grow food."},{"title":"Regional Trade Networks Supplied Materials Beyond Local Stone","slug":"regional-trade-networks-supplied-materials-beyond-local-stone","url":"/categories/forbidden-archaeology/puma-punku/regional-trade-networks-supplied-materials-beyond-local-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Artifacts near Puma Punku traveled hundreds of kilometers across mountains."},{"title":"Ritual Significance Elevated Puma Punku Beyond Mere Construction","slug":"ritual-significance-elevated-puma-punku-beyond-mere-construction","url":"/categories/forbidden-archaeology/puma-punku/ritual-significance-elevated-puma-punku-beyond-mere-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The platform was not just built to stand, but to command belief."},{"title":"Seismic Activity May Explain the Monument’s Dramatic Collapse","slug":"seismic-activity-may-explain-the-monument-s-dramatic-collapse","url":"/categories/forbidden-archaeology/puma-punku/seismic-activity-may-explain-the-monument-s-dramatic-collapse.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Earthquakes powerful enough to scatter multi-ton blocks struck the Andes."},{"title":"Stone Transport Across Lake Titicaca Required Buoyant Engineering","slug":"stone-transport-across-lake-titicaca-required-buoyant-engineering","url":"/categories/forbidden-archaeology/puma-punku/stone-transport-across-lake-titicaca-required-buoyant-engineering.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tens of tons of rock floated across one of the world’s highest lakes."},{"title":"Structural Redundancy in Interlocking Blocks Enhanced Stability","slug":"structural-redundancy-in-interlocking-blocks-enhanced-stability","url":"/categories/forbidden-archaeology/puma-punku/structural-redundancy-in-interlocking-blocks-enhanced-stability.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Each stone was carved to grip multiple neighbors at once."},{"title":"Territorial Influence of Tiwanaku Extended Hundreds of Kilometers","slug":"territorial-influence-of-tiwanaku-extended-hundreds-of-kilometers","url":"/categories/forbidden-archaeology/puma-punku/territorial-influence-of-tiwanaku-extended-hundreds-of-kilometers.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A high-altitude stone complex anchored influence across vast Andean distances."},{"title":"Unfinished Blocks Suggest Abrupt Abandonment of Puma Punku","slug":"unfinished-blocks-suggest-abrupt-abandonment-of-puma-punku","url":"/categories/forbidden-archaeology/puma-punku/unfinished-blocks-suggest-abrupt-abandonment-of-puma-punku.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Half-carved stones lie frozen mid-process as if tools vanished overnight."},{"title":"Urban Integration Linked Puma Punku to a Multi-Kilometer Capital Network","slug":"urban-integration-linked-puma-punku-to-a-multi-kilometer-capital-network","url":"/categories/forbidden-archaeology/puma-punku/urban-integration-linked-puma-punku-to-a-multi-kilometer-capital-network.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The shattered platform once anchored a city stretching across the plateau."},{"title":"Volcanic Andesite at Puma Punku Originated From Distant Geological Formations","slug":"volcanic-andesite-at-puma-punku-originated-from-distant-geological-formations","url":"/categories/forbidden-archaeology/puma-punku/volcanic-andesite-at-puma-punku-originated-from-distant-geological-formations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone used in the monument formed from ancient magma deep beneath the Andes."},{"title":"Water Management Channels Surrounding Puma Punku Controlled Seasonal Flooding","slug":"water-management-channels-surrounding-puma-punku-controlled-seasonal-flooding","url":"/categories/forbidden-archaeology/puma-punku/water-management-channels-surrounding-puma-punku-controlled-seasonal-flooding.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Engineered canals tamed floodwaters beside a 13,000-foot stone complex."},{"title":"X-Shaped Metal Clamps Bound Multi-Ton Stones at Puma Punku","slug":"x-shaped-metal-clamps-bound-multi-ton-stones-at-puma-punku","url":"/categories/forbidden-archaeology/puma-punku/x-shaped-metal-clamps-bound-multi-ton-stones-at-puma-punku.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Molten metal once locked volcanic blocks together in the thin Andean air."},{"title":"Yielding to Thin Air, Tiwanaku Workers Built at Extreme Altitude","slug":"yielding-to-thin-air-tiwanaku-workers-built-at-extreme-altitude","url":"/categories/forbidden-archaeology/puma-punku/yielding-to-thin-air-tiwanaku-workers-built-at-extreme-altitude.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Laborers carved volcanic rock where oxygen drops nearly 40 percent."},{"title":"Zonal Layout of the Tiwanaku Capital Integrated Ritual and Industry","slug":"zonal-layout-of-the-tiwanaku-capital-integrated-ritual-and-industry","url":"/categories/forbidden-archaeology/puma-punku/zonal-layout-of-the-tiwanaku-capital-integrated-ritual-and-industry.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sacred plazas and industrial zones coexisted in a planned highland city."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

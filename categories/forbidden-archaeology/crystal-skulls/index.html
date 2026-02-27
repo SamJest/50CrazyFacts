@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crystal Skulls</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Crystal Skulls</h1>
+  <p>Explore all facts in "Crystal Skulls".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Crystal Skulls</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"British Museum 19th-Century Crystal Skull Acquisition and Modern Forensic Analysis","slug":"british-museum-19th-century-crystal-skull-acquisition-and-modern-forensic-analysis","url":"/categories/forbidden-archaeology/crystal-skulls/british-museum-19th-century-crystal-skull-acquisition-and-modern-forensic-analysis.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A skull once displayed as a pre-Columbian relic was carved with tools invented 400 years later."},{"title":"Deutsche Idar-Oberstein 1870s Quartz Carving Industry and Crystal Skull Manufacturing Parallels","slug":"deutsche-idar-oberstein-1870s-quartz-carving-industry-and-crystal-skull-manufacturing-parallels","url":"/categories/forbidden-archaeology/crystal-skulls/deutsche-idar-oberstein-1870s-quartz-carving-industry-and-crystal-skull-manufacturing-parallels.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A German gemstone town processed Brazilian quartz into “Aztec” relics."},{"title":"Eugène Boban 1870s Paris Dealership and the Commercial Rise of Crystal Skulls","slug":"eug-ne-boban-1870s-paris-dealership-and-the-commercial-rise-of-crystal-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/eug-ne-boban-1870s-paris-dealership-and-the-commercial-rise-of-crystal-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single Paris dealer seeded museums with skulls that were never excavated."},{"title":"FBI Art Crime Team Guidance on Authenticating High-Value Stone Artifacts","slug":"fbi-art-crime-team-guidance-on-authenticating-high-value-stone-artifacts","url":"/categories/forbidden-archaeology/crystal-skulls/fbi-art-crime-team-guidance-on-authenticating-high-value-stone-artifacts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Federal investigators treat forged relics like financial crimes."},{"title":"Field Museum 2007 Laboratory Assessment of Unprovenanced Crystal Skull Specimens","slug":"field-museum-2007-laboratory-assessment-of-unprovenanced-crystal-skull-specimens","url":"/categories/forbidden-archaeology/crystal-skulls/field-museum-2007-laboratory-assessment-of-unprovenanced-crystal-skull-specimens.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A Chicago lab dismantled a sacred narrative with surface microscopy."},{"title":"Geological Society Quartz Source Analysis and the Brazilian Connection to 19th-Century Carving","slug":"geological-society-quartz-source-analysis-and-the-brazilian-connection-to-19th-century-carving","url":"/categories/forbidden-archaeology/crystal-skulls/geological-society-quartz-source-analysis-and-the-brazilian-connection-to-19th-century-carving.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The crystal’s geological fingerprint points to Brazil, not ancient Mexico."},{"title":"Getty Conservation Institute Microscopic Surface Mapping of Quartz Artifact Tool Marks","slug":"getty-conservation-institute-microscopic-surface-mapping-of-quartz-artifact-tool-marks","url":"/categories/forbidden-archaeology/crystal-skulls/getty-conservation-institute-microscopic-surface-mapping-of-quartz-artifact-tool-marks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Micron-scale mapping exposed mechanical fingerprints inside a “prehistoric” skull."},{"title":"Harvard Peabody Museum Provenance Audit of Crystal Skull Acquisition Records","slug":"harvard-peabody-museum-provenance-audit-of-crystal-skull-acquisition-records","url":"/categories/forbidden-archaeology/crystal-skulls/harvard-peabody-museum-provenance-audit-of-crystal-skull-acquisition-records.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An academic audit traced a “ritual relic” to undocumented trade networks."},{"title":"Hemispherical Optical Distortion Tests on Crystal Skull Eye Sockets","slug":"hemispherical-optical-distortion-tests-on-crystal-skull-eye-sockets","url":"/categories/forbidden-archaeology/crystal-skulls/hemispherical-optical-distortion-tests-on-crystal-skull-eye-sockets.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Light passing through the skull’s eyes reveals industrial polishing symmetry."},{"title":"Indian Geological Survey Quartz Inclusion Analysis and Implications for Artifact Dating","slug":"indian-geological-survey-quartz-inclusion-analysis-and-implications-for-artifact-dating","url":"/categories/forbidden-archaeology/crystal-skulls/indian-geological-survey-quartz-inclusion-analysis-and-implications-for-artifact-dating.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Microscopic mineral inclusions can expose a skull’s modern supply chain."},{"title":"Institute of Archaeology London Experimental Abrasion Study on Quartz Surfaces","slug":"institute-of-archaeology-london-experimental-abrasion-study-on-quartz-surfaces","url":"/categories/forbidden-archaeology/crystal-skulls/institute-of-archaeology-london-experimental-abrasion-study-on-quartz-surfaces.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient-style abrasion could not replicate the skulls’ mirror finish."},{"title":"International Council of Museums Provenance Standards and Crystal Skull Reclassification","slug":"international-council-of-museums-provenance-standards-and-crystal-skull-reclassification","url":"/categories/forbidden-archaeology/crystal-skulls/international-council-of-museums-provenance-standards-and-crystal-skull-reclassification.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern museum rules would have blocked the skulls at the door."},{"title":"Japanese Electron Microscopy Studies Confirm Rotary Tool Signatures in Quartz Artifacts","slug":"japanese-electron-microscopy-studies-confirm-rotary-tool-signatures-in-quartz-artifacts","url":"/categories/forbidden-archaeology/crystal-skulls/japanese-electron-microscopy-studies-confirm-rotary-tool-signatures-in-quartz-artifacts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Electron beams exposed industrial rhythms frozen inside crystal."},{"title":"John Mitchell-Hedges 1960s Public Lectures Amplifying Crystal Skull Discovery Claims","slug":"john-mitchell-hedges-1960s-public-lectures-amplifying-crystal-skull-discovery-claims","url":"/categories/forbidden-archaeology/crystal-skulls/john-mitchell-hedges-1960s-public-lectures-amplifying-crystal-skull-discovery-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A lecture circuit transformed an auction purchase into a lost-civilization legend."},{"title":"Journal of Archaeological Science Peer-Reviewed Assessment of Crystal Skull Tool Marks","slug":"journal-of-archaeological-science-peer-reviewed-assessment-of-crystal-skull-tool-marks","url":"/categories/forbidden-archaeology/crystal-skulls/journal-of-archaeological-science-peer-reviewed-assessment-of-crystal-skull-tool-marks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Peer review concluded the skulls’ surfaces record industrial machinery, not ritual."},{"title":"Kingston University Microscopy Study of Quartz Tool Marks on Crystal Skulls","slug":"kingston-university-microscopy-study-of-quartz-tool-marks-on-crystal-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/kingston-university-microscopy-study-of-quartz-tool-marks-on-crystal-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Under magnification, an “ancient” skull displays the fingerprint of modern machinery."},{"title":"London 2008 British Museum-Smithsonian Joint Investigation Into Crystal Skull Origins","slug":"london-2008-british-museum-smithsonian-joint-investigation-into-crystal-skull-origins","url":"/categories/forbidden-archaeology/crystal-skulls/london-2008-british-museum-smithsonian-joint-investigation-into-crystal-skull-origins.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Two national museums dismantled a century-old relic with microscopes and trade records."},{"title":"Lubaantun 1920s Excavation Reports and the Complete Absence of Crystal Skull Documentation","slug":"lubaantun-1920s-excavation-reports-and-the-complete-absence-of-crystal-skull-documentation","url":"/categories/forbidden-archaeology/crystal-skulls/lubaantun-1920s-excavation-reports-and-the-complete-absence-of-crystal-skull-documentation.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Official excavation records describe temples in detail yet never mention a crystal skull."},{"title":"Metallurgical Abrasive Technology After 1850 and Its Impact on Quartz Carving Precision","slug":"metallurgical-abrasive-technology-after-1850-and-its-impact-on-quartz-carving-precision","url":"/categories/forbidden-archaeology/crystal-skulls/metallurgical-abrasive-technology-after-1850-and-its-impact-on-quartz-carving-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Industrial abrasives made mirror-finish quartz possible centuries after the Aztecs."},{"title":"Metropolitan Museum Comparative Study of Pre-Columbian Stonework Versus Crystal Skull Surfaces","slug":"metropolitan-museum-comparative-study-of-pre-columbian-stonework-versus-crystal-skull-surfaces","url":"/categories/forbidden-archaeology/crystal-skulls/metropolitan-museum-comparative-study-of-pre-columbian-stonework-versus-crystal-skull-surfaces.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Authentic Aztec carvings bear different scars than the famous quartz skulls."},{"title":"Mitchell-Hedges 1943 Sotheby’s Auction Record Contradicts Belize Discovery Story","slug":"mitchell-hedges-1943-sotheby-s-auction-record-contradicts-belize-discovery-story","url":"/categories/forbidden-archaeology/crystal-skulls/mitchell-hedges-1943-sotheby-s-auction-record-contradicts-belize-discovery-story.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The “lost city” skull was purchased at auction, not unearthed in ruins."},{"title":"National Geographic 2011 Analysis of Crystal Skull Myths Versus Archaeological Evidence","slug":"national-geographic-2011-analysis-of-crystal-skull-myths-versus-archaeological-evidence","url":"/categories/forbidden-archaeology/crystal-skulls/national-geographic-2011-analysis-of-crystal-skull-myths-versus-archaeological-evidence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A global magazine tested a mystical legend against lab data."},{"title":"National Museum of Mexico 1886 Exhibition and Early Crystal Skull Marketing","slug":"national-museum-of-mexico-1886-exhibition-and-early-crystal-skull-marketing","url":"/categories/forbidden-archaeology/crystal-skulls/national-museum-of-mexico-1886-exhibition-and-early-crystal-skull-marketing.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A supposed sacred relic debuted as a commercial curiosity in 1886."},{"title":"Nature 2008 Commentary on Forensic Mineralogy and Artifact Authentication","slug":"nature-2008-commentary-on-forensic-mineralogy-and-artifact-authentication","url":"/categories/forbidden-archaeology/crystal-skulls/nature-2008-commentary-on-forensic-mineralogy-and-artifact-authentication.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A mineral’s microscopic scratches can overturn a century of belief."},{"title":"Oxford University Materials Science Replication of Quartz Skull Carving Constraints","slug":"oxford-university-materials-science-replication-of-quartz-skull-carving-constraints","url":"/categories/forbidden-archaeology/crystal-skulls/oxford-university-materials-science-replication-of-quartz-skull-carving-constraints.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"When engineers tried carving quartz by hand, time and physics intervened."},{"title":"Penn Museum Comparative Drilling Analysis of Ancient Lapidary Techniques Versus Crystal Skulls","slug":"penn-museum-comparative-drilling-analysis-of-ancient-lapidary-techniques-versus-crystal-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/penn-museum-comparative-drilling-analysis-of-ancient-lapidary-techniques-versus-crystal-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient drills left irregular tunnels; the skulls show industrial cylinders."},{"title":"Princeton University Archival Correspondence Linking Crystal Skulls to 19th-Century Dealers","slug":"princeton-university-archival-correspondence-linking-crystal-skulls-to-19th-century-dealers","url":"/categories/forbidden-archaeology/crystal-skulls/princeton-university-archival-correspondence-linking-crystal-skulls-to-19th-century-dealers.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Letters in a university archive unraveled a century of sacred storytelling."},{"title":"Quetzalcoatl-Inspired Crystal Skull Legends and 20th-Century Myth Construction","slug":"quetzalcoatl-inspired-crystal-skull-legends-and-20th-century-myth-construction","url":"/categories/forbidden-archaeology/crystal-skulls/quetzalcoatl-inspired-crystal-skull-legends-and-20th-century-myth-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An alleged Aztec prophecy about thirteen crystal skulls was written in the 1900s, not the 1500s."},{"title":"Radiographic Imaging Studies Revealing Internal Stress Patterns in Crystal Skulls","slug":"radiographic-imaging-studies-revealing-internal-stress-patterns-in-crystal-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/radiographic-imaging-studies-revealing-internal-stress-patterns-in-crystal-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"X-rays exposed internal stress fractures consistent with machine carving."},{"title":"Reuters 2008 Coverage of Scientific Findings on Crystal Skull Authenticity","slug":"reuters-2008-coverage-of-scientific-findings-on-crystal-skull-authenticity","url":"/categories/forbidden-archaeology/crystal-skulls/reuters-2008-coverage-of-scientific-findings-on-crystal-skull-authenticity.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"International headlines announced that sacred skulls were modern souvenirs."},{"title":"Rijksmuseum Hardstone Workshop Records and 19th-Century Quartz Craft Techniques","slug":"rijksmuseum-hardstone-workshop-records-and-19th-century-quartz-craft-techniques","url":"/categories/forbidden-archaeology/crystal-skulls/rijksmuseum-hardstone-workshop-records-and-19th-century-quartz-craft-techniques.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"European workshop logs describe the same carving methods found on the skulls."},{"title":"Royal Academy Conservation Reports on Reclassification of Contested Quartz Artifacts","slug":"royal-academy-conservation-reports-on-reclassification-of-contested-quartz-artifacts","url":"/categories/forbidden-archaeology/crystal-skulls/royal-academy-conservation-reports-on-reclassification-of-contested-quartz-artifacts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Conservators quietly downgraded sacred relics after laboratory review."},{"title":"Royal Anthropological Institute Peer Review on Crystal Skull Cultural Attribution","slug":"royal-anthropological-institute-peer-review-on-crystal-skull-cultural-attribution","url":"/categories/forbidden-archaeology/crystal-skulls/royal-anthropological-institute-peer-review-on-crystal-skull-cultural-attribution.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Academic review found no ritual precedent for quartz skulls in Mesoamerican religion."},{"title":"Royal Belgian Institute of Natural Sciences Quartz Provenance Study and Brazilian Export Links","slug":"royal-belgian-institute-of-natural-sciences-quartz-provenance-study-and-brazilian-export-links","url":"/categories/forbidden-archaeology/crystal-skulls/royal-belgian-institute-of-natural-sciences-quartz-provenance-study-and-brazilian-export-links.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Mineral inclusions inside the skull align with 19th-century Brazilian exports."},{"title":"Royal Institution Optical Studies Demonstrating Uniform Refraction in Crystal Skull Eye Cavities","slug":"royal-institution-optical-studies-demonstrating-uniform-refraction-in-crystal-skull-eye-cavities","url":"/categories/forbidden-archaeology/crystal-skulls/royal-institution-optical-studies-demonstrating-uniform-refraction-in-crystal-skull-eye-cavities.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Light bends through the skull’s eyes with machine-level symmetry."},{"title":"Royal Ontario Museum Comparative Surface Texture Analysis of Mesoamerican Stone Artifacts","slug":"royal-ontario-museum-comparative-surface-texture-analysis-of-mesoamerican-stone-artifacts","url":"/categories/forbidden-archaeology/crystal-skulls/royal-ontario-museum-comparative-surface-texture-analysis-of-mesoamerican-stone-artifacts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Authentic ritual carvings display micro-textures the skulls completely lack."},{"title":"Royal Society Archival Analysis of 19th-Century Antiquities Trade Correspondence","slug":"royal-society-archival-analysis-of-19th-century-antiquities-trade-correspondence","url":"/categories/forbidden-archaeology/crystal-skulls/royal-society-archival-analysis-of-19th-century-antiquities-trade-correspondence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Private letters mapped a supply chain behind the “ancient” skulls."},{"title":"Royal Society of Chemistry Analysis of Quartz Hardness Challenges Ancient Carving Claims","slug":"royal-society-of-chemistry-analysis-of-quartz-hardness-challenges-ancient-carving-claims","url":"/categories/forbidden-archaeology/crystal-skulls/royal-society-of-chemistry-analysis-of-quartz-hardness-challenges-ancient-carving-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Quartz is harder than steel, yet a “stone-age” skull shows machine precision."},{"title":"Royal Society of Chemistry Hardness Scale Data and the Improbability of Ancient Quartz Skull Precision","slug":"royal-society-of-chemistry-hardness-scale-data-and-the-improbability-of-ancient-quartz-skull-precision","url":"/categories/forbidden-archaeology/crystal-skulls/royal-society-of-chemistry-hardness-scale-data-and-the-improbability-of-ancient-quartz-skull-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Quartz resists steel, yet the skulls show flawless industrial symmetry."},{"title":"UCLA Materials Analysis Comparing Experimental Quartz Carvings to Museum Crystal Skulls","slug":"ucla-materials-analysis-comparing-experimental-quartz-carvings-to-museum-crystal-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/ucla-materials-analysis-comparing-experimental-quartz-carvings-to-museum-crystal-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"When researchers carved quartz by hand, the results looked nothing like the famous skulls."},{"title":"United States National Museum 1992 Study Reclassifying Crystal Skulls as Modern Creations","slug":"united-states-national-museum-1992-study-reclassifying-crystal-skulls-as-modern-creations","url":"/categories/forbidden-archaeology/crystal-skulls/united-states-national-museum-1992-study-reclassifying-crystal-skulls-as-modern-creations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A museum artifact lost its ancient identity after laboratory scrutiny in 1992."},{"title":"Vatican Museum Hardstone Collection Comparisons and the Absence of Pre-Columbian Quartz Skulls","slug":"vatican-museum-hardstone-collection-comparisons-and-the-absence-of-pre-columbian-quartz-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/vatican-museum-hardstone-collection-comparisons-and-the-absence-of-pre-columbian-quartz-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One of the world’s largest collections lacks a single authenticated quartz skull."},{"title":"Victoria and Albert Museum Comparative Quartz Carving Techniques Review","slug":"victoria-and-albert-museum-comparative-quartz-carving-techniques-review","url":"/categories/forbidden-archaeology/crystal-skulls/victoria-and-albert-museum-comparative-quartz-carving-techniques-review.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Authentic historic quartz carvings lack the skulls’ mechanical polish."},{"title":"Vienna Natural History Museum Review of 19th-Century Quartz Carving Trade Catalogues","slug":"vienna-natural-history-museum-review-of-19th-century-quartz-carving-trade-catalogues","url":"/categories/forbidden-archaeology/crystal-skulls/vienna-natural-history-museum-review-of-19th-century-quartz-carving-trade-catalogues.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Trade catalogues advertised crystal curiosities decades before the myths formed."},{"title":"World War II Era Collecting Boom and the Surge in Crystal Skull Provenance Claims","slug":"world-war-ii-era-collecting-boom-and-the-surge-in-crystal-skull-provenance-claims","url":"/categories/forbidden-archaeology/crystal-skulls/world-war-ii-era-collecting-boom-and-the-surge-in-crystal-skull-provenance-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"As global war reshaped borders, “ancient” skulls quietly gained new origin stories."},{"title":"X-Ray Diffraction Tests on the Mitchell-Hedges Crystal Skull Revealed Modern Tooling","slug":"x-ray-diffraction-tests-on-the-mitchell-hedges-crystal-skull-revealed-modern-tooling","url":"/categories/forbidden-archaeology/crystal-skulls/x-ray-diffraction-tests-on-the-mitchell-hedges-crystal-skull-revealed-modern-tooling.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A skull claimed to predate Columbus carries microscopic scars from industrial rotary wheels."},{"title":"Yale University Provenance Review of Mesoamerican Crystal Skull Claims","slug":"yale-university-provenance-review-of-mesoamerican-crystal-skull-claims","url":"/categories/forbidden-archaeology/crystal-skulls/yale-university-provenance-review-of-mesoamerican-crystal-skull-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An Ivy League collection traced its “ancient” skull to a European dealer, not a jungle temple."},{"title":"Yucatán Trade Networks and the Absence of Crystal Skulls in Excavated Maya Sites","slug":"yucat-n-trade-networks-and-the-absence-of-crystal-skulls-in-excavated-maya-sites","url":"/categories/forbidden-archaeology/crystal-skulls/yucat-n-trade-networks-and-the-absence-of-crystal-skulls-in-excavated-maya-sites.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of Maya temples have been excavated, yet not one yielded a crystal skull."},{"title":"Zeiss Microscopy Findings on Symmetry in Alleged Pre-Columbian Crystal Skulls","slug":"zeiss-microscopy-findings-on-symmetry-in-alleged-pre-columbian-crystal-skulls","url":"/categories/forbidden-archaeology/crystal-skulls/zeiss-microscopy-findings-on-symmetry-in-alleged-pre-columbian-crystal-skulls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Perfect bilateral symmetry in quartz betrayed a skull’s industrial origin."},{"title":"Zurich Quartz Trade Records and 19th-Century Crystal Skull Production","slug":"zurich-quartz-trade-records-and-19th-century-crystal-skull-production","url":"/categories/forbidden-archaeology/crystal-skulls/zurich-quartz-trade-records-and-19th-century-crystal-skull-production.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"European gem workshops were exporting “ancient” skulls before archaeology could test them."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

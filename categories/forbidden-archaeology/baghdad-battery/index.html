@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baghdad Battery</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Baghdad Battery</h1>
+  <p>Explore all facts in "Baghdad Battery".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Baghdad Battery</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Baghdad Battery That Predates Modern Electricity by 1,800 Years","slug":"ancient-baghdad-battery-that-predates-modern-electricity-by-1-800-years","url":"/categories/forbidden-archaeology/baghdad-battery/ancient-baghdad-battery-that-predates-modern-electricity-by-1-800-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An ancient clay jar from Iraq could generate electricity 1,800 years before modern batteries existed."},{"title":"Archaeological Context of Baghdad Battery Discovery in 1938 Iraq","slug":"archaeological-context-of-baghdad-battery-discovery-in-1938-iraq","url":"/categories/forbidden-archaeology/baghdad-battery/archaeological-context-of-baghdad-battery-discovery-in-1938-iraq.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A routine dig in 1938 unearthed an object that should not exist."},{"title":"Baghdad Battery Could Deliver Electric Shock in the Ancient World","slug":"baghdad-battery-could-deliver-electric-shock-in-the-ancient-world","url":"/categories/forbidden-archaeology/baghdad-battery/baghdad-battery-could-deliver-electric-shock-in-the-ancient-world.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This clay jar could shock you in 200 BCE."},{"title":"Bitumen-Sealed Electrochemical Design in the Baghdad Battery","slug":"bitumen-sealed-electrochemical-design-in-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/bitumen-sealed-electrochemical-design-in-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Black tar inside a clay jar may have insulated ancient electricity."},{"title":"Copper and Iron Configuration in Baghdad Battery Mirrors Modern Galvanic Cells","slug":"copper-and-iron-configuration-in-baghdad-battery-mirrors-modern-galvanic-cells","url":"/categories/forbidden-archaeology/baghdad-battery/copper-and-iron-configuration-in-baghdad-battery-mirrors-modern-galvanic-cells.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Its metal layout matches a modern battery almost perfectly."},{"title":"Dating the Baghdad Battery to the Parthian Empire Era","slug":"dating-the-baghdad-battery-to-the-parthian-empire-era","url":"/categories/forbidden-archaeology/baghdad-battery/dating-the-baghdad-battery-to-the-parthian-empire-era.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A possible battery emerged from an empire known for horse archers, not electricity."},{"title":"Earliest Possible Battery Predates Volta by Nearly Two Millennia","slug":"earliest-possible-battery-predates-volta-by-nearly-two-millennia","url":"/categories/forbidden-archaeology/baghdad-battery/earliest-possible-battery-predates-volta-by-nearly-two-millennia.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Volta built the first battery in 1800—unless ancient Iraq did it first."},{"title":"Electroplating Theory Behind the Baghdad Battery Mystery","slug":"electroplating-theory-behind-the-baghdad-battery-mystery","url":"/categories/forbidden-archaeology/baghdad-battery/electroplating-theory-behind-the-baghdad-battery-mystery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Gold may have been electrically bonded to silver in ancient Iraq."},{"title":"Experimental Replicas of the Baghdad Battery Generate Measurable Voltage","slug":"experimental-replicas-of-the-baghdad-battery-generate-measurable-voltage","url":"/categories/forbidden-archaeology/baghdad-battery/experimental-replicas-of-the-baghdad-battery-generate-measurable-voltage.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern scientists rebuilt it—and it actually worked."},{"title":"Function Debate Over the Baghdad Battery Still Divides Archaeologists","slug":"function-debate-over-the-baghdad-battery-still-divides-archaeologists","url":"/categories/forbidden-archaeology/baghdad-battery/function-debate-over-the-baghdad-battery-still-divides-archaeologists.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some experts call it a battery—others insist it never powered anything."},{"title":"Glass Seals and Asphalt Insulation in the Baghdad Battery","slug":"glass-seals-and-asphalt-insulation-in-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/glass-seals-and-asphalt-insulation-in-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient engineers insulated metal electrodes with asphalt and glass."},{"title":"Hypothesis That Baghdad Battery Was Used in Ancient Medical Therapy","slug":"hypothesis-that-baghdad-battery-was-used-in-ancient-medical-therapy","url":"/categories/forbidden-archaeology/baghdad-battery/hypothesis-that-baghdad-battery-was-used-in-ancient-medical-therapy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient healers may have applied electric currents to the human body."},{"title":"Iron Rod Corrosion Suggests Chemical Reaction Inside Baghdad Battery","slug":"iron-rod-corrosion-suggests-chemical-reaction-inside-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/iron-rod-corrosion-suggests-chemical-reaction-inside-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The iron core shows corrosion consistent with acidic reactions."},{"title":"Jar Dimensions of the Baghdad Battery Suggest Purpose-Built Design","slug":"jar-dimensions-of-the-baghdad-battery-suggest-purpose-built-design","url":"/categories/forbidden-archaeology/baghdad-battery/jar-dimensions-of-the-baghdad-battery-suggest-purpose-built-design.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The copper tube fits the jar with almost engineered precision."},{"title":"Known Examples of Similar Baghdad Battery Artifacts Suggest Replication","slug":"known-examples-of-similar-baghdad-battery-artifacts-suggest-replication","url":"/categories/forbidden-archaeology/baghdad-battery/known-examples-of-similar-baghdad-battery-artifacts-suggest-replication.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"More than one of these electric jars has been found."},{"title":"Lack of Written Records Deepens the Baghdad Battery Enigma","slug":"lack-of-written-records-deepens-the-baghdad-battery-enigma","url":"/categories/forbidden-archaeology/baghdad-battery/lack-of-written-records-deepens-the-baghdad-battery-enigma.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"No ancient text explains why this battery-like device existed."},{"title":"Metal Potential Difference Between Iron and Copper Powers the Baghdad Battery","slug":"metal-potential-difference-between-iron-and-copper-powers-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/metal-potential-difference-between-iron-and-copper-powers-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Two ordinary metals create invisible current when separated correctly."},{"title":"Multiple Baghdad Batteries Could Produce Higher Voltage Together","slug":"multiple-baghdad-batteries-could-produce-higher-voltage-together","url":"/categories/forbidden-archaeology/baghdad-battery/multiple-baghdad-batteries-could-produce-higher-voltage-together.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stack enough of these jars and voltage multiplies fast."},{"title":"No Surviving Wires Found With the Baghdad Battery","slug":"no-surviving-wires-found-with-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/no-surviving-wires-found-with-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A working battery with no surviving wires sounds impossible."},{"title":"Object Height of the Baghdad Battery Makes It Portable Ancient Power","slug":"object-height-of-the-baghdad-battery-makes-it-portable-ancient-power","url":"/categories/forbidden-archaeology/baghdad-battery/object-height-of-the-baghdad-battery-makes-it-portable-ancient-power.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient power source fits in your hand."},{"title":"Possible Use of the Baghdad Battery in Religious Rituals","slug":"possible-use-of-the-baghdad-battery-in-religious-rituals","url":"/categories/forbidden-archaeology/baghdad-battery/possible-use-of-the-baghdad-battery-in-religious-rituals.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A hidden electric shock in a temple would feel supernatural."},{"title":"Potential Electrochemical Reaction Requires Only Common Ancient Liquids","slug":"potential-electrochemical-reaction-requires-only-common-ancient-liquids","url":"/categories/forbidden-archaeology/baghdad-battery/potential-electrochemical-reaction-requires-only-common-ancient-liquids.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Vinegar alone could have activated this ancient battery."},{"title":"Quantity of Surviving Baghdad Battery Specimens Suggests Intentional Production","slug":"quantity-of-surviving-baghdad-battery-specimens-suggests-intentional-production","url":"/categories/forbidden-archaeology/baghdad-battery/quantity-of-surviving-baghdad-battery-specimens-suggests-intentional-production.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"More than one ancient battery-like jar survived the centuries."},{"title":"Rapid Corrosion Patterns Support Electrolyte Exposure in Baghdad Battery","slug":"rapid-corrosion-patterns-support-electrolyte-exposure-in-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/rapid-corrosion-patterns-support-electrolyte-exposure-in-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The iron core deteriorated exactly as a working anode should."},{"title":"Recorded Voltage Output of Baghdad Battery Replicas Challenges Historical Assumptions","slug":"recorded-voltage-output-of-baghdad-battery-replicas-challenges-historical-assumptions","url":"/categories/forbidden-archaeology/baghdad-battery/recorded-voltage-output-of-baghdad-battery-replicas-challenges-historical-assumptions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient clay jars produce measurable electricity on modern voltmeters."},{"title":"Scale of Voltage From Multiple Baghdad Batteries Rivals Early 19th Century Cells","slug":"scale-of-voltage-from-multiple-baghdad-batteries-rivals-early-19th-century-cells","url":"/categories/forbidden-archaeology/baghdad-battery/scale-of-voltage-from-multiple-baghdad-batteries-rivals-early-19th-century-cells.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stack enough ancient jars and voltage approaches early laboratory levels."},{"title":"Silent Archaeological Record Intensifies the Baghdad Battery Mystery","slug":"silent-archaeological-record-intensifies-the-baghdad-battery-mystery","url":"/categories/forbidden-archaeology/baghdad-battery/silent-archaeological-record-intensifies-the-baghdad-battery-mystery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A working battery left no instruction manual behind."},{"title":"The Baghdad Battery Was Discovered Near Ancient Ctesiphon","slug":"the-baghdad-battery-was-discovered-near-ancient-ctesiphon","url":"/categories/forbidden-archaeology/baghdad-battery/the-baghdad-battery-was-discovered-near-ancient-ctesiphon.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A possible battery emerged near one of the ancient world's greatest cities."},{"title":"Theoretical Current Output From Linked Baghdad Batteries Could Drive Visible Reactions","slug":"theoretical-current-output-from-linked-baghdad-batteries-could-drive-visible-reactions","url":"/categories/forbidden-archaeology/baghdad-battery/theoretical-current-output-from-linked-baghdad-batteries-could-drive-visible-reactions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Chain enough jars together and chemistry visibly changes."},{"title":"Unique Combination of Clay, Copper, Iron, and Bitumen Defines the Baghdad Battery","slug":"unique-combination-of-clay-copper-iron-and-bitumen-defines-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/unique-combination-of-clay-copper-iron-and-bitumen-defines-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Four common materials combine to create ancient electricity."},{"title":"Unsealed Top Design Allows Electrolyte Access in the Baghdad Battery","slug":"unsealed-top-design-allows-electrolyte-access-in-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/unsealed-top-design-allows-electrolyte-access-in-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The jar's opening design makes chemical activation surprisingly simple."},{"title":"Verifiable Experimental Tests Confirm Electrochemical Viability of Baghdad Battery","slug":"verifiable-experimental-tests-confirm-electrochemical-viability-of-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/verifiable-experimental-tests-confirm-electrochemical-viability-of-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern laboratories proved this ancient design truly generates power."},{"title":"Voltage Output of a Single Baghdad Battery Is Low but Stable","slug":"voltage-output-of-a-single-baghdad-battery-is-low-but-stable","url":"/categories/forbidden-archaeology/baghdad-battery/voltage-output-of-a-single-baghdad-battery-is-low-but-stable.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Even a half-volt can change chemistry dramatically."},{"title":"Wartime Looting Affected Access to the Original Baghdad Battery","slug":"wartime-looting-affected-access-to-the-original-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/wartime-looting-affected-access-to-the-original-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A device that challenges history nearly vanished in modern conflict."},{"title":"X-Ray Analysis Revealed Internal Structure of the Baghdad Battery","slug":"x-ray-analysis-revealed-internal-structure-of-the-baghdad-battery","url":"/categories/forbidden-archaeology/baghdad-battery/x-ray-analysis-revealed-internal-structure-of-the-baghdad-battery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern imaging exposed hidden metal engineering inside a clay jar."},{"title":"Xenial Trade Networks of the Parthian Empire Could Spread Technical Knowledge","slug":"xenial-trade-networks-of-the-parthian-empire-could-spread-technical-knowledge","url":"/categories/forbidden-archaeology/baghdad-battery/xenial-trade-networks-of-the-parthian-empire-could-spread-technical-knowledge.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A battery-like device sat inside one of history's busiest trade corridors."},{"title":"Yield of Electrical Output From Acidic Solutions Demonstrates Predictable Chemistry","slug":"yield-of-electrical-output-from-acidic-solutions-demonstrates-predictable-chemistry","url":"/categories/forbidden-archaeology/baghdad-battery/yield-of-electrical-output-from-acidic-solutions-demonstrates-predictable-chemistry.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Pour in vinegar and invisible current instantly begins."},{"title":"Yoked Electrochemical Theory Connects Baghdad Battery to Ancient Metal Workshops","slug":"yoked-electrochemical-theory-connects-baghdad-battery-to-ancient-metal-workshops","url":"/categories/forbidden-archaeology/baghdad-battery/yoked-electrochemical-theory-connects-baghdad-battery-to-ancient-metal-workshops.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Gold workshops and electric jars may have operated side by side."},{"title":"Zero Direct Proof Has Not Diminished the Baghdad Battery's Scientific Relevance","slug":"zero-direct-proof-has-not-diminished-the-baghdad-battery-s-scientific-relevance","url":"/categories/forbidden-archaeology/baghdad-battery/zero-direct-proof-has-not-diminished-the-baghdad-battery-s-scientific-relevance.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Despite missing proof of intent, the science still works."},{"title":"Zinc Is Absent From the Baghdad Battery Despite Modern Comparisons","slug":"zinc-is-absent-from-the-baghdad-battery-despite-modern-comparisons","url":"/categories/forbidden-archaeology/baghdad-battery/zinc-is-absent-from-the-baghdad-battery-despite-modern-comparisons.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Unlike modern batteries, this ancient cell used no zinc at all."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

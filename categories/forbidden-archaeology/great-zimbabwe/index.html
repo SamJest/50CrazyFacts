@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Great Zimbabwe</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Great Zimbabwe</h1>
+  <p>Explore all facts in "Great Zimbabwe".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Great Zimbabwe</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Terracing Near Great Zimbabwe Suggests Intensive Agriculture on Granite Slopes","slug":"ancient-terracing-near-great-zimbabwe-suggests-intensive-agriculture-on-granite-slopes","url":"/categories/forbidden-archaeology/great-zimbabwe/ancient-terracing-near-great-zimbabwe-suggests-intensive-agriculture-on-granite-slopes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Farmers carved food systems directly into rocky hillsides."},{"title":"Archaeologists Found Persian Glass at Great Zimbabwe’s Hill Complex","slug":"archaeologists-found-persian-glass-at-great-zimbabwe-s-hill-complex","url":"/categories/forbidden-archaeology/great-zimbabwe/archaeologists-found-persian-glass-at-great-zimbabwe-s-hill-complex.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Delicate Middle Eastern glass shattered in the heart of inland Africa."},{"title":"Burial Evidence at Great Zimbabwe Suggests Elite Ritual Practices on Elevated Ground","slug":"burial-evidence-at-great-zimbabwe-suggests-elite-ritual-practices-on-elevated-ground","url":"/categories/forbidden-archaeology/great-zimbabwe/burial-evidence-at-great-zimbabwe-suggests-elite-ritual-practices-on-elevated-ground.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The highest stones may have guarded the city’s most sacred dead."},{"title":"Burned Granite at Great Zimbabwe Was Shaped Using Controlled Thermal Shock","slug":"burned-granite-at-great-zimbabwe-was-shaped-using-controlled-thermal-shock","url":"/categories/forbidden-archaeology/great-zimbabwe/burned-granite-at-great-zimbabwe-was-shaped-using-controlled-thermal-shock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Builders cracked solid granite using fire before steel tools existed."},{"title":"Chinese Celadon at Great Zimbabwe Dates to the Yuan Dynasty","slug":"chinese-celadon-at-great-zimbabwe-dates-to-the-yuan-dynasty","url":"/categories/forbidden-archaeology/great-zimbabwe/chinese-celadon-at-great-zimbabwe-dates-to-the-yuan-dynasty.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Porcelain fired in imperial China surfaced in a medieval African capital."},{"title":"Clay Floors at Great Zimbabwe Were Repeatedly Resurfaced Over Generations","slug":"clay-floors-at-great-zimbabwe-were-repeatedly-resurfaced-over-generations","url":"/categories/forbidden-archaeology/great-zimbabwe/clay-floors-at-great-zimbabwe-were-repeatedly-resurfaced-over-generations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Beneath the stone walls lie layered floors recording centuries of footsteps."},{"title":"Deforestation May Have Strained Great Zimbabwe’s Urban Core","slug":"deforestation-may-have-strained-great-zimbabwe-s-urban-core","url":"/categories/forbidden-archaeology/great-zimbabwe/deforestation-may-have-strained-great-zimbabwe-s-urban-core.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A stone empire may have weakened because trees vanished."},{"title":"Distant Goldfields Linked to Great Zimbabwe Fueled Regional Political Expansion","slug":"distant-goldfields-linked-to-great-zimbabwe-fueled-regional-political-expansion","url":"/categories/forbidden-archaeology/great-zimbabwe/distant-goldfields-linked-to-great-zimbabwe-fueled-regional-political-expansion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Mines far beyond the city’s walls powered its monumental rise."},{"title":"Early European Explorers Refused to Believe Africans Built Great Zimbabwe","slug":"early-european-explorers-refused-to-believe-africans-built-great-zimbabwe","url":"/categories/forbidden-archaeology/great-zimbabwe/early-european-explorers-refused-to-believe-africans-built-great-zimbabwe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Colonial explorers saw the ruins and denied local authorship."},{"title":"Elevated Granite Kopjes Functioned as Natural Watchtowers Over Trade Routes","slug":"elevated-granite-kopjes-functioned-as-natural-watchtowers-over-trade-routes","url":"/categories/forbidden-archaeology/great-zimbabwe/elevated-granite-kopjes-functioned-as-natural-watchtowers-over-trade-routes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"From its hilltop, this capital could scan horizons for kilometers."},{"title":"Elite Residences at Great Zimbabwe Were Physically Separated by Stone Walls","slug":"elite-residences-at-great-zimbabwe-were-physically-separated-by-stone-walls","url":"/categories/forbidden-archaeology/great-zimbabwe/elite-residences-at-great-zimbabwe-were-physically-separated-by-stone-walls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Power in this medieval city was measured in meters of granite."},{"title":"Fire-Blackened Granite at Great Zimbabwe Reveals Ancient Metalworking Activity","slug":"fire-blackened-granite-at-great-zimbabwe-reveals-ancient-metalworking-activity","url":"/categories/forbidden-archaeology/great-zimbabwe/fire-blackened-granite-at-great-zimbabwe-reveals-ancient-metalworking-activity.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone walls hide evidence of furnaces that once roared beside them."},{"title":"Great Zimbabwe Controlled Gold That Reached Medieval China","slug":"great-zimbabwe-controlled-gold-that-reached-medieval-china","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-controlled-gold-that-reached-medieval-china.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Gold from inland Africa traveled thousands of kilometers to Asia centuries ago."},{"title":"Great Zimbabwe Covered Nearly 720 Hectares at Its Peak","slug":"great-zimbabwe-covered-nearly-720-hectares-at-its-peak","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-covered-nearly-720-hectares-at-its-peak.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A medieval African city sprawled across land larger than many modern towns."},{"title":"Great Zimbabwe Declined Without Evidence of Invasion","slug":"great-zimbabwe-declined-without-evidence-of-invasion","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-declined-without-evidence-of-invasion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A powerful stone capital emptied out without signs of conquest."},{"title":"Great Zimbabwe Was Built on a Granite Plateau 1,100 Meters Above Sea Level","slug":"great-zimbabwe-was-built-on-a-granite-plateau-1-100-meters-above-sea-level","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-was-built-on-a-granite-plateau-1-100-meters-above-sea-level.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A medieval stone metropolis rose high above the surrounding plains."},{"title":"Great Zimbabwe’s Granite Walls Were Built Without Mortar Yet Still Stand 11 Meters High","slug":"great-zimbabwe-s-granite-walls-were-built-without-mortar-yet-still-stand-11-meters-high","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-s-granite-walls-were-built-without-mortar-yet-still-stand-11-meters-high.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire stone city rose without mortar and still refuses to fall."},{"title":"Great Zimbabwe’s Hill Complex Predates the Great Enclosure","slug":"great-zimbabwe-s-hill-complex-predates-the-great-enclosure","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-s-hill-complex-predates-the-great-enclosure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The oldest stone structures sit high above the later city below."},{"title":"Great Zimbabwe’s Name Literally Means Houses of Stone","slug":"great-zimbabwe-s-name-literally-means-houses-of-stone","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-s-name-literally-means-houses-of-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire nation took its name from ancient stone walls."},{"title":"Great Zimbabwe’s Walls Curve with Mathematical Precision","slug":"great-zimbabwe-s-walls-curve-with-mathematical-precision","url":"/categories/forbidden-archaeology/great-zimbabwe/great-zimbabwe-s-walls-curve-with-mathematical-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A medieval stone wall curves in a near-perfect ellipse without blueprints."},{"title":"Huge Granite Boulders Were Incorporated Directly Into Great Zimbabwe’s Architecture","slug":"huge-granite-boulders-were-incorporated-directly-into-great-zimbabwe-s-architecture","url":"/categories/forbidden-archaeology/great-zimbabwe/huge-granite-boulders-were-incorporated-directly-into-great-zimbabwe-s-architecture.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Entire buildings were fused into living bedrock instead of replacing it."},{"title":"Imported Arabian Coins Were Discovered at Great Zimbabwe","slug":"imported-arabian-coins-were-discovered-at-great-zimbabwe","url":"/categories/forbidden-archaeology/great-zimbabwe/imported-arabian-coins-were-discovered-at-great-zimbabwe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Foreign currency from the Islamic world surfaced in an inland African ruin."},{"title":"Ivory Carvings from Great Zimbabwe Entered Global Trade Networks","slug":"ivory-carvings-from-great-zimbabwe-entered-global-trade-networks","url":"/categories/forbidden-archaeology/great-zimbabwe/ivory-carvings-from-great-zimbabwe-entered-global-trade-networks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Elephant tusks carved inland traveled across oceans as luxury art."},{"title":"Jewelry Beads from India and the Middle East Were Found at Great Zimbabwe","slug":"jewelry-beads-from-india-and-the-middle-east-were-found-at-great-zimbabwe","url":"/categories/forbidden-archaeology/great-zimbabwe/jewelry-beads-from-india-and-the-middle-east-were-found-at-great-zimbabwe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tiny glass beads traveled farther than most medieval humans ever did."},{"title":"Kilometer-Wide Settlement Footprint Makes Great Zimbabwe One of Africa’s Largest Medieval Sites","slug":"kilometer-wide-settlement-footprint-makes-great-zimbabwe-one-of-africa-s-largest-medieval-sites","url":"/categories/forbidden-archaeology/great-zimbabwe/kilometer-wide-settlement-footprint-makes-great-zimbabwe-one-of-africa-s-largest-medieval-sites.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This stone capital stretched across land wider than many modern city centers."},{"title":"Kilwa Chronicles Mention Southern African Gold Linked to Great Zimbabwe","slug":"kilwa-chronicles-mention-southern-african-gold-linked-to-great-zimbabwe","url":"/categories/forbidden-archaeology/great-zimbabwe/kilwa-chronicles-mention-southern-african-gold-linked-to-great-zimbabwe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A coastal chronicle recorded gold flowing from a distant inland kingdom."},{"title":"Livestock Wealth at Great Zimbabwe Measured Power in Cattle Herds","slug":"livestock-wealth-at-great-zimbabwe-measured-power-in-cattle-herds","url":"/categories/forbidden-archaeology/great-zimbabwe/livestock-wealth-at-great-zimbabwe-measured-power-in-cattle-herds.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Status in this stone capital could be counted in living animals."},{"title":"Long-Distance Salt Trade May Have Supplemented Great Zimbabwe’s Economy","slug":"long-distance-salt-trade-may-have-supplemented-great-zimbabwe-s-economy","url":"/categories/forbidden-archaeology/great-zimbabwe/long-distance-salt-trade-may-have-supplemented-great-zimbabwe-s-economy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Essential white crystals moved across savannahs toward a golden capital."},{"title":"Massive Outer Walls at Great Zimbabwe Lack Defensive Moats Yet Remain Intact","slug":"massive-outer-walls-at-great-zimbabwe-lack-defensive-moats-yet-remain-intact","url":"/categories/forbidden-archaeology/great-zimbabwe/massive-outer-walls-at-great-zimbabwe-lack-defensive-moats-yet-remain-intact.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"These towering enclosures stand without trenches or mortar to protect them."},{"title":"Massive Stone Passageways at Great Zimbabwe Narrow to Control Human Movement","slug":"massive-stone-passageways-at-great-zimbabwe-narrow-to-control-human-movement","url":"/categories/forbidden-archaeology/great-zimbabwe/massive-stone-passageways-at-great-zimbabwe-narrow-to-control-human-movement.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some corridors inside this stone capital force people into single file."},{"title":"Monumental Stone Walls at Great Zimbabwe Required Moving Thousands of Tons of Rock","slug":"monumental-stone-walls-at-great-zimbabwe-required-moving-thousands-of-tons-of-rock","url":"/categories/forbidden-archaeology/great-zimbabwe/monumental-stone-walls-at-great-zimbabwe-required-moving-thousands-of-tons-of-rock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This medieval city shifted entire hillsides without machines or wheels."},{"title":"No Written Language Has Been Found at Great Zimbabwe","slug":"no-written-language-has-been-found-at-great-zimbabwe","url":"/categories/forbidden-archaeology/great-zimbabwe/no-written-language-has-been-found-at-great-zimbabwe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A sprawling medieval capital left no surviving written records."},{"title":"Obsidian and Exotic Stone Fragments Suggest Far-Reaching Exchange Connections","slug":"obsidian-and-exotic-stone-fragments-suggest-far-reaching-exchange-connections","url":"/categories/forbidden-archaeology/great-zimbabwe/obsidian-and-exotic-stone-fragments-suggest-far-reaching-exchange-connections.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Non-local stones appeared inside a city built entirely from granite."},{"title":"Organic Housing at Great Zimbabwe Has Mostly Vanished, Hiding the True Population Size","slug":"organic-housing-at-great-zimbabwe-has-mostly-vanished-hiding-the-true-population-size","url":"/categories/forbidden-archaeology/great-zimbabwe/organic-housing-at-great-zimbabwe-has-mostly-vanished-hiding-the-true-population-size.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Most of this vast city disappeared because it was built to decay."},{"title":"Pollen Analysis Around Great Zimbabwe Reveals Shifts in Ancient Vegetation","slug":"pollen-analysis-around-great-zimbabwe-reveals-shifts-in-ancient-vegetation","url":"/categories/forbidden-archaeology/great-zimbabwe/pollen-analysis-around-great-zimbabwe-reveals-shifts-in-ancient-vegetation.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Microscopic grains expose environmental strain around a stone empire."},{"title":"Quartz and Gold Artifacts at Great Zimbabwe Signal Ritual Significance of Minerals","slug":"quartz-and-gold-artifacts-at-great-zimbabwe-signal-ritual-significance-of-minerals","url":"/categories/forbidden-archaeology/great-zimbabwe/quartz-and-gold-artifacts-at-great-zimbabwe-signal-ritual-significance-of-minerals.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Shimmering minerals were more than currency inside these granite walls."},{"title":"Rainwater Drainage Channels Were Engineered Into Great Zimbabwe’s Stonework","slug":"rainwater-drainage-channels-were-engineered-into-great-zimbabwe-s-stonework","url":"/categories/forbidden-archaeology/great-zimbabwe/rainwater-drainage-channels-were-engineered-into-great-zimbabwe-s-stonework.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Even torrential rain was redirected by deliberate stone design."},{"title":"Ritual Spaces at Great Zimbabwe Were Oriented Around Elevated Sacred Zones","slug":"ritual-spaces-at-great-zimbabwe-were-oriented-around-elevated-sacred-zones","url":"/categories/forbidden-archaeology/great-zimbabwe/ritual-spaces-at-great-zimbabwe-were-oriented-around-elevated-sacred-zones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The highest rocks in this city were reserved for spiritual authority."},{"title":"Sacred Soapstone Birds Were Once Mounted on Tall Stone Columns","slug":"sacred-soapstone-birds-were-once-mounted-on-tall-stone-columns","url":"/categories/forbidden-archaeology/great-zimbabwe/sacred-soapstone-birds-were-once-mounted-on-tall-stone-columns.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Carved birds towered above the city on elevated granite pedestals."},{"title":"Soapstone Birds from Great Zimbabwe Became National Symbols","slug":"soapstone-birds-from-great-zimbabwe-became-national-symbols","url":"/categories/forbidden-archaeology/great-zimbabwe/soapstone-birds-from-great-zimbabwe-became-national-symbols.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Eight carved birds once perched above a vanished African empire."},{"title":"Stone Walls at Great Zimbabwe Were Built Without Right Angles","slug":"stone-walls-at-great-zimbabwe-were-built-without-right-angles","url":"/categories/forbidden-archaeology/great-zimbabwe/stone-walls-at-great-zimbabwe-were-built-without-right-angles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This monumental city avoided straight corners almost entirely."},{"title":"The Great Enclosure’s Conical Tower Has No Door and No Interior Room","slug":"the-great-enclosure-s-conical-tower-has-no-door-and-no-interior-room","url":"/categories/forbidden-archaeology/great-zimbabwe/the-great-enclosure-s-conical-tower-has-no-door-and-no-interior-room.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A massive stone tower rises inside Great Zimbabwe with no entrance at all."},{"title":"Trade Ceramics at Great Zimbabwe Include Distinctive Sgraffito Ware","slug":"trade-ceramics-at-great-zimbabwe-include-distinctive-sgraffito-ware","url":"/categories/forbidden-archaeology/great-zimbabwe/trade-ceramics-at-great-zimbabwe-include-distinctive-sgraffito-ware.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Intricately scratched pottery from distant workshops reached an inland plateau."},{"title":"Trade Networks Linked Great Zimbabwe to Ports Over 300 Kilometers Away","slug":"trade-networks-linked-great-zimbabwe-to-ports-over-300-kilometers-away","url":"/categories/forbidden-archaeology/great-zimbabwe/trade-networks-linked-great-zimbabwe-to-ports-over-300-kilometers-away.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Gold crossed hundreds of kilometers of savannah before touching the sea."},{"title":"Urban Density at Great Zimbabwe May Have Rivaled Contemporary European Towns","slug":"urban-density-at-great-zimbabwe-may-have-rivaled-contemporary-european-towns","url":"/categories/forbidden-archaeology/great-zimbabwe/urban-density-at-great-zimbabwe-may-have-rivaled-contemporary-european-towns.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This African capital may have matched medieval Europe in population scale."},{"title":"Valley Ruins at Great Zimbabwe Reveal Planned Urban Expansion","slug":"valley-ruins-at-great-zimbabwe-reveal-planned-urban-expansion","url":"/categories/forbidden-archaeology/great-zimbabwe/valley-ruins-at-great-zimbabwe-reveal-planned-urban-expansion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The city did not sprawl randomly; it expanded in deliberate phases."},{"title":"Valley Settlements Around Great Zimbabwe Demonstrate Controlled Urban Zoning","slug":"valley-settlements-around-great-zimbabwe-demonstrate-controlled-urban-zoning","url":"/categories/forbidden-archaeology/great-zimbabwe/valley-settlements-around-great-zimbabwe-demonstrate-controlled-urban-zoning.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Residential clusters formed deliberate patterns rather than chaotic sprawl."},{"title":"Wildlife Exploitation Around Great Zimbabwe Included Hunting Large Game","slug":"wildlife-exploitation-around-great-zimbabwe-included-hunting-large-game","url":"/categories/forbidden-archaeology/great-zimbabwe/wildlife-exploitation-around-great-zimbabwe-included-hunting-large-game.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The bones of large animals surround the remains of this stone capital."},{"title":"Young Granite Blocks at Great Zimbabwe Were Carefully Sorted by Size Before Construction","slug":"young-granite-blocks-at-great-zimbabwe-were-carefully-sorted-by-size-before-construction","url":"/categories/forbidden-archaeology/great-zimbabwe/young-granite-blocks-at-great-zimbabwe-were-carefully-sorted-by-size-before-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stones were organized like building bricks despite lacking mortar."},{"title":"Zambezi River Trade Indirectly Amplified Great Zimbabwe’s Influence","slug":"zambezi-river-trade-indirectly-amplified-great-zimbabwe-s-influence","url":"/categories/forbidden-archaeology/great-zimbabwe/zambezi-river-trade-indirectly-amplified-great-zimbabwe-s-influence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A river hundreds of kilometers away helped fuel a stone capital."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

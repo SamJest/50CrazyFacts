@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yonaguni Monument</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Yonaguni Monument</h1>
+  <p>Explore all facts in "Yonaguni Monument".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Yonaguni Monument</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Tsunami Modeling and the Yonaguni Monument’s Survival","slug":"ancient-tsunami-modeling-and-the-yonaguni-monument-s-survival","url":"/categories/forbidden-archaeology/yonaguni-monument/ancient-tsunami-modeling-and-the-yonaguni-monument-s-survival.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A structure resembling a temple has endured centuries of Pacific tsunamis."},{"title":"Archaeological Criteria Tests Applied to the Yonaguni Monument","slug":"archaeological-criteria-tests-applied-to-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/archaeological-criteria-tests-applied-to-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Standard archaeological tests struggle to classify this massive structure."},{"title":"Bathymetric Mapping Reveals the Yonaguni Monument’s Monumental Scale","slug":"bathymetric-mapping-reveals-the-yonaguni-monument-s-monumental-scale","url":"/categories/forbidden-archaeology/yonaguni-monument/bathymetric-mapping-reveals-the-yonaguni-monument-s-monumental-scale.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Seafloor scans show a 27-meter-tall formation hiding in plain sight."},{"title":"Biological Bioerosion Processes Acting on the Yonaguni Monument","slug":"biological-bioerosion-processes-acting-on-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/biological-bioerosion-processes-acting-on-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Living organisms slowly drill into stone that looks engineered."},{"title":"Comparative Analysis of Jointed Sandstone Formations Worldwide and Yonaguni","slug":"comparative-analysis-of-jointed-sandstone-formations-worldwide-and-yonaguni","url":"/categories/forbidden-archaeology/yonaguni-monument/comparative-analysis-of-jointed-sandstone-formations-worldwide-and-yonaguni.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Similar blocky cliffs exist on land without human involvement."},{"title":"Current Velocity Measurements at the Yonaguni Monument Site","slug":"current-velocity-measurements-at-the-yonaguni-monument-site","url":"/categories/forbidden-archaeology/yonaguni-monument/current-velocity-measurements-at-the-yonaguni-monument-site.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Water here can move faster than a human can swim."},{"title":"Currents Around the Yonaguni Monument That Carve Stone Like Tools","slug":"currents-around-the-yonaguni-monument-that-carve-stone-like-tools","url":"/categories/forbidden-archaeology/yonaguni-monument/currents-around-the-yonaguni-monument-that-carve-stone-like-tools.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ocean currents here move fast enough to scour rock clean."},{"title":"Differential Weathering Patterns Visible on the Yonaguni Monument","slug":"differential-weathering-patterns-visible-on-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/differential-weathering-patterns-visible-on-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some surfaces erode faster, creating step-like stone geometry."},{"title":"Diver Measurements Show Yonaguni’s Angles Approaching 90 Degrees","slug":"diver-measurements-show-yonaguni-s-angles-approaching-90-degrees","url":"/categories/forbidden-archaeology/yonaguni-monument/diver-measurements-show-yonaguni-s-angles-approaching-90-degrees.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Underwater corners here approach perfect right angles."},{"title":"Erosion Rates and the Longevity Puzzle of the Yonaguni Monument","slug":"erosion-rates-and-the-longevity-puzzle-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/erosion-rates-and-the-longevity-puzzle-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sharp underwater terraces persist despite relentless marine erosion."},{"title":"Fossil Microanalysis at the Yonaguni Monument Reveals Long Submergence","slug":"fossil-microanalysis-at-the-yonaguni-monument-reveals-long-submergence","url":"/categories/forbidden-archaeology/yonaguni-monument/fossil-microanalysis-at-the-yonaguni-monument-reveals-long-submergence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Microscopic marine fossils cling to surfaces that resemble carved stone."},{"title":"Fossil Microanalysis at the Yonaguni Monument Reveals Long Submergence","slug":"fossil-microanalysis-at-the-yonaguni-monument-reveals-long-submergence","url":"/categories/forbidden-archaeology/yonaguni-monument/fossil-microanalysis-at-the-yonaguni-monument-reveals-long-submergence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Microscopic marine fossils cling to surfaces that resemble carved stone."},{"title":"Geological Dating Places Yonaguni’s Bedrock in the Miocene Epoch","slug":"geological-dating-places-yonaguni-s-bedrock-in-the-miocene-epoch","url":"/categories/forbidden-archaeology/yonaguni-monument/geological-dating-places-yonaguni-s-bedrock-in-the-miocene-epoch.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The stone beneath this ‘ruin’ formed millions of years before humans."},{"title":"Hydrodynamic Pressure at 25 Meters and Its Effect on Yonaguni","slug":"hydrodynamic-pressure-at-25-meters-and-its-effect-on-yonaguni","url":"/categories/forbidden-archaeology/yonaguni-monument/hydrodynamic-pressure-at-25-meters-and-its-effect-on-yonaguni.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This debated monument sits under pressure equal to three atmospheres."},{"title":"Hydrostatic Stability of Large Sandstone Masses at Yonaguni Depth","slug":"hydrostatic-stability-of-large-sandstone-masses-at-yonaguni-depth","url":"/categories/forbidden-archaeology/yonaguni-monument/hydrostatic-stability-of-large-sandstone-masses-at-yonaguni-depth.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 150-meter rock mass remains stable under constant water pressure."},{"title":"Ice Age Coastlines and the Lost Plains Around the Yonaguni Monument","slug":"ice-age-coastlines-and-the-lost-plains-around-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/ice-age-coastlines-and-the-lost-plains-around-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Vast coastal plains once surrounded what is now open ocean."},{"title":"Ice Age Coastlines and the Lost Plains Around the Yonaguni Monument","slug":"ice-age-coastlines-and-the-lost-plains-around-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/ice-age-coastlines-and-the-lost-plains-around-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Vast coastal plains once surrounded what is now open ocean."},{"title":"Joint Patterns in Sandstone That Mimic Architectural Blocks at Yonaguni","slug":"joint-patterns-in-sandstone-that-mimic-architectural-blocks-at-yonaguni","url":"/categories/forbidden-archaeology/yonaguni-monument/joint-patterns-in-sandstone-that-mimic-architectural-blocks-at-yonaguni.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Natural fractures here form block shapes resembling quarried stone."},{"title":"Kuroshio Typhoon Impacts on the Yonaguni Monument’s Structure","slug":"kuroshio-typhoon-impacts-on-the-yonaguni-monument-s-structure","url":"/categories/forbidden-archaeology/yonaguni-monument/kuroshio-typhoon-impacts-on-the-yonaguni-monument-s-structure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Super typhoons batter a formation that looks engineered."},{"title":"Kuroshio Typhoon Impacts on the Yonaguni Monument’s Structure","slug":"kuroshio-typhoon-impacts-on-the-yonaguni-monument-s-structure","url":"/categories/forbidden-archaeology/yonaguni-monument/kuroshio-typhoon-impacts-on-the-yonaguni-monument-s-structure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Super typhoons batter a formation that looks engineered."},{"title":"Lithological Composition of the Yonaguni Monument’s Sandstone Layers","slug":"lithological-composition-of-the-yonaguni-monument-s-sandstone-layers","url":"/categories/forbidden-archaeology/yonaguni-monument/lithological-composition-of-the-yonaguni-monument-s-sandstone-layers.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Layered sandstone forms platforms that resemble deliberate terraces."},{"title":"Lithological Composition of the Yonaguni Monument’s Sandstone Layers","slug":"lithological-composition-of-the-yonaguni-monument-s-sandstone-layers","url":"/categories/forbidden-archaeology/yonaguni-monument/lithological-composition-of-the-yonaguni-monument-s-sandstone-layers.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Layered sandstone forms platforms that resemble deliberate terraces."},{"title":"Marine Life Colonization on the Yonaguni Monument’s Terraces","slug":"marine-life-colonization-on-the-yonaguni-monument-s-terraces","url":"/categories/forbidden-archaeology/yonaguni-monument/marine-life-colonization-on-the-yonaguni-monument-s-terraces.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Coral and fish now inhabit what looks like a drowned monument."},{"title":"Marine Terrace Formation Processes Comparable to the Yonaguni Monument","slug":"marine-terrace-formation-processes-comparable-to-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/marine-terrace-formation-processes-comparable-to-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Natural marine terraces can resemble colossal staircases."},{"title":"Natural Joint Orthogonality and the Yonaguni Monument Illusion","slug":"natural-joint-orthogonality-and-the-yonaguni-monument-illusion","url":"/categories/forbidden-archaeology/yonaguni-monument/natural-joint-orthogonality-and-the-yonaguni-monument-illusion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Intersecting fracture lines create walls that appear constructed."},{"title":"Natural Joint Orthogonality and the Yonaguni Monument Illusion","slug":"natural-joint-orthogonality-and-the-yonaguni-monument-illusion","url":"/categories/forbidden-archaeology/yonaguni-monument/natural-joint-orthogonality-and-the-yonaguni-monument-illusion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Intersecting fracture lines create walls that appear constructed."},{"title":"Ocean Floor Visibility That Keeps the Yonaguni Monument in Debate","slug":"ocean-floor-visibility-that-keeps-the-yonaguni-monument-in-debate","url":"/categories/forbidden-archaeology/yonaguni-monument/ocean-floor-visibility-that-keeps-the-yonaguni-monument-in-debate.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Strong currents limit study of a structure larger than a stadium."},{"title":"Orthogonal Fracture Density Measurements at the Yonaguni Monument","slug":"orthogonal-fracture-density-measurements-at-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/orthogonal-fracture-density-measurements-at-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Rock fractures intersect here in unusually dense grids."},{"title":"Paleoseismic Activity Recorded in the Yonaguni Monument’s Fractures","slug":"paleoseismic-activity-recorded-in-the-yonaguni-monument-s-fractures","url":"/categories/forbidden-archaeology/yonaguni-monument/paleoseismic-activity-recorded-in-the-yonaguni-monument-s-fractures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient earthquakes are frozen into this underwater formation."},{"title":"Paleoseismic Activity Recorded in the Yonaguni Monument’s Fractures","slug":"paleoseismic-activity-recorded-in-the-yonaguni-monument-s-fractures","url":"/categories/forbidden-archaeology/yonaguni-monument/paleoseismic-activity-recorded-in-the-yonaguni-monument-s-fractures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient earthquakes are frozen into this underwater formation."},{"title":"Pressure-Driven Chemical Weathering at the Yonaguni Monument Site","slug":"pressure-driven-chemical-weathering-at-the-yonaguni-monument-site","url":"/categories/forbidden-archaeology/yonaguni-monument/pressure-driven-chemical-weathering-at-the-yonaguni-monument-site.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Seawater chemistry slowly alters stone that looks freshly carved."},{"title":"Quaternary Sea-Level Rise and the Submergence of the Yonaguni Monument","slug":"quaternary-sea-level-rise-and-the-submergence-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/quaternary-sea-level-rise-and-the-submergence-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An Ice Age shoreline drowned what may have been dry land architecture."},{"title":"Radiometric Constraints and the Dating Limits of the Yonaguni Monument","slug":"radiometric-constraints-and-the-dating-limits-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/radiometric-constraints-and-the-dating-limits-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Scientists cannot directly date when its surfaces were shaped."},{"title":"Radiometric Constraints and the Dating Limits of the Yonaguni Monument","slug":"radiometric-constraints-and-the-dating-limits-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/radiometric-constraints-and-the-dating-limits-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Scientists cannot directly date when its surfaces were shaped."},{"title":"Regional Bathymetric Gradients Surrounding the Yonaguni Monument","slug":"regional-bathymetric-gradients-surrounding-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/regional-bathymetric-gradients-surrounding-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The seabed drops sharply just beyond its towering terraces."},{"title":"Regional Fault Lines Intersect Beneath the Yonaguni Monument","slug":"regional-fault-lines-intersect-beneath-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/regional-fault-lines-intersect-beneath-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Multiple fault systems converge below this submerged formation."},{"title":"Sediment Transport Dynamics Around the Yonaguni Monument","slug":"sediment-transport-dynamics-around-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/sediment-transport-dynamics-around-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Powerful currents constantly sweep sand away from its base."},{"title":"Structural Continuity Between the Yonaguni Monument and Adjacent Bedrock","slug":"structural-continuity-between-the-yonaguni-monument-and-adjacent-bedrock","url":"/categories/forbidden-archaeology/yonaguni-monument/structural-continuity-between-the-yonaguni-monument-and-adjacent-bedrock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"What looks like stacked blocks is actually continuous stone."},{"title":"Submerged Topography Around the Yonaguni Monument Extends Beyond a Single Structure","slug":"submerged-topography-around-the-yonaguni-monument-extends-beyond-a-single-structure","url":"/categories/forbidden-archaeology/yonaguni-monument/submerged-topography-around-the-yonaguni-monument-extends-beyond-a-single-structure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The debated formation is part of a larger underwater landscape."},{"title":"Submerged Topography Around the Yonaguni Monument Extends Beyond a Single Structure","slug":"submerged-topography-around-the-yonaguni-monument-extends-beyond-a-single-structure","url":"/categories/forbidden-archaeology/yonaguni-monument/submerged-topography-around-the-yonaguni-monument-extends-beyond-a-single-structure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The debated formation is part of a larger underwater landscape."},{"title":"Tectonic Uplift and Subsidence Cycles Affecting the Yonaguni Monument","slug":"tectonic-uplift-and-subsidence-cycles-affecting-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/tectonic-uplift-and-subsidence-cycles-affecting-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The seafloor here rises and falls over geological time."},{"title":"The 150-Meter Yonaguni Platform That Looks Like a Sunken Pyramid","slug":"the-150-meter-yonaguni-platform-that-looks-like-a-sunken-pyramid","url":"/categories/forbidden-archaeology/yonaguni-monument/the-150-meter-yonaguni-platform-that-looks-like-a-sunken-pyramid.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An underwater platform the length of a skyscraper lies off Japan’s coast."},{"title":"The 1986 Discovery That Sparked the Yonaguni Monument Debate","slug":"the-1986-discovery-that-sparked-the-yonaguni-monument-debate","url":"/categories/forbidden-archaeology/yonaguni-monument/the-1986-discovery-that-sparked-the-yonaguni-monument-debate.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A routine shark dive revealed a structure that rewrote assumptions overnight."},{"title":"The Contested ‘Carvings’ of the Yonaguni Monument","slug":"the-contested-carvings-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/the-contested-carvings-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Marks in stone beneath the sea resemble ancient symbols."},{"title":"The Tectonic Forces Beneath the Yonaguni Monument","slug":"the-tectonic-forces-beneath-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/the-tectonic-forces-beneath-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An underwater ‘pyramid’ sits directly above an earthquake zone."},{"title":"Underwater Light Attenuation and the Optical Illusion of the Yonaguni Monument","slug":"underwater-light-attenuation-and-the-optical-illusion-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/underwater-light-attenuation-and-the-optical-illusion-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Filtered blue light makes its angles appear even sharper."},{"title":"Underwater Photogrammetry and the Digital Reconstruction of Yonaguni","slug":"underwater-photogrammetry-and-the-digital-reconstruction-of-yonaguni","url":"/categories/forbidden-archaeology/yonaguni-monument/underwater-photogrammetry-and-the-digital-reconstruction-of-yonaguni.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Advanced 3D models reveal terraces sharper than photographs suggest."},{"title":"Underwater Photogrammetry and the Digital Reconstruction of Yonaguni","slug":"underwater-photogrammetry-and-the-digital-reconstruction-of-yonaguni","url":"/categories/forbidden-archaeology/yonaguni-monument/underwater-photogrammetry-and-the-digital-reconstruction-of-yonaguni.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Advanced 3D models reveal terraces sharper than photographs suggest."},{"title":"Vertical Relief of the Yonaguni Monument Rivals Urban Buildings","slug":"vertical-relief-of-the-yonaguni-monument-rivals-urban-buildings","url":"/categories/forbidden-archaeology/yonaguni-monument/vertical-relief-of-the-yonaguni-monument-rivals-urban-buildings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This underwater formation rises nearly as tall as an eight-story building."},{"title":"Vertical Relief of the Yonaguni Monument Rivals Urban Buildings","slug":"vertical-relief-of-the-yonaguni-monument-rivals-urban-buildings","url":"/categories/forbidden-archaeology/yonaguni-monument/vertical-relief-of-the-yonaguni-monument-rivals-urban-buildings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This underwater formation rises nearly as tall as an eight-story building."},{"title":"Water Depth Stability and the Preservation of the Yonaguni Monument","slug":"water-depth-stability-and-the-preservation-of-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/water-depth-stability-and-the-preservation-of-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A stable 25-meter depth has protected its massive terraces."},{"title":"Wave Refraction Patterns That Intensify Erosion at the Yonaguni Monument","slug":"wave-refraction-patterns-that-intensify-erosion-at-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/wave-refraction-patterns-that-intensify-erosion-at-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ocean waves bend and concentrate energy against its stone terraces."},{"title":"Xenolithic Inclusions in Yonaguni’s Sandstone Reveal Complex Geological History","slug":"xenolithic-inclusions-in-yonaguni-s-sandstone-reveal-complex-geological-history","url":"/categories/forbidden-archaeology/yonaguni-monument/xenolithic-inclusions-in-yonaguni-s-sandstone-reveal-complex-geological-history.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Foreign rock fragments are locked inside this debated formation."},{"title":"Yonaguni Monument and the Ice Age Sea-Level Paradox","slug":"yonaguni-monument-and-the-ice-age-sea-level-paradox","url":"/categories/forbidden-archaeology/yonaguni-monument/yonaguni-monument-and-the-ice-age-sea-level-paradox.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This underwater structure would have stood on dry land 10,000 years ago."},{"title":"Yonaguni Monument and the Limits of Underwater Archaeology","slug":"yonaguni-monument-and-the-limits-of-underwater-archaeology","url":"/categories/forbidden-archaeology/yonaguni-monument/yonaguni-monument-and-the-limits-of-underwater-archaeology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An alleged ancient monument lies beyond the reach of traditional excavation."},{"title":"Yonaguni Monument: The Underwater Structure with 90-Degree Stone Terraces","slug":"yonaguni-monument-the-underwater-structure-with-90-degree-stone-terraces","url":"/categories/forbidden-archaeology/yonaguni-monument/yonaguni-monument-the-underwater-structure-with-90-degree-stone-terraces.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A submerged stone structure off Japan looks carved with perfect right angles."},{"title":"Yonaguni Monument’s Location at the Edge of the Pacific Ring of Fire","slug":"yonaguni-monument-s-location-at-the-edge-of-the-pacific-ring-of-fire","url":"/categories/forbidden-archaeology/yonaguni-monument/yonaguni-monument-s-location-at-the-edge-of-the-pacific-ring-of-fire.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A pyramid-like structure rests inside one of Earth’s most violent zones."},{"title":"Yonaguni Monument’s Sharp Corners That Defy Ocean Erosion Expectations","slug":"yonaguni-monument-s-sharp-corners-that-defy-ocean-erosion-expectations","url":"/categories/forbidden-archaeology/yonaguni-monument/yonaguni-monument-s-sharp-corners-that-defy-ocean-erosion-expectations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Saltwater erosion usually rounds rock, yet these corners stay razor sharp."},{"title":"Yonaguni Monument’s Submerged Staircase That Drops 80 Feet Underwater","slug":"yonaguni-monument-s-submerged-staircase-that-drops-80-feet-underwater","url":"/categories/forbidden-archaeology/yonaguni-monument/yonaguni-monument-s-submerged-staircase-that-drops-80-feet-underwater.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Divers descend an underwater staircase that plunges nearly eight stories down."},{"title":"Zeolite Mineral Traces in Regional Sandstone Near the Yonaguni Monument","slug":"zeolite-mineral-traces-in-regional-sandstone-near-the-yonaguni-monument","url":"/categories/forbidden-archaeology/yonaguni-monument/zeolite-mineral-traces-in-regional-sandstone-near-the-yonaguni-monument.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Microscopic minerals inside its stone hint at volcanic origins."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

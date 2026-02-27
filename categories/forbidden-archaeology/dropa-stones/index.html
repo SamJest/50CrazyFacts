@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dropa Stones</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Dropa Stones</h1>
+  <p>Explore all facts in "Dropa Stones".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Dropa Stones</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Absence of Physical Specimens: No Verified Dropa Stone Has Undergone Radiocarbon Dating","slug":"absence-of-physical-specimens-no-verified-dropa-stone-has-undergone-radiocarbon-dating","url":"/categories/forbidden-archaeology/dropa-stones/absence-of-physical-specimens-no-verified-dropa-stone-has-undergone-radiocarbon-dating.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An artifact allegedly 12,000 years old has never been publicly radiocarbon dated."},{"title":"Alleged Cobalt Composition of the Dropa Stones and the Electrical Conductivity Claim","slug":"alleged-cobalt-composition-of-the-dropa-stones-and-the-electrical-conductivity-claim","url":"/categories/forbidden-archaeology/dropa-stones/alleged-cobalt-composition-of-the-dropa-stones-and-the-electrical-conductivity-claim.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient stone discs were reportedly rich in cobalt, a metal used in modern electronics."},{"title":"Bayan Har Cave Skeletons: The Alleged Small-Bodied Beings Linked to the Dropa Stones","slug":"bayan-har-cave-skeletons-the-alleged-small-bodied-beings-linked-to-the-dropa-stones","url":"/categories/forbidden-archaeology/dropa-stones/bayan-har-cave-skeletons-the-alleged-small-bodied-beings-linked-to-the-dropa-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tiny skeletons with oversized skulls were reportedly found beside spiral stone discs in a sealed mountain cave."},{"title":"Burial Context Claim: Dropa Discs Allegedly Found Beside Ordered Skeleton Rows","slug":"burial-context-claim-dropa-discs-allegedly-found-beside-ordered-skeleton-rows","url":"/categories/forbidden-archaeology/dropa-stones/burial-context-claim-dropa-discs-allegedly-found-beside-ordered-skeleton-rows.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of inscribed discs were reportedly buried beside neatly arranged skeletons."},{"title":"Carbon Dating Paradox: Why Stone Artifacts Require Contextual Organic Evidence","slug":"carbon-dating-paradox-why-stone-artifacts-require-contextual-organic-evidence","url":"/categories/forbidden-archaeology/dropa-stones/carbon-dating-paradox-why-stone-artifacts-require-contextual-organic-evidence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An artifact cannot be 12,000 years old without something organic to prove it."},{"title":"Claims of Electromagnetic Anomalies Surrounding the Dropa Stones","slug":"claims-of-electromagnetic-anomalies-surrounding-the-dropa-stones","url":"/categories/forbidden-archaeology/dropa-stones/claims-of-electromagnetic-anomalies-surrounding-the-dropa-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient stone discs were rumored to emit measurable electromagnetic signals."},{"title":"Cold War Secrecy and the Global Spread of the Dropa Stones Legend","slug":"cold-war-secrecy-and-the-global-spread-of-the-dropa-stones-legend","url":"/categories/forbidden-archaeology/dropa-stones/cold-war-secrecy-and-the-global-spread-of-the-dropa-stones-legend.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A remote mountain cave story exploded internationally during peak Cold War information barriers."},{"title":"Documented Prehistoric Discs Elsewhere: Why None Match the Dropa Description","slug":"documented-prehistoric-discs-elsewhere-why-none-match-the-dropa-description","url":"/categories/forbidden-archaeology/dropa-stones/documented-prehistoric-discs-elsewhere-why-none-match-the-dropa-description.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone discs exist in archaeology, yet none mirror the Dropa spiral archive."},{"title":"Dropa Stones and the Claim of Prehistoric Astronomical Knowledge","slug":"dropa-stones-and-the-claim-of-prehistoric-astronomical-knowledge","url":"/categories/forbidden-archaeology/dropa-stones/dropa-stones-and-the-claim-of-prehistoric-astronomical-knowledge.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Spiral carvings allegedly recorded star systems thousands of years before telescopes."},{"title":"Eyewitness Accounts Without Artifacts: The Dropa Stones Documentation Gap","slug":"eyewitness-accounts-without-artifacts-the-dropa-stones-documentation-gap","url":"/categories/forbidden-archaeology/dropa-stones/eyewitness-accounts-without-artifacts-the-dropa-stones-documentation-gap.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Multiple witnesses allegedly saw the discs, yet no verified photograph exists."},{"title":"Field Note Absence: No Published Stratigraphic Profiles of the Dropa Caves","slug":"field-note-absence-no-published-stratigraphic-profiles-of-the-dropa-caves","url":"/categories/forbidden-archaeology/dropa-stones/field-note-absence-no-published-stratigraphic-profiles-of-the-dropa-caves.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A cave site allegedly holding 700 artifacts has no published stratigraphic diagram."},{"title":"Final Synthesis: The Dropa Stones as a Case Study in Forbidden Archaeology","slug":"final-synthesis-the-dropa-stones-as-a-case-study-in-forbidden-archaeology","url":"/categories/forbidden-archaeology/dropa-stones/final-synthesis-the-dropa-stones-as-a-case-study-in-forbidden-archaeology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An Ice Age alien archive persists despite zero verified artifacts."},{"title":"Functional Design Mystery: Were the Dropa Discs Meant to Rotate?","slug":"functional-design-mystery-were-the-dropa-discs-meant-to-rotate","url":"/categories/forbidden-archaeology/dropa-stones/functional-design-mystery-were-the-dropa-discs-meant-to-rotate.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The central perforation suggests the discs were designed to spin, not just sit."},{"title":"Geochemical Fingerprinting Gap: No Published Elemental Profile of Dropa Discs","slug":"geochemical-fingerprinting-gap-no-published-elemental-profile-of-dropa-discs","url":"/categories/forbidden-archaeology/dropa-stones/geochemical-fingerprinting-gap-no-published-elemental-profile-of-dropa-discs.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A stone artifact allegedly rich in rare metals lacks a single published elemental analysis."},{"title":"Geological Feasibility: Stone Disc Manufacturing at High Altitude in Prehistory","slug":"geological-feasibility-stone-disc-manufacturing-at-high-altitude-in-prehistory","url":"/categories/forbidden-archaeology/dropa-stones/geological-feasibility-stone-disc-manufacturing-at-high-altitude-in-prehistory.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Carving hundreds of perfectly circular stone discs at 4,000 meters defies logistical intuition."},{"title":"High-Altitude Isolation: The Bayan Har Mountains Setting of the Dropa Legend","slug":"high-altitude-isolation-the-bayan-har-mountains-setting-of-the-dropa-legend","url":"/categories/forbidden-archaeology/dropa-stones/high-altitude-isolation-the-bayan-har-mountains-setting-of-the-dropa-legend.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The alleged artifacts were found over 4,000 meters above sea level in one of Asia’s harshest terrains."},{"title":"Historical Newspaper Trail: No Contemporary 1930s Press Coverage of the Dropa Find","slug":"historical-newspaper-trail-no-contemporary-1930s-press-coverage-of-the-dropa-find","url":"/categories/forbidden-archaeology/dropa-stones/historical-newspaper-trail-no-contemporary-1930s-press-coverage-of-the-dropa-find.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A discovery allegedly made in the 1930s left no trace in surviving newspaper archives."},{"title":"Implied Population Paradox: Who Produced the Alleged Dropa Archive?","slug":"implied-population-paradox-who-produced-the-alleged-dropa-archive","url":"/categories/forbidden-archaeology/dropa-stones/implied-population-paradox-who-produced-the-alleged-dropa-archive.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Seven hundred inscribed discs imply a literate community that left no other trace."},{"title":"Isolation and Myth Transmission: How the Dropa Narrative Spread Without Primary Evidence","slug":"isolation-and-myth-transmission-how-the-dropa-narrative-spread-without-primary-evidence","url":"/categories/forbidden-archaeology/dropa-stones/isolation-and-myth-transmission-how-the-dropa-narrative-spread-without-primary-evidence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A story lacking physical proof crossed continents and decades unimpeded."},{"title":"Journal Archive Silence: The Dropa Stones Never Appeared in Indexed Chinese Archaeological Journals","slug":"journal-archive-silence-the-dropa-stones-never-appeared-in-indexed-chinese-archaeological-journals","url":"/categories/forbidden-archaeology/dropa-stones/journal-archive-silence-the-dropa-stones-never-appeared-in-indexed-chinese-archaeological-journals.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A discovery allegedly rewriting human history left zero trace in indexed academic journals."},{"title":"Knowledge Density Claim: Could 700 Discs Encode a Prehistoric Archive?","slug":"knowledge-density-claim-could-700-discs-encode-a-prehistoric-archive","url":"/categories/forbidden-archaeology/dropa-stones/knowledge-density-claim-could-700-discs-encode-a-prehistoric-archive.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Seven hundred spiral discs could theoretically store thousands of sentences in stone."},{"title":"Linguistic Improbability: The Claim of a Unique Unknown Script on the Dropa Stones","slug":"linguistic-improbability-the-claim-of-a-unique-unknown-script-on-the-dropa-stones","url":"/categories/forbidden-archaeology/dropa-stones/linguistic-improbability-the-claim-of-a-unique-unknown-script-on-the-dropa-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire written language was allegedly discovered with no linguistic relatives."},{"title":"Myth Versus Material Culture: Why No Associated Tools Accompany the Dropa Stones","slug":"myth-versus-material-culture-why-no-associated-tools-accompany-the-dropa-stones","url":"/categories/forbidden-archaeology/dropa-stones/myth-versus-material-culture-why-no-associated-tools-accompany-the-dropa-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of precision-carved discs allegedly exist without a single confirmed carving tool."},{"title":"Narrative Evolution: How the Dropa Story Gained Extraterrestrial Elements","slug":"narrative-evolution-how-the-dropa-story-gained-extraterrestrial-elements","url":"/categories/forbidden-archaeology/dropa-stones/narrative-evolution-how-the-dropa-story-gained-extraterrestrial-elements.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Early reports mentioned stone discs; later versions added alien crash survivors."},{"title":"Oral Tradition and the Dropa Legend: No Confirmed Local Folklore Corroboration","slug":"oral-tradition-and-the-dropa-legend-no-confirmed-local-folklore-corroboration","url":"/categories/forbidden-archaeology/dropa-stones/oral-tradition-and-the-dropa-legend-no-confirmed-local-folklore-corroboration.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A discovery allegedly rewriting human history lacks verified indigenous oral tradition support."},{"title":"Physical Improbability: The Central Hole Design of the Dropa Discs","slug":"physical-improbability-the-central-hole-design-of-the-dropa-discs","url":"/categories/forbidden-archaeology/dropa-stones/physical-improbability-the-central-hole-design-of-the-dropa-discs.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Each alleged disc reportedly had a perfectly drilled hole through solid stone."},{"title":"Population Genetics Contrast: Verified Tibetan Adaptation Without Dropa Correlation","slug":"population-genetics-contrast-verified-tibetan-adaptation-without-dropa-correlation","url":"/categories/forbidden-archaeology/dropa-stones/population-genetics-contrast-verified-tibetan-adaptation-without-dropa-correlation.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Genetic studies confirm high-altitude adaptation, yet no trace of a distinct Dropa lineage."},{"title":"Psychological Impact: Why the Dropa Stones Feel Plausible Despite Missing Evidence","slug":"psychological-impact-why-the-dropa-stones-feel-plausible-despite-missing-evidence","url":"/categories/forbidden-archaeology/dropa-stones/psychological-impact-why-the-dropa-stones-feel-plausible-despite-missing-evidence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A story with no verified artifacts still convinces thousands it rewrites history."},{"title":"Quantitative Improbability: Estimating Labor Required to Carve 700 Stone Discs","slug":"quantitative-improbability-estimating-labor-required-to-carve-700-stone-discs","url":"/categories/forbidden-archaeology/dropa-stones/quantitative-improbability-estimating-labor-required-to-carve-700-stone-discs.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hand-carving 700 precision discs could require thousands of labor hours."},{"title":"Regional Archaeology Contrast: Verified Tibetan Plateau Discoveries Versus Dropa Claims","slug":"regional-archaeology-contrast-verified-tibetan-plateau-discoveries-versus-dropa-claims","url":"/categories/forbidden-archaeology/dropa-stones/regional-archaeology-contrast-verified-tibetan-plateau-discoveries-versus-dropa-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Documented high-altitude sites exist, yet none resemble the Dropa archive."},{"title":"Regional Cave Survey Records: No Confirmed Dropa Cave Listed in Official Inventories","slug":"regional-cave-survey-records-no-confirmed-dropa-cave-listed-in-official-inventories","url":"/categories/forbidden-archaeology/dropa-stones/regional-cave-survey-records-no-confirmed-dropa-cave-listed-in-official-inventories.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Government cave surveys list hundreds of sites, yet none match the Dropa archive description."},{"title":"Replication Feasibility: Could Modern Tools Recreate a Dropa Disc?","slug":"replication-feasibility-could-modern-tools-recreate-a-dropa-disc","url":"/categories/forbidden-archaeology/dropa-stones/replication-feasibility-could-modern-tools-recreate-a-dropa-disc.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single precision spiral disc could be replicated today in hours with machinery."},{"title":"Scientific Replicability Problem: No Independent Team Has Examined Dropa Specimens","slug":"scientific-replicability-problem-no-independent-team-has-examined-dropa-specimens","url":"/categories/forbidden-archaeology/dropa-stones/scientific-replicability-problem-no-independent-team-has-examined-dropa-specimens.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A discovery of global significance has never been independently replicated."},{"title":"Symbolic Versus Technological Interpretation: The Core Debate Around the Dropa Stones","slug":"symbolic-versus-technological-interpretation-the-core-debate-around-the-dropa-stones","url":"/categories/forbidden-archaeology/dropa-stones/symbolic-versus-technological-interpretation-the-core-debate-around-the-dropa-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Are the discs misunderstood ritual objects or imagined machines?"},{"title":"The 700 Disc Claim: Scale of the Alleged Dropa Stone Discovery","slug":"the-700-disc-claim-scale-of-the-alleged-dropa-stone-discovery","url":"/categories/forbidden-archaeology/dropa-stones/the-700-disc-claim-scale-of-the-alleged-dropa-stone-discovery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One cave allegedly contained more than 700 inscribed stone discs."},{"title":"The Alleged 12,000-Year Timeline of the Dropa Stones and Ice Age Civilization Claims","slug":"the-alleged-12-000-year-timeline-of-the-dropa-stones-and-ice-age-civilization-claims","url":"/categories/forbidden-archaeology/dropa-stones/the-alleged-12-000-year-timeline-of-the-dropa-stones-and-ice-age-civilization-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Artifacts allegedly dated to the Ice Age were said to contain structured written language."},{"title":"The Dropa Stones of Bayan Har: Discs with 12,000-Year-Old Spiral Inscriptions","slug":"the-dropa-stones-of-bayan-har-discs-with-12-000-year-old-spiral-inscriptions","url":"/categories/forbidden-archaeology/dropa-stones/the-dropa-stones-of-bayan-har-discs-with-12-000-year-old-spiral-inscriptions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone discs buried in a remote Chinese mountain range carry microscopic spiral grooves allegedly 12,000 years old."},{"title":"The Missing Museum Records: Why No Verified Dropa Stones Appear in Chinese Collections","slug":"the-missing-museum-records-why-no-verified-dropa-stones-appear-in-chinese-collections","url":"/categories/forbidden-archaeology/dropa-stones/the-missing-museum-records-why-no-verified-dropa-stones-appear-in-chinese-collections.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of allegedly revolutionary artifacts have no confirmed museum catalog numbers."},{"title":"The Spiral Script Claim: Microscopic Carvings on the Dropa Discs","slug":"the-spiral-script-claim-microscopic-carvings-on-the-dropa-discs","url":"/categories/forbidden-archaeology/dropa-stones/the-spiral-script-claim-microscopic-carvings-on-the-dropa-discs.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone grooves allegedly contained writing so small it required magnification to read."},{"title":"Tool Mark Analysis Void: No Microscopic Study of Alleged Spiral Engravings","slug":"tool-mark-analysis-void-no-microscopic-study-of-alleged-spiral-engravings","url":"/categories/forbidden-archaeology/dropa-stones/tool-mark-analysis-void-no-microscopic-study-of-alleged-spiral-engravings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Intricate spiral grooves have never been examined under a microscope."},{"title":"Tsum Um Nui: The Controversial Scholar Linked to the Dropa Stone Translations","slug":"tsum-um-nui-the-controversial-scholar-linked-to-the-dropa-stone-translations","url":"/categories/forbidden-archaeology/dropa-stones/tsum-um-nui-the-controversial-scholar-linked-to-the-dropa-stone-translations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single little-known scholar allegedly decoded a 12,000-year-old alien message."},{"title":"Undocumented Excavation Leadership: No Verified Field Director Linked to the Dropa Discovery","slug":"undocumented-excavation-leadership-no-verified-field-director-linked-to-the-dropa-discovery","url":"/categories/forbidden-archaeology/dropa-stones/undocumented-excavation-leadership-no-verified-field-director-linked-to-the-dropa-discovery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An excavation allegedly yielding 700 artifacts has no confirmed field director on record."},{"title":"Volumetric Analysis: How Much Stone Would 700 Dropa Discs Require?","slug":"volumetric-analysis-how-much-stone-would-700-dropa-discs-require","url":"/categories/forbidden-archaeology/dropa-stones/volumetric-analysis-how-much-stone-would-700-dropa-discs-require.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Seven hundred stone discs could require several tons of quarried rock."},{"title":"Why Mainstream Archaeology Classifies the Dropa Stones as Unverified","slug":"why-mainstream-archaeology-classifies-the-dropa-stones-as-unverified","url":"/categories/forbidden-archaeology/dropa-stones/why-mainstream-archaeology-classifies-the-dropa-stones-as-unverified.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An alleged Ice Age archive remains absent from every peer-reviewed excavation report."},{"title":"X-Ray Analysis Absence: No Published Imaging of Dropa Disc Internal Structure","slug":"x-ray-analysis-absence-no-published-imaging-of-dropa-disc-internal-structure","url":"/categories/forbidden-archaeology/dropa-stones/x-ray-analysis-absence-no-published-imaging-of-dropa-disc-internal-structure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An artifact claimed to contain metal inclusions has never undergone published X-ray imaging."},{"title":"Yield of Information: Estimating Spiral Inscription Length on a Single Dropa Disc","slug":"yield-of-information-estimating-spiral-inscription-length-on-a-single-dropa-disc","url":"/categories/forbidden-archaeology/dropa-stones/yield-of-information-estimating-spiral-inscription-length-on-a-single-dropa-disc.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A continuous spiral on a 30-centimeter disc could stretch over a meter in length."},{"title":"Yunnan-Tibet Border Context: Geographic Ambiguity in Dropa Location Reports","slug":"yunnan-tibet-border-context-geographic-ambiguity-in-dropa-location-reports","url":"/categories/forbidden-archaeology/dropa-stones/yunnan-tibet-border-context-geographic-ambiguity-in-dropa-location-reports.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The alleged discovery site shifts across maps between Tibetan and Qinghai regions."},{"title":"Zero Provenance Records: The Chain of Custody Problem in the Dropa Case","slug":"zero-provenance-records-the-chain-of-custody-problem-in-the-dropa-case","url":"/categories/forbidden-archaeology/dropa-stones/zero-provenance-records-the-chain-of-custody-problem-in-the-dropa-case.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of alleged artifacts have no documented chain of custody."},{"title":"Zonal Oxygen Stress: Human Labor Limits at 4,000 Meters Elevation","slug":"zonal-oxygen-stress-human-labor-limits-at-4-000-meters-elevation","url":"/categories/forbidden-archaeology/dropa-stones/zonal-oxygen-stress-human-labor-limits-at-4-000-meters-elevation.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"At 4,000 meters, oxygen levels drop enough to impair sustained manual labor."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

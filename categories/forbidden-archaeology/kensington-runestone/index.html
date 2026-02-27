@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kensington Runestone</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Kensington Runestone</h1>
+  <p>Explore all facts in "Kensington Runestone".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Kensington Runestone</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Alexandria Minnesota Big Ole Statue Amplifies Runestone Cultural Legacy","slug":"alexandria-minnesota-big-ole-statue-amplifies-runestone-cultural-legacy","url":"/categories/forbidden-archaeology/kensington-runestone/alexandria-minnesota-big-ole-statue-amplifies-runestone-cultural-legacy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 28-foot Viking statue stands guard over a disputed inscription."},{"title":"Epigraphic Authentication Standards Highlight Missing Context for 1898 Kensington Find","slug":"epigraphic-authentication-standards-highlight-missing-context-for-1898-kensington-find","url":"/categories/forbidden-archaeology/kensington-runestone/epigraphic-authentication-standards-highlight-missing-context-for-1898-kensington-find.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Most ancient inscriptions come from excavations; this one came from a farm field."},{"title":"Geological Weathering Tests on Kensington Runestone Produced Conflicting Results","slug":"geological-weathering-tests-on-kensington-runestone-produced-conflicting-results","url":"/categories/forbidden-archaeology/kensington-runestone/geological-weathering-tests-on-kensington-runestone-produced-conflicting-results.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The grooves look ancient, yet laboratory analysis refuses certainty."},{"title":"Hudson Bay to Minnesota 1362 Route Would Require 1000-Mile Medieval Inland Expedition","slug":"hudson-bay-to-minnesota-1362-route-would-require-1000-mile-medieval-inland-expedition","url":"/categories/forbidden-archaeology/kensington-runestone/hudson-bay-to-minnesota-1362-route-would-require-1000-mile-medieval-inland-expedition.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The inscription implies Vikings navigated over a thousand inland miles."},{"title":"Kalmar Union 1397 Context Highlights Political Fragmentation Before 1362 Date","slug":"kalmar-union-1397-context-highlights-political-fragmentation-before-1362-date","url":"/categories/forbidden-archaeology/kensington-runestone/kalmar-union-1397-context-highlights-political-fragmentation-before-1362-date.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The inscription predates the Kalmar Union by 35 years."},{"title":"Kensington Inscription’s 22-Member Expedition Detail Raises Demographic Questions","slug":"kensington-inscription-s-22-member-expedition-detail-raises-demographic-questions","url":"/categories/forbidden-archaeology/kensington-runestone/kensington-inscription-s-22-member-expedition-detail-raises-demographic-questions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The stone specifies 22 men deep inside North America."},{"title":"Kensington Runestone 1362 Inscription Claims Norse Presence in Medieval Minnesota","slug":"kensington-runestone-1362-inscription-claims-norse-presence-in-medieval-minnesota","url":"/categories/forbidden-archaeology/kensington-runestone/kensington-runestone-1362-inscription-claims-norse-presence-in-medieval-minnesota.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 200-pound slab in rural Minnesota claims Vikings died there in 1362."},{"title":"Kensington Runestone Inscription Mixes Latin Letters With Runes","slug":"kensington-runestone-inscription-mixes-latin-letters-with-runes","url":"/categories/forbidden-archaeology/kensington-runestone/kensington-runestone-inscription-mixes-latin-letters-with-runes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The stone combines two writing systems in one 1362 message."},{"title":"Kensington Runestone Mentions 10 Dead Men in 1362 Attack Narrative","slug":"kensington-runestone-mentions-10-dead-men-in-1362-attack-narrative","url":"/categories/forbidden-archaeology/kensington-runestone/kensington-runestone-mentions-10-dead-men-in-1362-attack-narrative.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The inscription calmly reports ten men found dead."},{"title":"Kensington Stone Weight of 200 Pounds Challenges Covert Forgery Assumptions","slug":"kensington-stone-weight-of-200-pounds-challenges-covert-forgery-assumptions","url":"/categories/forbidden-archaeology/kensington-runestone/kensington-stone-weight-of-200-pounds-challenges-covert-forgery-assumptions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A farmer would need to maneuver 200 pounds of carved stone unnoticed."},{"title":"Kormakssaga Manuscripts Illustrate How Saga Transmission Complicates 1362 Claims","slug":"kormakssaga-manuscripts-illustrate-how-saga-transmission-complicates-1362-claims","url":"/categories/forbidden-archaeology/kensington-runestone/kormakssaga-manuscripts-illustrate-how-saga-transmission-complicates-1362-claims.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Saga manuscripts were copied centuries after voyages they describe."},{"title":"Minnesota Agricultural Expansion 1890s Increased Likelihood of Artifact Disturbance","slug":"minnesota-agricultural-expansion-1890s-increased-likelihood-of-artifact-disturbance","url":"/categories/forbidden-archaeology/kensington-runestone/minnesota-agricultural-expansion-1890s-increased-likelihood-of-artifact-disturbance.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Industrial plowing reshaped landscapes just before the stone appeared."},{"title":"Minnesota Historical Society Archival Reviews Document Early Runestone Skepticism","slug":"minnesota-historical-society-archival-reviews-document-early-runestone-skepticism","url":"/categories/forbidden-archaeology/kensington-runestone/minnesota-historical-society-archival-reviews-document-early-runestone-skepticism.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Archival records show doubt emerged immediately in 1898."},{"title":"Minnesota River Network Would Demand Repeated Portage for 14th Century Norse Expedition","slug":"minnesota-river-network-would-demand-repeated-portage-for-14th-century-norse-expedition","url":"/categories/forbidden-archaeology/kensington-runestone/minnesota-river-network-would-demand-repeated-portage-for-14th-century-norse-expedition.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Reaching central Minnesota would require dragging boats across land repeatedly."},{"title":"Nordic Runic Corpus Comparisons Reveal Statistical Anomalies in Kensington Text","slug":"nordic-runic-corpus-comparisons-reveal-statistical-anomalies-in-kensington-text","url":"/categories/forbidden-archaeology/kensington-runestone/nordic-runic-corpus-comparisons-reveal-statistical-anomalies-in-kensington-text.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Rune frequency patterns on the stone diverge from medieval corpora."},{"title":"Norwegian and Swedish Rune Blending in Kensington Text Challenges Medieval Orthodoxy","slug":"norwegian-and-swedish-rune-blending-in-kensington-text-challenges-medieval-orthodoxy","url":"/categories/forbidden-archaeology/kensington-runestone/norwegian-and-swedish-rune-blending-in-kensington-text-challenges-medieval-orthodoxy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The inscription blends Scandinavian identities into one inland expedition."},{"title":"Norwegian Black Death Recovery Timeline Complicates 1362 Exploration Scenario","slug":"norwegian-black-death-recovery-timeline-complicates-1362-exploration-scenario","url":"/categories/forbidden-archaeology/kensington-runestone/norwegian-black-death-recovery-timeline-complicates-1362-exploration-scenario.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The inscription’s date falls amid Scandinavia’s plague aftermath."},{"title":"Norwegian Sea Maritime Focus in 14th Century Contrasts With Inland Minnesota Claim","slug":"norwegian-sea-maritime-focus-in-14th-century-contrasts-with-inland-minnesota-claim","url":"/categories/forbidden-archaeology/kensington-runestone/norwegian-sea-maritime-focus-in-14th-century-contrasts-with-inland-minnesota-claim.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Documented Scandinavian voyages centered on the Norwegian Sea, not the Midwest."},{"title":"Olaus Magnus 1555 Map Shows Northern Imagination But No Minnesota Norse Colony","slug":"olaus-magnus-1555-map-shows-northern-imagination-but-no-minnesota-norse-colony","url":"/categories/forbidden-archaeology/kensington-runestone/olaus-magnus-1555-map-shows-northern-imagination-but-no-minnesota-norse-colony.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 16th-century Scandinavian map depicts wonders, yet not a Midwest expedition."},{"title":"Olof Ohman 1898 Discovery Triggered One of America’s Longest Archaeological Disputes","slug":"olof-ohman-1898-discovery-triggered-one-of-america-s-longest-archaeological-disputes","url":"/categories/forbidden-archaeology/kensington-runestone/olof-ohman-1898-discovery-triggered-one-of-america-s-longest-archaeological-disputes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A tree root allegedly wrapped around the stone that rewrote American history."},{"title":"Quantitative Rune Frequency Analysis Shows Divergence From 14th Century Norms","slug":"quantitative-rune-frequency-analysis-shows-divergence-from-14th-century-norms","url":"/categories/forbidden-archaeology/kensington-runestone/quantitative-rune-frequency-analysis-shows-divergence-from-14th-century-norms.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Statistical modeling suggests the rune mix does not fit 1362 patterns."},{"title":"Quarry Provenance Studies Suggest Kensington Stone Matches Local Minnesota Bedrock","slug":"quarry-provenance-studies-suggest-kensington-stone-matches-local-minnesota-bedrock","url":"/categories/forbidden-archaeology/kensington-runestone/quarry-provenance-studies-suggest-kensington-stone-matches-local-minnesota-bedrock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The stone’s geology points to a nearby source, not medieval cargo."},{"title":"Queen Margaret I’s 14th Century Governance Leaves No Record of 1362 Minnesota Voyage","slug":"queen-margaret-i-s-14th-century-governance-leaves-no-record-of-1362-minnesota-voyage","url":"/categories/forbidden-archaeology/kensington-runestone/queen-margaret-i-s-14th-century-governance-leaves-no-record-of-1362-minnesota-voyage.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A claimed transatlantic expedition leaves no trace in royal archives."},{"title":"Red River Basin Geography Challenges 14th Century Scandinavian Inland Navigation","slug":"red-river-basin-geography-challenges-14th-century-scandinavian-inland-navigation","url":"/categories/forbidden-archaeology/kensington-runestone/red-river-basin-geography-challenges-14th-century-scandinavian-inland-navigation.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The claimed route crosses watershed divides few medieval Europeans documented."},{"title":"Runestone Museum Alexandria Houses America’s Most Contested Viking Artifact","slug":"runestone-museum-alexandria-houses-america-s-most-contested-viking-artifact","url":"/categories/forbidden-archaeology/kensington-runestone/runestone-museum-alexandria-houses-america-s-most-contested-viking-artifact.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One Midwestern museum displays a stone that challenges Columbus."},{"title":"Runestone Museum Preservation Efforts Ensure Continued Scientific Access to 1362 Inscription","slug":"runestone-museum-preservation-efforts-ensure-continued-scientific-access-to-1362-inscription","url":"/categories/forbidden-archaeology/kensington-runestone/runestone-museum-preservation-efforts-ensure-continued-scientific-access-to-1362-inscription.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The contested slab remains accessible for modern testing."},{"title":"Runestone’s 1362 Date Aligns With No Known Scandinavian Atlantic Expedition Records","slug":"runestone-s-1362-date-aligns-with-no-known-scandinavian-atlantic-expedition-records","url":"/categories/forbidden-archaeology/kensington-runestone/runestone-s-1362-date-aligns-with-no-known-scandinavian-atlantic-expedition-records.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The specific year appears nowhere in confirmed Norse voyage archives."},{"title":"Runic Epigraphy Standards Demand In Situ Discovery Absent in Kensington Case","slug":"runic-epigraphy-standards-demand-in-situ-discovery-absent-in-kensington-case","url":"/categories/forbidden-archaeology/kensington-runestone/runic-epigraphy-standards-demand-in-situ-discovery-absent-in-kensington-case.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Most authentic runestones are found embedded in documented medieval sites."},{"title":"Runic Linguistic Analysis Reveals 19th-Century Dialect Patterns on Kensington Stone","slug":"runic-linguistic-analysis-reveals-19th-century-dialect-patterns-on-kensington-stone","url":"/categories/forbidden-archaeology/kensington-runestone/runic-linguistic-analysis-reveals-19th-century-dialect-patterns-on-kensington-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The medieval inscription contains language patterns documented centuries later."},{"title":"Scandinavian Immigration 19th Century Context Fueled Kensington Runestone Debate","slug":"scandinavian-immigration-19th-century-context-fueled-kensington-runestone-debate","url":"/categories/forbidden-archaeology/kensington-runestone/scandinavian-immigration-19th-century-context-fueled-kensington-runestone-debate.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A medieval Viking claim surfaced during peak Scandinavian migration."},{"title":"University of Minnesota Scholars Rejected Kensington Runestone Shortly After 1898 Discovery","slug":"university-of-minnesota-scholars-rejected-kensington-runestone-shortly-after-1898-discovery","url":"/categories/forbidden-archaeology/kensington-runestone/university-of-minnesota-scholars-rejected-kensington-runestone-shortly-after-1898-discovery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Academics dismissed the stone within months of its unveiling."},{"title":"University of Oslo Runology Archives Classify Kensington Inscription as Modern","slug":"university-of-oslo-runology-archives-classify-kensington-inscription-as-modern","url":"/categories/forbidden-archaeology/kensington-runestone/university-of-oslo-runology-archives-classify-kensington-inscription-as-modern.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Leading Scandinavian runologists publicly reject the 1362 date."},{"title":"Upland Scandinavian Dialect Forms Appear Inconsistent With 14th Century Epigraphy","slug":"upland-scandinavian-dialect-forms-appear-inconsistent-with-14th-century-epigraphy","url":"/categories/forbidden-archaeology/kensington-runestone/upland-scandinavian-dialect-forms-appear-inconsistent-with-14th-century-epigraphy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Certain word forms resemble dialects recorded centuries later."},{"title":"Upper Midwest Archaeological Surveys Have Found No 14th Century Norse Artifacts","slug":"upper-midwest-archaeological-surveys-have-found-no-14th-century-norse-artifacts","url":"/categories/forbidden-archaeology/kensington-runestone/upper-midwest-archaeological-surveys-have-found-no-14th-century-norse-artifacts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Extensive surveys reveal no confirmed Norse material in Minnesota."},{"title":"Upper Midwest Glacial Geology Preserved Kensington Stone Beneath Agricultural Soil","slug":"upper-midwest-glacial-geology-preserved-kensington-stone-beneath-agricultural-soil","url":"/categories/forbidden-archaeology/kensington-runestone/upper-midwest-glacial-geology-preserved-kensington-stone-beneath-agricultural-soil.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A glacial landscape concealed a carved slab for centuries or decades."},{"title":"Uppsala Medieval Trade Networks Raise Questions About 1362 Atlantic Logistics","slug":"uppsala-medieval-trade-networks-raise-questions-about-1362-atlantic-logistics","url":"/categories/forbidden-archaeology/kensington-runestone/uppsala-medieval-trade-networks-raise-questions-about-1362-atlantic-logistics.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 14th-century inland voyage would require trade routes stretching beyond Uppsala."},{"title":"Viking Age Chronology Conflict Pits 1000 CE Newfoundland Against 1362 Minnesota Claim","slug":"viking-age-chronology-conflict-pits-1000-ce-newfoundland-against-1362-minnesota-claim","url":"/categories/forbidden-archaeology/kensington-runestone/viking-age-chronology-conflict-pits-1000-ce-newfoundland-against-1362-minnesota-claim.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Confirmed Norse ruins stop in Newfoundland, yet the stone pushes 362 years forward."},{"title":"Westward Vinland Reference in Kensington Text Connects to Icelandic Saga Geography","slug":"westward-vinland-reference-in-kensington-text-connects-to-icelandic-saga-geography","url":"/categories/forbidden-archaeology/kensington-runestone/westward-vinland-reference-in-kensington-text-connects-to-icelandic-saga-geography.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The inscription mentions Vinland, tying Minnesota to medieval Icelandic lore."},{"title":"X-Ray and Microscopic Studies Attempted to Date Kensington Runestone Carvings","slug":"x-ray-and-microscopic-studies-attempted-to-date-kensington-runestone-carvings","url":"/categories/forbidden-archaeology/kensington-runestone/x-ray-and-microscopic-studies-attempted-to-date-kensington-runestone-carvings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Scientists put the stone under microscopes searching for medieval tool marks."},{"title":"Xenial Climate Shifts in the 14th Century Complicate Long-Distance Norse Expeditions","slug":"xenial-climate-shifts-in-the-14th-century-complicate-long-distance-norse-expeditions","url":"/categories/forbidden-archaeology/kensington-runestone/xenial-climate-shifts-in-the-14th-century-complicate-long-distance-norse-expeditions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The 1362 date falls during early phases of the Little Ice Age."},{"title":"Xenodochial Memory in Immigrant Communities Can Reinforce Historical Identification","slug":"xenodochial-memory-in-immigrant-communities-can-reinforce-historical-identification","url":"/categories/forbidden-archaeology/kensington-runestone/xenodochial-memory-in-immigrant-communities-can-reinforce-historical-identification.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Communities sometimes adopt distant history as local heritage."},{"title":"Xerographic Replication Tests Attempted to Reproduce Kensington Rune Weathering","slug":"xerographic-replication-tests-attempted-to-reproduce-kensington-rune-weathering","url":"/categories/forbidden-archaeology/kensington-runestone/xerographic-replication-tests-attempted-to-reproduce-kensington-rune-weathering.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Researchers carved fresh runes to see how quickly they age."},{"title":"XRF Spectroscopy Tests Could Detect Modern Metal Residue in Carved Grooves","slug":"xrf-spectroscopy-tests-could-detect-modern-metal-residue-in-carved-grooves","url":"/categories/forbidden-archaeology/kensington-runestone/xrf-spectroscopy-tests-could-detect-modern-metal-residue-in-carved-grooves.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern instruments can detect microscopic traces invisible in 1898."},{"title":"Yale Linguist Debate 20th Century Reignited Kensington Runestone Controversy","slug":"yale-linguist-debate-20th-century-reignited-kensington-runestone-controversy","url":"/categories/forbidden-archaeology/kensington-runestone/yale-linguist-debate-20th-century-reignited-kensington-runestone-controversy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A university debate in the 1900s reopened a 1362 claim."},{"title":"Ytterby Mineral Naming Paradox Echoes Kensington Runestone’s Scandinavian Identity Debate","slug":"ytterby-mineral-naming-paradox-echoes-kensington-runestone-s-scandinavian-identity-debate","url":"/categories/forbidden-archaeology/kensington-runestone/ytterby-mineral-naming-paradox-echoes-kensington-runestone-s-scandinavian-identity-debate.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A Swedish village named four elements; a Minnesota stone claims medieval Scandinavians."},{"title":"Zealand Rune Variants Allegedly Embedded in 1362 Kensington Inscription","slug":"zealand-rune-variants-allegedly-embedded-in-1362-kensington-inscription","url":"/categories/forbidden-archaeology/kensington-runestone/zealand-rune-variants-allegedly-embedded-in-1362-kensington-inscription.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A Minnesota stone appears to encode rune forms tied to Denmark’s Zealand."},{"title":"Zero Confirmed Medieval Scandinavian Settlements Exist West of Newfoundland","slug":"zero-confirmed-medieval-scandinavian-settlements-exist-west-of-newfoundland","url":"/categories/forbidden-archaeology/kensington-runestone/zero-confirmed-medieval-scandinavian-settlements-exist-west-of-newfoundland.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Beyond Newfoundland, archaeology falls silent on Norse America."},{"title":"Zinc Chisel Hardness Debate Questions 19th Century Tool Compatibility with Kensington Stone","slug":"zinc-chisel-hardness-debate-questions-19th-century-tool-compatibility-with-kensington-stone","url":"/categories/forbidden-archaeology/kensington-runestone/zinc-chisel-hardness-debate-questions-19th-century-tool-compatibility-with-kensington-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tool hardness could decide whether 1362 or 1898 carved the grooves."},{"title":"Zinc Content in 19th Century Steel Tools Could Theoretically Date Rune Carvings","slug":"zinc-content-in-19th-century-steel-tools-could-theoretically-date-rune-carvings","url":"/categories/forbidden-archaeology/kensington-runestone/zinc-content-in-19th-century-steel-tools-could-theoretically-date-rune-carvings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Industrial alloys might betray a supposedly medieval inscription."},{"title":"Zonal Freeze-Thaw Cycles in Minnesota Can Alter Stone Surfaces Within Decades","slug":"zonal-freeze-thaw-cycles-in-minnesota-can-alter-stone-surfaces-within-decades","url":"/categories/forbidden-archaeology/kensington-runestone/zonal-freeze-thaw-cycles-in-minnesota-can-alter-stone-surfaces-within-decades.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Minnesota winters can fracture rock surfaces in under a lifetime."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

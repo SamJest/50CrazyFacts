@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sacsayhuaman</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Sacsayhuaman</h1>
+  <p>Explore all facts in "Sacsayhuaman".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Sacsayhuaman</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Andean Altitude Forced Builders to Work With 40 Percent Less Oxygen","slug":"andean-altitude-forced-builders-to-work-with-40-percent-less-oxygen","url":"/categories/forbidden-archaeology/sacsayhuaman/andean-altitude-forced-builders-to-work-with-40-percent-less-oxygen.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sacsayhuaman’s 100 ton stones were set in air with nearly half the oxygen of sea level."},{"title":"Archaeologists Identified Three Massive Towers Once Rising Above Sacsayhuaman","slug":"archaeologists-identified-three-massive-towers-once-rising-above-sacsayhuaman","url":"/categories/forbidden-archaeology/sacsayhuaman/archaeologists-identified-three-massive-towers-once-rising-above-sacsayhuaman.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Three stone towers once crowned Sacsayhuaman, towering above Cusco like a mountain citadel."},{"title":"Battle of 1536 Turned Sacsayhuaman Into a High Altitude War Zone","slug":"battle-of-1536-turned-sacsayhuaman-into-a-high-altitude-war-zone","url":"/categories/forbidden-archaeology/sacsayhuaman/battle-of-1536-turned-sacsayhuaman-into-a-high-altitude-war-zone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 15th century stone fortress became the epicenter of a brutal siege against Spanish cavalry."},{"title":"Boulders at Sacsayhuaman Were Fitted Without a Single Drop of Mortar","slug":"boulders-at-sacsayhuaman-were-fitted-without-a-single-drop-of-mortar","url":"/categories/forbidden-archaeology/sacsayhuaman/boulders-at-sacsayhuaman-were-fitted-without-a-single-drop-of-mortar.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Walls made of 200 ton stones stand firm without glue, cement, or mortar."},{"title":"Colonial Engineers Struggled to Dismantle Sacsayhuaman’s Largest Blocks","slug":"colonial-engineers-struggled-to-dismantle-sacsayhuaman-s-largest-blocks","url":"/categories/forbidden-archaeology/sacsayhuaman/colonial-engineers-struggled-to-dismantle-sacsayhuaman-s-largest-blocks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Spanish engineers who leveled cities could not budge Sacsayhuaman’s biggest stones."},{"title":"Drainage Channels at Sacsayhuaman Still Function After 500 Years","slug":"drainage-channels-at-sacsayhuaman-still-function-after-500-years","url":"/categories/forbidden-archaeology/sacsayhuaman/drainage-channels-at-sacsayhuaman-still-function-after-500-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone drains carved in the 1400s still move rainwater down a mountain slope."},{"title":"Earthquake Damage Patterns Show Sacsayhuaman Flexes Instead of Fractures","slug":"earthquake-damage-patterns-show-sacsayhuaman-flexes-instead-of-fractures","url":"/categories/forbidden-archaeology/sacsayhuaman/earthquake-damage-patterns-show-sacsayhuaman-flexes-instead-of-fractures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"During earthquakes, Sacsayhuaman’s 100 ton stones shift and settle instead of shattering."},{"title":"Foundations of Lost Towers Reveal Circular Engineering at Sacsayhuaman","slug":"foundations-of-lost-towers-reveal-circular-engineering-at-sacsayhuaman","url":"/categories/forbidden-archaeology/sacsayhuaman/foundations-of-lost-towers-reveal-circular-engineering-at-sacsayhuaman.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Beneath ruined walls lie circular tower bases once rising above the Andes skyline."},{"title":"Geologists Confirm Sacsayhuaman Stones Came From Quarries Miles Away","slug":"geologists-confirm-sacsayhuaman-stones-came-from-quarries-miles-away","url":"/categories/forbidden-archaeology/sacsayhuaman/geologists-confirm-sacsayhuaman-stones-came-from-quarries-miles-away.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some 100 ton stones at Sacsayhuaman were hauled several kilometers uphill from distant quarries."},{"title":"Gigantic Foundation Stones Anchor the Lowest Tier of the Fortress","slug":"gigantic-foundation-stones-anchor-the-lowest-tier-of-the-fortress","url":"/categories/forbidden-archaeology/sacsayhuaman/gigantic-foundation-stones-anchor-the-lowest-tier-of-the-fortress.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The heaviest stones at Sacsayhuaman sit at the base like geological anchors."},{"title":"Hidden Drainage Systems Run Beneath Sacsayhuaman’s Massive Walls","slug":"hidden-drainage-systems-run-beneath-sacsayhuaman-s-massive-walls","url":"/categories/forbidden-archaeology/sacsayhuaman/hidden-drainage-systems-run-beneath-sacsayhuaman-s-massive-walls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A fortress built from 100 ton stones secretly channels rainwater through hidden drains."},{"title":"Human Chains Likely Hauled Stones Up Steep Andean Slopes","slug":"human-chains-likely-hauled-stones-up-steep-andean-slopes","url":"/categories/forbidden-archaeology/sacsayhuaman/human-chains-likely-hauled-stones-up-steep-andean-slopes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Thousands of people pulling in unison dragged stones heavier than houses uphill."},{"title":"Immovable Lower Walls Preserve the Original 15th Century Core","slug":"immovable-lower-walls-preserve-the-original-15th-century-core","url":"/categories/forbidden-archaeology/sacsayhuaman/immovable-lower-walls-preserve-the-original-15th-century-core.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The most ancient stones survived conquest because they were simply too heavy to move."},{"title":"Inca Labor Tax Mobilized Thousands to Build Sacsayhuaman","slug":"inca-labor-tax-mobilized-thousands-to-build-sacsayhuaman","url":"/categories/forbidden-archaeology/sacsayhuaman/inca-labor-tax-mobilized-thousands-to-build-sacsayhuaman.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An empire without currency assembled thousands to move stones heavier than trucks."},{"title":"Jagged Wall Geometry Maximizes Defensive Angles of Attack","slug":"jagged-wall-geometry-maximizes-defensive-angles-of-attack","url":"/categories/forbidden-archaeology/sacsayhuaman/jagged-wall-geometry-maximizes-defensive-angles-of-attack.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The zigzag walls create multiple overlapping angles that expose attackers from every direction."},{"title":"Kilometers of Andean Terrain Were Modified to Support Construction","slug":"kilometers-of-andean-terrain-were-modified-to-support-construction","url":"/categories/forbidden-archaeology/sacsayhuaman/kilometers-of-andean-terrain-were-modified-to-support-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Building Sacsayhuaman required reshaping entire slopes, not just stacking stones."},{"title":"Largest Stone at Sacsayhuaman May Weigh Over 300 Tons","slug":"largest-stone-at-sacsayhuaman-may-weigh-over-300-tons","url":"/categories/forbidden-archaeology/sacsayhuaman/largest-stone-at-sacsayhuaman-may-weigh-over-300-tons.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One Sacsayhuaman block rivals the weight of a fully loaded jumbo jet."},{"title":"Laser Scans Reveal Millimeter Precision Across Multi Ton Stones","slug":"laser-scans-reveal-millimeter-precision-across-multi-ton-stones","url":"/categories/forbidden-archaeology/sacsayhuaman/laser-scans-reveal-millimeter-precision-across-multi-ton-stones.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Modern lasers detect millimeter accuracy on stones heavier than buses."},{"title":"Modern Laser Surveys Reveal Subtle Stone Curvatures at Sacsayhuaman","slug":"modern-laser-surveys-reveal-subtle-stone-curvatures-at-sacsayhuaman","url":"/categories/forbidden-archaeology/sacsayhuaman/modern-laser-surveys-reveal-subtle-stone-curvatures-at-sacsayhuaman.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Advanced laser scans show Sacsayhuaman’s massive stones are not perfectly flat but subtly curved."},{"title":"Monumental Scale of Sacsayhuaman Inspired Early European Awe","slug":"monumental-scale-of-sacsayhuaman-inspired-early-european-awe","url":"/categories/forbidden-archaeology/sacsayhuaman/monumental-scale-of-sacsayhuaman-inspired-early-european-awe.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Conquistadors accustomed to European castles called this Andean fortress unmatched."},{"title":"Natural Limestone Outcrops Were Integrated Directly Into the Walls","slug":"natural-limestone-outcrops-were-integrated-directly-into-the-walls","url":"/categories/forbidden-archaeology/sacsayhuaman/natural-limestone-outcrops-were-integrated-directly-into-the-walls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Parts of Sacsayhuaman are not built onto the mountain but carved from it."},{"title":"No Written Blueprints Survive for Sacsayhuaman’s Complex Design","slug":"no-written-blueprints-survive-for-sacsayhuaman-s-complex-design","url":"/categories/forbidden-archaeology/sacsayhuaman/no-written-blueprints-survive-for-sacsayhuaman-s-complex-design.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A fortress of 100 ton stones was built without surviving written plans or blueprints."},{"title":"Open Esplanade Could Accommodate Massive Imperial Gatherings","slug":"open-esplanade-could-accommodate-massive-imperial-gatherings","url":"/categories/forbidden-archaeology/sacsayhuaman/open-esplanade-could-accommodate-massive-imperial-gatherings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Below towering 100 ton walls, thousands once assembled on a mountain plateau."},{"title":"Puma Shaped City Plan Places Sacsayhuaman as the Head of an Animal Visible From Above","slug":"puma-shaped-city-plan-places-sacsayhuaman-as-the-head-of-an-animal-visible-from-above","url":"/categories/forbidden-archaeology/sacsayhuaman/puma-shaped-city-plan-places-sacsayhuaman-as-the-head-of-an-animal-visible-from-above.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire imperial capital was laid out as a giant puma, with Sacsayhuaman forming its head."},{"title":"Quadrilateral and Polygonal Stones Prevent Long Fracture Lines in the Walls","slug":"quadrilateral-and-polygonal-stones-prevent-long-fracture-lines-in-the-walls","url":"/categories/forbidden-archaeology/sacsayhuaman/quadrilateral-and-polygonal-stones-prevent-long-fracture-lines-in-the-walls.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"No straight crack can run uninterrupted through Sacsayhuaman’s interlocking stone maze."},{"title":"Quarry Marks Show Stones Were Shaped Before Final Placement","slug":"quarry-marks-show-stones-were-shaped-before-final-placement","url":"/categories/forbidden-archaeology/sacsayhuaman/quarry-marks-show-stones-were-shaped-before-final-placement.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tool marks reveal 100 ton blocks were pre shaped miles away before uphill transport."},{"title":"Ridge Top Fortress Commands Strategic View of Every Approach to Cusco","slug":"ridge-top-fortress-commands-strategic-view-of-every-approach-to-cusco","url":"/categories/forbidden-archaeology/sacsayhuaman/ridge-top-fortress-commands-strategic-view-of-every-approach-to-cusco.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"From Sacsayhuaman’s ridge, defenders could see threats long before they reached the city below."},{"title":"Ridge Top Location Gives Sacsayhuaman Commanding Views of the Cusco Valley","slug":"ridge-top-location-gives-sacsayhuaman-commanding-views-of-the-cusco-valley","url":"/categories/forbidden-archaeology/sacsayhuaman/ridge-top-location-gives-sacsayhuaman-commanding-views-of-the-cusco-valley.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"From its ridge, Sacsayhuaman surveys an entire imperial capital below."},{"title":"Sacsayhuaman Once Hosted Massive Inca Ceremonial Gatherings","slug":"sacsayhuaman-once-hosted-massive-inca-ceremonial-gatherings","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-once-hosted-massive-inca-ceremonial-gatherings.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A mountain fortress doubled as a stage for empire wide religious festivals."},{"title":"Sacsayhuaman Overlooks Cusco in the Shape of a Sacred Puma","slug":"sacsayhuaman-overlooks-cusco-in-the-shape-of-a-sacred-puma","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-overlooks-cusco-in-the-shape-of-a-sacred-puma.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire imperial capital was designed as a giant puma visible from above."},{"title":"Sacsayhuaman Sits Nearly 3,700 Meters Above Sea Level","slug":"sacsayhuaman-sits-nearly-3-700-meters-above-sea-level","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-sits-nearly-3-700-meters-above-sea-level.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A megalithic fortress weighing thousands of tons stands higher than most European peaks."},{"title":"Sacsayhuaman Survived Earthquakes That Destroyed Colonial Cusco","slug":"sacsayhuaman-survived-earthquakes-that-destroyed-colonial-cusco","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-survived-earthquakes-that-destroyed-colonial-cusco.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Spanish cathedrals collapsed in earthquakes while Sacsayhuaman’s 15th century walls barely shifted."},{"title":"Sacsayhuaman’s 200-Ton Stones Were Fitted Without Mortar or Modern Tools","slug":"sacsayhuaman-s-200-ton-stones-were-fitted-without-mortar-or-modern-tools","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-s-200-ton-stones-were-fitted-without-mortar-or-modern-tools.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some stones at Sacsayhuaman weigh more than a Boeing 737 yet fit so tightly a knife blade cannot slide between them."},{"title":"Sacsayhuaman’s Esplanade Covers an Area Larger Than Several Football Fields","slug":"sacsayhuaman-s-esplanade-covers-an-area-larger-than-several-football-fields","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-s-esplanade-covers-an-area-larger-than-several-football-fields.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A high altitude stone fortress includes a plaza broad enough for thousands to gather."},{"title":"Sacsayhuaman’s Polygonal Masonry Uses Stones With Up to 12 Angles","slug":"sacsayhuaman-s-polygonal-masonry-uses-stones-with-up-to-12-angles","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-s-polygonal-masonry-uses-stones-with-up-to-12-angles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some fortress stones have 12 sides yet lock together without mortar."},{"title":"Sacsayhuaman’s Remaining Walls Represent Only a Fraction of Its Original Scale","slug":"sacsayhuaman-s-remaining-walls-represent-only-a-fraction-of-its-original-scale","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-s-remaining-walls-represent-only-a-fraction-of-its-original-scale.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"What stands today is only a surviving fragment of a much larger stone complex."},{"title":"Sacsayhuaman’s Stone Joints Are So Precise They Resist Blade Insertion","slug":"sacsayhuaman-s-stone-joints-are-so-precise-they-resist-blade-insertion","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-s-stone-joints-are-so-precise-they-resist-blade-insertion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"In some sections, not even a knife blade fits between Sacsayhuaman’s stones."},{"title":"Sacsayhuaman’s Stones Were So Prized Spaniards Dismantled Parts of It","slug":"sacsayhuaman-s-stones-were-so-prized-spaniards-dismantled-parts-of-it","url":"/categories/forbidden-archaeology/sacsayhuaman/sacsayhuaman-s-stones-were-so-prized-spaniards-dismantled-parts-of-it.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Conquistadors tore apart a mountain fortress to build colonial Cusco."},{"title":"Spanish Chronicles Described Sacsayhuaman as Beyond European Comparison","slug":"spanish-chronicles-described-sacsayhuaman-as-beyond-european-comparison","url":"/categories/forbidden-archaeology/sacsayhuaman/spanish-chronicles-described-sacsayhuaman-as-beyond-european-comparison.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Early Europeans claimed no building in Spain matched Sacsayhuaman’s scale."},{"title":"Stone Angles at Sacsayhuaman Eliminate Continuous Vertical Seams","slug":"stone-angles-at-sacsayhuaman-eliminate-continuous-vertical-seams","url":"/categories/forbidden-archaeology/sacsayhuaman/stone-angles-at-sacsayhuaman-eliminate-continuous-vertical-seams.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Its walls avoid straight vertical cracks that would invite collapse."},{"title":"The Zigzag Walls of Sacsayhuaman Form a 400-Meter Stone Lightning Bolt","slug":"the-zigzag-walls-of-sacsayhuaman-form-a-400-meter-stone-lightning-bolt","url":"/categories/forbidden-archaeology/sacsayhuaman/the-zigzag-walls-of-sacsayhuaman-form-a-400-meter-stone-lightning-bolt.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 400 meter long zigzag wall crowns a mountain, built from stones taller than people."},{"title":"Thousands of Workers Moved Sacsayhuaman’s Stones Without Wheels or Draft Animals","slug":"thousands-of-workers-moved-sacsayhuaman-s-stones-without-wheels-or-draft-animals","url":"/categories/forbidden-archaeology/sacsayhuaman/thousands-of-workers-moved-sacsayhuaman-s-stones-without-wheels-or-draft-animals.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"200 ton stones were dragged uphill without wheels, horses, or iron tools."},{"title":"Three Parallel Defensive Walls Stack Massive Stone Tiers Along the Slope","slug":"three-parallel-defensive-walls-stack-massive-stone-tiers-along-the-slope","url":"/categories/forbidden-archaeology/sacsayhuaman/three-parallel-defensive-walls-stack-massive-stone-tiers-along-the-slope.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sacsayhuaman’s defenses rise in three colossal zigzag tiers cut into a mountain."},{"title":"Up to 20,000 Workers May Have Participated in Construction","slug":"up-to-20-000-workers-may-have-participated-in-construction","url":"/categories/forbidden-archaeology/sacsayhuaman/up-to-20-000-workers-may-have-participated-in-construction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tens of thousands of laborers likely hauled, carved, and fitted Sacsayhuaman’s stones."},{"title":"Vertical Inclination of Walls Increases Stability During Seismic Events","slug":"vertical-inclination-of-walls-increases-stability-during-seismic-events","url":"/categories/forbidden-archaeology/sacsayhuaman/vertical-inclination-of-walls-increases-stability-during-seismic-events.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sacsayhuaman’s walls lean slightly inward, quietly resisting earthquakes."},{"title":"Water Storage Features Suggest Long Term Defensive Planning","slug":"water-storage-features-suggest-long-term-defensive-planning","url":"/categories/forbidden-archaeology/sacsayhuaman/water-storage-features-suggest-long-term-defensive-planning.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A high altitude fortress incorporated water management for prolonged occupation."},{"title":"X Shaped Intersections of Angled Stones Lock Massive Blocks in Place","slug":"x-shaped-intersections-of-angled-stones-lock-massive-blocks-in-place","url":"/categories/forbidden-archaeology/sacsayhuaman/x-shaped-intersections-of-angled-stones-lock-massive-blocks-in-place.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Some joints at Sacsayhuaman form complex cross locking patterns that prevent sliding."},{"title":"Yard After Yard of Zigzag Walls Create a Stone Horizon Above Cusco","slug":"yard-after-yard-of-zigzag-walls-create-a-stone-horizon-above-cusco","url":"/categories/forbidden-archaeology/sacsayhuaman/yard-after-yard-of-zigzag-walls-create-a-stone-horizon-above-cusco.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stretching roughly 400 meters, Sacsayhuaman’s walls redraw the skyline of an entire valley."},{"title":"Zigzag Geometry Blends Sacred Symbolism With Military Strategy","slug":"zigzag-geometry-blends-sacred-symbolism-with-military-strategy","url":"/categories/forbidden-archaeology/sacsayhuaman/zigzag-geometry-blends-sacred-symbolism-with-military-strategy.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sacsayhuaman’s jagged walls function as both lightning symbol and battlefield design."},{"title":"Zigzag Wall Pattern May Symbolize Lightning in Inca Cosmology","slug":"zigzag-wall-pattern-may-symbolize-lightning-in-inca-cosmology","url":"/categories/forbidden-archaeology/sacsayhuaman/zigzag-wall-pattern-may-symbolize-lightning-in-inca-cosmology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The fortress walls mirror the jagged shape of lightning across a mountain."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

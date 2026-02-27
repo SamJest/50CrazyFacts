@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antikythera Mechanism</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Antikythera Mechanism</h1>
+  <p>Explore all facts in "Antikythera Mechanism".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Antikythera Mechanism</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Greek Lettering Style Helped Date the Antikythera Mechanism Precisely","slug":"ancient-greek-lettering-style-helped-date-the-antikythera-mechanism-precisely","url":"/categories/forbidden-archaeology/antikythera-mechanism/ancient-greek-lettering-style-helped-date-the-antikythera-mechanism-precisely.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tiny letter shapes fixed the age of a mechanical mystery."},{"title":"Ancient Shipwreck Cargo Suggests the Antikythera Mechanism Was Luxury Scientific Equipment","slug":"ancient-shipwreck-cargo-suggests-the-antikythera-mechanism-was-luxury-scientific-equipment","url":"/categories/forbidden-archaeology/antikythera-mechanism/ancient-shipwreck-cargo-suggests-the-antikythera-mechanism-was-luxury-scientific-equipment.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This cosmic calculator traveled with statues and elite Roman cargo."},{"title":"Antikythera Mechanism Contained Over 2,000 Characters of Technical Greek Text","slug":"antikythera-mechanism-contained-over-2-000-characters-of-technical-greek-text","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-contained-over-2-000-characters-of-technical-greek-text.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An ancient machine came with its own engraved user manual."},{"title":"Antikythera Mechanism May Have Originated in a Hellenistic Scientific Workshop","slug":"antikythera-mechanism-may-have-originated-in-a-hellenistic-scientific-workshop","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-may-have-originated-in-a-hellenistic-scientific-workshop.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This machine was not a one-off miracle but likely built in a research culture."},{"title":"Antikythera Mechanism Modeled Five Planets with Moving Bronze Gears","slug":"antikythera-mechanism-modeled-five-planets-with-moving-bronze-gears","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-modeled-five-planets-with-moving-bronze-gears.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient Greeks built a machine that made planets move in your hand."},{"title":"Antikythera Mechanism Predicted the Olympic Games Schedule","slug":"antikythera-mechanism-predicted-the-olympic-games-schedule","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-predicted-the-olympic-games-schedule.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An ancient computer tracked athletic games alongside eclipses and planetary cycles."},{"title":"Antikythera Mechanism Rewrites the Timeline of Mechanical Complexity","slug":"antikythera-mechanism-rewrites-the-timeline-of-mechanical-complexity","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-rewrites-the-timeline-of-mechanical-complexity.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Historians had to rewrite engineering history because of one corroded box."},{"title":"Antikythera Mechanism Was Hidden Under 45 Meters of Water for 2,000 Years","slug":"antikythera-mechanism-was-hidden-under-45-meters-of-water-for-2-000-years","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-was-hidden-under-45-meters-of-water-for-2-000-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A computer older than the Roman Empire survived two millennia underwater."},{"title":"Antikythera Mechanism: The 2,000-Year-Old Analog Computer That Predicted Eclipses","slug":"antikythera-mechanism-the-2-000-year-old-analog-computer-that-predicted-eclipses","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-the-2-000-year-old-analog-computer-that-predicted-eclipses.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A corroded lump of bronze from a shipwreck turned out to be a working computer built before Jesus was born."},{"title":"Antikythera Mechanism’s Differential Gear Predated Medieval Clockwork by a Millennium","slug":"antikythera-mechanism-s-differential-gear-predated-medieval-clockwork-by-a-millennium","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-s-differential-gear-predated-medieval-clockwork-by-a-millennium.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient machine used a gear system historians thought did not exist for 1,500 years."},{"title":"Antikythera Mechanism’s Metonic Dial Aligned Lunar Months with Solar Years","slug":"antikythera-mechanism-s-metonic-dial-aligned-lunar-months-with-solar-years","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-s-metonic-dial-aligned-lunar-months-with-solar-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient engineers solved a 19-year calendar problem with spinning bronze gears."},{"title":"Antikythera Mechanism’s Saros Dial Predicted Eclipses Decades in Advance","slug":"antikythera-mechanism-s-saros-dial-predicted-eclipses-decades-in-advance","url":"/categories/forbidden-archaeology/antikythera-mechanism/antikythera-mechanism-s-saros-dial-predicted-eclipses-decades-in-advance.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This 100 BCE device could forecast total darkness years before it happened."},{"title":"Back Dial Architecture in the Antikythera Mechanism Required Multi-Level Gear Stacking","slug":"back-dial-architecture-in-the-antikythera-mechanism-required-multi-level-gear-stacking","url":"/categories/forbidden-archaeology/antikythera-mechanism/back-dial-architecture-in-the-antikythera-mechanism-required-multi-level-gear-stacking.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient engineers built a three-dimensional time engine inside a box."},{"title":"Bronze Gear Teeth on the Antikythera Mechanism Were Cut to Sub-Millimeter Precision","slug":"bronze-gear-teeth-on-the-antikythera-mechanism-were-cut-to-sub-millimeter-precision","url":"/categories/forbidden-archaeology/antikythera-mechanism/bronze-gear-teeth-on-the-antikythera-mechanism-were-cut-to-sub-millimeter-precision.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Each tiny bronze tooth was cut so precisely it rivaled Renaissance clockwork."},{"title":"Century-Long Misinterpretation Delayed Recognition of the Antikythera Mechanism’s Full Scope","slug":"century-long-misinterpretation-delayed-recognition-of-the-antikythera-mechanism-s-full-scope","url":"/categories/forbidden-archaeology/antikythera-mechanism/century-long-misinterpretation-delayed-recognition-of-the-antikythera-mechanism-s-full-scope.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"For decades, scholars underestimated what the gears could do."},{"title":"Computed Lunar Anomaly: The Antikythera Mechanism Modeled an Elliptical Orbit","slug":"computed-lunar-anomaly-the-antikythera-mechanism-modeled-an-elliptical-orbit","url":"/categories/forbidden-archaeology/antikythera-mechanism/computed-lunar-anomaly-the-antikythera-mechanism-modeled-an-elliptical-orbit.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An ancient bronze machine simulated a non-circular Moon centuries before Kepler."},{"title":"Dating the Antikythera Mechanism to 100 BCE Rewrote Ancient Technology Chronology","slug":"dating-the-antikythera-mechanism-to-100-bce-rewrote-ancient-technology-chronology","url":"/categories/forbidden-archaeology/antikythera-mechanism/dating-the-antikythera-mechanism-to-100-bce-rewrote-ancient-technology-chronology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Carbon dating and inscriptions pushed advanced machinery back to 100 BCE."},{"title":"Eclipse Glyphs on the Antikythera Mechanism Specified Color and Direction","slug":"eclipse-glyphs-on-the-antikythera-mechanism-specified-color-and-direction","url":"/categories/forbidden-archaeology/antikythera-mechanism/eclipse-glyphs-on-the-antikythera-mechanism-specified-color-and-direction.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient device did not just predict eclipses; it described how they would look."},{"title":"Front Dial of the Antikythera Mechanism Displayed the Zodiac in Motion","slug":"front-dial-of-the-antikythera-mechanism-displayed-the-zodiac-in-motion","url":"/categories/forbidden-archaeology/antikythera-mechanism/front-dial-of-the-antikythera-mechanism-displayed-the-zodiac-in-motion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"You could watch the zodiac signs rotate in real time on a 2,000-year-old device."},{"title":"Gear Ratios in the Antikythera Mechanism Matched Babylonian Astronomical Cycles","slug":"gear-ratios-in-the-antikythera-mechanism-matched-babylonian-astronomical-cycles","url":"/categories/forbidden-archaeology/antikythera-mechanism/gear-ratios-in-the-antikythera-mechanism-matched-babylonian-astronomical-cycles.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Greek bronze gears secretly encoded centuries of Babylonian sky data."},{"title":"Hidden Fragments of the Antikythera Mechanism Were Only Identified a Century Later","slug":"hidden-fragments-of-the-antikythera-mechanism-were-only-identified-a-century-later","url":"/categories/forbidden-archaeology/antikythera-mechanism/hidden-fragments-of-the-antikythera-mechanism-were-only-identified-a-century-later.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Pieces of this ancient computer sat unrecognized for 100 years in a museum drawer."},{"title":"Interlocking Gear Trains in the Antikythera Mechanism Modeled Multiple Time Scales Simultaneously","slug":"interlocking-gear-trains-in-the-antikythera-mechanism-modeled-multiple-time-scales-simultaneously","url":"/categories/forbidden-archaeology/antikythera-mechanism/interlocking-gear-trains-in-the-antikythera-mechanism-modeled-multiple-time-scales-simultaneously.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient device tracked days, months, years, and decades at once."},{"title":"Jammed by Corrosion, the Antikythera Mechanism Survived Because It Failed","slug":"jammed-by-corrosion-the-antikythera-mechanism-survived-because-it-failed","url":"/categories/forbidden-archaeology/antikythera-mechanism/jammed-by-corrosion-the-antikythera-mechanism-survived-because-it-failed.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The device only reached us because seawater locked its gears in place."},{"title":"Knowledge Gap After the Antikythera Mechanism Suggests a Lost Mechanical Tradition","slug":"knowledge-gap-after-the-antikythera-mechanism-suggests-a-lost-mechanical-tradition","url":"/categories/forbidden-archaeology/antikythera-mechanism/knowledge-gap-after-the-antikythera-mechanism-suggests-a-lost-mechanical-tradition.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Then the record goes silent for over 1,000 years."},{"title":"Lost Wax Casting Techniques Enabled the Antikythera Mechanism’s Complex Bronze Framework","slug":"lost-wax-casting-techniques-enabled-the-antikythera-mechanism-s-complex-bronze-framework","url":"/categories/forbidden-archaeology/antikythera-mechanism/lost-wax-casting-techniques-enabled-the-antikythera-mechanism-s-complex-bronze-framework.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient computer relied on metal casting techniques still used today."},{"title":"Metonic and Callippic Cycles Were Both Encoded Inside the Antikythera Mechanism","slug":"metonic-and-callippic-cycles-were-both-encoded-inside-the-antikythera-mechanism","url":"/categories/forbidden-archaeology/antikythera-mechanism/metonic-and-callippic-cycles-were-both-encoded-inside-the-antikythera-mechanism.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient device tracked time across 19-year and 76-year cycles simultaneously."},{"title":"No Comparable Device Survived from the Roman World After the Antikythera Mechanism","slug":"no-comparable-device-survived-from-the-roman-world-after-the-antikythera-mechanism","url":"/categories/forbidden-archaeology/antikythera-mechanism/no-comparable-device-survived-from-the-roman-world-after-the-antikythera-mechanism.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An engineering breakthrough appears in 100 BCE—then vanishes for centuries."},{"title":"Operated by Hand Crank, the Antikythera Mechanism Simulated Decades in Minutes","slug":"operated-by-hand-crank-the-antikythera-mechanism-simulated-decades-in-minutes","url":"/categories/forbidden-archaeology/antikythera-mechanism/operated-by-hand-crank-the-antikythera-mechanism-simulated-decades-in-minutes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One turn of a crank could fast-forward the heavens by months."},{"title":"Planetary Synodic Periods in the Antikythera Mechanism Required Multi-Gear Cascades","slug":"planetary-synodic-periods-in-the-antikythera-mechanism-required-multi-gear-cascades","url":"/categories/forbidden-archaeology/antikythera-mechanism/planetary-synodic-periods-in-the-antikythera-mechanism-required-multi-gear-cascades.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient engineers stacked gears just to track one wandering planet."},{"title":"Quietly Recovered in 1901, the Antikythera Mechanism Almost Went Unnoticed","slug":"quietly-recovered-in-1901-the-antikythera-mechanism-almost-went-unnoticed","url":"/categories/forbidden-archaeology/antikythera-mechanism/quietly-recovered-in-1901-the-antikythera-mechanism-almost-went-unnoticed.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The most advanced machine of antiquity was first cataloged as scrap."},{"title":"Reconstruction Models Show the Antikythera Mechanism Fit Inside a Wooden Box the Size of a Shoebox","slug":"reconstruction-models-show-the-antikythera-mechanism-fit-inside-a-wooden-box-the-size-of-a-shoebox","url":"/categories/forbidden-archaeology/antikythera-mechanism/reconstruction-models-show-the-antikythera-mechanism-fit-inside-a-wooden-box-the-size-of-a-shoebox.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A device modeling the cosmos fit inside something smaller than a laptop."},{"title":"Spiral Dials on the Antikythera Mechanism Allowed Long Cycles Without Massive Gears","slug":"spiral-dials-on-the-antikythera-mechanism-allowed-long-cycles-without-massive-gears","url":"/categories/forbidden-archaeology/antikythera-mechanism/spiral-dials-on-the-antikythera-mechanism-allowed-long-cycles-without-massive-gears.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient engineers bent time into spirals to save space."},{"title":"Tracked Lunar Nodes, the Antikythera Mechanism Anticipated Eclipse Seasons Precisely","slug":"tracked-lunar-nodes-the-antikythera-mechanism-anticipated-eclipse-seasons-precisely","url":"/categories/forbidden-archaeology/antikythera-mechanism/tracked-lunar-nodes-the-antikythera-mechanism-anticipated-eclipse-seasons-precisely.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient machine knew when the Sun and Moon would align catastrophically."},{"title":"Used as a Teaching Instrument, the Antikythera Mechanism May Have Demonstrated Cosmology Visually","slug":"used-as-a-teaching-instrument-the-antikythera-mechanism-may-have-demonstrated-cosmology-visually","url":"/categories/forbidden-archaeology/antikythera-mechanism/used-as-a-teaching-instrument-the-antikythera-mechanism-may-have-demonstrated-cosmology-visually.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Students could watch the cosmos move instead of memorizing it."},{"title":"Variable Moon Speed Modeled by the Antikythera Mechanism Defied Perfect Circle Cosmology","slug":"variable-moon-speed-modeled-by-the-antikythera-mechanism-defied-perfect-circle-cosmology","url":"/categories/forbidden-archaeology/antikythera-mechanism/variable-moon-speed-modeled-by-the-antikythera-mechanism-defied-perfect-circle-cosmology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient machine admitted the Moon does not move perfectly."},{"title":"Wooden Case Inscriptions on the Antikythera Mechanism Read Like an Ancient User Interface Guide","slug":"wooden-case-inscriptions-on-the-antikythera-mechanism-read-like-an-ancient-user-interface-guide","url":"/categories/forbidden-archaeology/antikythera-mechanism/wooden-case-inscriptions-on-the-antikythera-mechanism-read-like-an-ancient-user-interface-guide.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An ancient computer explained itself in engraved technical prose."},{"title":"X-Ray Tomography in 2005 Revealed Hidden Gears Inside the Antikythera Mechanism","slug":"x-ray-tomography-in-2005-revealed-hidden-gears-inside-the-antikythera-mechanism","url":"/categories/forbidden-archaeology/antikythera-mechanism/x-ray-tomography-in-2005-revealed-hidden-gears-inside-the-antikythera-mechanism.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Two thousand years later, medical imaging exposed its secret machinery."},{"title":"Yoked Gear Systems in the Antikythera Mechanism Coordinated Solar and Lunar Calendars","slug":"yoked-gear-systems-in-the-antikythera-mechanism-coordinated-solar-and-lunar-calendars","url":"/categories/forbidden-archaeology/antikythera-mechanism/yoked-gear-systems-in-the-antikythera-mechanism-coordinated-solar-and-lunar-calendars.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ancient device forced the Sun and Moon into mechanical agreement."},{"title":"Zero Comparable Analog Computers Survived from Antiquity Besides the Antikythera Mechanism","slug":"zero-comparable-analog-computers-survived-from-antiquity-besides-the-antikythera-mechanism","url":"/categories/forbidden-archaeology/antikythera-mechanism/zero-comparable-analog-computers-survived-from-antiquity-besides-the-antikythera-mechanism.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"History preserved one ancient computer and erased the rest."},{"title":"Zodiac Ring Adjustments in the Antikythera Mechanism Accounted for Calendar Shifts","slug":"zodiac-ring-adjustments-in-the-antikythera-mechanism-accounted-for-calendar-shifts","url":"/categories/forbidden-archaeology/antikythera-mechanism/zodiac-ring-adjustments-in-the-antikythera-mechanism-accounted-for-calendar-shifts.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient engineers built in manual calibration for drifting calendars."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

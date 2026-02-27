@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nazca Lines</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Nazca Lines</h1>
+  <p>Explore all facts in "Nazca Lines".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Nazca Lines</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Astronaut Figure in Peru’s Nazca Desert Is 2,000 Years Old","slug":"astronaut-figure-in-peru-s-nazca-desert-is-2-000-years-old","url":"/categories/forbidden-archaeology/nazca-lines/astronaut-figure-in-peru-s-nazca-desert-is-2-000-years-old.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 2,000-year-old astronaut appears carved into a Peruvian hillside."},{"title":"Bloody Hand Geoglyph Discovered in Nazca Desert Measures Over 4 Meters","slug":"bloody-hand-geoglyph-discovered-in-nazca-desert-measures-over-4-meters","url":"/categories/forbidden-archaeology/nazca-lines/bloody-hand-geoglyph-discovered-in-nazca-desert-measures-over-4-meters.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A severed hand 4 meters long was carved into living desert."},{"title":"Cat Geoglyph on Nazca Hillside Is Older Than Most Famous Lines","slug":"cat-geoglyph-on-nazca-hillside-is-older-than-most-famous-lines","url":"/categories/forbidden-archaeology/nazca-lines/cat-geoglyph-on-nazca-hillside-is-older-than-most-famous-lines.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 37-meter cat lay hidden in plain sight for centuries."},{"title":"Ceremonial Pathways in Nazca Form Walking Corridors Across the Desert","slug":"ceremonial-pathways-in-nazca-form-walking-corridors-across-the-desert","url":"/categories/forbidden-archaeology/nazca-lines/ceremonial-pathways-in-nazca-form-walking-corridors-across-the-desert.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient pathways stretch across desert longer than airport runways."},{"title":"Dozens of New Nazca Geoglyphs Were Found Using Artificial Intelligence","slug":"dozens-of-new-nazca-geoglyphs-were-found-using-artificial-intelligence","url":"/categories/forbidden-archaeology/nazca-lines/dozens-of-new-nazca-geoglyphs-were-found-using-artificial-intelligence.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Artificial intelligence just uncovered ancient drawings hidden for 1,500 years."},{"title":"Dual-Scale Nazca Designs Combine Giant Animals With Tiny Human Figures","slug":"dual-scale-nazca-designs-combine-giant-animals-with-tiny-human-figures","url":"/categories/forbidden-archaeology/nazca-lines/dual-scale-nazca-designs-combine-giant-animals-with-tiny-human-figures.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Colossal birds share desert space with figures smaller than houses."},{"title":"Erosion Accidentally Revealed a 2,000-Year-Old Nazca Cat in 2020","slug":"erosion-accidentally-revealed-a-2-000-year-old-nazca-cat-in-2020","url":"/categories/forbidden-archaeology/nazca-lines/erosion-accidentally-revealed-a-2-000-year-old-nazca-cat-in-2020.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A landslide exposed a prehistoric cat hidden for centuries."},{"title":"Extremely Dry Nazca Desert Preserved 2,000-Year-Old Lines With Almost No Rain","slug":"extremely-dry-nazca-desert-preserved-2-000-year-old-lines-with-almost-no-rain","url":"/categories/forbidden-archaeology/nazca-lines/extremely-dry-nazca-desert-preserved-2-000-year-old-lines-with-almost-no-rain.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A region with almost no rain froze ancient art in time."},{"title":"Frigatebird Geoglyph in Nazca Stretches Nearly 300 Meters Across Desert","slug":"frigatebird-geoglyph-in-nazca-stretches-nearly-300-meters-across-desert","url":"/categories/forbidden-archaeology/nazca-lines/frigatebird-geoglyph-in-nazca-stretches-nearly-300-meters-across-desert.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A desert bird nearly 300 meters long spreads its wings in dust."},{"title":"Geometric Trapezoids in Nazca Span Wider Than Airport Runways","slug":"geometric-trapezoids-in-nazca-span-wider-than-airport-runways","url":"/categories/forbidden-archaeology/nazca-lines/geometric-trapezoids-in-nazca-span-wider-than-airport-runways.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Massive trapezoids stretch wider than modern airport runways."},{"title":"Giant Nazca Trapezoids Point Toward Surrounding Andean Hills","slug":"giant-nazca-trapezoids-point-toward-surrounding-andean-hills","url":"/categories/forbidden-archaeology/nazca-lines/giant-nazca-trapezoids-point-toward-surrounding-andean-hills.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Massive desert shapes aim directly at distant mountains."},{"title":"Human Figure Known as the Astronaut Watches Over Nazca From a Hillside","slug":"human-figure-known-as-the-astronaut-watches-over-nazca-from-a-hillside","url":"/categories/forbidden-archaeology/nazca-lines/human-figure-known-as-the-astronaut-watches-over-nazca-from-a-hillside.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A giant wide-eyed figure stares down from desert rock."},{"title":"Human Skeleton Geoglyph in Nazca Is Visible From Passing Aircraft","slug":"human-skeleton-geoglyph-in-nazca-is-visible-from-passing-aircraft","url":"/categories/forbidden-archaeology/nazca-lines/human-skeleton-geoglyph-in-nazca-is-visible-from-passing-aircraft.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 30-meter skeleton stares upward from empty desert."},{"title":"Invisible From Ground Level, Nazca Figures Reveal Themselves Only From Above","slug":"invisible-from-ground-level-nazca-figures-reveal-themselves-only-from-above","url":"/categories/forbidden-archaeology/nazca-lines/invisible-from-ground-level-nazca-figures-reveal-themselves-only-from-above.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stand beside them and you see nothing but random lines."},{"title":"Japanese Researchers Discovered Over 100 Small Nazca Figures in One Survey","slug":"japanese-researchers-discovered-over-100-small-nazca-figures-in-one-survey","url":"/categories/forbidden-archaeology/nazca-lines/japanese-researchers-discovered-over-100-small-nazca-figures-in-one-survey.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single research team revealed over 100 hidden desert figures."},{"title":"Kilometer-Long Nazca Lines Remain Straight Across Uneven Terrain","slug":"kilometer-long-nazca-lines-remain-straight-across-uneven-terrain","url":"/categories/forbidden-archaeology/nazca-lines/kilometer-long-nazca-lines-remain-straight-across-uneven-terrain.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Lines run for kilometers without bending around hills."},{"title":"Large Nazca Geoglyphs Were Mapped by Satellites Orbiting Hundreds of Kilometers Above Earth","slug":"large-nazca-geoglyphs-were-mapped-by-satellites-orbiting-hundreds-of-kilometers-above-earth","url":"/categories/forbidden-archaeology/nazca-lines/large-nazca-geoglyphs-were-mapped-by-satellites-orbiting-hundreds-of-kilometers-above-earth.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Satellites hundreds of kilometers up can trace inch-deep scratches."},{"title":"Long Nazca Lines Align With Solstice Sunrises and Sunsets","slug":"long-nazca-lines-align-with-solstice-sunrises-and-sunsets","url":"/categories/forbidden-archaeology/nazca-lines/long-nazca-lines-align-with-solstice-sunrises-and-sunsets.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Certain desert lines point directly at solstice sunrises."},{"title":"Monkey Geoglyph Spiral Tail Shows Mathematical Precision in Ancient Desert","slug":"monkey-geoglyph-spiral-tail-shows-mathematical-precision-in-ancient-desert","url":"/categories/forbidden-archaeology/nazca-lines/monkey-geoglyph-spiral-tail-shows-mathematical-precision-in-ancient-desert.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A perfect spiral curls across 135 meters of sand."},{"title":"Nazca Condor Geoglyph Stretches 134 Meters Across the Plain","slug":"nazca-condor-geoglyph-stretches-134-meters-across-the-plain","url":"/categories/forbidden-archaeology/nazca-lines/nazca-condor-geoglyph-stretches-134-meters-across-the-plain.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A condor the size of a skyscraper lies etched in dust."},{"title":"Nazca Lines Are Visible From Space Despite Being Inches Deep","slug":"nazca-lines-are-visible-from-space-despite-being-inches-deep","url":"/categories/forbidden-archaeology/nazca-lines/nazca-lines-are-visible-from-space-despite-being-inches-deep.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Inch-deep scratches in sand are visible from orbit."},{"title":"Nazca Lines Cover an Area Larger Than 500 Square Kilometers","slug":"nazca-lines-cover-an-area-larger-than-500-square-kilometers","url":"/categories/forbidden-archaeology/nazca-lines/nazca-lines-cover-an-area-larger-than-500-square-kilometers.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient drawings cover a desert area larger than many cities."},{"title":"Nazca Lines Stretch Over 800 Straight Lines Across the Desert","slug":"nazca-lines-stretch-over-800-straight-lines-across-the-desert","url":"/categories/forbidden-archaeology/nazca-lines/nazca-lines-stretch-over-800-straight-lines-across-the-desert.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Hundreds of perfectly straight lines slice across 50 kilometers of desert."},{"title":"Nazca Lines Were Created Without Seeing Them From the Air","slug":"nazca-lines-were-created-without-seeing-them-from-the-air","url":"/categories/forbidden-archaeology/nazca-lines/nazca-lines-were-created-without-seeing-them-from-the-air.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"They built massive sky-visible art without ever flying."},{"title":"Nazca Monkey Geoglyph Features a Spiral Tail 135 Meters Wide","slug":"nazca-monkey-geoglyph-features-a-spiral-tail-135-meters-wide","url":"/categories/forbidden-archaeology/nazca-lines/nazca-monkey-geoglyph-features-a-spiral-tail-135-meters-wide.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A monkey with a perfect spiral tail spans 135 meters of desert."},{"title":"Nazca Spider Geoglyph May Represent a Rare Amazon Species","slug":"nazca-spider-geoglyph-may-represent-a-rare-amazon-species","url":"/categories/forbidden-archaeology/nazca-lines/nazca-spider-geoglyph-may-represent-a-rare-amazon-species.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A desert spider carved 1,500 years ago matches an Amazon species."},{"title":"Nazca Whale Geoglyph Predates Many European Civilizations","slug":"nazca-whale-geoglyph-predates-many-european-civilizations","url":"/categories/forbidden-archaeology/nazca-lines/nazca-whale-geoglyph-predates-many-european-civilizations.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A giant whale was carved into desert centuries before Rome peaked."},{"title":"One Nazca Line Extends More Than 30 Kilometers Across Desert Plain","slug":"one-nazca-line-extends-more-than-30-kilometers-across-desert-plain","url":"/categories/forbidden-archaeology/nazca-lines/one-nazca-line-extends-more-than-30-kilometers-across-desert-plain.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single straight line runs farther than many daily commutes."},{"title":"Paracas Culture Began Nazca Geoglyph Tradition 500 Years Earlier","slug":"paracas-culture-began-nazca-geoglyph-tradition-500-years-earlier","url":"/categories/forbidden-archaeology/nazca-lines/paracas-culture-began-nazca-geoglyph-tradition-500-years-earlier.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"The Nazca Lines began centuries before the Nazca existed."},{"title":"Peruvian Desert Winds Helped Protect Nazca Lines for Nearly Two Millennia","slug":"peruvian-desert-winds-helped-protect-nazca-lines-for-nearly-two-millennia","url":"/categories/forbidden-archaeology/nazca-lines/peruvian-desert-winds-helped-protect-nazca-lines-for-nearly-two-millennia.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Steady winds preserved lines that storms should have erased."},{"title":"Quadrilateral Nazca Shapes Cover Areas Larger Than Football Fields","slug":"quadrilateral-nazca-shapes-cover-areas-larger-than-football-fields","url":"/categories/forbidden-archaeology/nazca-lines/quadrilateral-nazca-shapes-cover-areas-larger-than-football-fields.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient quadrilaterals swallow entire football fields in dust."},{"title":"Rectangle Geoglyphs in Nazca Form Pathways Longer Than City Blocks","slug":"rectangle-geoglyphs-in-nazca-form-pathways-longer-than-city-blocks","url":"/categories/forbidden-archaeology/nazca-lines/rectangle-geoglyphs-in-nazca-form-pathways-longer-than-city-blocks.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Rectangles longer than city blocks cut across barren earth."},{"title":"Researchers Walked Nazca Lines for Hours Without Realizing They Were Inside a Giant Figure","slug":"researchers-walked-nazca-lines-for-hours-without-realizing-they-were-inside-a-giant-figure","url":"/categories/forbidden-archaeology/nazca-lines/researchers-walked-nazca-lines-for-hours-without-realizing-they-were-inside-a-giant-figure.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"You can walk for hours and never see the giant beneath you."},{"title":"Some Nazca Figures Measure Under 10 Meters Yet Remained Undetected for Centuries","slug":"some-nazca-figures-measure-under-10-meters-yet-remained-undetected-for-centuries","url":"/categories/forbidden-archaeology/nazca-lines/some-nazca-figures-measure-under-10-meters-yet-remained-undetected-for-centuries.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tiny desert drawings hid beside giants for 2,000 years."},{"title":"The Nazca Hummingbird Is Longer Than a Boeing 737","slug":"the-nazca-hummingbird-is-longer-than-a-boeing-737","url":"/categories/forbidden-archaeology/nazca-lines/the-nazca-hummingbird-is-longer-than-a-boeing-737.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A hummingbird longer than a Boeing 737 is etched into bare earth."},{"title":"Unusually Precise Nazca Lines Were Created Using Simple Rope and Stakes","slug":"unusually-precise-nazca-lines-were-created-using-simple-rope-and-stakes","url":"/categories/forbidden-archaeology/nazca-lines/unusually-precise-nazca-lines-were-created-using-simple-rope-and-stakes.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Kilometer-long precision began with rope stretched across sand."},{"title":"Vast Nazca Geoglyph Network Contains Over 800 Straight Lines","slug":"vast-nazca-geoglyph-network-contains-over-800-straight-lines","url":"/categories/forbidden-archaeology/nazca-lines/vast-nazca-geoglyph-network-contains-over-800-straight-lines.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"More than 800 straight lines slice across one desert plain."},{"title":"Vast Nazca Plain Contains One of the Largest Archaeological Landscapes on Earth","slug":"vast-nazca-plain-contains-one-of-the-largest-archaeological-landscapes-on-earth","url":"/categories/forbidden-archaeology/nazca-lines/vast-nazca-plain-contains-one-of-the-largest-archaeological-landscapes-on-earth.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An entire desert plain functions as a single ancient artwork."},{"title":"Wooden Stakes Found at Nazca Site Reveal Ancient Surveying Techniques","slug":"wooden-stakes-found-at-nazca-site-reveal-ancient-surveying-techniques","url":"/categories/forbidden-archaeology/nazca-lines/wooden-stakes-found-at-nazca-site-reveal-ancient-surveying-techniques.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient wooden stakes still mark lines carved 2,000 years ago."},{"title":"Zigzag Nazca Lines Create Sharp Angles Across Kilometer-Long Paths","slug":"zigzag-nazca-lines-create-sharp-angles-across-kilometer-long-paths","url":"/categories/forbidden-archaeology/nazca-lines/zigzag-nazca-lines-create-sharp-angles-across-kilometer-long-paths.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Perfect zigzags slice across desert for hundreds of meters."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

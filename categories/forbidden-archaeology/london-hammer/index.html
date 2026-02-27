@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>London Hammer</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>London Hammer</h1>
+  <p>Explore all facts in "London Hammer".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>London Hammer</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Apparent Impossibility: Why the London Hammer Persists in Forbidden Archaeology","slug":"apparent-impossibility-why-the-london-hammer-persists-in-forbidden-archaeology","url":"/categories/forbidden-archaeology/london-hammer/apparent-impossibility-why-the-london-hammer-persists-in-forbidden-archaeology.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single object continues to flirt with rewriting prehistory."},{"title":"Bedrock Illusion: Why the London Hammer Looks Cemented Into Deep Time","slug":"bedrock-illusion-why-the-london-hammer-looks-cemented-into-deep-time","url":"/categories/forbidden-archaeology/london-hammer/bedrock-illusion-why-the-london-hammer-looks-cemented-into-deep-time.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Solid limestone appears to swallow a modern hammer whole."},{"title":"Buried in Cretaceous Rock: Why the London Hammer Looks Older Than Humanity","slug":"buried-in-cretaceous-rock-why-the-london-hammer-looks-older-than-humanity","url":"/categories/forbidden-archaeology/london-hammer/buried-in-cretaceous-rock-why-the-london-hammer-looks-older-than-humanity.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A hammer embedded in dinosaur-era stone shouldn’t exist at all."},{"title":"Carbonate Chemistry Shock: How Dissolved Stone Builds Around Steel","slug":"carbonate-chemistry-shock-how-dissolved-stone-builds-around-steel","url":"/categories/forbidden-archaeology/london-hammer/carbonate-chemistry-shock-how-dissolved-stone-builds-around-steel.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Invisible minerals can entomb iron in rock-hard limestone."},{"title":"Could a 19th-Century Tool Really Be Mistaken for a 100-Million-Year-Old Artifact?","slug":"could-a-19th-century-tool-really-be-mistaken-for-a-100-million-year-old-artifact","url":"/categories/forbidden-archaeology/london-hammer/could-a-19th-century-tool-really-be-mistaken-for-a-100-million-year-old-artifact.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One misplaced hammer ignited a battle over Earth’s entire timeline."},{"title":"Deceptive Density: Why the London Hammer’s Rock Feels Ancient","slug":"deceptive-density-why-the-london-hammer-s-rock-feels-ancient","url":"/categories/forbidden-archaeology/london-hammer/deceptive-density-why-the-london-hammer-s-rock-feels-ancient.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A hardened shell can mimic millions of years of geology."},{"title":"Deep Time Illusion: The Geological Science Behind the London Hammer","slug":"deep-time-illusion-the-geological-science-behind-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/deep-time-illusion-the-geological-science-behind-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Solid rock can form around modern objects faster than most people imagine."},{"title":"Excavation Silence: The Missing Stratigraphy Behind the London Hammer","slug":"excavation-silence-the-missing-stratigraphy-behind-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/excavation-silence-the-missing-stratigraphy-behind-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"No verified field record anchors this hammer to the Cretaceous."},{"title":"Fossil Record Collision: What a Cretaceous Hammer Would Actually Mean","slug":"fossil-record-collision-what-a-cretaceous-hammer-would-actually-mean","url":"/categories/forbidden-archaeology/london-hammer/fossil-record-collision-what-a-cretaceous-hammer-would-actually-mean.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One verified hammer could erase the entire human timeline."},{"title":"Fossil Rock and Forged Iron: The Puzzle That Made the London Hammer Famous","slug":"fossil-rock-and-forged-iron-the-puzzle-that-made-the-london-hammer-famous","url":"/categories/forbidden-archaeology/london-hammer/fossil-rock-and-forged-iron-the-puzzle-that-made-the-london-hammer-famous.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A simple hammer became a supposed relic of a world before humans."},{"title":"Geology vs. Time Travel: What the London Hammer Really Tests","slug":"geology-vs-time-travel-what-the-london-hammer-really-tests","url":"/categories/forbidden-archaeology/london-hammer/geology-vs-time-travel-what-the-london-hammer-really-tests.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One artifact forces a choice between deep time and impossible history."},{"title":"Groundwater Architect: The Hidden Force Behind the London Hammer’s Stone Shell","slug":"groundwater-architect-the-hidden-force-behind-the-london-hammer-s-stone-shell","url":"/categories/forbidden-archaeology/london-hammer/groundwater-architect-the-hidden-force-behind-the-london-hammer-s-stone-shell.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Flowing water may have built this entire geological illusion."},{"title":"Hammer vs. Hominins: The Evolutionary Catastrophe a Cretaceous Tool Would Trigger","slug":"hammer-vs-hominins-the-evolutionary-catastrophe-a-cretaceous-tool-would-trigger","url":"/categories/forbidden-archaeology/london-hammer/hammer-vs-hominins-the-evolutionary-catastrophe-a-cretaceous-tool-would-trigger.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A verified Cretaceous hammer would obliterate human evolution overnight."},{"title":"Hidden in Stone: Why the London Hammer Feels Like a Timeline Glitch","slug":"hidden-in-stone-why-the-london-hammer-feels-like-a-timeline-glitch","url":"/categories/forbidden-archaeology/london-hammer/hidden-in-stone-why-the-london-hammer-feels-like-a-timeline-glitch.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A carpenter’s tool appears fused with dinosaur-era geology."},{"title":"How a Limestone Concretion Turned a Texas Hammer Into a Time-Travel Mystery","slug":"how-a-limestone-concretion-turned-a-texas-hammer-into-a-time-travel-mystery","url":"/categories/forbidden-archaeology/london-hammer/how-a-limestone-concretion-turned-a-texas-hammer-into-a-time-travel-mystery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This ordinary carpenter’s hammer sparked claims of human history rewriting itself."},{"title":"Industrial Design Evidence: Why the London Hammer Matches 19th-Century Tools","slug":"industrial-design-evidence-why-the-london-hammer-matches-19th-century-tools","url":"/categories/forbidden-archaeology/london-hammer/industrial-design-evidence-why-the-london-hammer-matches-19th-century-tools.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Its shape screams railroad-era industry, not prehistory."},{"title":"Industrial Iron in Ancient Stone: The Metallurgy Debate Around the London Hammer","slug":"industrial-iron-in-ancient-stone-the-metallurgy-debate-around-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/industrial-iron-in-ancient-stone-the-metallurgy-debate-around-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Claims of impossible iron purity turned a hammer into a legend."},{"title":"Iron Preservation Paradox: Why Corrosion Did Not Destroy the Hammer","slug":"iron-preservation-paradox-why-corrosion-did-not-destroy-the-hammer","url":"/categories/forbidden-archaeology/london-hammer/iron-preservation-paradox-why-corrosion-did-not-destroy-the-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A buried iron head survived conditions that should have rusted it away."},{"title":"Jarring Time Collision: Why the London Hammer Still Refuses to Disappear","slug":"jarring-time-collision-why-the-london-hammer-still-refuses-to-disappear","url":"/categories/forbidden-archaeology/london-hammer/jarring-time-collision-why-the-london-hammer-still-refuses-to-disappear.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single embedded hammer continues to challenge millions of years."},{"title":"Jurassic Imagination vs. Geological Reality: The London Hammer Divide","slug":"jurassic-imagination-vs-geological-reality-the-london-hammer-divide","url":"/categories/forbidden-archaeology/london-hammer/jurassic-imagination-vs-geological-reality-the-london-hammer-divide.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Dinosaurs and mining tools share one rock—at least visually."},{"title":"Kinetic Burial: How Sediment Movement Could Trap a Modern Hammer in Ancient Layers","slug":"kinetic-burial-how-sediment-movement-could-trap-a-modern-hammer-in-ancient-layers","url":"/categories/forbidden-archaeology/london-hammer/kinetic-burial-how-sediment-movement-could-trap-a-modern-hammer-in-ancient-layers.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Sediment shifts can bury modern objects inside ancient formations."},{"title":"Kinetic Stone Trap: How Mineral Growth Can Fake a 100-Million-Year Burial","slug":"kinetic-stone-trap-how-mineral-growth-can-fake-a-100-million-year-burial","url":"/categories/forbidden-archaeology/london-hammer/kinetic-stone-trap-how-mineral-growth-can-fake-a-100-million-year-burial.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Minerals can lock modern steel inside rock that looks prehistoric."},{"title":"Limestone vs. Legacy: Why Bedrock Age Does Not Date the London Hammer","slug":"limestone-vs-legacy-why-bedrock-age-does-not-date-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/limestone-vs-legacy-why-bedrock-age-does-not-date-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient bedrock can cradle objects that are shockingly modern."},{"title":"Lithification Limits: Why Not All Limestone Is the Same Age","slug":"lithification-limits-why-not-all-limestone-is-the-same-age","url":"/categories/forbidden-archaeology/london-hammer/lithification-limits-why-not-all-limestone-is-the-same-age.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient strata can host much younger hardened stone."},{"title":"Metallurgy Mirage: The Purity Claims That Fueled the London Hammer Mystery","slug":"metallurgy-mirage-the-purity-claims-that-fueled-the-london-hammer-mystery","url":"/categories/forbidden-archaeology/london-hammer/metallurgy-mirage-the-purity-claims-that-fueled-the-london-hammer-mystery.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A hammer’s iron composition was said to defy modern industry."},{"title":"Mineral Coffin Effect: How Groundwater Can Turn Debris Into Stone","slug":"mineral-coffin-effect-how-groundwater-can-turn-debris-into-stone","url":"/categories/forbidden-archaeology/london-hammer/mineral-coffin-effect-how-groundwater-can-turn-debris-into-stone.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Flowing water can entomb modern metal in rock-hard limestone."},{"title":"Morphology Matters: Tool Typology That Anchors the London Hammer in the 1800s","slug":"morphology-matters-tool-typology-that-anchors-the-london-hammer-in-the-1800s","url":"/categories/forbidden-archaeology/london-hammer/morphology-matters-tool-typology-that-anchors-the-london-hammer-in-the-1800s.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Its silhouette belongs to the railroad age, not the age of reptiles."},{"title":"Narrative Shock vs. Stratigraphy: Why Context Determines an Artifact’s Age","slug":"narrative-shock-vs-stratigraphy-why-context-determines-an-artifact-s-age","url":"/categories/forbidden-archaeology/london-hammer/narrative-shock-vs-stratigraphy-why-context-determines-an-artifact-s-age.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Without excavation records, even stone can lie about time."},{"title":"Nucleation Point Mystery: How a Hammer Can Seed Solid Rock","slug":"nucleation-point-mystery-how-a-hammer-can-seed-solid-rock","url":"/categories/forbidden-archaeology/london-hammer/nucleation-point-mystery-how-a-hammer-can-seed-solid-rock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single metal head can trigger stone growth around itself."},{"title":"Out-of-Place or Out-of-Context? The Real Question Behind the London Hammer","slug":"out-of-place-or-out-of-context-the-real-question-behind-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/out-of-place-or-out-of-context-the-real-question-behind-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A misplaced tool masquerades as a prehistoric impossibility."},{"title":"Oxygen Deprivation Effect: Why the Hammer’s Iron Endured Burial","slug":"oxygen-deprivation-effect-why-the-hammer-s-iron-endured-burial","url":"/categories/forbidden-archaeology/london-hammer/oxygen-deprivation-effect-why-the-hammer-s-iron-endured-burial.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Buried iron can survive where air cannot reach."},{"title":"Paradox in Palm of Your Hand: The 100-Million-Year Illusion","slug":"paradox-in-palm-of-your-hand-the-100-million-year-illusion","url":"/categories/forbidden-archaeology/london-hammer/paradox-in-palm-of-your-hand-the-100-million-year-illusion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"This handheld tool appears to erase the entire fossil record."},{"title":"Pressure and Precipitation: The Chemical Equation Behind the Illusion","slug":"pressure-and-precipitation-the-chemical-equation-behind-the-illusion","url":"/categories/forbidden-archaeology/london-hammer/pressure-and-precipitation-the-chemical-equation-behind-the-illusion.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Tiny shifts in pressure can turn dissolved minerals into stone."},{"title":"Question of Deep Time: Could the London Hammer Rewrite Evolution?","slug":"question-of-deep-time-could-the-london-hammer-rewrite-evolution","url":"/categories/forbidden-archaeology/london-hammer/question-of-deep-time-could-the-london-hammer-rewrite-evolution.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"One misplaced hammer appears to threaten 100 million years of evolution."},{"title":"Rapid Rock Formation: The Chemical Reality Behind the London Hammer","slug":"rapid-rock-formation-the-chemical-reality-behind-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/rapid-rock-formation-the-chemical-reality-behind-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Rock-hard limestone can form around modern objects faster than intuition allows."},{"title":"Rock Record Resilience: Why One Hammer Cannot Overturn Millions of Fossils","slug":"rock-record-resilience-why-one-hammer-cannot-overturn-millions-of-fossils","url":"/categories/forbidden-archaeology/london-hammer/rock-record-resilience-why-one-hammer-cannot-overturn-millions-of-fossils.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single artifact cannot outweigh an entire planet’s fossil archive."},{"title":"Sediment Time Trap: How Ancient Layers Can Host Modern Intruders","slug":"sediment-time-trap-how-ancient-layers-can-host-modern-intruders","url":"/categories/forbidden-archaeology/london-hammer/sediment-time-trap-how-ancient-layers-can-host-modern-intruders.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Old rock can hide younger objects in plain sight."},{"title":"Sedimentary Sleight of Hand: When Stone Rewrites First Impressions","slug":"sedimentary-sleight-of-hand-when-stone-rewrites-first-impressions","url":"/categories/forbidden-archaeology/london-hammer/sedimentary-sleight-of-hand-when-stone-rewrites-first-impressions.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Ancient-looking rock can deceive even experienced observers."},{"title":"Strange but Stratified: Why the London Hammer Lacks Geological Proof","slug":"strange-but-stratified-why-the-london-hammer-lacks-geological-proof","url":"/categories/forbidden-archaeology/london-hammer/strange-but-stratified-why-the-london-hammer-lacks-geological-proof.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"An artifact without excavation records cannot rewrite Earth’s timeline."},{"title":"The London Hammer: A Modern Tool Sealed Inside 100-Million-Year-Old Rock","slug":"the-london-hammer-a-modern-tool-sealed-inside-100-million-year-old-rock","url":"/categories/forbidden-archaeology/london-hammer/the-london-hammer-a-modern-tool-sealed-inside-100-million-year-old-rock.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A 20th-century hammer appears locked inside rock older than dinosaurs."},{"title":"Time Compression Illusion: How One Hammer Challenges 100 Million Years","slug":"time-compression-illusion-how-one-hammer-challenges-100-million-years","url":"/categories/forbidden-archaeology/london-hammer/time-compression-illusion-how-one-hammer-challenges-100-million-years.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A mining tool seems to punch straight through deep time."},{"title":"Time-Scale Tension: Why the London Hammer Refuses to Fade Away","slug":"time-scale-tension-why-the-london-hammer-refuses-to-fade-away","url":"/categories/forbidden-archaeology/london-hammer/time-scale-tension-why-the-london-hammer-refuses-to-fade-away.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A single artifact keeps flirting with rewriting prehistory."},{"title":"Undisturbed or Unverified? The Excavation Gap in the London Hammer Story","slug":"undisturbed-or-unverified-the-excavation-gap-in-the-london-hammer-story","url":"/categories/forbidden-archaeology/london-hammer/undisturbed-or-unverified-the-excavation-gap-in-the-london-hammer-story.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A missing field report may be the biggest mystery of all."},{"title":"Velocity of Mineral Growth: How Fast Can Rock Form Around Metal?","slug":"velocity-of-mineral-growth-how-fast-can-rock-form-around-metal","url":"/categories/forbidden-archaeology/london-hammer/velocity-of-mineral-growth-how-fast-can-rock-form-around-metal.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Stone can harden around modern iron faster than intuition allows."},{"title":"Visual Shock Bias: Why the London Hammer Feels Impossible","slug":"visual-shock-bias-why-the-london-hammer-feels-impossible","url":"/categories/forbidden-archaeology/london-hammer/visual-shock-bias-why-the-london-hammer-feels-impossible.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Seeing metal in stone triggers instant disbelief."},{"title":"Water Chemistry Paradox: The Hidden Architect of the London Hammer","slug":"water-chemistry-paradox-the-hidden-architect-of-the-london-hammer","url":"/categories/forbidden-archaeology/london-hammer/water-chemistry-paradox-the-hidden-architect-of-the-london-hammer.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Invisible groundwater may have engineered the entire illusion."},{"title":"Wood in Stone: Why the London Hammer’s Handle Did Not Rot Away","slug":"wood-in-stone-why-the-london-hammer-s-handle-did-not-rot-away","url":"/categories/forbidden-archaeology/london-hammer/wood-in-stone-why-the-london-hammer-s-handle-did-not-rot-away.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A wooden handle survived burial inside rock that looks prehistoric."},{"title":"X-Factor of Concretions: Why Objects Become Stone Anchors","slug":"x-factor-of-concretions-why-objects-become-stone-anchors","url":"/categories/forbidden-archaeology/london-hammer/x-factor-of-concretions-why-objects-become-stone-anchors.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Any object can become the nucleus of solid rock."},{"title":"Yield Strength vs. Time Depth: Why Iron Survives Underground","slug":"yield-strength-vs-time-depth-why-iron-survives-underground","url":"/categories/forbidden-archaeology/london-hammer/yield-strength-vs-time-depth-why-iron-survives-underground.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"Buried iron can endure for centuries inside mineral-rich soil."},{"title":"Zoned Illusion: When Secondary Mineralization Mimics Ancient Strata","slug":"zoned-illusion-when-secondary-mineralization-mimics-ancient-strata","url":"/categories/forbidden-archaeology/london-hammer/zoned-illusion-when-secondary-mineralization-mimics-ancient-strata.html","color":"#bb24c4","category":"forbidden-archaeology","factCount":1,"factPreview":"A thin mineral shell can masquerade as prehistoric bedrock."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
