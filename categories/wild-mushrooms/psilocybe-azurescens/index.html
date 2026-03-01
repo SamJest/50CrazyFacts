@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Psilocybe Azurescens</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Psilocybe Azurescens</h1>
+  <p>Explore all facts in "Psilocybe Azurescens".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Psilocybe Azurescens</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aerodynamic Cap Curvature Enhances Passive Airflow Over Psilocybe azurescens Gills","slug":"aerodynamic-cap-curvature-enhances-passive-airflow-over-psilocybe-azurescens-gills","url":"/categories/wild-mushrooms/psilocybe-azurescens/aerodynamic-cap-curvature-enhances-passive-airflow-over-psilocybe-azurescens-gills.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The curved cap subtly channels wind to improve spore dispersal."},{"title":"Aerodynamic Cap Curvature Enhances Passive Airflow Over Psilocybe azurescens Gills","slug":"aerodynamic-cap-curvature-enhances-passive-airflow-over-psilocybe-azurescens-gills","url":"/categories/wild-mushrooms/psilocybe-azurescens/aerodynamic-cap-curvature-enhances-passive-airflow-over-psilocybe-azurescens-gills.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The curved cap subtly channels wind to improve spore dispersal."},{"title":"Azurescens-Induced Temporary Paralysis Cases Documented in Clinical Reports","slug":"azurescens-induced-temporary-paralysis-cases-documented-in-clinical-reports","url":"/categories/wild-mushrooms/psilocybe-azurescens/azurescens-induced-temporary-paralysis-cases-documented-in-clinical-reports.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Some users report temporary paralysis after eating a mushroom."},{"title":"Biochemical Conversion Rate of Psilocybin to Psilocin Peaks Within 90 Minutes of Ingestion","slug":"biochemical-conversion-rate-of-psilocybin-to-psilocin-peaks-within-90-minutes-of-ingestion","url":"/categories/wild-mushrooms/psilocybe-azurescens/biochemical-conversion-rate-of-psilocybin-to-psilocin-peaks-within-90-minutes-of-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Within 90 minutes, this mushroom’s chemistry is measurably active in the bloodstream."},{"title":"Cell Wall Chitin Content Gives Psilocybe azurescens Structural Flexibility in Sand","slug":"cell-wall-chitin-content-gives-psilocybe-azurescens-structural-flexibility-in-sand","url":"/categories/wild-mushrooms/psilocybe-azurescens/cell-wall-chitin-content-gives-psilocybe-azurescens-structural-flexibility-in-sand.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom stands upright in shifting sand using insect-like material."},{"title":"Cellular Autolysis Begins Within Days After Psilocybe azurescens Spore Release","slug":"cellular-autolysis-begins-within-days-after-psilocybe-azurescens-spore-release","url":"/categories/wild-mushrooms/psilocybe-azurescens/cellular-autolysis-begins-within-days-after-psilocybe-azurescens-spore-release.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Once spores are released, the mushroom begins digesting itself."},{"title":"Dikaryotic Cell Structure Enables Psilocybe azurescens to Maintain Dual Nuclei Per Cell","slug":"dikaryotic-cell-structure-enables-psilocybe-azurescens-to-maintain-dual-nuclei-per-cell","url":"/categories/wild-mushrooms/psilocybe-azurescens/dikaryotic-cell-structure-enables-psilocybe-azurescens-to-maintain-dual-nuclei-per-cell.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each living cell in this mushroom can contain two separate nuclei."},{"title":"Diurnal Humidity Swings Cause Measurable Mass Fluctuations in Psilocybe azurescens Caps","slug":"diurnal-humidity-swings-cause-measurable-mass-fluctuations-in-psilocybe-azurescens-caps","url":"/categories/wild-mushrooms/psilocybe-azurescens/diurnal-humidity-swings-cause-measurable-mass-fluctuations-in-psilocybe-azurescens-caps.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can gain and lose measurable mass in a single day."},{"title":"Diurnal Humidity Swings Cause Measurable Mass Fluctuations in Psilocybe azurescens Caps","slug":"diurnal-humidity-swings-cause-measurable-mass-fluctuations-in-psilocybe-azurescens-caps","url":"/categories/wild-mushrooms/psilocybe-azurescens/diurnal-humidity-swings-cause-measurable-mass-fluctuations-in-psilocybe-azurescens-caps.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can gain and lose measurable mass in a single day."},{"title":"Dune Grass Microclimates Allow Psilocybe azurescens to Withstand Coastal Storm Cycles","slug":"dune-grass-microclimates-allow-psilocybe-azurescens-to-withstand-coastal-storm-cycles","url":"/categories/wild-mushrooms/psilocybe-azurescens/dune-grass-microclimates-allow-psilocybe-azurescens-to-withstand-coastal-storm-cycles.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fragile-looking mushroom survives Pacific storms that reshape shorelines."},{"title":"Enzymatic Gene Clusters Drive Psilocybin Biosynthesis in Psilocybe azurescens","slug":"enzymatic-gene-clusters-drive-psilocybin-biosynthesis-in-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/enzymatic-gene-clusters-drive-psilocybin-biosynthesis-in-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compact gene cluster programs this mushroom to manufacture psychedelics."},{"title":"Field Identification Errors with Toxic Look-Alikes Pose Documented Medical Risks","slug":"field-identification-errors-with-toxic-look-alikes-pose-documented-medical-risks","url":"/categories/wild-mushrooms/psilocybe-azurescens/field-identification-errors-with-toxic-look-alikes-pose-documented-medical-risks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A misidentified mushroom can turn exploration into poisoning within hours."},{"title":"Fruiting Season Peaks Below 10°C for Psilocybe azurescens in the Pacific Northwest","slug":"fruiting-season-peaks-below-10-c-for-psilocybe-azurescens-in-the-pacific-northwest","url":"/categories/wild-mushrooms/psilocybe-azurescens/fruiting-season-peaks-below-10-c-for-psilocybe-azurescens-in-the-pacific-northwest.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cold autumn nights trigger one of nature’s most potent mushrooms."},{"title":"Fungal Secondary Metabolite Pathways Expand Under Environmental Stress Conditions","slug":"fungal-secondary-metabolite-pathways-expand-under-environmental-stress-conditions","url":"/categories/wild-mushrooms/psilocybe-azurescens/fungal-secondary-metabolite-pathways-expand-under-environmental-stress-conditions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Environmental stress can amplify the chemical arsenal of this mushroom."},{"title":"Fungal Secondary Metabolite Pathways Expand Under Environmental Stress Conditions","slug":"fungal-secondary-metabolite-pathways-expand-under-environmental-stress-conditions","url":"/categories/wild-mushrooms/psilocybe-azurescens/fungal-secondary-metabolite-pathways-expand-under-environmental-stress-conditions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Environmental stress can amplify the chemical arsenal of this mushroom."},{"title":"Genetic Sequencing Confirms Psilocybe azurescens as a Distinct Pacific Northwest Lineage","slug":"genetic-sequencing-confirms-psilocybe-azurescens-as-a-distinct-pacific-northwest-lineage","url":"/categories/wild-mushrooms/psilocybe-azurescens/genetic-sequencing-confirms-psilocybe-azurescens-as-a-distinct-pacific-northwest-lineage.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"DNA testing separated this coastal mushroom from its look-alikes."},{"title":"Hypersaline Microzones in Coastal Driftwood Can Stress Psilocybe azurescens Mycelium","slug":"hypersaline-microzones-in-coastal-driftwood-can-stress-psilocybe-azurescens-mycelium","url":"/categories/wild-mushrooms/psilocybe-azurescens/hypersaline-microzones-in-coastal-driftwood-can-stress-psilocybe-azurescens-mycelium.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Salt carried inland by storms can chemically stress this dune fungus."},{"title":"Hyphal Networks of Psilocybe azurescens Extend Meters Beyond Visible Fruiting Sites","slug":"hyphal-networks-of-psilocybe-azurescens-extend-meters-beyond-visible-fruiting-sites","url":"/categories/wild-mushrooms/psilocybe-azurescens/hyphal-networks-of-psilocybe-azurescens-extend-meters-beyond-visible-fruiting-sites.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The mushroom you see marks only the edge of a much larger organism."},{"title":"Isotopic Analysis Reveals Nutrient Sources in Psilocybe azurescens Coastal Habitats","slug":"isotopic-analysis-reveals-nutrient-sources-in-psilocybe-azurescens-coastal-habitats","url":"/categories/wild-mushrooms/psilocybe-azurescens/isotopic-analysis-reveals-nutrient-sources-in-psilocybe-azurescens-coastal-habitats.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Carbon fingerprints show this mushroom eats more than meets the eye."},{"title":"Juvenile Cap Hygrophanous Shifts Alter Psilocybe azurescens Color Within Hours","slug":"juvenile-cap-hygrophanous-shifts-alter-psilocybe-azurescens-color-within-hours","url":"/categories/wild-mushrooms/psilocybe-azurescens/juvenile-cap-hygrophanous-shifts-alter-psilocybe-azurescens-color-within-hours.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom can change color in a single afternoon."},{"title":"Keratin-Degrading Microbes Share Substrate Space with Psilocybe azurescens in Dunes","slug":"keratin-degrading-microbes-share-substrate-space-with-psilocybe-azurescens-in-dunes","url":"/categories/wild-mushrooms/psilocybe-azurescens/keratin-degrading-microbes-share-substrate-space-with-psilocybe-azurescens-in-dunes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even animal-derived debris can influence this mushroom’s habitat chemistry."},{"title":"Keratin-Degrading Microbes Share Substrate Space with Psilocybe azurescens in Dunes","slug":"keratin-degrading-microbes-share-substrate-space-with-psilocybe-azurescens-in-dunes","url":"/categories/wild-mushrooms/psilocybe-azurescens/keratin-degrading-microbes-share-substrate-space-with-psilocybe-azurescens-in-dunes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even animal-derived debris can influence this mushroom’s habitat chemistry."},{"title":"Kilogram-Scale Mycelial Networks Underlie Small Psilocybe azurescens Fruiting Bodies","slug":"kilogram-scale-mycelial-networks-underlie-small-psilocybe-azurescens-fruiting-bodies","url":"/categories/wild-mushrooms/psilocybe-azurescens/kilogram-scale-mycelial-networks-underlie-small-psilocybe-azurescens-fruiting-bodies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible mushroom is only a fraction of the organism."},{"title":"Lignin-Degrading Enzymes Power Psilocybe azurescens Wood Colonization","slug":"lignin-degrading-enzymes-power-psilocybe-azurescens-wood-colonization","url":"/categories/wild-mushrooms/psilocybe-azurescens/lignin-degrading-enzymes-power-psilocybe-azurescens-wood-colonization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This psychedelic mushroom digests wood with industrial-grade chemistry."},{"title":"Lipid Membrane Permeability Influences Psilocybin Absorption After Ingestion","slug":"lipid-membrane-permeability-influences-psilocybin-absorption-after-ingestion","url":"/categories/wild-mushrooms/psilocybe-azurescens/lipid-membrane-permeability-influences-psilocybin-absorption-after-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from dune wood must cross brain barriers to alter perception."},{"title":"Marine-Influenced Substrates Increase Alkaloid Variability in Psilocybe azurescens","slug":"marine-influenced-substrates-increase-alkaloid-variability-in-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/marine-influenced-substrates-increase-alkaloid-variability-in-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Salt air and sea driftwood may alter a mushroom’s chemistry."},{"title":"Microscopic Spore Prints of Psilocybe azurescens Reveal Billions Released Per Cap","slug":"microscopic-spore-prints-of-psilocybe-azurescens-reveal-billions-released-per-cap","url":"/categories/wild-mushrooms/psilocybe-azurescens/microscopic-spore-prints-of-psilocybe-azurescens-reveal-billions-released-per-cap.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One small cap can release billions of microscopic spores into the air."},{"title":"Mycelial Competition with Other Wood-Decay Fungi Shapes Psilocybe azurescens Colonies","slug":"mycelial-competition-with-other-wood-decay-fungi-shapes-psilocybe-azurescens-colonies","url":"/categories/wild-mushrooms/psilocybe-azurescens/mycelial-competition-with-other-wood-decay-fungi-shapes-psilocybe-azurescens-colonies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Beneath the sand, fungal species wage chemical warfare for wood."},{"title":"Mycelial Hyphae Generate Turgor Pressures Comparable to Plant Cells During Expansion","slug":"mycelial-hyphae-generate-turgor-pressures-comparable-to-plant-cells-during-expansion","url":"/categories/wild-mushrooms/psilocybe-azurescens/mycelial-hyphae-generate-turgor-pressures-comparable-to-plant-cells-during-expansion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Fungal cells push against their walls with pressure rivaling plant tissue."},{"title":"Neuroimaging Studies Link Psilocybin to Reduced Default Mode Network Activity","slug":"neuroimaging-studies-link-psilocybin-to-reduced-default-mode-network-activity","url":"/categories/wild-mushrooms/psilocybe-azurescens/neuroimaging-studies-link-psilocybin-to-reduced-default-mode-network-activity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain scans show this compound quiets the brain’s central control network."},{"title":"Oregon Coastal Dunes Host One of the Most Potent Wild Psychedelic Species","slug":"oregon-coastal-dunes-host-one-of-the-most-potent-wild-psychedelic-species","url":"/categories/wild-mushrooms/psilocybe-azurescens/oregon-coastal-dunes-host-one-of-the-most-potent-wild-psychedelic-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Wind-scoured sand dunes hide a mushroom stronger than many street drugs."},{"title":"Psilocybe azurescens Contains Up to 1.8% Psilocybin by Dry Weight","slug":"psilocybe-azurescens-contains-up-to-1-8-psilocybin-by-dry-weight","url":"/categories/wild-mushrooms/psilocybe-azurescens/psilocybe-azurescens-contains-up-to-1-8-psilocybin-by-dry-weight.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom the size of a coin can rival laboratory-grade psychedelics."},{"title":"Quaternary Climate Patterns Help Explain Modern Distribution of Psilocybe azurescens","slug":"quaternary-climate-patterns-help-explain-modern-distribution-of-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/quaternary-climate-patterns-help-explain-modern-distribution-of-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Ice age climate shifts likely shaped where this mushroom exists today."},{"title":"Quinone Formation Explains the Intense Blue Oxidation in Psilocybe azurescens","slug":"quinone-formation-explains-the-intense-blue-oxidation-in-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/quinone-formation-explains-the-intense-blue-oxidation-in-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The blue color is a chemical reaction happening in plain sight."},{"title":"Radiating Gill Architecture Maximizes Spore Surface Area in Psilocybe azurescens","slug":"radiating-gill-architecture-maximizes-spore-surface-area-in-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/radiating-gill-architecture-maximizes-spore-surface-area-in-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Hidden beneath the cap lies a tightly packed spore-producing engine."},{"title":"Reactive Oxygen Species Form During Psilocybe azurescens Tissue Damage","slug":"reactive-oxygen-species-form-during-psilocybe-azurescens-tissue-damage","url":"/categories/wild-mushrooms/psilocybe-azurescens/reactive-oxygen-species-form-during-psilocybe-azurescens-tissue-damage.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A simple bruise triggers oxidative chemistry inside this mushroom."},{"title":"Reactive Oxygen Species Form During Psilocybe azurescens Tissue Damage","slug":"reactive-oxygen-species-form-during-psilocybe-azurescens-tissue-damage","url":"/categories/wild-mushrooms/psilocybe-azurescens/reactive-oxygen-species-form-during-psilocybe-azurescens-tissue-damage.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A simple bruise triggers oxidative chemistry inside this mushroom."},{"title":"Respiration Rates Increase Sharply During Psilocybe azurescens Fruiting Body Formation","slug":"respiration-rates-increase-sharply-during-psilocybe-azurescens-fruiting-body-formation","url":"/categories/wild-mushrooms/psilocybe-azurescens/respiration-rates-increase-sharply-during-psilocybe-azurescens-fruiting-body-formation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"As this mushroom emerges, its cellular respiration accelerates dramatically."},{"title":"Rugose Cap Morphology Distinguishes Psilocybe azurescens from Similar Species","slug":"rugose-cap-morphology-distinguishes-psilocybe-azurescens-from-similar-species","url":"/categories/wild-mushrooms/psilocybe-azurescens/rugose-cap-morphology-distinguishes-psilocybe-azurescens-from-similar-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A subtle wrinkled cap can separate intense potency from misidentification."},{"title":"Thermal Threshold Below 10°C Regulates Psilocybe azurescens Fruiting Initiation","slug":"thermal-threshold-below-10-c-regulates-psilocybe-azurescens-fruiting-initiation","url":"/categories/wild-mushrooms/psilocybe-azurescens/thermal-threshold-below-10-c-regulates-psilocybe-azurescens-fruiting-initiation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A few degrees of temperature drop can trigger mass emergence."},{"title":"Ultraviolet Exposure Gradually Degrades Psilocybin in Exposed Psilocybe azurescens Caps","slug":"ultraviolet-exposure-gradually-degrades-psilocybin-in-exposed-psilocybe-azurescens-caps","url":"/categories/wild-mushrooms/psilocybe-azurescens/ultraviolet-exposure-gradually-degrades-psilocybin-in-exposed-psilocybe-azurescens-caps.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Direct sunlight slowly dismantles the very compound that defines this mushroom."},{"title":"Understudied Baeocystin Levels in Psilocybe azurescens Complicate Pharmacology","slug":"understudied-baeocystin-levels-in-psilocybe-azurescens-complicate-pharmacology","url":"/categories/wild-mushrooms/psilocybe-azurescens/understudied-baeocystin-levels-in-psilocybe-azurescens-complicate-pharmacology.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One of its active compounds remains pharmacologically mysterious."},{"title":"University Toxicology Reviews Highlight Species-Specific Psilocybin Variability","slug":"university-toxicology-reviews-highlight-species-specific-psilocybin-variability","url":"/categories/wild-mushrooms/psilocybe-azurescens/university-toxicology-reviews-highlight-species-specific-psilocybin-variability.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Not all psychedelic mushrooms are chemically interchangeable."},{"title":"Volatile Organic Compounds Emitted During Fruiting Attract Invertebrate Activity","slug":"volatile-organic-compounds-emitted-during-fruiting-attract-invertebrate-activity","url":"/categories/wild-mushrooms/psilocybe-azurescens/volatile-organic-compounds-emitted-during-fruiting-attract-invertebrate-activity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom releases airborne chemicals detectable by insects."},{"title":"Wood Chip Transport Networks Facilitate Regional Spread of Psilocybe azurescens","slug":"wood-chip-transport-networks-facilitate-regional-spread-of-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/wood-chip-transport-networks-facilitate-regional-spread-of-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Landscaping supply chains can move psychedelic fungi across counties."},{"title":"Xeric Wood Chip Habitats Enable Psilocybe azurescens Urban Spread","slug":"xeric-wood-chip-habitats-enable-psilocybe-azurescens-urban-spread","url":"/categories/wild-mushrooms/psilocybe-azurescens/xeric-wood-chip-habitats-enable-psilocybe-azurescens-urban-spread.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Landscaping mulch can quietly host a high-potency psychedelic species."},{"title":"Yachats 1979 Discovery Redefined Potency Benchmarks in Psilocybe Research","slug":"yachats-1979-discovery-redefined-potency-benchmarks-in-psilocybe-research","url":"/categories/wild-mushrooms/psilocybe-azurescens/yachats-1979-discovery-redefined-potency-benchmarks-in-psilocybe-research.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A 1979 coastal find quietly reset psychedelic potency expectations."},{"title":"Yields of Psilocybin per Gram in Psilocybe azurescens Exceed Many Cultivated Species","slug":"yields-of-psilocybin-per-gram-in-psilocybe-azurescens-exceed-many-cultivated-species","url":"/categories/wild-mushrooms/psilocybe-azurescens/yields-of-psilocybin-per-gram-in-psilocybe-azurescens-exceed-many-cultivated-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Wild coastal specimens can outperform laboratory-grown strains in potency."},{"title":"Zonal Blue Bruising Reaction Signals Psilocybin Oxidation Chemistry","slug":"zonal-blue-bruising-reaction-signals-psilocybin-oxidation-chemistry","url":"/categories/wild-mushrooms/psilocybe-azurescens/zonal-blue-bruising-reaction-signals-psilocybin-oxidation-chemistry.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A light touch turns this mushroom deep blue within minutes."},{"title":"Zygotic Recombination During Spore Fusion Expands Genetic Diversity in Psilocybe azurescens","slug":"zygotic-recombination-during-spore-fusion-expands-genetic-diversity-in-psilocybe-azurescens","url":"/categories/wild-mushrooms/psilocybe-azurescens/zygotic-recombination-during-spore-fusion-expands-genetic-diversity-in-psilocybe-azurescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two microscopic spores can merge to create a genetically new fungus."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

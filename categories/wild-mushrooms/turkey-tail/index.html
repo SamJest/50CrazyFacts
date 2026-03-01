@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turkey Tail</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Turkey Tail</h1>
+  <p>Explore all facts in "Turkey Tail".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Turkey Tail</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Single Turkey Tail Log Can Host Multiple Genetic Individuals","slug":"a-single-turkey-tail-log-can-host-multiple-genetic-individuals","url":"/categories/wild-mushrooms/turkey-tail/a-single-turkey-tail-log-can-host-multiple-genetic-individuals.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One fallen log can hide competing fungal empires."},{"title":"Alternating Wet and Dry Cycles Strengthen Turkey Tail’s Structural Resilience","slug":"alternating-wet-and-dry-cycles-strengthen-turkey-tail-s-structural-resilience","url":"/categories/wild-mushrooms/turkey-tail/alternating-wet-and-dry-cycles-strengthen-turkey-tail-s-structural-resilience.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Repeated soaking and drying does not tear it apart."},{"title":"Beneath Every Turkey Tail Shelf Lies a Hidden Mycelial Network","slug":"beneath-every-turkey-tail-shelf-lies-a-hidden-mycelial-network","url":"/categories/wild-mushrooms/turkey-tail/beneath-every-turkey-tail-shelf-lies-a-hidden-mycelial-network.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible fan is only the tip of a wood-consuming web."},{"title":"Branch-Level Colonization by Turkey Tail Begins Before Full Trunk Decay","slug":"branch-level-colonization-by-turkey-tail-begins-before-full-trunk-decay","url":"/categories/wild-mushrooms/turkey-tail/branch-level-colonization-by-turkey-tail-begins-before-full-trunk-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It attacks fallen limbs long before the trunk collapses."},{"title":"Cellulose Fibers Remain After Turkey Tail Selectively Removes Lignin","slug":"cellulose-fibers-remain-after-turkey-tail-selectively-removes-lignin","url":"/categories/wild-mushrooms/turkey-tail/cellulose-fibers-remain-after-turkey-tail-selectively-removes-lignin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It strips away rigidity and leaves pale skeletal strands."},{"title":"Chemical Defenses Allow Turkey Tail to Resist Microbial Attack","slug":"chemical-defenses-allow-turkey-tail-to-resist-microbial-attack","url":"/categories/wild-mushrooms/turkey-tail/chemical-defenses-allow-turkey-tail-to-resist-microbial-attack.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Other microbes try to invade, but this fungus fights back."},{"title":"Downed Hardwood Logs Become Long-Term Substrates for Turkey Tail Colonies","slug":"downed-hardwood-logs-become-long-term-substrates-for-turkey-tail-colonies","url":"/categories/wild-mushrooms/turkey-tail/downed-hardwood-logs-become-long-term-substrates-for-turkey-tail-colonies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single fallen tree can feed one colony for years."},{"title":"Drought Conditions Do Not Immediately Kill Turkey Tail","slug":"drought-conditions-do-not-immediately-kill-turkey-tail","url":"/categories/wild-mushrooms/turkey-tail/drought-conditions-do-not-immediately-kill-turkey-tail.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Dry spells that shrivel plants leave this fungus intact."},{"title":"Edge Growth in Turkey Tail Marks Active Nutrient Expansion Zones","slug":"edge-growth-in-turkey-tail-marks-active-nutrient-expansion-zones","url":"/categories/wild-mushrooms/turkey-tail/edge-growth-in-turkey-tail-marks-active-nutrient-expansion-zones.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The bright rim signals where digestion advances."},{"title":"Enzymes From Turkey Tail Are Studied for Bioremediation","slug":"enzymes-from-turkey-tail-are-studied-for-bioremediation","url":"/categories/wild-mushrooms/turkey-tail/enzymes-from-turkey-tail-are-studied-for-bioremediation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest fungus can dismantle industrial pollutants in labs."},{"title":"Forest Insects Use Turkey Tail as Year-Round Shelter","slug":"forest-insects-use-turkey-tail-as-year-round-shelter","url":"/categories/wild-mushrooms/turkey-tail/forest-insects-use-turkey-tail-as-year-round-shelter.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Tiny animals live inside this mushroom through winter."},{"title":"Fragmented Wood From Turkey Tail Decay Integrates Rapidly Into Soil","slug":"fragmented-wood-from-turkey-tail-decay-integrates-rapidly-into-soil","url":"/categories/wild-mushrooms/turkey-tail/fragmented-wood-from-turkey-tail-decay-integrates-rapidly-into-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Solid trunks become crumbly earth under its influence."},{"title":"Genetic Studies Reveal High Diversity Within Turkey Tail Populations","slug":"genetic-studies-reveal-high-diversity-within-turkey-tail-populations","url":"/categories/wild-mushrooms/turkey-tail/genetic-studies-reveal-high-diversity-within-turkey-tail-populations.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two identical-looking brackets can be genetically distant."},{"title":"Gravity-Assisted Spore Drop Enhances Turkey Tail Dispersal Success","slug":"gravity-assisted-spore-drop-enhances-turkey-tail-dispersal-success","url":"/categories/wild-mushrooms/turkey-tail/gravity-assisted-spore-drop-enhances-turkey-tail-dispersal-success.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It lets gravity finish the job wind begins."},{"title":"Hardwood Chemical Defenses Do Not Fully Block Turkey Tail Enzymes","slug":"hardwood-chemical-defenses-do-not-fully-block-turkey-tail-enzymes","url":"/categories/wild-mushrooms/turkey-tail/hardwood-chemical-defenses-do-not-fully-block-turkey-tail-enzymes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even tannin-rich wood cannot halt its advance."},{"title":"Humidity Surges Can Trigger Fresh Growth on Old Turkey Tail Brackets","slug":"humidity-surges-can-trigger-fresh-growth-on-old-turkey-tail-brackets","url":"/categories/wild-mushrooms/turkey-tail/humidity-surges-can-trigger-fresh-growth-on-old-turkey-tail-brackets.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After rain, dormant shelves can resume visible expansion."},{"title":"Inside Turkey Tail, Pore Surfaces Multiply Spore Production Area","slug":"inside-turkey-tail-pore-surfaces-multiply-spore-production-area","url":"/categories/wild-mushrooms/turkey-tail/inside-turkey-tail-pore-surfaces-multiply-spore-production-area.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Flip it over and you reveal a microscopic factory floor."},{"title":"Interconnected Mycelial Growth Allows Turkey Tail to Exploit Adjacent Debris","slug":"interconnected-mycelial-growth-allows-turkey-tail-to-exploit-adjacent-debris","url":"/categories/wild-mushrooms/turkey-tail/interconnected-mycelial-growth-allows-turkey-tail-to-exploit-adjacent-debris.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One colony can bridge multiple pieces of wood."},{"title":"Junction Zones Form When Competing Turkey Tail Colonies Meet","slug":"junction-zones-form-when-competing-turkey-tail-colonies-meet","url":"/categories/wild-mushrooms/turkey-tail/junction-zones-form-when-competing-turkey-tail-colonies-meet.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Invisible borders appear when fungal territories collide."},{"title":"Just One Turkey Tail Colony Can Persist for Years on a Single Trunk","slug":"just-one-turkey-tail-colony-can-persist-for-years-on-a-single-trunk","url":"/categories/wild-mushrooms/turkey-tail/just-one-turkey-tail-colony-can-persist-for-years-on-a-single-trunk.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single colonization event can last multiple seasons."},{"title":"Key Enzymes in Turkey Tail Can Function at Ordinary Forest Temperatures","slug":"key-enzymes-in-turkey-tail-can-function-at-ordinary-forest-temperatures","url":"/categories/wild-mushrooms/turkey-tail/key-enzymes-in-turkey-tail-can-function-at-ordinary-forest-temperatures.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It dismantles hardwood without heat, pressure, or machinery."},{"title":"Layered Turkey Tail Colonies Can Cover Entire Fallen Trees","slug":"layered-turkey-tail-colonies-can-cover-entire-fallen-trees","url":"/categories/wild-mushrooms/turkey-tail/layered-turkey-tail-colonies-can-cover-entire-fallen-trees.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Some trunks disappear beneath waves of fungal fans."},{"title":"Microscopic Hyphae in Turkey Tail Can Penetrate Deep Into Hardwood","slug":"microscopic-hyphae-in-turkey-tail-can-penetrate-deep-into-hardwood","url":"/categories/wild-mushrooms/turkey-tail/microscopic-hyphae-in-turkey-tail-can-penetrate-deep-into-hardwood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Threads thinner than hair infiltrate solid timber."},{"title":"Newly Fallen Hardwood Is Especially Vulnerable to Turkey Tail","slug":"newly-fallen-hardwood-is-especially-vulnerable-to-turkey-tail","url":"/categories/wild-mushrooms/turkey-tail/newly-fallen-hardwood-is-especially-vulnerable-to-turkey-tail.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Fresh timber can become fungal territory within a season."},{"title":"Overlapping Turkey Tail Brackets Create Natural Water Channels","slug":"overlapping-turkey-tail-brackets-create-natural-water-channels","url":"/categories/wild-mushrooms/turkey-tail/overlapping-turkey-tail-brackets-create-natural-water-channels.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its layered shelves redirect rain across decaying logs."},{"title":"Persistent Turkey Tail Colonies Continue Working After Visible Fading","slug":"persistent-turkey-tail-colonies-continue-working-after-visible-fading","url":"/categories/wild-mushrooms/turkey-tail/persistent-turkey-tail-colonies-continue-working-after-visible-fading.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even when colors dull, decomposition does not stop."},{"title":"Quarter-Sized Turkey Tail Brackets Can Release Millions of Spores","slug":"quarter-sized-turkey-tail-brackets-can-release-millions-of-spores","url":"/categories/wild-mushrooms/turkey-tail/quarter-sized-turkey-tail-brackets-can-release-millions-of-spores.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fan smaller than a coin becomes an aerial broadcaster."},{"title":"Rapid Color Band Formation Reflects Distinct Growth Phases in Turkey Tail","slug":"rapid-color-band-formation-reflects-distinct-growth-phases-in-turkey-tail","url":"/categories/wild-mushrooms/turkey-tail/rapid-color-band-formation-reflects-distinct-growth-phases-in-turkey-tail.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each ring marks a shift in environmental conditions."},{"title":"Spore Production in Turkey Tail Peaks During Optimal Airflow Conditions","slug":"spore-production-in-turkey-tail-peaks-during-optimal-airflow-conditions","url":"/categories/wild-mushrooms/turkey-tail/spore-production-in-turkey-tail-peaks-during-optimal-airflow-conditions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Wind transforms quiet logs into biological launchpads."},{"title":"Turkey Tail Breaks Down Lignin, Nature’s Most Resistant Wood Polymer","slug":"turkey-tail-breaks-down-lignin-nature-s-most-resistant-wood-polymer","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-breaks-down-lignin-nature-s-most-resistant-wood-polymer.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It dissolves the compound that makes trees stand upright."},{"title":"Turkey Tail Can Colonize Freshly Cut Timber Within Weeks","slug":"turkey-tail-can-colonize-freshly-cut-timber-within-weeks","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-can-colonize-freshly-cut-timber-within-weeks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cut a tree, and this mushroom can claim it almost immediately."},{"title":"Turkey Tail Contains Hundreds of Distinct Chemical Compounds","slug":"turkey-tail-contains-hundreds-of-distinct-chemical-compounds","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-contains-hundreds-of-distinct-chemical-compounds.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest fungus is a biochemical factory hidden in plain sight."},{"title":"Turkey Tail Forms Layered Colonies Like Shingles on a Roof","slug":"turkey-tail-forms-layered-colonies-like-shingles-on-a-roof","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-forms-layered-colonies-like-shingles-on-a-roof.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It stacks in perfect tiers across entire fallen trunks."},{"title":"Turkey Tail Grows Across Six Continents in Wild Forests","slug":"turkey-tail-grows-across-six-continents-in-wild-forests","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-grows-across-six-continents-in-wild-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest mushroom spans nearly the entire planet."},{"title":"Turkey Tail Helps Prevent Massive Deadwood Pileups in Forests","slug":"turkey-tail-helps-prevent-massive-deadwood-pileups-in-forests","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-helps-prevent-massive-deadwood-pileups-in-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Without this fungus, forests would choke on fallen timber."},{"title":"Turkey Tail Mushroom Can Outlive the Tree It Grows On","slug":"turkey-tail-mushroom-can-outlive-the-tree-it-grows-on","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-mushroom-can-outlive-the-tree-it-grows-on.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom keeps living years after its tree is dead."},{"title":"Turkey Tail Mushroom Survives Freezing Temperatures Without Rotting","slug":"turkey-tail-mushroom-survives-freezing-temperatures-without-rotting","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-mushroom-survives-freezing-temperatures-without-rotting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Most mushrooms rot in days; this one survives winter ice."},{"title":"Turkey Tail Plays a Measurable Role in Forest Carbon Turnover","slug":"turkey-tail-plays-a-measurable-role-in-forest-carbon-turnover","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-plays-a-measurable-role-in-forest-carbon-turnover.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It helps decide how long carbon stays locked in wood."},{"title":"Turkey Tail Produces Billions of Spores From a Single Log","slug":"turkey-tail-produces-billions-of-spores-from-a-single-log","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-produces-billions-of-spores-from-a-single-log.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One fallen log can release billions of microscopic travelers."},{"title":"Turkey Tail Remains Visible Year-Round in Temperate Forests","slug":"turkey-tail-remains-visible-year-round-in-temperate-forests","url":"/categories/wild-mushrooms/turkey-tail/turkey-tail-remains-visible-year-round-in-temperate-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"While other mushrooms vanish, this one stays on display."},{"title":"Ultra-Thin Turkey Tail Brackets Withstand Repeated Freeze-Thaw Cycles","slug":"ultra-thin-turkey-tail-brackets-withstand-repeated-freeze-thaw-cycles","url":"/categories/wild-mushrooms/turkey-tail/ultra-thin-turkey-tail-brackets-withstand-repeated-freeze-thaw-cycles.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Paper-thin shelves survive cycles that crack solid wood."},{"title":"Upward-Facing Turkey Tail Brackets Maximize Spore Release Efficiency","slug":"upward-facing-turkey-tail-brackets-maximize-spore-release-efficiency","url":"/categories/wild-mushrooms/turkey-tail/upward-facing-turkey-tail-brackets-maximize-spore-release-efficiency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its growth angle turns gravity into an advantage."},{"title":"Variable Host Trees Do Not Prevent Turkey Tail Colonization","slug":"variable-host-trees-do-not-prevent-turkey-tail-colonization","url":"/categories/wild-mushrooms/turkey-tail/variable-host-trees-do-not-prevent-turkey-tail-colonization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Oak, beech, maple—it claims them all."},{"title":"Vast Forest Floors Contain Continuous Turkey Tail Decomposition Zones","slug":"vast-forest-floors-contain-continuous-turkey-tail-decomposition-zones","url":"/categories/wild-mushrooms/turkey-tail/vast-forest-floors-contain-continuous-turkey-tail-decomposition-zones.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Entire woodland sections are quietly dissolving at once."},{"title":"Wind-Driven Spore Clouds From Turkey Tail Can Rise Above the Canopy","slug":"wind-driven-spore-clouds-from-turkey-tail-can-rise-above-the-canopy","url":"/categories/wild-mushrooms/turkey-tail/wind-driven-spore-clouds-from-turkey-tail-can-rise-above-the-canopy.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Microscopic particles launched from logs can climb skyward."},{"title":"Wood Lightens in Color Where Turkey Tail Removes Lignin","slug":"wood-lightens-in-color-where-turkey-tail-removes-lignin","url":"/categories/wild-mushrooms/turkey-tail/wood-lightens-in-color-where-turkey-tail-removes-lignin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It bleaches timber without paint or chemicals."},{"title":"Xylose-Rich Hardwood Becomes Digestible Through Turkey Tail Enzymes","slug":"xylose-rich-hardwood-becomes-digestible-through-turkey-tail-enzymes","url":"/categories/wild-mushrooms/turkey-tail/xylose-rich-hardwood-becomes-digestible-through-turkey-tail-enzymes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It converts rigid plant sugars into accessible nutrients."},{"title":"Year-Round Presence Makes Turkey Tail One of the Most Frequently Seen Wild Mushrooms","slug":"year-round-presence-makes-turkey-tail-one-of-the-most-frequently-seen-wild-mushrooms","url":"/categories/wild-mushrooms/turkey-tail/year-round-presence-makes-turkey-tail-one-of-the-most-frequently-seen-wild-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"In every season, its layered fans remain on display."},{"title":"Zero Sunlight Is Required for Turkey Tail to Digest Wood","slug":"zero-sunlight-is-required-for-turkey-tail-to-digest-wood","url":"/categories/wild-mushrooms/turkey-tail/zero-sunlight-is-required-for-turkey-tail-to-digest-wood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It thrives in darkness where plants cannot function."},{"title":"Zonal Pigment Layers Help Turkey Tail Camouflage Against Bark","slug":"zonal-pigment-layers-help-turkey-tail-camouflage-against-bark","url":"/categories/wild-mushrooms/turkey-tail/zonal-pigment-layers-help-turkey-tail-camouflage-against-bark.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its bands mimic the very wood it consumes."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liberty Cap</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Liberty Cap</h1>
+  <p>Explore all facts in "Liberty Cap".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Liberty Cap</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Agricultural Pasture Management Indirectly Expands Liberty Cap Habitat in Temperate Europe","slug":"agricultural-pasture-management-indirectly-expands-liberty-cap-habitat-in-temperate-europe","url":"/categories/wild-mushrooms/liberty-cap/agricultural-pasture-management-indirectly-expands-liberty-cap-habitat-in-temperate-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Sheep farming quietly sustains a psychoactive species across continents."},{"title":"Atmospheric Carbon Cycling Research Highlights Fungal Role in Grassland Nutrient Redistribution","slug":"atmospheric-carbon-cycling-research-highlights-fungal-role-in-grassland-nutrient-redistribution","url":"/categories/wild-mushrooms/liberty-cap/atmospheric-carbon-cycling-research-highlights-fungal-role-in-grassland-nutrient-redistribution.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom tied to altered states also helps regulate carbon in pastures."},{"title":"Biochemical Structural Similarity Between Psilocin and Serotonin Enables Receptor Hijacking","slug":"biochemical-structural-similarity-between-psilocin-and-serotonin-enables-receptor-hijacking","url":"/categories/wild-mushrooms/liberty-cap/biochemical-structural-similarity-between-psilocin-and-serotonin-enables-receptor-hijacking.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungal molecule mimics your brain’s own neurotransmitter closely enough to take its place."},{"title":"Cerebral Blood Flow Measurements Decrease in Key Networks After Liberty Cap Psilocybin","slug":"cerebral-blood-flow-measurements-decrease-in-key-networks-after-liberty-cap-psilocybin","url":"/categories/wild-mushrooms/liberty-cap/cerebral-blood-flow-measurements-decrease-in-key-networks-after-liberty-cap-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain blood flow drops in control centers after ingesting a pasture mushroom."},{"title":"Demographic Survey Data Indicate Liberty Cap Use Peaks in Autumn Foraging Seasons","slug":"demographic-survey-data-indicate-liberty-cap-use-peaks-in-autumn-foraging-seasons","url":"/categories/wild-mushrooms/liberty-cap/demographic-survey-data-indicate-liberty-cap-use-peaks-in-autumn-foraging-seasons.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Hospital admissions linked to wild psilocybin often spike with rainfall."},{"title":"Dose Escalation Protocols in Early Trials Increased Psilocybin Gradually to 30 Milligrams","slug":"dose-escalation-protocols-in-early-trials-increased-psilocybin-gradually-to-30-milligrams","url":"/categories/wild-mushrooms/liberty-cap/dose-escalation-protocols-in-early-trials-increased-psilocybin-gradually-to-30-milligrams.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Researchers raised mushroom-derived doses in controlled steps to avoid psychological overload."},{"title":"Dose-Response Data From Modern Trials Show Milligram Precision Drives Liberty Cap Effects","slug":"dose-response-data-from-modern-trials-show-milligram-precision-drives-liberty-cap-effects","url":"/categories/wild-mushrooms/liberty-cap/dose-response-data-from-modern-trials-show-milligram-precision-drives-liberty-cap-effects.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Three milligrams can separate mild mood shift from full ego dissolution."},{"title":"Electrophysiology Experiments Demonstrate Liberty Cap Compounds Alter Thalamic Sensory Filtering","slug":"electrophysiology-experiments-demonstrate-liberty-cap-compounds-alter-thalamic-sensory-filtering","url":"/categories/wild-mushrooms/liberty-cap/electrophysiology-experiments-demonstrate-liberty-cap-compounds-alter-thalamic-sensory-filtering.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A meadow mushroom can disrupt the brain’s sensory gatekeeper."},{"title":"Fungal Taxonomy Records Show Liberty Cap Identification Dates to 1838 Classification","slug":"fungal-taxonomy-records-show-liberty-cap-identification-dates-to-1838-classification","url":"/categories/wild-mushrooms/liberty-cap/fungal-taxonomy-records-show-liberty-cap-identification-dates-to-1838-classification.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A psychoactive pasture mushroom entered formal science nearly two centuries ago."},{"title":"Geographic Distribution Records Place Liberty Caps Across North America and Northern Europe","slug":"geographic-distribution-records-place-liberty-caps-across-north-america-and-northern-europe","url":"/categories/wild-mushrooms/liberty-cap/geographic-distribution-records-place-liberty-caps-across-north-america-and-northern-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same psychoactive mushroom grows from Ireland to the Pacific Northwest."},{"title":"Hepatic Metabolism Pathways Convert Liberty Cap Psilocybin Within Minutes of Ingestion","slug":"hepatic-metabolism-pathways-convert-liberty-cap-psilocybin-within-minutes-of-ingestion","url":"/categories/wild-mushrooms/liberty-cap/hepatic-metabolism-pathways-convert-liberty-cap-psilocybin-within-minutes-of-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your liver transforms a field mushroom into a brain-active compound almost instantly."},{"title":"Human Default Mode Network Activity Decreases Within 30 Minutes of Psilocybin Administration","slug":"human-default-mode-network-activity-decreases-within-30-minutes-of-psilocybin-administration","url":"/categories/wild-mushrooms/liberty-cap/human-default-mode-network-activity-decreases-within-30-minutes-of-psilocybin-administration.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Core self-referential brain activity drops before the first hour ends."},{"title":"Ion Channel Modulation Studies Link Liberty Cap Psilocin to Cortical Signal Amplification","slug":"ion-channel-modulation-studies-link-liberty-cap-psilocin-to-cortical-signal-amplification","url":"/categories/wild-mushrooms/liberty-cap/ion-channel-modulation-studies-link-liberty-cap-psilocin-to-cortical-signal-amplification.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A grassland molecule amplifies electrical signals inside your cortex."},{"title":"Judicial Review Cases in Early 2000s Clarified Fresh Versus Prepared Psilocybin Mushroom Status in UK Law","slug":"judicial-review-cases-in-early-2000s-clarified-fresh-versus-prepared-psilocybin-mushroom-status-in-uk-law","url":"/categories/wild-mushrooms/liberty-cap/judicial-review-cases-in-early-2000s-clarified-fresh-versus-prepared-psilocybin-mushroom-status-in-uk-law.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Courts had to decide whether a freshly picked mushroom counted as a processed drug."},{"title":"Judicial Sentencing Data Show Liberty Cap Possession Cases Resulted in Multi-Year UK Convictions","slug":"judicial-sentencing-data-show-liberty-cap-possession-cases-resulted-in-multi-year-uk-convictions","url":"/categories/wild-mushrooms/liberty-cap/judicial-sentencing-data-show-liberty-cap-possession-cases-resulted-in-multi-year-uk-convictions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A pasture mushroom has led to prison terms measured in years."},{"title":"Kinetic Elimination Half-Life of Psilocin Averages 2 to 3 Hours in Human Plasma","slug":"kinetic-elimination-half-life-of-psilocin-averages-2-to-3-hours-in-human-plasma","url":"/categories/wild-mushrooms/liberty-cap/kinetic-elimination-half-life-of-psilocin-averages-2-to-3-hours-in-human-plasma.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your body clears a mushroom’s active compound in just a few hours."},{"title":"Kinetic Onset Timeline of Liberty Cap Psilocybin Peaks Within 90 Minutes","slug":"kinetic-onset-timeline-of-liberty-cap-psilocybin-peaks-within-90-minutes","url":"/categories/wild-mushrooms/liberty-cap/kinetic-onset-timeline-of-liberty-cap-psilocybin-peaks-within-90-minutes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A meadow mushroom can rewire perception in under an hour."},{"title":"Liberty Cap Psilocybin Potency Reaches 1.8 Percent Dry Weight in European Grasslands","slug":"liberty-cap-psilocybin-potency-reaches-1-8-percent-dry-weight-in-european-grasslands","url":"/categories/wild-mushrooms/liberty-cap/liberty-cap-psilocybin-potency-reaches-1-8-percent-dry-weight-in-european-grasslands.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom smaller than a coin can chemically overpower the human brain."},{"title":"Lipid Solubility Properties Enable Liberty Cap Psilocin Rapid Neural Distribution","slug":"lipid-solubility-properties-enable-liberty-cap-psilocin-rapid-neural-distribution","url":"/categories/wild-mushrooms/liberty-cap/lipid-solubility-properties-enable-liberty-cap-psilocin-rapid-neural-distribution.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from damp grass dissolves into brain tissue with chemical precision."},{"title":"Metabolic Enzyme CYP2D6 Variability Influences Psilocin Blood Levels After Liberty Cap Ingestion","slug":"metabolic-enzyme-cyp2d6-variability-influences-psilocin-blood-levels-after-liberty-cap-ingestion","url":"/categories/wild-mushrooms/liberty-cap/metabolic-enzyme-cyp2d6-variability-influences-psilocin-blood-levels-after-liberty-cap-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two people can eat the same mushroom and absorb it differently."},{"title":"Mycological Surveys Estimate Millions of Liberty Caps Fruit in Single Peak Seasons","slug":"mycological-surveys-estimate-millions-of-liberty-caps-fruit-in-single-peak-seasons","url":"/categories/wild-mushrooms/liberty-cap/mycological-surveys-estimate-millions-of-liberty-caps-fruit-in-single-peak-seasons.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One damp autumn can produce more psychoactive mushrooms than people in a city."},{"title":"Neuroimaging Data From 2012 Imperial College Study Revealed Default Mode Network Suppression","slug":"neuroimaging-data-from-2012-imperial-college-study-revealed-default-mode-network-suppression","url":"/categories/wild-mushrooms/liberty-cap/neuroimaging-data-from-2012-imperial-college-study-revealed-default-mode-network-suppression.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain scans showed a pasture mushroom silencing the brain’s control hub."},{"title":"Neuroplasticity Markers Increased Within 24 Hours of Psilocybin Exposure in Controlled Study","slug":"neuroplasticity-markers-increased-within-24-hours-of-psilocybin-exposure-in-controlled-study","url":"/categories/wild-mushrooms/liberty-cap/neuroplasticity-markers-increased-within-24-hours-of-psilocybin-exposure-in-controlled-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom compound triggered measurable growth signals in brain cells."},{"title":"Observational Data From 2018 Survey Estimated Millions Have Tried Psilocybin Worldwide","slug":"observational-data-from-2018-survey-estimated-millions-have-tried-psilocybin-worldwide","url":"/categories/wild-mushrooms/liberty-cap/observational-data-from-2018-survey-estimated-millions-have-tried-psilocybin-worldwide.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom that grows in quiet fields has reached global populations."},{"title":"Oxidative Blue Bruising Reaction Identifies Liberty Cap Psilocin Exposure to Air","slug":"oxidative-blue-bruising-reaction-identifies-liberty-cap-psilocin-exposure-to-air","url":"/categories/wild-mushrooms/liberty-cap/oxidative-blue-bruising-reaction-identifies-liberty-cap-psilocin-exposure-to-air.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Damage a Liberty Cap and it can turn blue within minutes."},{"title":"Pharmacological Reviews Confirm Liberty Cap Psilocybin Crosses the Blood-Brain Barrier Efficiently","slug":"pharmacological-reviews-confirm-liberty-cap-psilocybin-crosses-the-blood-brain-barrier-efficiently","url":"/categories/wild-mushrooms/liberty-cap/pharmacological-reviews-confirm-liberty-cap-psilocybin-crosses-the-blood-brain-barrier-efficiently.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from damp grass reaches the human cortex within hours."},{"title":"Phase 2 Trial Design Required Two Therapists Per Participant During Psilocybin Sessions","slug":"phase-2-trial-design-required-two-therapists-per-participant-during-psilocybin-sessions","url":"/categories/wild-mushrooms/liberty-cap/phase-2-trial-design-required-two-therapists-per-participant-during-psilocybin-sessions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom dose demanded a staffing ratio closer to surgery than counseling."},{"title":"Quantitative EEG Mapping in 2021 Trial Detected Widespread Gamma Synchrony After Psilocybin Administration","slug":"quantitative-eeg-mapping-in-2021-trial-detected-widespread-gamma-synchrony-after-psilocybin-administration","url":"/categories/wild-mushrooms/liberty-cap/quantitative-eeg-mapping-in-2021-trial-detected-widespread-gamma-synchrony-after-psilocybin-administration.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A pasture-derived compound synchronized brain waves across distant regions."},{"title":"Quantitative EEG Mapping in 2021 Trial Detected Widespread Gamma Synchrony After Psilocybin Administration","slug":"quantitative-eeg-mapping-in-2021-trial-detected-widespread-gamma-synchrony-after-psilocybin-administration","url":"/categories/wild-mushrooms/liberty-cap/quantitative-eeg-mapping-in-2021-trial-detected-widespread-gamma-synchrony-after-psilocybin-administration.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A pasture-derived compound synchronized brain waves across distant regions."},{"title":"Quantum-Level Serotonin Receptor Binding Explains Liberty Cap Hallucinations","slug":"quantum-level-serotonin-receptor-binding-explains-liberty-cap-hallucinations","url":"/categories/wild-mushrooms/liberty-cap/quantum-level-serotonin-receptor-binding-explains-liberty-cap-hallucinations.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom interferes directly with the brain’s serotonin circuitry."},{"title":"Receptor Downregulation Studies Suggest Temporary Tolerance After Repeated Liberty Cap Exposure","slug":"receptor-downregulation-studies-suggest-temporary-tolerance-after-repeated-liberty-cap-exposure","url":"/categories/wild-mushrooms/liberty-cap/receptor-downregulation-studies-suggest-temporary-tolerance-after-repeated-liberty-cap-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Use the same mushroom twice in quick succession and it may barely work."},{"title":"Regulatory Reclassification Debates in 2020s Reexamined Liberty Cap Medical Potential","slug":"regulatory-reclassification-debates-in-2020s-reexamined-liberty-cap-medical-potential","url":"/categories/wild-mushrooms/liberty-cap/regulatory-reclassification-debates-in-2020s-reexamined-liberty-cap-medical-potential.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A once-banned field mushroom is now in formal medical trials."},{"title":"Statistical Analysis From 2022 Depression Trial Reported 71 Percent Response After Psilocybin Sessions","slug":"statistical-analysis-from-2022-depression-trial-reported-71-percent-response-after-psilocybin-sessions","url":"/categories/wild-mushrooms/liberty-cap/statistical-analysis-from-2022-depression-trial-reported-71-percent-response-after-psilocybin-sessions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One or two supervised doses outperformed months of standard antidepressant treatment in a major study."},{"title":"Transatlantic 1979 Florida Case Linked Liberty Cap Foraging to Emergency Toxicology Review","slug":"transatlantic-1979-florida-case-linked-liberty-cap-foraging-to-emergency-toxicology-review","url":"/categories/wild-mushrooms/liberty-cap/transatlantic-1979-florida-case-linked-liberty-cap-foraging-to-emergency-toxicology-review.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single wild mushroom incident triggered hospital-level toxicology scrutiny."},{"title":"Ultrastructural Microscopy Reveals Liberty Cap Gill Architecture Maximizes Spore Release Efficiency","slug":"ultrastructural-microscopy-reveals-liberty-cap-gill-architecture-maximizes-spore-release-efficiency","url":"/categories/wild-mushrooms/liberty-cap/ultrastructural-microscopy-reveals-liberty-cap-gill-architecture-maximizes-spore-release-efficiency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Beneath its small cap lies a microscopic spore-launch system engineered for scale."},{"title":"Ultrastructural Microscopy Reveals Liberty Cap Gill Architecture Maximizes Spore Release Efficiency","slug":"ultrastructural-microscopy-reveals-liberty-cap-gill-architecture-maximizes-spore-release-efficiency","url":"/categories/wild-mushrooms/liberty-cap/ultrastructural-microscopy-reveals-liberty-cap-gill-architecture-maximizes-spore-release-efficiency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Beneath its small cap lies a microscopic spore-launch system engineered for scale."},{"title":"United Kingdom Misuse of Drugs Act 1971 Criminalized Liberty Cap Harvesting","slug":"united-kingdom-misuse-of-drugs-act-1971-criminalized-liberty-cap-harvesting","url":"/categories/wild-mushrooms/liberty-cap/united-kingdom-misuse-of-drugs-act-1971-criminalized-liberty-cap-harvesting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Picking a pasture mushroom in Britain can carry prison time."},{"title":"Vascular Complications Documented in 1960s Psilocybin Case Reports Involving Liberty Caps","slug":"vascular-complications-documented-in-1960s-psilocybin-case-reports-involving-liberty-caps","url":"/categories/wild-mushrooms/liberty-cap/vascular-complications-documented-in-1960s-psilocybin-case-reports-involving-liberty-caps.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A meadow mushroom has triggered emergency-level cardiovascular spikes in clinical records."},{"title":"Voluntary Reporting Systems in 2019 Recorded Psilocybin-Related Emergency Visits Without Fatal Respiratory Collapse","slug":"voluntary-reporting-systems-in-2019-recorded-psilocybin-related-emergency-visits-without-fatal-respiratory-collapse","url":"/categories/wild-mushrooms/liberty-cap/voluntary-reporting-systems-in-2019-recorded-psilocybin-related-emergency-visits-without-fatal-respiratory-collapse.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Hospitals logged mushroom-related crises that rarely ended in respiratory failure."},{"title":"Water Content of Fresh Liberty Caps Exceeds 90 Percent Before Drying","slug":"water-content-of-fresh-liberty-caps-exceeds-90-percent-before-drying","url":"/categories/wild-mushrooms/liberty-cap/water-content-of-fresh-liberty-caps-exceeds-90-percent-before-drying.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom that feels solid is mostly water by weight."},{"title":"Whole-Brain Connectivity Analysis in 2014 Study Showed Increased Global Integration Under Psilocybin","slug":"whole-brain-connectivity-analysis-in-2014-study-showed-increased-global-integration-under-psilocybin","url":"/categories/wild-mushrooms/liberty-cap/whole-brain-connectivity-analysis-in-2014-study-showed-increased-global-integration-under-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain regions that rarely communicate began exchanging signals at once."},{"title":"Xenobiotic Classification of Psilocybin Places Liberty Cap Compound Among Exogenous Neuroactives","slug":"xenobiotic-classification-of-psilocybin-places-liberty-cap-compound-among-exogenous-neuroactives","url":"/categories/wild-mushrooms/liberty-cap/xenobiotic-classification-of-psilocybin-places-liberty-cap-compound-among-exogenous-neuroactives.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your brain treats this field molecule as a foreign chemical intruder."},{"title":"Xenobiotic Classification of Psilocybin Places Liberty Cap Compound Among Exogenous Neuroactives","slug":"xenobiotic-classification-of-psilocybin-places-liberty-cap-compound-among-exogenous-neuroactives","url":"/categories/wild-mushrooms/liberty-cap/xenobiotic-classification-of-psilocybin-places-liberty-cap-compound-among-exogenous-neuroactives.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your brain treats this field molecule as a foreign chemical intruder."},{"title":"Xerophilic Grassland Ecology Enables Liberty Cap Growth Across 15 European Countries","slug":"xerophilic-grassland-ecology-enables-liberty-cap-growth-across-15-european-countries","url":"/categories/wild-mushrooms/liberty-cap/xerophilic-grassland-ecology-enables-liberty-cap-growth-across-15-european-countries.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fragile mushroom colonizes entire nations without cultivation."},{"title":"Year-Long Follow-Up in 2016 Study Found Sustained Mood Improvements After Single Psilocybin Session","slug":"year-long-follow-up-in-2016-study-found-sustained-mood-improvements-after-single-psilocybin-session","url":"/categories/wild-mushrooms/liberty-cap/year-long-follow-up-in-2016-study-found-sustained-mood-improvements-after-single-psilocybin-session.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One supervised dose produced mood changes measurable a year later."},{"title":"Year-Long Follow-Up in 2016 Study Found Sustained Mood Improvements After Single Psilocybin Session","slug":"year-long-follow-up-in-2016-study-found-sustained-mood-improvements-after-single-psilocybin-session","url":"/categories/wild-mushrooms/liberty-cap/year-long-follow-up-in-2016-study-found-sustained-mood-improvements-after-single-psilocybin-session.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One supervised dose produced mood changes measurable a year later."},{"title":"Yield Variability Studies Show Liberty Cap Psilocybin Content Fluctuates Threefold","slug":"yield-variability-studies-show-liberty-cap-psilocybin-content-fluctuates-threefold","url":"/categories/wild-mushrooms/liberty-cap/yield-variability-studies-show-liberty-cap-psilocybin-content-fluctuates-threefold.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two mushrooms from the same field can differ chemically by 300 percent."},{"title":"Z-Score Reductions in 2020 Anxiety Study Quantified Significant Symptom Decline After Psilocybin","slug":"z-score-reductions-in-2020-anxiety-study-quantified-significant-symptom-decline-after-psilocybin","url":"/categories/wild-mushrooms/liberty-cap/z-score-reductions-in-2020-anxiety-study-quantified-significant-symptom-decline-after-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Standardized anxiety scores dropped sharply after supervised mushroom-derived therapy."},{"title":"Z-Score Reductions in 2020 Anxiety Study Quantified Significant Symptom Decline After Psilocybin","slug":"z-score-reductions-in-2020-anxiety-study-quantified-significant-symptom-decline-after-psilocybin","url":"/categories/wild-mushrooms/liberty-cap/z-score-reductions-in-2020-anxiety-study-quantified-significant-symptom-decline-after-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Standardized anxiety scores dropped sharply after supervised mushroom-derived therapy."},{"title":"Zoonotic Misidentification Cases Linked to Liberty Cap Lookalikes in 1980s UK Reports","slug":"zoonotic-misidentification-cases-linked-to-liberty-cap-lookalikes-in-1980s-uk-reports","url":"/categories/wild-mushrooms/liberty-cap/zoonotic-misidentification-cases-linked-to-liberty-cap-lookalikes-in-1980s-uk-reports.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One nearly identical mushroom can turn a psychedelic experience into organ failure."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

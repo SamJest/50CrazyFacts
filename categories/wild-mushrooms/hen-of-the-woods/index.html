@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hen Of The Woods</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Hen Of The Woods</h1>
+  <p>Explore all facts in "Hen Of The Woods".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Hen Of The Woods</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Appalachian Hen of the Woods Mushrooms Can Weigh Over 45 Kilograms","slug":"appalachian-hen-of-the-woods-mushrooms-can-weigh-over-45-kilograms","url":"/categories/wild-mushrooms/hen-of-the-woods/appalachian-hen-of-the-woods-mushrooms-can-weigh-over-45-kilograms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single wild mushroom in Pennsylvania once outweighed a grown Labrador."},{"title":"Biochemical Extraction Methods Standardize Hen of the Woods Beta-Glucan Fractions","slug":"biochemical-extraction-methods-standardize-hen-of-the-woods-beta-glucan-fractions","url":"/categories/wild-mushrooms/hen-of-the-woods/biochemical-extraction-methods-standardize-hen-of-the-woods-beta-glucan-fractions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Industrial labs extract specific molecules from a forest mushroom with pharmaceutical precision."},{"title":"Cellulose Liberation by Hen of the Woods Accelerates Wood Structural Failure","slug":"cellulose-liberation-by-hen-of-the-woods-accelerates-wood-structural-failure","url":"/categories/wild-mushrooms/hen-of-the-woods/cellulose-liberation-by-hen-of-the-woods-accelerates-wood-structural-failure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom dismantles the molecular glue that keeps hardwood rigid."},{"title":"Diameter Growth Rings Reveal Hen of the Woods Can Exploit Decades of Heartwood Formation","slug":"diameter-growth-rings-reveal-hen-of-the-woods-can-exploit-decades-of-heartwood-formation","url":"/categories/wild-mushrooms/hen-of-the-woods/diameter-growth-rings-reveal-hen-of-the-woods-can-exploit-decades-of-heartwood-formation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom can consume wood laid down before World War II."},{"title":"DNA Barcoding Confirms Hen of the Woods Identity Across Continents","slug":"dna-barcoding-confirms-hen-of-the-woods-identity-across-continents","url":"/categories/wild-mushrooms/hen-of-the-woods/dna-barcoding-confirms-hen-of-the-woods-identity-across-continents.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom species grows in forests separated by oceans."},{"title":"Enzymatic Breakdown Rates in Hen of the Woods Can Persist for Decades Within One Host","slug":"enzymatic-breakdown-rates-in-hen-of-the-woods-can-persist-for-decades-within-one-host","url":"/categories/wild-mushrooms/hen-of-the-woods/enzymatic-breakdown-rates-in-hen-of-the-woods-can-persist-for-decades-within-one-host.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can spend decades dismantling a single tree from inside."},{"title":"Fungal Colony Size in Hen of the Woods Can Extend Meters Beyond Visible Clusters","slug":"fungal-colony-size-in-hen-of-the-woods-can-extend-meters-beyond-visible-clusters","url":"/categories/wild-mushrooms/hen-of-the-woods/fungal-colony-size-in-hen-of-the-woods-can-extend-meters-beyond-visible-clusters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The mushroom you see is only a fraction of the organism you don’t."},{"title":"Girth of Individual Hen of the Woods Clusters Can Exceed One Meter in Diameter","slug":"girth-of-individual-hen-of-the-woods-clusters-can-exceed-one-meter-in-diameter","url":"/categories/wild-mushrooms/hen-of-the-woods/girth-of-individual-hen-of-the-woods-clusters-can-exceed-one-meter-in-diameter.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single mushroom cluster can spread wider than a kitchen table."},{"title":"Heavy Storm Events Increase Visible Fruiting of Hen of the Woods in Late Summer","slug":"heavy-storm-events-increase-visible-fruiting-of-hen-of-the-woods-in-late-summer","url":"/categories/wild-mushrooms/hen-of-the-woods/heavy-storm-events-increase-visible-fruiting-of-hen-of-the-woods-in-late-summer.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A powerful rainstorm can trigger kilograms of mushroom growth within days."},{"title":"Ionic Metal Accumulation in Hen of the Woods Reflects Soil Chemistry Shifts","slug":"ionic-metal-accumulation-in-hen-of-the-woods-reflects-soil-chemistry-shifts","url":"/categories/wild-mushrooms/hen-of-the-woods/ionic-metal-accumulation-in-hen-of-the-woods-reflects-soil-chemistry-shifts.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom at a tree’s base can mirror the metal profile of the soil beneath it."},{"title":"Junction Zones in Oak Roots Become Primary Colonization Points for Hen of the Woods","slug":"junction-zones-in-oak-roots-become-primary-colonization-points-for-hen-of-the-woods","url":"/categories/wild-mushrooms/hen-of-the-woods/junction-zones-in-oak-roots-become-primary-colonization-points-for-hen-of-the-woods.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The most structurally critical root junctions are often the first invaded."},{"title":"Kilogram-Scale Maitake Harvests in Japan Fueled a Multi-Million Dollar Wild Mushroom Market","slug":"kilogram-scale-maitake-harvests-in-japan-fueled-a-multi-million-dollar-wild-mushroom-market","url":"/categories/wild-mushrooms/hen-of-the-woods/kilogram-scale-maitake-harvests-in-japan-fueled-a-multi-million-dollar-wild-mushroom-market.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One forest mushroom triggered bidding wars worth thousands per specimen in Japan."},{"title":"Kinetic Wind Load Failures Increase When Hen of the Woods Compromises Oak Bases","slug":"kinetic-wind-load-failures-increase-when-hen-of-the-woods-compromises-oak-bases","url":"/categories/wild-mushrooms/hen-of-the-woods/kinetic-wind-load-failures-increase-when-hen-of-the-woods-compromises-oak-bases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single autumn mushroom can determine whether a 20-ton oak survives a storm."},{"title":"Lateral Root Decay from Hen of the Woods Alters Tree Biomechanics Before Collapse","slug":"lateral-root-decay-from-hen-of-the-woods-alters-tree-biomechanics-before-collapse","url":"/categories/wild-mushrooms/hen-of-the-woods/lateral-root-decay-from-hen-of-the-woods-alters-tree-biomechanics-before-collapse.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A tree can shift its weight distribution years before it finally falls."},{"title":"Lignin-Degrading Enzymes in Hen of the Woods Break Down One of Nature’s Toughest Polymers","slug":"lignin-degrading-enzymes-in-hen-of-the-woods-break-down-one-of-nature-s-toughest-polymers","url":"/categories/wild-mushrooms/hen-of-the-woods/lignin-degrading-enzymes-in-hen-of-the-woods-break-down-one-of-nature-s-toughest-polymers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom dissolves a polymer so resilient it helps trees stand for centuries."},{"title":"Mature Oak Ecosystems Depend on Hen of the Woods for Late-Stage Decomposition Cycles","slug":"mature-oak-ecosystems-depend-on-hen-of-the-woods-for-late-stage-decomposition-cycles","url":"/categories/wild-mushrooms/hen-of-the-woods/mature-oak-ecosystems-depend-on-hen-of-the-woods-for-late-stage-decomposition-cycles.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Old-growth forests quietly rely on a mushroom that eats their largest trees."},{"title":"Microclimate Humidity Gradients Determine Frond Architecture in Hen of the Woods","slug":"microclimate-humidity-gradients-determine-frond-architecture-in-hen-of-the-woods","url":"/categories/wild-mushrooms/hen-of-the-woods/microclimate-humidity-gradients-determine-frond-architecture-in-hen-of-the-woods.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Air moisture alone can reshape the architecture of a massive mushroom cluster."},{"title":"Mycelial Network Density in Hen of the Woods Enables Efficient Nutrient Redistribution","slug":"mycelial-network-density-in-hen-of-the-woods-enables-efficient-nutrient-redistribution","url":"/categories/wild-mushrooms/hen-of-the-woods/mycelial-network-density-in-hen-of-the-woods-enables-efficient-nutrient-redistribution.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hidden web beneath one oak can reroute nutrients across meters of soil."},{"title":"Nutrient Density Analysis Shows Hen of the Woods Contains Significant Beta-Glucan Concentrations","slug":"nutrient-density-analysis-shows-hen-of-the-woods-contains-significant-beta-glucan-concentrations","url":"/categories/wild-mushrooms/hen-of-the-woods/nutrient-density-analysis-shows-hen-of-the-woods-contains-significant-beta-glucan-concentrations.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A woodland mushroom contains polysaccharide levels studied alongside medical compounds."},{"title":"Oak Butt Rot from Hen of the Woods Can Hollow Trees While Leaves Remain Fully Green","slug":"oak-butt-rot-from-hen-of-the-woods-can-hollow-trees-while-leaves-remain-fully-green","url":"/categories/wild-mushrooms/hen-of-the-woods/oak-butt-rot-from-hen-of-the-woods-can-hollow-trees-while-leaves-remain-fully-green.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An oak can look perfectly healthy while its core is already hollow."},{"title":"Osmotic Pressure Maintains Frond Structure in Hen of the Woods Despite Delicate Tissue","slug":"osmotic-pressure-maintains-frond-structure-in-hen-of-the-woods-despite-delicate-tissue","url":"/categories/wild-mushrooms/hen-of-the-woods/osmotic-pressure-maintains-frond-structure-in-hen-of-the-woods-despite-delicate-tissue.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Water pressure alone keeps a massive mushroom’s layered form intact."},{"title":"Oxygen-Dependent Enzymes Drive Hen of the Woods White Rot Mechanism","slug":"oxygen-dependent-enzymes-drive-hen-of-the-woods-white-rot-mechanism","url":"/categories/wild-mushrooms/hen-of-the-woods/oxygen-dependent-enzymes-drive-hen-of-the-woods-white-rot-mechanism.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom requires oxygen to dismantle hardwood from within."},{"title":"Pound-for-Pound Water Content in Hen of the Woods Exceeds 85 Percent by Weight","slug":"pound-for-pound-water-content-in-hen-of-the-woods-exceeds-85-percent-by-weight","url":"/categories/wild-mushrooms/hen-of-the-woods/pound-for-pound-water-content-in-hen-of-the-woods-exceeds-85-percent-by-weight.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A massive forest mushroom is mostly water held in delicate fronds."},{"title":"Quantified Carbon Release from Hen of the Woods Decay Contributes to Forest CO2 Flux","slug":"quantified-carbon-release-from-hen-of-the-woods-decay-contributes-to-forest-co2-flux","url":"/categories/wild-mushrooms/hen-of-the-woods/quantified-carbon-release-from-hen-of-the-woods-decay-contributes-to-forest-co2-flux.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom at a tree’s base actively returns stored carbon to the atmosphere."},{"title":"Quercus Root Rot Signals Hen of the Woods Infection in Mature Oaks","slug":"quercus-root-rot-signals-hen-of-the-woods-infection-in-mature-oaks","url":"/categories/wild-mushrooms/hen-of-the-woods/quercus-root-rot-signals-hen-of-the-woods-infection-in-mature-oaks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A prized edible mushroom often means a 200-year-old oak is already dying."},{"title":"Ribosome-Level Studies Show Hen of the Woods Polysaccharides Alter Cytokine Signaling","slug":"ribosome-level-studies-show-hen-of-the-woods-polysaccharides-alter-cytokine-signaling","url":"/categories/wild-mushrooms/hen-of-the-woods/ribosome-level-studies-show-hen-of-the-woods-polysaccharides-alter-cytokine-signaling.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A woodland fungus can shift immune cell communication at the molecular level."},{"title":"Root System Interconnection Allows Hen of the Woods to Spread Between Adjacent Oaks","slug":"root-system-interconnection-allows-hen-of-the-woods-to-spread-between-adjacent-oaks","url":"/categories/wild-mushrooms/hen-of-the-woods/root-system-interconnection-allows-hen-of-the-woods-to-spread-between-adjacent-oaks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single fungal network can move from one oak to the next underground."},{"title":"Thermal Imaging Studies Capture Active Metabolism in Growing Hen of the Woods","slug":"thermal-imaging-studies-capture-active-metabolism-in-growing-hen-of-the-woods","url":"/categories/wild-mushrooms/hen-of-the-woods/thermal-imaging-studies-capture-active-metabolism-in-growing-hen-of-the-woods.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Infrared cameras reveal that a mushroom cluster radiates detectable heat."},{"title":"Ubiquitous Temperate Distribution Allows Hen of the Woods to Span Three Continents","slug":"ubiquitous-temperate-distribution-allows-hen-of-the-woods-to-span-three-continents","url":"/categories/wild-mushrooms/hen-of-the-woods/ubiquitous-temperate-distribution-allows-hen-of-the-woods-to-span-three-continents.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same oak-root fungus appears in forests separated by thousands of miles."},{"title":"Ultrastructure Imaging Reveals Hen of the Woods Hyphae Penetrate Deep into Oak Heartwood","slug":"ultrastructure-imaging-reveals-hen-of-the-woods-hyphae-penetrate-deep-into-oak-heartwood","url":"/categories/wild-mushrooms/hen-of-the-woods/ultrastructure-imaging-reveals-hen-of-the-woods-hyphae-penetrate-deep-into-oak-heartwood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Microscopic filaments infiltrate hardwood that once supported tons of weight."},{"title":"Urban Oak Failures Linked to Hen of the Woods Root Decay Cases in 2012 Storm Reports","slug":"urban-oak-failures-linked-to-hen-of-the-woods-root-decay-cases-in-2012-storm-reports","url":"/categories/wild-mushrooms/hen-of-the-woods/urban-oak-failures-linked-to-hen-of-the-woods-root-decay-cases-in-2012-storm-reports.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Storm-downed city oaks sometimes collapse because of a mushroom no one noticed."},{"title":"Vascular Cambium Exposure Enables Hen of the Woods Entry into 150-Year-Old Oaks","slug":"vascular-cambium-exposure-enables-hen-of-the-woods-entry-into-150-year-old-oaks","url":"/categories/wild-mushrooms/hen-of-the-woods/vascular-cambium-exposure-enables-hen-of-the-woods-entry-into-150-year-old-oaks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A centuries-old oak can be breached through a wound smaller than a coin."},{"title":"Vulnerable Urban Tree Clusters Show Higher Hen of the Woods Incidence in Compacted Soils","slug":"vulnerable-urban-tree-clusters-show-higher-hen-of-the-woods-incidence-in-compacted-soils","url":"/categories/wild-mushrooms/hen-of-the-woods/vulnerable-urban-tree-clusters-show-higher-hen-of-the-woods-incidence-in-compacted-soils.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"City soil compression can invite a forest fungus to undermine mature oaks."},{"title":"Watt-Level Metabolic Heat Measured in Dense Hen of the Woods Clusters","slug":"watt-level-metabolic-heat-measured-in-dense-hen-of-the-woods-clusters","url":"/categories/wild-mushrooms/hen-of-the-woods/watt-level-metabolic-heat-measured-in-dense-hen-of-the-woods-clusters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom cluster can generate measurable heat like a small appliance."},{"title":"Xeric Late-Summer Droughts Suppress Hen of the Woods Fruiting Despite Active Decay","slug":"xeric-late-summer-droughts-suppress-hen-of-the-woods-fruiting-despite-active-decay","url":"/categories/wild-mushrooms/hen-of-the-woods/xeric-late-summer-droughts-suppress-hen-of-the-woods-fruiting-despite-active-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A tree can be rotting from within while no mushroom appears at all."},{"title":"Xylose-Rich Beta-Glucans in Hen of the Woods Trigger Documented Immune Responses","slug":"xylose-rich-beta-glucans-in-hen-of-the-woods-trigger-documented-immune-responses","url":"/categories/wild-mushrooms/hen-of-the-woods/xylose-rich-beta-glucans-in-hen-of-the-woods-trigger-documented-immune-responses.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom activates immune pathways normally targeted by pharmaceuticals."},{"title":"Yearly Recurring Hen of the Woods Colonies Can Persist for Decades on One Tree","slug":"yearly-recurring-hen-of-the-woods-colonies-can-persist-for-decades-on-one-tree","url":"/categories/wild-mushrooms/hen-of-the-woods/yearly-recurring-hen-of-the-woods-colonies-can-persist-for-decades-on-one-tree.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom colony can return every autumn for over 20 years."},{"title":"Yield Records Show Cultivated Hen of the Woods Can Produce Multiple Flushes per Substrate Block","slug":"yield-records-show-cultivated-hen-of-the-woods-can-produce-multiple-flushes-per-substrate-block","url":"/categories/wild-mushrooms/hen-of-the-woods/yield-records-show-cultivated-hen-of-the-woods-can-produce-multiple-flushes-per-substrate-block.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One controlled growing block can erupt in repeated waves of mushroom mass."},{"title":"Yields of Cultivated Hen of the Woods Now Exceed Wild Harvests Worldwide","slug":"yields-of-cultivated-hen-of-the-woods-now-exceed-wild-harvests-worldwide","url":"/categories/wild-mushrooms/hen-of-the-woods/yields-of-cultivated-hen-of-the-woods-now-exceed-wild-harvests-worldwide.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Most Hen of the Woods eaten today never touched a forest."},{"title":"Zero-Fertilizer Forest Cycles Depend on Hen of the Woods Wood Decomposition","slug":"zero-fertilizer-forest-cycles-depend-on-hen-of-the-woods-wood-decomposition","url":"/categories/wild-mushrooms/hen-of-the-woods/zero-fertilizer-forest-cycles-depend-on-hen-of-the-woods-wood-decomposition.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Entire hardwood nutrient cycles hinge on a mushroom eating tree bases from within."},{"title":"Zonal White Rot Patterns from Hen of the Woods Weaken Load-Bearing Oak Roots","slug":"zonal-white-rot-patterns-from-hen-of-the-woods-weaken-load-bearing-oak-roots","url":"/categories/wild-mushrooms/hen-of-the-woods/zonal-white-rot-patterns-from-hen-of-the-woods-weaken-load-bearing-oak-roots.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A decorative mushroom can quietly reduce a tree’s root strength by half."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

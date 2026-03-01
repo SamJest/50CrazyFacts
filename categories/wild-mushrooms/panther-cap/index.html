@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panther Cap</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Panther Cap</h1>
+  <p>Explore all facts in "Panther Cap".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Panther Cap</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Amatoxin Concentration in Panther Cap Mushrooms Can Shut Down Human Liver Cells Within 24 Hours","slug":"amatoxin-concentration-in-panther-cap-mushrooms-can-shut-down-human-liver-cells-within-24-hours","url":"/categories/wild-mushrooms/panther-cap/amatoxin-concentration-in-panther-cap-mushrooms-can-shut-down-human-liver-cells-within-24-hours.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One wild mushroom can quietly dissolve your liver in a single day."},{"title":"Autonomic Nervous System Fluctuations Are Common in Moderate Panther Cap Poisoning","slug":"autonomic-nervous-system-fluctuations-are-common-in-moderate-panther-cap-poisoning","url":"/categories/wild-mushrooms/panther-cap/autonomic-nervous-system-fluctuations-are-common-in-moderate-panther-cap-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom can scramble the body’s automatic controls."},{"title":"Basal Volva Structure Is a Critical Identification Feature in Amanita pantherina","slug":"basal-volva-structure-is-a-critical-identification-feature-in-amanita-pantherina","url":"/categories/wild-mushrooms/panther-cap/basal-volva-structure-is-a-critical-identification-feature-in-amanita-pantherina.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Digging a few centimeters deeper can prevent a hospital visit."},{"title":"Behavioral Disinhibition During Amanita pantherina Intoxication Can Lead to Accidental Injury","slug":"behavioral-disinhibition-during-amanita-pantherina-intoxication-can-lead-to-accidental-injury","url":"/categories/wild-mushrooms/panther-cap/behavioral-disinhibition-during-amanita-pantherina-intoxication-can-lead-to-accidental-injury.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can remove the brain’s internal brakes."},{"title":"Cap Wart Patterns in Amanita pantherina Originate From Remnants of the Universal Veil","slug":"cap-wart-patterns-in-amanita-pantherina-originate-from-remnants-of-the-universal-veil","url":"/categories/wild-mushrooms/panther-cap/cap-wart-patterns-in-amanita-pantherina-originate-from-remnants-of-the-universal-veil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Those white spots are remnants of the mushroom’s birth."},{"title":"Cardiovascular Instability Has Been Observed During Severe Amanita pantherina Poisoning","slug":"cardiovascular-instability-has-been-observed-during-severe-amanita-pantherina-poisoning","url":"/categories/wild-mushrooms/panther-cap/cardiovascular-instability-has-been-observed-during-severe-amanita-pantherina-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom toxin can destabilize heart rhythm alongside the brain."},{"title":"Dopaminergic Disruption From Panther Cap Exposure Can Trigger Acute Psychosis-Like Episodes","slug":"dopaminergic-disruption-from-panther-cap-exposure-can-trigger-acute-psychosis-like-episodes","url":"/categories/wild-mushrooms/panther-cap/dopaminergic-disruption-from-panther-cap-exposure-can-trigger-acute-psychosis-like-episodes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A woodland mushroom can induce hospital-level psychosis within hours."},{"title":"Dose-Dependent Seizure Activity Has Been Reported in Severe Amanita pantherina Poisoning","slug":"dose-dependent-seizure-activity-has-been-reported-in-severe-amanita-pantherina-poisoning","url":"/categories/wild-mushrooms/panther-cap/dose-dependent-seizure-activity-has-been-reported-in-severe-amanita-pantherina-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"In extreme cases, this mushroom can trigger seizures."},{"title":"Ectomycorrhizal Networks Allow Amanita pantherina Mycelium to Span Several Meters Underground","slug":"ectomycorrhizal-networks-allow-amanita-pantherina-mycelium-to-span-several-meters-underground","url":"/categories/wild-mushrooms/panther-cap/ectomycorrhizal-networks-allow-amanita-pantherina-mycelium-to-span-several-meters-underground.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible cap is only a fraction of the organism."},{"title":"Environmental Stress Conditions Can Increase Secondary Metabolite Production in Toxic Fungi","slug":"environmental-stress-conditions-can-increase-secondary-metabolite-production-in-toxic-fungi","url":"/categories/wild-mushrooms/panther-cap/environmental-stress-conditions-can-increase-secondary-metabolite-production-in-toxic-fungi.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Harsh environments can make toxic mushrooms even more chemically potent."},{"title":"Fatal Respiratory Depression Has Been Reported in Severe Amanita pantherina Poisoning Cases","slug":"fatal-respiratory-depression-has-been-reported-in-severe-amanita-pantherina-poisoning-cases","url":"/categories/wild-mushrooms/panther-cap/fatal-respiratory-depression-has-been-reported-in-severe-amanita-pantherina-poisoning-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A decorative forest mushroom can shut down breathing entirely."},{"title":"Forest Soil Microbiomes Influence Secondary Metabolite Profiles in Amanita Species","slug":"forest-soil-microbiomes-influence-secondary-metabolite-profiles-in-amanita-species","url":"/categories/wild-mushrooms/panther-cap/forest-soil-microbiomes-influence-secondary-metabolite-profiles-in-amanita-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The soil beneath the mushroom helps shape its chemical arsenal."},{"title":"Glutamate Receptor Overstimulation by Ibotenic Acid Can Cause Excitotoxic Neuronal Injury","slug":"glutamate-receptor-overstimulation-by-ibotenic-acid-can-cause-excitotoxic-neuronal-injury","url":"/categories/wild-mushrooms/panther-cap/glutamate-receptor-overstimulation-by-ibotenic-acid-can-cause-excitotoxic-neuronal-injury.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom toxin can overstimulate neurons until they die."},{"title":"Hemispheric Climate Shifts Are Expanding Amanita pantherina Habitat Ranges in Temperate Forests","slug":"hemispheric-climate-shifts-are-expanding-amanita-pantherina-habitat-ranges-in-temperate-forests","url":"/categories/wild-mushrooms/panther-cap/hemispheric-climate-shifts-are-expanding-amanita-pantherina-habitat-ranges-in-temperate-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Climate change may be widening the footprint of this toxic mushroom."},{"title":"Historical Misidentification of Panther Cap Has Contributed to Foraging Deaths in Temperate Europe","slug":"historical-misidentification-of-panther-cap-has-contributed-to-foraging-deaths-in-temperate-europe","url":"/categories/wild-mushrooms/panther-cap/historical-misidentification-of-panther-cap-has-contributed-to-foraging-deaths-in-temperate-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A simple visual mistake in the forest has ended lives."},{"title":"HPLC Laboratory Analysis Is Required to Precisely Measure Ibotenic Acid in Panther Cap Tissue","slug":"hplc-laboratory-analysis-is-required-to-precisely-measure-ibotenic-acid-in-panther-cap-tissue","url":"/categories/wild-mushrooms/panther-cap/hplc-laboratory-analysis-is-required-to-precisely-measure-ibotenic-acid-in-panther-cap-tissue.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"You need advanced lab equipment to know how toxic it is."},{"title":"Ibotenic Acid in Panther Cap Mushrooms Converts to Psychoactive Muscimol Inside the Human Brain","slug":"ibotenic-acid-in-panther-cap-mushrooms-converts-to-psychoactive-muscimol-inside-the-human-brain","url":"/categories/wild-mushrooms/panther-cap/ibotenic-acid-in-panther-cap-mushrooms-converts-to-psychoactive-muscimol-inside-the-human-brain.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest mushroom chemically rewires your brain within hours."},{"title":"Juvenile Panther Cap Specimens Can Be More Difficult to Identify Than Mature Caps","slug":"juvenile-panther-cap-specimens-can-be-more-difficult-to-identify-than-mature-caps","url":"/categories/wild-mushrooms/panther-cap/juvenile-panther-cap-specimens-can-be-more-difficult-to-identify-than-mature-caps.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The most dangerous stage can look the least suspicious."},{"title":"Kinetic Onset of Symptoms After Amanita pantherina Ingestion Often Occurs Within 30 to 120 Minutes","slug":"kinetic-onset-of-symptoms-after-amanita-pantherina-ingestion-often-occurs-within-30-to-120-minutes","url":"/categories/wild-mushrooms/panther-cap/kinetic-onset-of-symptoms-after-amanita-pantherina-ingestion-often-occurs-within-30-to-120-minutes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Effects from this mushroom can begin before a movie ends."},{"title":"Koryak Shamanic Traditions Document Panther Cap Intoxication Rituals in Siberia","slug":"koryak-shamanic-traditions-document-panther-cap-intoxication-rituals-in-siberia","url":"/categories/wild-mushrooms/panther-cap/koryak-shamanic-traditions-document-panther-cap-intoxication-rituals-in-siberia.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Entire ceremonies were built around ingesting a toxic mushroom."},{"title":"Lethal Dosage Uncertainty in Amanita pantherina Has No Established Safe Threshold in Clinical Literature","slug":"lethal-dosage-uncertainty-in-amanita-pantherina-has-no-established-safe-threshold-in-clinical-literature","url":"/categories/wild-mushrooms/panther-cap/lethal-dosage-uncertainty-in-amanita-pantherina-has-no-established-safe-threshold-in-clinical-literature.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"There is no medically defined safe dose for this mushroom."},{"title":"Long-Term Neurological Sequelae Are Rare but Documented After Severe Panther Cap Exposure","slug":"long-term-neurological-sequelae-are-rare-but-documented-after-severe-panther-cap-exposure","url":"/categories/wild-mushrooms/panther-cap/long-term-neurological-sequelae-are-rare-but-documented-after-severe-panther-cap-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Most recover fully, but some cases leave lingering effects."},{"title":"Molecular Mimicry in Panther Cap Toxins Allows Them to Imitate Human Neurotransmitters","slug":"molecular-mimicry-in-panther-cap-toxins-allows-them-to-imitate-human-neurotransmitters","url":"/categories/wild-mushrooms/panther-cap/molecular-mimicry-in-panther-cap-toxins-allows-them-to-imitate-human-neurotransmitters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom’s molecules impersonate your own brain chemicals."},{"title":"Neurological Ataxia Is a Hallmark Symptom of Panther Cap Intoxication","slug":"neurological-ataxia-is-a-hallmark-symptom-of-panther-cap-intoxication","url":"/categories/wild-mushrooms/panther-cap/neurological-ataxia-is-a-hallmark-symptom-of-panther-cap-intoxication.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Victims can lose the ability to walk within hours."},{"title":"Neurotoxic Dose Variability in Panther Cap Mushrooms Makes Every Specimen Chemically Unpredictable","slug":"neurotoxic-dose-variability-in-panther-cap-mushrooms-makes-every-specimen-chemically-unpredictable","url":"/categories/wild-mushrooms/panther-cap/neurotoxic-dose-variability-in-panther-cap-mushrooms-makes-every-specimen-chemically-unpredictable.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two identical-looking mushrooms can deliver radically different toxic doses."},{"title":"Ongoing Clinical Reviews Show Most Amanita pantherina Patients Recover Within 24 to 48 Hours","slug":"ongoing-clinical-reviews-show-most-amanita-pantherina-patients-recover-within-24-to-48-hours","url":"/categories/wild-mushrooms/panther-cap/ongoing-clinical-reviews-show-most-amanita-pantherina-patients-recover-within-24-to-48-hours.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toxin that mimics fatal crisis can fully reverse in two days."},{"title":"Panther Cap Mushroom Poisoning Cases Appear in European Toxicology Surveillance Reports Every Year","slug":"panther-cap-mushroom-poisoning-cases-appear-in-european-toxicology-surveillance-reports-every-year","url":"/categories/wild-mushrooms/panther-cap/panther-cap-mushroom-poisoning-cases-appear-in-european-toxicology-surveillance-reports-every-year.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Modern hospitals still treat poisonings from this medieval-looking fungus."},{"title":"Postmortem Toxicology Has Confirmed Muscimol Presence in Fatal Amanita pantherina Cases","slug":"postmortem-toxicology-has-confirmed-muscimol-presence-in-fatal-amanita-pantherina-cases","url":"/categories/wild-mushrooms/panther-cap/postmortem-toxicology-has-confirmed-muscimol-presence-in-fatal-amanita-pantherina-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Autopsies have traced deaths back to molecules from this mushroom."},{"title":"Quantitative Toxicology Confirms Ibotenic Acid Concentrations Vary Widely Between Specimens","slug":"quantitative-toxicology-confirms-ibotenic-acid-concentrations-vary-widely-between-specimens","url":"/categories/wild-mushrooms/panther-cap/quantitative-toxicology-confirms-ibotenic-acid-concentrations-vary-widely-between-specimens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two mushrooms from the same forest can carry different chemical loads."},{"title":"Quaternary Forest Expansion Increased Amanita pantherina Distribution Across Temperate Europe","slug":"quaternary-forest-expansion-increased-amanita-pantherina-distribution-across-temperate-europe","url":"/categories/wild-mushrooms/panther-cap/quaternary-forest-expansion-increased-amanita-pantherina-distribution-across-temperate-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Ice Age forest shifts helped spread a neurotoxic mushroom across continents."},{"title":"Receptor Binding Affinity of Muscimol Exceeds That of Many Endogenous GABA Molecules","slug":"receptor-binding-affinity-of-muscimol-exceeds-that-of-many-endogenous-gaba-molecules","url":"/categories/wild-mushrooms/panther-cap/receptor-binding-affinity-of-muscimol-exceeds-that-of-many-endogenous-gaba-molecules.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungal molecule can bind more powerfully than your own neurotransmitters."},{"title":"Reversible Coma States Have Been Documented After Severe Panther Cap Intoxication","slug":"reversible-coma-states-have-been-documented-after-severe-panther-cap-intoxication","url":"/categories/wild-mushrooms/panther-cap/reversible-coma-states-have-been-documented-after-severe-panther-cap-intoxication.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom can induce coma without permanent injury."},{"title":"Spore Print Color Confirms Amanita pantherina as a White-Spored Species","slug":"spore-print-color-confirms-amanita-pantherina-as-a-white-spored-species","url":"/categories/wild-mushrooms/panther-cap/spore-print-color-confirms-amanita-pantherina-as-a-white-spored-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A simple overnight test can reveal its true identity."},{"title":"Synaptic Inhibition by Muscimol Demonstrates How Small Molecules Can Silence Neural Networks","slug":"synaptic-inhibition-by-muscimol-demonstrates-how-small-molecules-can-silence-neural-networks","url":"/categories/wild-mushrooms/panther-cap/synaptic-inhibition-by-muscimol-demonstrates-how-small-molecules-can-silence-neural-networks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A molecule smaller than a virus can quiet entire brain circuits."},{"title":"Temperature and Moisture Cycles Influence Fruiting Frequency of Amanita pantherina","slug":"temperature-and-moisture-cycles-influence-fruiting-frequency-of-amanita-pantherina","url":"/categories/wild-mushrooms/panther-cap/temperature-and-moisture-cycles-influence-fruiting-frequency-of-amanita-pantherina.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Weather patterns decide when this toxic mushroom appears."},{"title":"Toxic Confusion Between Amanita pantherina and Edible Agaricus Species Persists in Modern Foraging","slug":"toxic-confusion-between-amanita-pantherina-and-edible-agaricus-species-persists-in-modern-foraging","url":"/categories/wild-mushrooms/panther-cap/toxic-confusion-between-amanita-pantherina-and-edible-agaricus-species-persists-in-modern-foraging.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Edible and toxic mushrooms can look alarmingly alike."},{"title":"Ultraviolet Exposure Alters Pigment Stability in Amanita pantherina Caps","slug":"ultraviolet-exposure-alters-pigment-stability-in-amanita-pantherina-caps","url":"/categories/wild-mushrooms/panther-cap/ultraviolet-exposure-alters-pigment-stability-in-amanita-pantherina-caps.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Sunlight can subtly change how this toxic mushroom looks."},{"title":"Uptake of Ibotenic Acid From Panther Cap Can Cross the Blood Brain Barrier","slug":"uptake-of-ibotenic-acid-from-panther-cap-can-cross-the-blood-brain-barrier","url":"/categories/wild-mushrooms/panther-cap/uptake-of-ibotenic-acid-from-panther-cap-can-cross-the-blood-brain-barrier.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest toxin can breach your brain’s most protected boundary."},{"title":"Visual Hallucinations From Amanita pantherina Can Persist Up to 24 Hours in Documented Cases","slug":"visual-hallucinations-from-amanita-pantherina-can-persist-up-to-24-hours-in-documented-cases","url":"/categories/wild-mushrooms/panther-cap/visual-hallucinations-from-amanita-pantherina-can-persist-up-to-24-hours-in-documented-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Some patients see altered reality for an entire day."},{"title":"Worldwide Distribution of Amanita pantherina Extends Across Europe, Asia, and North America","slug":"worldwide-distribution-of-amanita-pantherina-extends-across-europe-asia-and-north-america","url":"/categories/wild-mushrooms/panther-cap/worldwide-distribution-of-amanita-pantherina-extends-across-europe-asia-and-north-america.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This toxic mushroom spans three continents."},{"title":"Xenobiotic Metabolism Determines How Quickly Muscimol Clears From the Human Body","slug":"xenobiotic-metabolism-determines-how-quickly-muscimol-clears-from-the-human-body","url":"/categories/wild-mushrooms/panther-cap/xenobiotic-metabolism-determines-how-quickly-muscimol-clears-from-the-human-body.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your liver decides how long this mushroom controls your brain."},{"title":"Xeric Soil Adaptability Allows Panther Cap to Thrive in Nutrient-Poor Forest Floors","slug":"xeric-soil-adaptability-allows-panther-cap-to-thrive-in-nutrient-poor-forest-floors","url":"/categories/wild-mushrooms/panther-cap/xeric-soil-adaptability-allows-panther-cap-to-thrive-in-nutrient-poor-forest-floors.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This toxic mushroom flourishes where soil nutrients barely exist."},{"title":"Yew and Birch Symbiosis Helps Anchor Panther Cap in Northern Hemisphere Forests","slug":"yew-and-birch-symbiosis-helps-anchor-panther-cap-in-northern-hemisphere-forests","url":"/categories/wild-mushrooms/panther-cap/yew-and-birch-symbiosis-helps-anchor-panther-cap-in-northern-hemisphere-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toxic mushroom depends on tree roots to survive at scale."},{"title":"Zonal Forest Composition Directly Influences Amanita pantherina Abundance","slug":"zonal-forest-composition-directly-influences-amanita-pantherina-abundance","url":"/categories/wild-mushrooms/panther-cap/zonal-forest-composition-directly-influences-amanita-pantherina-abundance.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Change the trees, and you change this mushroom’s population."},{"title":"Zoological Case Reports Document Panther Cap Poisoning in Domestic Animals","slug":"zoological-case-reports-document-panther-cap-poisoning-in-domestic-animals","url":"/categories/wild-mushrooms/panther-cap/zoological-case-reports-document-panther-cap-poisoning-in-domestic-animals.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Dogs can collapse within hours after eating this forest mushroom."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

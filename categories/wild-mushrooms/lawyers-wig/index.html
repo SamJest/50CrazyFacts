@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lawyers Wig</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Lawyers Wig</h1>
+  <p>Explore all facts in "Lawyers Wig".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Lawyers Wig</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aleuria aurantia Forms Bright Orange Cups Visible From Several Meters Away","slug":"aleuria-aurantia-forms-bright-orange-cups-visible-from-several-meters-away","url":"/categories/wild-mushrooms/lawyers-wig/aleuria-aurantia-forms-bright-orange-cups-visible-from-several-meters-away.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest floor can suddenly look like it is scattered with tiny flames."},{"title":"Amanita phalloides Responsible for Majority of Fatal Mushroom Poisonings Worldwide","slug":"amanita-phalloides-responsible-for-majority-of-fatal-mushroom-poisonings-worldwide","url":"/categories/wild-mushrooms/lawyers-wig/amanita-phalloides-responsible-for-majority-of-fatal-mushroom-poisonings-worldwide.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Half a cap of this mushroom can shut down a human liver."},{"title":"Boletus edulis Networks Facilitate Nutrient Exchange Between Competing Trees","slug":"boletus-edulis-networks-facilitate-nutrient-exchange-between-competing-trees","url":"/categories/wild-mushrooms/lawyers-wig/boletus-edulis-networks-facilitate-nutrient-exchange-between-competing-trees.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One mushroom links rival trees in a hidden underground marketplace."},{"title":"Claviceps purpurea Ergot Contamination Triggered Historic Mass Poisonings in Medieval Europe","slug":"claviceps-purpurea-ergot-contamination-triggered-historic-mass-poisonings-in-medieval-europe","url":"/categories/wild-mushrooms/lawyers-wig/claviceps-purpurea-ergot-contamination-triggered-historic-mass-poisonings-in-medieval-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A grain-infecting fungus once caused convulsions and gangrene across villages."},{"title":"Coprinus comatus Self-Digests Into Black Ink Within Hours of Maturity","slug":"coprinus-comatus-self-digests-into-black-ink-within-hours-of-maturity","url":"/categories/wild-mushrooms/lawyers-wig/coprinus-comatus-self-digests-into-black-ink-within-hours-of-maturity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom liquefies itself before your eyes."},{"title":"Daldinia concentrica Survives Repeated Ignition Due to Dense Carbon Structure","slug":"daldinia-concentrica-survives-repeated-ignition-due-to-dense-carbon-structure","url":"/categories/wild-mushrooms/lawyers-wig/daldinia-concentrica-survives-repeated-ignition-due-to-dense-carbon-structure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus can smolder for hours like natural charcoal."},{"title":"Dichomitus squalens Degrades Industrial Lignin Using High-Redox Enzymes","slug":"dichomitus-squalens-degrades-industrial-lignin-using-high-redox-enzymes","url":"/categories/wild-mushrooms/lawyers-wig/dichomitus-squalens-degrades-industrial-lignin-using-high-redox-enzymes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A wood-rotting fungus dismantles one of nature’s toughest polymers."},{"title":"Entoloma hochstetteri Displays Structural Blue Pigments Without Synthetic Dye","slug":"entoloma-hochstetteri-displays-structural-blue-pigments-without-synthetic-dye","url":"/categories/wild-mushrooms/lawyers-wig/entoloma-hochstetteri-displays-structural-blue-pigments-without-synthetic-dye.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom in New Zealand glows cobalt without artificial coloring."},{"title":"Flammulina velutipes Fruits Beneath Snow in Subzero Temperatures","slug":"flammulina-velutipes-fruits-beneath-snow-in-subzero-temperatures","url":"/categories/wild-mushrooms/lawyers-wig/flammulina-velutipes-fruits-beneath-snow-in-subzero-temperatures.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom pushes through snow when most life is dormant."},{"title":"Fomitopsis pinicola Withstands Subzero Temperatures Below -40 Degrees Celsius","slug":"fomitopsis-pinicola-withstands-subzero-temperatures-below-40-degrees-celsius","url":"/categories/wild-mushrooms/lawyers-wig/fomitopsis-pinicola-withstands-subzero-temperatures-below-40-degrees-celsius.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This shelf fungus survives winters cold enough to freeze steel brittle."},{"title":"Fusarium Species Produce Mycotoxins That Contaminate Global Grain Supplies","slug":"fusarium-species-produce-mycotoxins-that-contaminate-global-grain-supplies","url":"/categories/wild-mushrooms/lawyers-wig/fusarium-species-produce-mycotoxins-that-contaminate-global-grain-supplies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A microscopic fungus can taint harvests across entire continents."},{"title":"Gyromitra esculenta Contains Rocket Fuel Compound Monomethylhydrazine","slug":"gyromitra-esculenta-contains-rocket-fuel-compound-monomethylhydrazine","url":"/categories/wild-mushrooms/lawyers-wig/gyromitra-esculenta-contains-rocket-fuel-compound-monomethylhydrazine.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom shares chemistry with rocket propellant."},{"title":"Hydnellum peckii Anticoagulant Compounds Rival Pharmaceutical Blood Thinners","slug":"hydnellum-peckii-anticoagulant-compounds-rival-pharmaceutical-blood-thinners","url":"/categories/wild-mushrooms/lawyers-wig/hydnellum-peckii-anticoagulant-compounds-rival-pharmaceutical-blood-thinners.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom bleeds red droplets that act like medical anticoagulants."},{"title":"Inocybe Species Contain Muscarine Levels High Enough to Disrupt Cardiac Function","slug":"inocybe-species-contain-muscarine-levels-high-enough-to-disrupt-cardiac-function","url":"/categories/wild-mushrooms/lawyers-wig/inocybe-species-contain-muscarine-levels-high-enough-to-disrupt-cardiac-function.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A small brown mushroom can interfere with your heartbeat."},{"title":"Inonotus obliquus Extracts Studied for High Antioxidant Activity in Laboratory Trials","slug":"inonotus-obliquus-extracts-studied-for-high-antioxidant-activity-in-laboratory-trials","url":"/categories/wild-mushrooms/lawyers-wig/inonotus-obliquus-extracts-studied-for-high-antioxidant-activity-in-laboratory-trials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A charcoal-black growth on birch trees shows measurable antioxidant power."},{"title":"Jack O’Lantern Mushroom Poisonings Increase During Autumn Foraging Season","slug":"jack-o-lantern-mushroom-poisonings-increase-during-autumn-foraging-season","url":"/categories/wild-mushrooms/lawyers-wig/jack-o-lantern-mushroom-poisonings-increase-during-autumn-foraging-season.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A glowing mushroom mimics edible chanterelles and sends foragers to hospitals."},{"title":"Kuehneromyces mutabilis Poisonings Occurred Due to Deadly Galerina Lookalikes","slug":"kuehneromyces-mutabilis-poisonings-occurred-due-to-deadly-galerina-lookalikes","url":"/categories/wild-mushrooms/lawyers-wig/kuehneromyces-mutabilis-poisonings-occurred-due-to-deadly-galerina-lookalikes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One nearly identical mushroom can shut down your liver within days."},{"title":"Lactarius indigo Produces Naturally Blue Latex With Antibacterial Properties","slug":"lactarius-indigo-produces-naturally-blue-latex-with-antibacterial-properties","url":"/categories/wild-mushrooms/lawyers-wig/lactarius-indigo-produces-naturally-blue-latex-with-antibacterial-properties.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom bleeds bright blue milk that can inhibit bacteria."},{"title":"Lycoperdon perlatum Releases Millions of Spores From a Single Puff","slug":"lycoperdon-perlatum-releases-millions-of-spores-from-a-single-puff","url":"/categories/wild-mushrooms/lawyers-wig/lycoperdon-perlatum-releases-millions-of-spores-from-a-single-puff.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Step on this mushroom and it explodes into a brown cloud."},{"title":"Marasmius oreades Revives After Complete Drying and Forms Expanding Fairy Rings","slug":"marasmius-oreades-revives-after-complete-drying-and-forms-expanding-fairy-rings","url":"/categories/wild-mushrooms/lawyers-wig/marasmius-oreades-revives-after-complete-drying-and-forms-expanding-fairy-rings.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This meadow mushroom dies, dries, and returns to life in widening circles."},{"title":"Morchella Species Appear in Post-Wildfire Forests Within One Growing Season","slug":"morchella-species-appear-in-post-wildfire-forests-within-one-growing-season","url":"/categories/wild-mushrooms/lawyers-wig/morchella-species-appear-in-post-wildfire-forests-within-one-growing-season.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After forests burn, prized mushrooms erupt from ash within months."},{"title":"Nidulariaceae Bird’s Nest Fungi Launch Spores Using Raindrop Impact Physics","slug":"nidulariaceae-bird-s-nest-fungi-launch-spores-using-raindrop-impact-physics","url":"/categories/wild-mushrooms/lawyers-wig/nidulariaceae-bird-s-nest-fungi-launch-spores-using-raindrop-impact-physics.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A raindrop turns this mushroom into a microscopic artillery cannon."},{"title":"Omphalotus olearius Emits Bioluminescent Light Visible in Complete Darkness","slug":"omphalotus-olearius-emits-bioluminescent-light-visible-in-complete-darkness","url":"/categories/wild-mushrooms/lawyers-wig/omphalotus-olearius-emits-bioluminescent-light-visible-in-complete-darkness.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom glows green at night without electricity."},{"title":"Ophiocordyceps unilateralis Forces Ants to Bite Leaves Before Death","slug":"ophiocordyceps-unilateralis-forces-ants-to-bite-leaves-before-death","url":"/categories/wild-mushrooms/lawyers-wig/ophiocordyceps-unilateralis-forces-ants-to-bite-leaves-before-death.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus hijacks an ant’s brain and makes it climb to its death."},{"title":"Pisolithus tinctorius Survives in Heavy Metal Contaminated Mine Tailings","slug":"pisolithus-tinctorius-survives-in-heavy-metal-contaminated-mine-tailings","url":"/categories/wild-mushrooms/lawyers-wig/pisolithus-tinctorius-survives-in-heavy-metal-contaminated-mine-tailings.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus grows where soil is toxic to most plants."},{"title":"Pleurocybella porrigens Linked to Acute Encephalopathy in 2004 Japan Outbreak","slug":"pleurocybella-porrigens-linked-to-acute-encephalopathy-in-2004-japan-outbreak","url":"/categories/wild-mushrooms/lawyers-wig/pleurocybella-porrigens-linked-to-acute-encephalopathy-in-2004-japan-outbreak.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An edible mushroom was linked to sudden brain failure in dozens of people."},{"title":"Pleurotus ostreatus Can Digest Petroleum Hydrocarbons in Contaminated Soil","slug":"pleurotus-ostreatus-can-digest-petroleum-hydrocarbons-in-contaminated-soil","url":"/categories/wild-mushrooms/lawyers-wig/pleurotus-ostreatus-can-digest-petroleum-hydrocarbons-in-contaminated-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An edible mushroom can break down crude oil components."},{"title":"Psathyrella aquatica Fruits Fully Submerged in Flowing River Water","slug":"psathyrella-aquatica-fruits-fully-submerged-in-flowing-river-water","url":"/categories/wild-mushrooms/lawyers-wig/psathyrella-aquatica-fruits-fully-submerged-in-flowing-river-water.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom grows underwater in a moving river."},{"title":"Psilocybin Research at Johns Hopkins Shows Sustained Depression Reduction After Single Dose","slug":"psilocybin-research-at-johns-hopkins-shows-sustained-depression-reduction-after-single-dose","url":"/categories/wild-mushrooms/lawyers-wig/psilocybin-research-at-johns-hopkins-shows-sustained-depression-reduction-after-single-dose.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One guided mushroom dose reduced major depression for months."},{"title":"Quinine Discovery Was Accelerated by Fungal Fermentation Research in 19th Century Europe","slug":"quinine-discovery-was-accelerated-by-fungal-fermentation-research-in-19th-century-europe","url":"/categories/wild-mushrooms/lawyers-wig/quinine-discovery-was-accelerated-by-fungal-fermentation-research-in-19th-century-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A deadly malaria treatment breakthrough depended on studying mold and fermentation."},{"title":"Ramaria formosa Resembles Coral but Contains Gastrointestinal Irritants","slug":"ramaria-formosa-resembles-coral-but-contains-gastrointestinal-irritants","url":"/categories/wild-mushrooms/lawyers-wig/ramaria-formosa-resembles-coral-but-contains-gastrointestinal-irritants.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This coral-shaped fungus can leave you severely dehydrated."},{"title":"Rhodotus palmatus Produces Veined Caps That Resemble Engineered Mesh Patterns","slug":"rhodotus-palmatus-produces-veined-caps-that-resemble-engineered-mesh-patterns","url":"/categories/wild-mushrooms/lawyers-wig/rhodotus-palmatus-produces-veined-caps-that-resemble-engineered-mesh-patterns.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom looks 3D-printed by a biomedical lab."},{"title":"Russula emetica Causes Violent Vomiting Within Hours of Ingestion","slug":"russula-emetica-causes-violent-vomiting-within-hours-of-ingestion","url":"/categories/wild-mushrooms/lawyers-wig/russula-emetica-causes-violent-vomiting-within-hours-of-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One bite of this red mushroom triggers immediate gastric revolt."},{"title":"Russula nigricans Blackens Completely When Bruised or Cut","slug":"russula-nigricans-blackens-completely-when-bruised-or-cut","url":"/categories/wild-mushrooms/lawyers-wig/russula-nigricans-blackens-completely-when-bruised-or-cut.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This white mushroom turns coal-black within minutes of damage."},{"title":"Sparassis crispa Can Reach 10 Kilograms With Thousands of Folded Lobes","slug":"sparassis-crispa-can-reach-10-kilograms-with-thousands-of-folded-lobes","url":"/categories/wild-mushrooms/lawyers-wig/sparassis-crispa-can-reach-10-kilograms-with-thousands-of-folded-lobes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom grows into a brain-sized mass weighing as much as a bowling ball."},{"title":"Suillus luteus Produces Sticky Caps That Trap Debris and Insects","slug":"suillus-luteus-produces-sticky-caps-that-trap-debris-and-insects","url":"/categories/wild-mushrooms/lawyers-wig/suillus-luteus-produces-sticky-caps-that-trap-debris-and-insects.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom coats itself in slime thick enough to glue pine needles."},{"title":"Tremella mesenterica Can Rehydrate After Complete Desiccation Within Minutes","slug":"tremella-mesenterica-can-rehydrate-after-complete-desiccation-within-minutes","url":"/categories/wild-mushrooms/lawyers-wig/tremella-mesenterica-can-rehydrate-after-complete-desiccation-within-minutes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This jelly fungus shrivels to nothing and revives with rain."},{"title":"Tricholoma matsutake Commands Prices Above $1,000 Per Kilogram in Japan","slug":"tricholoma-matsutake-commands-prices-above-1-000-per-kilogram-in-japan","url":"/categories/wild-mushrooms/lawyers-wig/tricholoma-matsutake-commands-prices-above-1-000-per-kilogram-in-japan.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A wild mushroom can sell for more than luxury seafood."},{"title":"Ustilaginoidea virens Causes False Smut That Contaminates Rice Harvests","slug":"ustilaginoidea-virens-causes-false-smut-that-contaminates-rice-harvests","url":"/categories/wild-mushrooms/lawyers-wig/ustilaginoidea-virens-causes-false-smut-that-contaminates-rice-harvests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus can replace rice grains with toxic green balls."},{"title":"Ustilago maydis Transformed Corn Smut Into a Multimillion-Dollar Food Industry","slug":"ustilago-maydis-transformed-corn-smut-into-a-multimillion-dollar-food-industry","url":"/categories/wild-mushrooms/lawyers-wig/ustilago-maydis-transformed-corn-smut-into-a-multimillion-dollar-food-industry.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A crop-destroying fungus became a prized culinary ingredient."},{"title":"Volvariella bombycina Grows Directly From Tree Trunks Instead of Soil","slug":"volvariella-bombycina-grows-directly-from-tree-trunks-instead-of-soil","url":"/categories/wild-mushrooms/lawyers-wig/volvariella-bombycina-grows-directly-from-tree-trunks-instead-of-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This silk-sheathed mushroom erupts from living wood midair."},{"title":"Volvariella volvacea Cultivation Feeds Millions Across Southeast Asia","slug":"volvariella-volvacea-cultivation-feeds-millions-across-southeast-asia","url":"/categories/wild-mushrooms/lawyers-wig/volvariella-volvacea-cultivation-feeds-millions-across-southeast-asia.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fast-growing tropical mushroom doubles production within days."},{"title":"Volvopluteus gloiocephalus Thrives in Urban Compost and Waste Sites","slug":"volvopluteus-gloiocephalus-thrives-in-urban-compost-and-waste-sites","url":"/categories/wild-mushrooms/lawyers-wig/volvopluteus-gloiocephalus-thrives-in-urban-compost-and-waste-sites.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom prefers garbage heaps over pristine forests."},{"title":"Wolfiporia extensa Sclerotia Can Weigh Over 10 Kilograms Underground","slug":"wolfiporia-extensa-sclerotia-can-weigh-over-10-kilograms-underground","url":"/categories/wild-mushrooms/lawyers-wig/wolfiporia-extensa-sclerotia-can-weigh-over-10-kilograms-underground.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single underground fungus can weigh more than a household microwave."},{"title":"Xanthoria parietina Survives High UV Radiation on Exposed Surfaces","slug":"xanthoria-parietina-survives-high-uv-radiation-on-exposed-surfaces","url":"/categories/wild-mushrooms/lawyers-wig/xanthoria-parietina-survives-high-uv-radiation-on-exposed-surfaces.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This bright orange fungus thrives in direct sunlight that damages cells."},{"title":"Xerocomellus chrysenteron Reveals Red Flesh When Cap Cracks Open","slug":"xerocomellus-chrysenteron-reveals-red-flesh-when-cap-cracks-open","url":"/categories/wild-mushrooms/lawyers-wig/xerocomellus-chrysenteron-reveals-red-flesh-when-cap-cracks-open.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This brown mushroom splits to expose bright red tissue underneath."},{"title":"Xylaria polymorpha Survives Wildfire Heat That Destroys Forest Canopies","slug":"xylaria-polymorpha-survives-wildfire-heat-that-destroys-forest-canopies","url":"/categories/wild-mushrooms/lawyers-wig/xylaria-polymorpha-survives-wildfire-heat-that-destroys-forest-canopies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A charcoal-black fungus survives temperatures that incinerate trees above it."},{"title":"Yarrowia lipolytica Breaks Down Industrial Oils and Fats","slug":"yarrowia-lipolytica-breaks-down-industrial-oils-and-fats","url":"/categories/wild-mushrooms/lawyers-wig/yarrowia-lipolytica-breaks-down-industrial-oils-and-fats.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This wild yeast digests grease like a microscopic refinery."},{"title":"Yartsa Gunbu Trade Generated Over $1 Billion Annually in Himalayan Regions","slug":"yartsa-gunbu-trade-generated-over-1-billion-annually-in-himalayan-regions","url":"/categories/wild-mushrooms/lawyers-wig/yartsa-gunbu-trade-generated-over-1-billion-annually-in-himalayan-regions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A parasitic fungus growing from caterpillars became a billion-dollar economy."},{"title":"Zelleromyces Species Form Underground Networks Spanning Multiple Hectares","slug":"zelleromyces-species-form-underground-networks-spanning-multiple-hectares","url":"/categories/wild-mushrooms/lawyers-wig/zelleromyces-species-form-underground-networks-spanning-multiple-hectares.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hidden fungus can occupy more land than a city block."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

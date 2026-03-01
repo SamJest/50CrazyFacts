@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>King Oyster</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>King Oyster</h1>
+  <p>Explore all facts in "King Oyster".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>King Oyster</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adaptive Enzyme Switching Lets King Oyster Mushrooms Digest Different Plant Polymers","slug":"adaptive-enzyme-switching-lets-king-oyster-mushrooms-digest-different-plant-polymers","url":"/categories/wild-mushrooms/king-oyster/adaptive-enzyme-switching-lets-king-oyster-mushrooms-digest-different-plant-polymers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom changes its chemistry depending on what it eats."},{"title":"Ancient Mediterranean Foragers Harvested King Oyster Mushrooms for Millennia","slug":"ancient-mediterranean-foragers-harvested-king-oyster-mushrooms-for-millennia","url":"/categories/wild-mushrooms/king-oyster/ancient-mediterranean-foragers-harvested-king-oyster-mushrooms-for-millennia.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Humans were eating this wild mushroom before modern agriculture existed."},{"title":"Billions of Enzyme Reactions Occur Inside a Single King Oyster Stem","slug":"billions-of-enzyme-reactions-occur-inside-a-single-king-oyster-stem","url":"/categories/wild-mushrooms/king-oyster/billions-of-enzyme-reactions-occur-inside-a-single-king-oyster-stem.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"That thick white stem is a living biochemical reactor."},{"title":"Biological Ballistospory Launches King Oyster Spores with Surface Tension Physics","slug":"biological-ballistospory-launches-king-oyster-spores-with-surface-tension-physics","url":"/categories/wild-mushrooms/king-oyster/biological-ballistospory-launches-king-oyster-spores-with-surface-tension-physics.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each spore is fired by a microscopic water-powered catapult."},{"title":"Carbon Stored in King Oyster Biomass Originates from Decomposed Grassland Roots","slug":"carbon-stored-in-king-oyster-biomass-originates-from-decomposed-grassland-roots","url":"/categories/wild-mushrooms/king-oyster/carbon-stored-in-king-oyster-biomass-originates-from-decomposed-grassland-roots.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"That thick stem was once buried plant tissue."},{"title":"Colossal Clusters of King Oyster Mushrooms Can Weigh Several Kilograms","slug":"colossal-clusters-of-king-oyster-mushrooms-can-weigh-several-kilograms","url":"/categories/wild-mushrooms/king-oyster/colossal-clusters-of-king-oyster-mushrooms-can-weigh-several-kilograms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single wild cluster can outweigh a housecat."},{"title":"Deep Soil Mycelium of King Oyster Mushrooms Survives Seasonal Extremes","slug":"deep-soil-mycelium-of-king-oyster-mushrooms-survives-seasonal-extremes","url":"/categories/wild-mushrooms/king-oyster/deep-soil-mycelium-of-king-oyster-mushrooms-survives-seasonal-extremes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible mushroom dies, but the underground body endures."},{"title":"Dormant King Oyster Mycelium Can Reactivate Rapidly After Environmental Stress","slug":"dormant-king-oyster-mycelium-can-reactivate-rapidly-after-environmental-stress","url":"/categories/wild-mushrooms/king-oyster/dormant-king-oyster-mycelium-can-reactivate-rapidly-after-environmental-stress.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Months of silence end with sudden underground activity."},{"title":"Enzyme Concentrations in King Oyster Mycelium Rival Industrial Catalysts","slug":"enzyme-concentrations-in-king-oyster-mycelium-rival-industrial-catalysts","url":"/categories/wild-mushrooms/king-oyster/enzyme-concentrations-in-king-oyster-mycelium-rival-industrial-catalysts.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus runs chemical reactions without steel tanks or heat."},{"title":"Extreme Temperature Shifts Trigger King Oyster Fruiting Events","slug":"extreme-temperature-shifts-trigger-king-oyster-fruiting-events","url":"/categories/wild-mushrooms/king-oyster/extreme-temperature-shifts-trigger-king-oyster-fruiting-events.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A sudden drop in temperature can summon mushrooms from bare soil."},{"title":"Fruiting Body Emergence in King Oyster Mushrooms Compresses Weeks of Growth into Days","slug":"fruiting-body-emergence-in-king-oyster-mushrooms-compresses-weeks-of-growth-into-days","url":"/categories/wild-mushrooms/king-oyster/fruiting-body-emergence-in-king-oyster-mushrooms-compresses-weeks-of-growth-into-days.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"What takes plants weeks happens here in under a week."},{"title":"Fungal Cell Walls in King Oyster Mushrooms Rival Insect Exoskeleton Strength","slug":"fungal-cell-walls-in-king-oyster-mushrooms-rival-insect-exoskeleton-strength","url":"/categories/wild-mushrooms/king-oyster/fungal-cell-walls-in-king-oyster-mushrooms-rival-insect-exoskeleton-strength.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This soft mushroom shares structural chemistry with beetle armor."},{"title":"Giant Spore Production in King Oyster Mushrooms Alters Local Air Composition","slug":"giant-spore-production-in-king-oyster-mushrooms-alters-local-air-composition","url":"/categories/wild-mushrooms/king-oyster/giant-spore-production-in-king-oyster-mushrooms-alters-local-air-composition.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A field of mushrooms can subtly change the air you breathe."},{"title":"Grassland Distribution of King Oyster Mushrooms Defies Forest-Centric Fungal Assumptions","slug":"grassland-distribution-of-king-oyster-mushrooms-defies-forest-centric-fungal-assumptions","url":"/categories/wild-mushrooms/king-oyster/grassland-distribution-of-king-oyster-mushrooms-defies-forest-centric-fungal-assumptions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This wild mushroom thrives far from shaded woods."},{"title":"Hidden Symbiotic Relationships Link King Oyster Mushrooms to Plant Roots","slug":"hidden-symbiotic-relationships-link-king-oyster-mushrooms-to-plant-roots","url":"/categories/wild-mushrooms/king-oyster/hidden-symbiotic-relationships-link-king-oyster-mushrooms-to-plant-roots.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom’s survival depends on plants you rarely notice."},{"title":"Hyphal Fusion in King Oyster Networks Strengthens Colony Resilience","slug":"hyphal-fusion-in-king-oyster-networks-strengthens-colony-resilience","url":"/categories/wild-mushrooms/king-oyster/hyphal-fusion-in-king-oyster-networks-strengthens-colony-resilience.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Thousands of threads merge into a unified organism."},{"title":"Integrated Climate Cues Synchronize King Oyster Fruiting Across Landscapes","slug":"integrated-climate-cues-synchronize-king-oyster-fruiting-across-landscapes","url":"/categories/wild-mushrooms/king-oyster/integrated-climate-cues-synchronize-king-oyster-fruiting-across-landscapes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Entire fields can respond to the same weather signal."},{"title":"Invisible Mycelial Threads of King Oyster Mushrooms Span Meters Underground","slug":"invisible-mycelial-threads-of-king-oyster-mushrooms-span-meters-underground","url":"/categories/wild-mushrooms/king-oyster/invisible-mycelial-threads-of-king-oyster-mushrooms-span-meters-underground.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Thousands of microscopic threads unite into one hidden organism."},{"title":"Junction-Based Nutrient Flow in King Oyster Mycelium Enables Distributed Growth","slug":"junction-based-nutrient-flow-in-king-oyster-mycelium-enables-distributed-growth","url":"/categories/wild-mushrooms/king-oyster/junction-based-nutrient-flow-in-king-oyster-mycelium-enables-distributed-growth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Energy moves through microscopic junctions beneath your feet."},{"title":"Juvenile King Oyster Mushrooms Expand at Remarkable Speed After Rainfall","slug":"juvenile-king-oyster-mushrooms-expand-at-remarkable-speed-after-rainfall","url":"/categories/wild-mushrooms/king-oyster/juvenile-king-oyster-mushrooms-expand-at-remarkable-speed-after-rainfall.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A bare patch of soil can erupt with thick stems in days."},{"title":"King Oyster Mushrooms Can Digest Tough Wood Fibers Like Industrial Enzymes","slug":"king-oyster-mushrooms-can-digest-tough-wood-fibers-like-industrial-enzymes","url":"/categories/wild-mushrooms/king-oyster/king-oyster-mushrooms-can-digest-tough-wood-fibers-like-industrial-enzymes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This edible mushroom digests wood tougher than cardboard."},{"title":"King Oyster Mushrooms Continue Growing After Harvest","slug":"king-oyster-mushrooms-continue-growing-after-harvest","url":"/categories/wild-mushrooms/king-oyster/king-oyster-mushrooms-continue-growing-after-harvest.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cut this mushroom, and it keeps changing."},{"title":"King Oyster Mushrooms Form Underground Networks Spanning Forest Floors","slug":"king-oyster-mushrooms-form-underground-networks-spanning-forest-floors","url":"/categories/wild-mushrooms/king-oyster/king-oyster-mushrooms-form-underground-networks-spanning-forest-floors.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One mushroom can secretly control a forest floor."},{"title":"King Oyster Mushrooms Produce Billions of Airborne Spores","slug":"king-oyster-mushrooms-produce-billions-of-airborne-spores","url":"/categories/wild-mushrooms/king-oyster/king-oyster-mushrooms-produce-billions-of-airborne-spores.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single mushroom can release a microscopic storm."},{"title":"King Oyster Mushrooms Survive in Arid Mediterranean Climates","slug":"king-oyster-mushrooms-survive-in-arid-mediterranean-climates","url":"/categories/wild-mushrooms/king-oyster/king-oyster-mushrooms-survive-in-arid-mediterranean-climates.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This thick-stemmed mushroom evolved in near-desert heat."},{"title":"Large-Scale King Oyster Mycelium Can Outlive Its Visible Mushrooms by Years","slug":"large-scale-king-oyster-mycelium-can-outlive-its-visible-mushrooms-by-years","url":"/categories/wild-mushrooms/king-oyster/large-scale-king-oyster-mycelium-can-outlive-its-visible-mushrooms-by-years.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The mushroom dies in days, but the organism survives for years."},{"title":"Massive Carbon Recycling by King Oyster Mushrooms Powers Grassland Ecosystems","slug":"massive-carbon-recycling-by-king-oyster-mushrooms-powers-grassland-ecosystems","url":"/categories/wild-mushrooms/king-oyster/massive-carbon-recycling-by-king-oyster-mushrooms-powers-grassland-ecosystems.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom unlocks carbon locked in dead roots."},{"title":"Nighttime Humidity Surges Intensify King Oyster Spore Release","slug":"nighttime-humidity-surges-intensify-king-oyster-spore-release","url":"/categories/wild-mushrooms/king-oyster/nighttime-humidity-surges-intensify-king-oyster-spore-release.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After dark, this mushroom releases an invisible cloud."},{"title":"Oxygen Exchange Continues Inside Harvested King Oyster Mushrooms","slug":"oxygen-exchange-continues-inside-harvested-king-oyster-mushrooms","url":"/categories/wild-mushrooms/king-oyster/oxygen-exchange-continues-inside-harvested-king-oyster-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even after cutting, this mushroom keeps breathing."},{"title":"Powerful Lignin-Degrading Enzymes Make King Oyster Mushrooms Bioremediation Candidates","slug":"powerful-lignin-degrading-enzymes-make-king-oyster-mushrooms-bioremediation-candidates","url":"/categories/wild-mushrooms/king-oyster/powerful-lignin-degrading-enzymes-make-king-oyster-mushrooms-bioremediation-candidates.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This edible fungus can break down stubborn environmental pollutants."},{"title":"Rapid Water Uptake Drives Sudden Expansion in King Oyster Mushrooms","slug":"rapid-water-uptake-drives-sudden-expansion-in-king-oyster-mushrooms","url":"/categories/wild-mushrooms/king-oyster/rapid-water-uptake-drives-sudden-expansion-in-king-oyster-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom inflates like a biological sponge after rain."},{"title":"Soil-Insulated Mycelium Protects King Oyster Mushrooms from UV Radiation","slug":"soil-insulated-mycelium-protects-king-oyster-mushrooms-from-uv-radiation","url":"/categories/wild-mushrooms/king-oyster/soil-insulated-mycelium-protects-king-oyster-mushrooms-from-uv-radiation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Sunlight kills the surface, but the core stays protected."},{"title":"Temperature Drops Act as Reproductive Switches for King Oyster Mushrooms","slug":"temperature-drops-act-as-reproductive-switches-for-king-oyster-mushrooms","url":"/categories/wild-mushrooms/king-oyster/temperature-drops-act-as-reproductive-switches-for-king-oyster-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A sudden chill can activate hidden fungal growth."},{"title":"Underground King Oyster Networks Share Nutrients Across Distances","slug":"underground-king-oyster-networks-share-nutrients-across-distances","url":"/categories/wild-mushrooms/king-oyster/underground-king-oyster-networks-share-nutrients-across-distances.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Nutrients discovered in one patch travel through hidden fungal highways."},{"title":"Vast Spore Clouds from King Oyster Mushrooms Can Travel Kilometers on Wind Currents","slug":"vast-spore-clouds-from-king-oyster-mushrooms-can-travel-kilometers-on-wind-currents","url":"/categories/wild-mushrooms/king-oyster/vast-spore-clouds-from-king-oyster-mushrooms-can-travel-kilometers-on-wind-currents.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom in one field can seed another miles away."},{"title":"Vertical Stem Density in King Oyster Mushrooms Supports Unusual Structural Strength","slug":"vertical-stem-density-in-king-oyster-mushrooms-supports-unusual-structural-strength","url":"/categories/wild-mushrooms/king-oyster/vertical-stem-density-in-king-oyster-mushrooms-supports-unusual-structural-strength.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom stands firm where others collapse."},{"title":"Wild King Oyster Mushrooms Withstand Weeks Without Rain Underground","slug":"wild-king-oyster-mushrooms-withstand-weeks-without-rain-underground","url":"/categories/wild-mushrooms/king-oyster/wild-king-oyster-mushrooms-withstand-weeks-without-rain-underground.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Drought scorches the surface, but the fungus survives below."},{"title":"Wind-Driven Dispersal Allows King Oyster Spores to Cross Natural Barriers","slug":"wind-driven-dispersal-allows-king-oyster-spores-to-cross-natural-barriers","url":"/categories/wild-mushrooms/king-oyster/wind-driven-dispersal-allows-king-oyster-spores-to-cross-natural-barriers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Rivers and hills cannot stop this mushroom’s spread."},{"title":"Xeric Adaptations Allow King Oyster Mushrooms to Thrive in Semi-Arid Grasslands","slug":"xeric-adaptations-allow-king-oyster-mushrooms-to-thrive-in-semi-arid-grasslands","url":"/categories/wild-mushrooms/king-oyster/xeric-adaptations-allow-king-oyster-mushrooms-to-thrive-in-semi-arid-grasslands.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Most mushrooms prefer damp forests; this one evolved for open dry plains."},{"title":"Xylem-Like Nutrient Channels in King Oyster Hyphae Enable Internal Transport","slug":"xylem-like-nutrient-channels-in-king-oyster-hyphae-enable-internal-transport","url":"/categories/wild-mushrooms/king-oyster/xylem-like-nutrient-channels-in-king-oyster-hyphae-enable-internal-transport.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom moves nutrients through microscopic highways."},{"title":"Yearly Fruiting Cycles of King Oyster Mushrooms Align with Seasonal Climate Patterns","slug":"yearly-fruiting-cycles-of-king-oyster-mushrooms-align-with-seasonal-climate-patterns","url":"/categories/wild-mushrooms/king-oyster/yearly-fruiting-cycles-of-king-oyster-mushrooms-align-with-seasonal-climate-patterns.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom times its appearance with seasonal shifts."},{"title":"Yield Surges After Autumn Rains Can Cover Fields with King Oyster Mushrooms","slug":"yield-surges-after-autumn-rains-can-cover-fields-with-king-oyster-mushrooms","url":"/categories/wild-mushrooms/king-oyster/yield-surges-after-autumn-rains-can-cover-fields-with-king-oyster-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One storm can transform a plain into a mushroom field."},{"title":"Zonal Growth Patterns Reveal Resource Allocation in King Oyster Mycelium","slug":"zonal-growth-patterns-reveal-resource-allocation-in-king-oyster-mycelium","url":"/categories/wild-mushrooms/king-oyster/zonal-growth-patterns-reveal-resource-allocation-in-king-oyster-mycelium.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The fungus grows in shifting zones like a living map."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

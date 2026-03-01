@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Psilocybe Cyanescens</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Psilocybe Cyanescens</h1>
+  <p>Explore all facts in "Psilocybe Cyanescens".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Psilocybe Cyanescens</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adverse Psychological Reactions to Psilocybin Documented in Controlled Clinical Trials","slug":"adverse-psychological-reactions-to-psilocybin-documented-in-controlled-clinical-trials","url":"/categories/wild-mushrooms/psilocybe-cyanescens/adverse-psychological-reactions-to-psilocybin-documented-in-controlled-clinical-trials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even in supervised labs, a measured dose can trigger acute fear."},{"title":"Blue Oxidation Reaction in Psilocybe cyanescens Correlates With Psilocin Polymerization","slug":"blue-oxidation-reaction-in-psilocybe-cyanescens-correlates-with-psilocin-polymerization","url":"/categories/wild-mushrooms/psilocybe-cyanescens/blue-oxidation-reaction-in-psilocybe-cyanescens-correlates-with-psilocin-polymerization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A bruise on a mushroom signals molecular reassembly in seconds."},{"title":"Cortical Entropy Increases Under Psilocybin According to Neuroimaging Models","slug":"cortical-entropy-increases-under-psilocybin-according-to-neuroimaging-models","url":"/categories/wild-mushrooms/psilocybe-cyanescens/cortical-entropy-increases-under-psilocybin-according-to-neuroimaging-models.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain activity becomes measurably more chaotic after a fungal metabolite."},{"title":"Dose-Response Curve of Psilocybin Shows Nonlinear Psychological Escalation","slug":"dose-response-curve-of-psilocybin-shows-nonlinear-psychological-escalation","url":"/categories/wild-mushrooms/psilocybe-cyanescens/dose-response-curve-of-psilocybin-shows-nonlinear-psychological-escalation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Doubling the dose does not double the experience; it can shatter it."},{"title":"Electrophysiological Studies Show Psilocybin Alters Cortical Oscillations Within Hours","slug":"electrophysiological-studies-show-psilocybin-alters-cortical-oscillations-within-hours","url":"/categories/wild-mushrooms/psilocybe-cyanescens/electrophysiological-studies-show-psilocybin-alters-cortical-oscillations-within-hours.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brainwave patterns shift measurably after a single fungal metabolite."},{"title":"Forensic Identification Challenges of Psilocybe cyanescens in Mixed Substrate Samples","slug":"forensic-identification-challenges-of-psilocybe-cyanescens-in-mixed-substrate-samples","url":"/categories/wild-mushrooms/psilocybe-cyanescens/forensic-identification-challenges-of-psilocybe-cyanescens-in-mixed-substrate-samples.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A handful of mulch can conceal a federally controlled compound."},{"title":"Functional Connectivity Reset Observed After Single Psilocybin Session","slug":"functional-connectivity-reset-observed-after-single-psilocybin-session","url":"/categories/wild-mushrooms/psilocybe-cyanescens/functional-connectivity-reset-observed-after-single-psilocybin-session.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One supervised dose temporarily reorganized large-scale brain networks."},{"title":"Genomic Sequencing Reveals Psilocybin Biosynthesis Gene Cluster in Psilocybe cyanescens","slug":"genomic-sequencing-reveals-psilocybin-biosynthesis-gene-cluster-in-psilocybe-cyanescens","url":"/categories/wild-mushrooms/psilocybe-cyanescens/genomic-sequencing-reveals-psilocybin-biosynthesis-gene-cluster-in-psilocybe-cyanescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A handful of genes in decaying wood code for altered consciousness."},{"title":"Hospitalization Rates for Hallucinogenic Mushroom Exposure Remain Low but Measurable","slug":"hospitalization-rates-for-hallucinogenic-mushroom-exposure-remain-low-but-measurable","url":"/categories/wild-mushrooms/psilocybe-cyanescens/hospitalization-rates-for-hallucinogenic-mushroom-exposure-remain-low-but-measurable.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Most psychedelic mushroom cases avoid organ failure yet still reach emergency rooms."},{"title":"Immunoassay Screening Limitations in Detecting Psilocybin Compounds","slug":"immunoassay-screening-limitations-in-detecting-psilocybin-compounds","url":"/categories/wild-mushrooms/psilocybe-cyanescens/immunoassay-screening-limitations-in-detecting-psilocybin-compounds.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Standard drug tests often miss a molecule that reshapes consciousness."},{"title":"Juvenile Brain Development Concerns Raised in Psilocybin Exposure Research","slug":"juvenile-brain-development-concerns-raised-in-psilocybin-exposure-research","url":"/categories/wild-mushrooms/psilocybe-cyanescens/juvenile-brain-development-concerns-raised-in-psilocybin-exposure-research.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An adult research compound interacts with a brain still under construction."},{"title":"Kinetic Half-Life of Psilocin Averages Two to Three Hours in Humans","slug":"kinetic-half-life-of-psilocin-averages-two-to-three-hours-in-humans","url":"/categories/wild-mushrooms/psilocybe-cyanescens/kinetic-half-life-of-psilocin-averages-two-to-three-hours-in-humans.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A molecule clears from blood in hours yet can reshape memory for years."},{"title":"King County 2022 Psilocybe cyanescens Emergency Calls After Urban Mulch Bloom","slug":"king-county-2022-psilocybe-cyanescens-emergency-calls-after-urban-mulch-bloom","url":"/categories/wild-mushrooms/psilocybe-cyanescens/king-county-2022-psilocybe-cyanescens-emergency-calls-after-urban-mulch-bloom.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A decorative wood chip bed turned into a hallucinogenic hotspot overnight."},{"title":"Kitsap County 2015 Pediatric Psilocybe cyanescens Exposure Case","slug":"kitsap-county-2015-pediatric-psilocybe-cyanescens-exposure-case","url":"/categories/wild-mushrooms/psilocybe-cyanescens/kitsap-county-2015-pediatric-psilocybe-cyanescens-exposure-case.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toddler found a mushroom in the yard and began hallucinating."},{"title":"Long-Term Psychological Outcomes After Psilocybin Sessions Studied Over 12 Months","slug":"long-term-psychological-outcomes-after-psilocybin-sessions-studied-over-12-months","url":"/categories/wild-mushrooms/psilocybe-cyanescens/long-term-psychological-outcomes-after-psilocybin-sessions-studied-over-12-months.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single supervised session produced measurable effects a year later."},{"title":"Metabolic Conversion of Psilocybin to Psilocin Occurs Within Minutes of Ingestion","slug":"metabolic-conversion-of-psilocybin-to-psilocin-occurs-within-minutes-of-ingestion","url":"/categories/wild-mushrooms/psilocybe-cyanescens/metabolic-conversion-of-psilocybin-to-psilocin-occurs-within-minutes-of-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A swallowed mushroom begins chemical transformation before perception shifts."},{"title":"Microgram-Level 5-HT2A Receptor Binding Explains Psilocybe cyanescens Potency","slug":"microgram-level-5-ht2a-receptor-binding-explains-psilocybe-cyanescens-potency","url":"/categories/wild-mushrooms/psilocybe-cyanescens/microgram-level-5-ht2a-receptor-binding-explains-psilocybe-cyanescens-potency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Less than a grain of salt can rewire cortical signaling."},{"title":"Neuroimaging 2021 Findings on Default Mode Network Disruption by Psilocybin","slug":"neuroimaging-2021-findings-on-default-mode-network-disruption-by-psilocybin","url":"/categories/wild-mushrooms/psilocybe-cyanescens/neuroimaging-2021-findings-on-default-mode-network-disruption-by-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A molecule from mulch temporarily dismantles the brain’s sense of self."},{"title":"Onset Time of Psilocybin Effects Typically Occurs Within 20 to 40 Minutes","slug":"onset-time-of-psilocybin-effects-typically-occurs-within-20-to-40-minutes","url":"/categories/wild-mushrooms/psilocybe-cyanescens/onset-time-of-psilocybin-effects-typically-occurs-within-20-to-40-minutes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Reality begins to bend less than half an hour after ingestion."},{"title":"Oregon 1985 Identification of Psilocybe cyanescens in Coastal Dune Grasses","slug":"oregon-1985-identification-of-psilocybe-cyanescens-in-coastal-dune-grasses","url":"/categories/wild-mushrooms/psilocybe-cyanescens/oregon-1985-identification-of-psilocybe-cyanescens-in-coastal-dune-grasses.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A coastal lawn fungus carries a federally controlled hallucinogen."},{"title":"Psilocybin Content Variability in Psilocybe cyanescens Measured at Over 1 Percent Dry Weight","slug":"psilocybin-content-variability-in-psilocybe-cyanescens-measured-at-over-1-percent-dry-weight","url":"/categories/wild-mushrooms/psilocybe-cyanescens/psilocybin-content-variability-in-psilocybe-cyanescens-measured-at-over-1-percent-dry-weight.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A gram of dried fungus can hold more than 10 milligrams of a potent psychedelic."},{"title":"Public Health Reports Note Increased Adolescent Exposure to Psilocybin Mushrooms","slug":"public-health-reports-note-increased-adolescent-exposure-to-psilocybin-mushrooms","url":"/categories/wild-mushrooms/psilocybe-cyanescens/public-health-reports-note-increased-adolescent-exposure-to-psilocybin-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Teen experimentation intersects with mushrooms that grow beside sidewalks."},{"title":"Quantitative Mass Spectrometry Confirms Alkaloid Variability Between Individual Specimens","slug":"quantitative-mass-spectrometry-confirms-alkaloid-variability-between-individual-specimens","url":"/categories/wild-mushrooms/psilocybe-cyanescens/quantitative-mass-spectrometry-confirms-alkaloid-variability-between-individual-specimens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two identical-looking caps can carry dramatically different chemical loads."},{"title":"Quebec 2019 Report on Blue Bruising Reaction in Psilocybe cyanescens","slug":"quebec-2019-report-on-blue-bruising-reaction-in-psilocybe-cyanescens","url":"/categories/wild-mushrooms/psilocybe-cyanescens/quebec-2019-report-on-blue-bruising-reaction-in-psilocybe-cyanescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom that turns blue when touched signals chemical transformation in seconds."},{"title":"Rainfall-Driven Fruiting Cycles of Psilocybe cyanescens Peak Below 10 Degrees Celsius","slug":"rainfall-driven-fruiting-cycles-of-psilocybe-cyanescens-peak-below-10-degrees-celsius","url":"/categories/wild-mushrooms/psilocybe-cyanescens/rainfall-driven-fruiting-cycles-of-psilocybe-cyanescens-peak-below-10-degrees-celsius.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cold autumn air triggers a flush of naturally occurring psychedelics."},{"title":"Serotonin 5-HT2A Receptor Agonism Drives Psilocybe cyanescens Hallucinogenic Effects","slug":"serotonin-5-ht2a-receptor-agonism-drives-psilocybe-cyanescens-hallucinogenic-effects","url":"/categories/wild-mushrooms/psilocybe-cyanescens/serotonin-5-ht2a-receptor-agonism-drives-psilocybe-cyanescens-hallucinogenic-effects.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A woodland molecule hijacks the same receptors that regulate mood and perception."},{"title":"Thermal Drying Above 70 Degrees Celsius Reduces Psilocybin Stability","slug":"thermal-drying-above-70-degrees-celsius-reduces-psilocybin-stability","url":"/categories/wild-mushrooms/psilocybe-cyanescens/thermal-drying-above-70-degrees-celsius-reduces-psilocybin-stability.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Excess heat weakens a molecule that reshapes perception."},{"title":"Time Perception Distortion Under Psilocybin Linked to Serotonergic Modulation","slug":"time-perception-distortion-under-psilocybin-linked-to-serotonergic-modulation","url":"/categories/wild-mushrooms/psilocybe-cyanescens/time-perception-distortion-under-psilocybin-linked-to-serotonergic-modulation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Minutes can stretch into hours under a molecule grown in bark chips."},{"title":"Ultraviolet Stability Testing of Psilocybin in Dried Psilocybe cyanescens Samples","slug":"ultraviolet-stability-testing-of-psilocybin-in-dried-psilocybe-cyanescens-samples","url":"/categories/wild-mushrooms/psilocybe-cyanescens/ultraviolet-stability-testing-of-psilocybin-in-dried-psilocybe-cyanescens-samples.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Sunlight fades colors but leaves a psychoactive molecule largely intact."},{"title":"University of Washington 2018 Survey of Psilocybe cyanescens in Campus Landscapes","slug":"university-of-washington-2018-survey-of-psilocybe-cyanescens-in-campus-landscapes","url":"/categories/wild-mushrooms/psilocybe-cyanescens/university-of-washington-2018-survey-of-psilocybe-cyanescens-in-campus-landscapes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A university campus hosts clusters of naturally occurring psychedelics."},{"title":"Urban Mulch Distribution Networks Facilitate Psilocybe cyanescens Spread Across Cities","slug":"urban-mulch-distribution-networks-facilitate-psilocybe-cyanescens-spread-across-cities","url":"/categories/wild-mushrooms/psilocybe-cyanescens/urban-mulch-distribution-networks-facilitate-psilocybe-cyanescens-spread-across-cities.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Landscaping trucks quietly transport psychoactive fungi between neighborhoods."},{"title":"Vancouver 2020 Decriminalization Debate Highlighted Natural Psilocybe cyanescens Growth","slug":"vancouver-2020-decriminalization-debate-highlighted-natural-psilocybe-cyanescens-growth","url":"/categories/wild-mushrooms/psilocybe-cyanescens/vancouver-2020-decriminalization-debate-highlighted-natural-psilocybe-cyanescens-growth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"City lawmakers debated a drug that sprouts freely in public mulch."},{"title":"Vienna 2017 Emergency Admissions Linked to Psilocybe cyanescens Misidentification","slug":"vienna-2017-emergency-admissions-linked-to-psilocybe-cyanescens-misidentification","url":"/categories/wild-mushrooms/psilocybe-cyanescens/vienna-2017-emergency-admissions-linked-to-psilocybe-cyanescens-misidentification.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom mistaken for edible species sent multiple Austrians into acute psychosis."},{"title":"Volatile Organic Compound Profiles Differentiate Psilocybe cyanescens From Similar Species","slug":"volatile-organic-compound-profiles-differentiate-psilocybe-cyanescens-from-similar-species","url":"/categories/wild-mushrooms/psilocybe-cyanescens/volatile-organic-compound-profiles-differentiate-psilocybe-cyanescens-from-similar-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Invisible scent molecules distinguish a psychoactive mushroom from its lookalikes."},{"title":"Washington State 2019 Poison Center Data on Psilocybe cyanescens Calls","slug":"washington-state-2019-poison-center-data-on-psilocybe-cyanescens-calls","url":"/categories/wild-mushrooms/psilocybe-cyanescens/washington-state-2019-poison-center-data-on-psilocybe-cyanescens-calls.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Autumn rain triggered a spike in psychedelic mushroom exposure calls."},{"title":"Wavy Cap Morphology Distinguishes Psilocybe cyanescens From Similar Brown Mushrooms","slug":"wavy-cap-morphology-distinguishes-psilocybe-cyanescens-from-similar-brown-mushrooms","url":"/categories/wild-mushrooms/psilocybe-cyanescens/wavy-cap-morphology-distinguishes-psilocybe-cyanescens-from-similar-brown-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A slight ripple in a cap margin separates cuisine from hallucination."},{"title":"Xanthochroic Cap Color Shifts Complicate Field Identification of Psilocybe cyanescens","slug":"xanthochroic-cap-color-shifts-complicate-field-identification-of-psilocybe-cyanescens","url":"/categories/wild-mushrooms/psilocybe-cyanescens/xanthochroic-cap-color-shifts-complicate-field-identification-of-psilocybe-cyanescens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom shifts color as it dries, confusing even careful observers."},{"title":"Xeric Wood Chip Colonization Allows Psilocybe cyanescens to Thrive in Urban Drought Zones","slug":"xeric-wood-chip-colonization-allows-psilocybe-cyanescens-to-thrive-in-urban-drought-zones","url":"/categories/wild-mushrooms/psilocybe-cyanescens/xeric-wood-chip-colonization-allows-psilocybe-cyanescens-to-thrive-in-urban-drought-zones.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A moisture-loving psychedelic survives in engineered drought landscapes."},{"title":"Yale 2020 Study on Psilocybin Showed Rapid Depression Score Reduction","slug":"yale-2020-study-on-psilocybin-showed-rapid-depression-score-reduction","url":"/categories/wild-mushrooms/psilocybe-cyanescens/yale-2020-study-on-psilocybin-showed-rapid-depression-score-reduction.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from a lawn mushroom reduced major depression scores within days."},{"title":"Zoning Law Conflicts Over Naturally Occurring Psilocybin Mushrooms in Urban Parks","slug":"zoning-law-conflicts-over-naturally-occurring-psilocybin-mushrooms-in-urban-parks","url":"/categories/wild-mushrooms/psilocybe-cyanescens/zoning-law-conflicts-over-naturally-occurring-psilocybin-mushrooms-in-urban-parks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A Schedule I compound sprouts legally in public playground mulch."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

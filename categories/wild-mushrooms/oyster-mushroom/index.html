@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oyster Mushroom</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Oyster Mushroom</h1>
+  <p>Explore all facts in "Oyster Mushroom".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Oyster Mushroom</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aerodynamic Spore Ejection in Oyster Mushrooms Creates Microscopic Air Currents","slug":"aerodynamic-spore-ejection-in-oyster-mushrooms-creates-microscopic-air-currents","url":"/categories/wild-mushrooms/oyster-mushroom/aerodynamic-spore-ejection-in-oyster-mushrooms-creates-microscopic-air-currents.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each oyster mushroom spore launches itself using a surface tension catapult."},{"title":"Ancient Oyster Mushrooms Were Recorded in Roman Texts as Edible Wild Fungi","slug":"ancient-oyster-mushrooms-were-recorded-in-roman-texts-as-edible-wild-fungi","url":"/categories/wild-mushrooms/oyster-mushroom/ancient-oyster-mushrooms-were-recorded-in-roman-texts-as-edible-wild-fungi.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Ancient Romans documented eating this wild mushroom nearly 2,000 years ago."},{"title":"Biodegradation by Oyster Mushrooms Can Neutralize Certain Chemical Warfare Residues","slug":"biodegradation-by-oyster-mushrooms-can-neutralize-certain-chemical-warfare-residues","url":"/categories/wild-mushrooms/oyster-mushroom/biodegradation-by-oyster-mushrooms-can-neutralize-certain-chemical-warfare-residues.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom has been tested against remnants of chemical warfare compounds."},{"title":"Bioelectrical Signals Travel Through Oyster Mushroom Mycelium Networks","slug":"bioelectrical-signals-travel-through-oyster-mushroom-mycelium-networks","url":"/categories/wild-mushrooms/oyster-mushroom/bioelectrical-signals-travel-through-oyster-mushroom-mycelium-networks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Electrical impulses pulse through this mushroom’s underground network."},{"title":"Carbon from Decaying Logs Processed by Oyster Mushrooms Reenters the Atmosphere Within Years","slug":"carbon-from-decaying-logs-processed-by-oyster-mushrooms-reenters-the-atmosphere-within-years","url":"/categories/wild-mushrooms/oyster-mushroom/carbon-from-decaying-logs-processed-by-oyster-mushrooms-reenters-the-atmosphere-within-years.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom determines how fast dead trees return to the sky."},{"title":"Cold-Adapted Oyster Mushroom Species Thrive in Subzero Forests","slug":"cold-adapted-oyster-mushroom-species-thrive-in-subzero-forests","url":"/categories/wild-mushrooms/oyster-mushroom/cold-adapted-oyster-mushroom-species-thrive-in-subzero-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Some oyster mushrooms fruit when temperatures hover near freezing."},{"title":"Decaying Logs Colonized by Oyster Mushrooms Can Support Entire Insect Communities","slug":"decaying-logs-colonized-by-oyster-mushrooms-can-support-entire-insect-communities","url":"/categories/wild-mushrooms/oyster-mushroom/decaying-logs-colonized-by-oyster-mushrooms-can-support-entire-insect-communities.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single oyster mushroom cluster can host an entire miniature ecosystem."},{"title":"Dense Spore Production by Oyster Mushrooms Can Create Visible Indoor Spore Dust","slug":"dense-spore-production-by-oyster-mushrooms-can-create-visible-indoor-spore-dust","url":"/categories/wild-mushrooms/oyster-mushroom/dense-spore-production-by-oyster-mushrooms-can-create-visible-indoor-spore-dust.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"In enclosed rooms, this mushroom can fill the air with visible spore clouds."},{"title":"Enzymatic Oxidation by Oyster Mushrooms Can Decolorize Synthetic Dyes in Wastewater","slug":"enzymatic-oxidation-by-oyster-mushrooms-can-decolorize-synthetic-dyes-in-wastewater","url":"/categories/wild-mushrooms/oyster-mushroom/enzymatic-oxidation-by-oyster-mushrooms-can-decolorize-synthetic-dyes-in-wastewater.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can strip industrial dye color from polluted water."},{"title":"Enzyme Systems in Oyster Mushrooms Rival Industrial Catalysts in Complexity","slug":"enzyme-systems-in-oyster-mushrooms-rival-industrial-catalysts-in-complexity","url":"/categories/wild-mushrooms/oyster-mushroom/enzyme-systems-in-oyster-mushrooms-rival-industrial-catalysts-in-complexity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest fungus performs chemical reactions factories struggle to replicate."},{"title":"Fruiting Oyster Mushrooms Can Double in Size Within Days","slug":"fruiting-oyster-mushrooms-can-double-in-size-within-days","url":"/categories/wild-mushrooms/oyster-mushroom/fruiting-oyster-mushrooms-can-double-in-size-within-days.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms can visibly expand in less than 48 hours."},{"title":"Fungal Hyphae of Oyster Mushrooms Can Penetrate Microscopic Cracks in Hardwood","slug":"fungal-hyphae-of-oyster-mushrooms-can-penetrate-microscopic-cracks-in-hardwood","url":"/categories/wild-mushrooms/oyster-mushroom/fungal-hyphae-of-oyster-mushrooms-can-penetrate-microscopic-cracks-in-hardwood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom infiltrates wood through cracks too small to see."},{"title":"Genetic Studies Reveal Oyster Mushrooms Can Recombine Traits Through Multiple Mating Types","slug":"genetic-studies-reveal-oyster-mushrooms-can-recombine-traits-through-multiple-mating-types","url":"/categories/wild-mushrooms/oyster-mushroom/genetic-studies-reveal-oyster-mushrooms-can-recombine-traits-through-multiple-mating-types.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms possess more mating types than many animals have sexes."},{"title":"Genomic Sequencing Reveals Thousands of Wood-Degrading Genes in Oyster Mushrooms","slug":"genomic-sequencing-reveals-thousands-of-wood-degrading-genes-in-oyster-mushrooms","url":"/categories/wild-mushrooms/oyster-mushroom/genomic-sequencing-reveals-thousands-of-wood-degrading-genes-in-oyster-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom’s genome encodes an arsenal of wood-destroying enzymes."},{"title":"High Altitude Forests Host Oyster Mushrooms Thriving in Thin Air","slug":"high-altitude-forests-host-oyster-mushrooms-thriving-in-thin-air","url":"/categories/wild-mushrooms/oyster-mushroom/high-altitude-forests-host-oyster-mushrooms-thriving-in-thin-air.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms grow on mountain slopes where oxygen is thinner."},{"title":"Hydrophobic Spore Surfaces in Oyster Mushrooms Enhance Long-Distance Air Travel","slug":"hydrophobic-spore-surfaces-in-oyster-mushrooms-enhance-long-distance-air-travel","url":"/categories/wild-mushrooms/oyster-mushroom/hydrophobic-spore-surfaces-in-oyster-mushrooms-enhance-long-distance-air-travel.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each spore carries a water-repelling coat built for flight."},{"title":"Industrial-Scale Oyster Mushroom Farms Operate Without Sunlight","slug":"industrial-scale-oyster-mushroom-farms-operate-without-sunlight","url":"/categories/wild-mushrooms/oyster-mushroom/industrial-scale-oyster-mushroom-farms-operate-without-sunlight.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms grow into food without a single ray of sunlight."},{"title":"Interconnected Mycelial Networks of Oyster Mushrooms Share Nutrients Across a Single Log","slug":"interconnected-mycelial-networks-of-oyster-mushrooms-share-nutrients-across-a-single-log","url":"/categories/wild-mushrooms/oyster-mushroom/interconnected-mycelial-networks-of-oyster-mushrooms-share-nutrients-across-a-single-log.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One part of this mushroom can feed another meters away."},{"title":"Juvenile Oyster Mushrooms Release Billions of Spores from a Single Cluster","slug":"juvenile-oyster-mushrooms-release-billions-of-spores-from-a-single-cluster","url":"/categories/wild-mushrooms/oyster-mushroom/juvenile-oyster-mushrooms-release-billions-of-spores-from-a-single-cluster.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One oyster mushroom cluster can release billions of microscopic spores."},{"title":"Kingdom Fungi Classification Places Oyster Mushrooms Closer to Animals Than Plants","slug":"kingdom-fungi-classification-places-oyster-mushrooms-closer-to-animals-than-plants","url":"/categories/wild-mushrooms/oyster-mushroom/kingdom-fungi-classification-places-oyster-mushrooms-closer-to-animals-than-plants.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom is genetically closer to you than to a tree."},{"title":"Lignin-Digesting Oyster Mushrooms Help Prevent Forests from Becoming Wood Graveyards","slug":"lignin-digesting-oyster-mushrooms-help-prevent-forests-from-becoming-wood-graveyards","url":"/categories/wild-mushrooms/oyster-mushroom/lignin-digesting-oyster-mushrooms-help-prevent-forests-from-becoming-wood-graveyards.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Without this mushroom, forests would choke on their own dead trees."},{"title":"Long-Term Wood Decomposition by Oyster Mushrooms Alters Soil Structure Beneath Logs","slug":"long-term-wood-decomposition-by-oyster-mushrooms-alters-soil-structure-beneath-logs","url":"/categories/wild-mushrooms/oyster-mushroom/long-term-wood-decomposition-by-oyster-mushrooms-alters-soil-structure-beneath-logs.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom reshapes the soil long after the log collapses."},{"title":"Mass Cultivation of Oyster Mushrooms Produces Tons of Protein Per Hectare","slug":"mass-cultivation-of-oyster-mushrooms-produces-tons-of-protein-per-hectare","url":"/categories/wild-mushrooms/oyster-mushroom/mass-cultivation-of-oyster-mushrooms-produces-tons-of-protein-per-hectare.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can yield more protein per area than many crops."},{"title":"Natural Antimicrobial Compounds in Oyster Mushrooms Inhibit Harmful Bacteria","slug":"natural-antimicrobial-compounds-in-oyster-mushrooms-inhibit-harmful-bacteria","url":"/categories/wild-mushrooms/oyster-mushroom/natural-antimicrobial-compounds-in-oyster-mushrooms-inhibit-harmful-bacteria.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom produces compounds that suppress bacterial growth."},{"title":"Oxygen-Independent Energy Strategies Allow Oyster Mushrooms to Persist in Dense Wood","slug":"oxygen-independent-energy-strategies-allow-oyster-mushrooms-to-persist-in-dense-wood","url":"/categories/wild-mushrooms/oyster-mushroom/oxygen-independent-energy-strategies-allow-oyster-mushrooms-to-persist-in-dense-wood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms thrive inside wood where oxygen levels drop."},{"title":"Oyster Mushroom Mycelium Can Bind Agricultural Residues into Solid Materials","slug":"oyster-mushroom-mycelium-can-bind-agricultural-residues-into-solid-materials","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushroom-mycelium-can-bind-agricultural-residues-into-solid-materials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can glue plant waste into rigid, lightweight blocks."},{"title":"Oyster Mushroom Tissue Contains Beta-Glucans Linked to Immune Response Modulation","slug":"oyster-mushroom-tissue-contains-beta-glucans-linked-to-immune-response-modulation","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushroom-tissue-contains-beta-glucans-linked-to-immune-response-modulation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom carries complex fibers studied for immune system effects."},{"title":"Oyster Mushrooms Can Accumulate Heavy Metals from Contaminated Substrates","slug":"oyster-mushrooms-can-accumulate-heavy-metals-from-contaminated-substrates","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-accumulate-heavy-metals-from-contaminated-substrates.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms can absorb toxic metals from polluted wood."},{"title":"Oyster Mushrooms Can Convert Agricultural Waste into High-Protein Food","slug":"oyster-mushrooms-can-convert-agricultural-waste-into-high-protein-food","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-convert-agricultural-waste-into-high-protein-food.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom turns straw into protein-rich human nutrition."},{"title":"Oyster Mushrooms Can Devour Oil Spills and Detoxify Contaminated Soil","slug":"oyster-mushrooms-can-devour-oil-spills-and-detoxify-contaminated-soil","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-devour-oil-spills-and-detoxify-contaminated-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can eat crude oil and turn pollution into food."},{"title":"Oyster Mushrooms Can Digest Plastic-Like Compounds in Laboratory Tests","slug":"oyster-mushrooms-can-digest-plastic-like-compounds-in-laboratory-tests","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-digest-plastic-like-compounds-in-laboratory-tests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest fungus can break down materials similar to synthetic plastics."},{"title":"Oyster Mushrooms Can Grow on Paper, Coffee Grounds, and Even Clothing","slug":"oyster-mushrooms-can-grow-on-paper-coffee-grounds-and-even-clothing","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-grow-on-paper-coffee-grounds-and-even-clothing.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom thrives on trash humans throw away daily."},{"title":"Oyster Mushrooms Can Lower Cholesterol Through Natural Lovastatin Production","slug":"oyster-mushrooms-can-lower-cholesterol-through-natural-lovastatin-production","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-lower-cholesterol-through-natural-lovastatin-production.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This common mushroom naturally produces the same compound as cholesterol drugs."},{"title":"Oyster Mushrooms Can Rapidly Colonize Freshly Fallen Hardwood After Storms","slug":"oyster-mushrooms-can-rapidly-colonize-freshly-fallen-hardwood-after-storms","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-rapidly-colonize-freshly-fallen-hardwood-after-storms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After a tree falls, this mushroom can claim it within weeks."},{"title":"Oyster Mushrooms Can Survive Freezing Temperatures and Fruit Through Snow","slug":"oyster-mushrooms-can-survive-freezing-temperatures-and-fruit-through-snow","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-can-survive-freezing-temperatures-and-fruit-through-snow.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms push through freezing air and keep growing."},{"title":"Oyster Mushrooms Form Vast Underground Networks Larger Than City Blocks","slug":"oyster-mushrooms-form-vast-underground-networks-larger-than-city-blocks","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-form-vast-underground-networks-larger-than-city-blocks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"What you see is tiny; the real organism spreads underground for meters."},{"title":"Oyster Mushrooms Glow in the Dark Using Natural Bioluminescence","slug":"oyster-mushrooms-glow-in-the-dark-using-natural-bioluminescence","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-glow-in-the-dark-using-natural-bioluminescence.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Some oyster mushrooms emit their own cold green light at night."},{"title":"Oyster Mushrooms Help Break Down Toxic Lignin Once Thought Nearly Indestructible","slug":"oyster-mushrooms-help-break-down-toxic-lignin-once-thought-nearly-indestructible","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-help-break-down-toxic-lignin-once-thought-nearly-indestructible.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus dissolves one of nature’s toughest molecular structures."},{"title":"Oyster Mushrooms Release Toxic Gas to Kill and Digest Nematodes","slug":"oyster-mushrooms-release-toxic-gas-to-kill-and-digest-nematodes","url":"/categories/wild-mushrooms/oyster-mushroom/oyster-mushrooms-release-toxic-gas-to-kill-and-digest-nematodes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This gentle-looking mushroom hunts by paralyzing worms with poison gas."},{"title":"Quasi-Immortal Mycelium Allows Oyster Mushrooms to Persist for Years Beneath a Single Log","slug":"quasi-immortal-mycelium-allows-oyster-mushrooms-to-persist-for-years-beneath-a-single-log","url":"/categories/wild-mushrooms/oyster-mushroom/quasi-immortal-mycelium-allows-oyster-mushrooms-to-persist-for-years-beneath-a-single-log.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible mushroom dies in days, but the real organism can live for years."},{"title":"Reproductive Spore Clouds from Oyster Mushrooms Alter Local Air Chemistry","slug":"reproductive-spore-clouds-from-oyster-mushrooms-alter-local-air-chemistry","url":"/categories/wild-mushrooms/oyster-mushroom/reproductive-spore-clouds-from-oyster-mushrooms-alter-local-air-chemistry.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Billions of spores released by one cluster change the air around it."},{"title":"Seasonal Oyster Mushroom Flushes Can Follow Heavy Rainfall Within Days","slug":"seasonal-oyster-mushroom-flushes-can-follow-heavy-rainfall-within-days","url":"/categories/wild-mushrooms/oyster-mushroom/seasonal-oyster-mushroom-flushes-can-follow-heavy-rainfall-within-days.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After rain, entire logs can erupt with mushrooms overnight."},{"title":"Toxin-Driven Nematode Predation Gives Oyster Mushrooms Access to Animal Nitrogen","slug":"toxin-driven-nematode-predation-gives-oyster-mushrooms-access-to-animal-nitrogen","url":"/categories/wild-mushrooms/oyster-mushroom/toxin-driven-nematode-predation-gives-oyster-mushrooms-access-to-animal-nitrogen.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom supplements its diet by killing microscopic animals."},{"title":"Ultra-Efficient Enzymes in Oyster Mushrooms Break Aromatic Rings Once Considered Highly Stable","slug":"ultra-efficient-enzymes-in-oyster-mushrooms-break-aromatic-rings-once-considered-highly-stable","url":"/categories/wild-mushrooms/oyster-mushroom/ultra-efficient-enzymes-in-oyster-mushrooms-break-aromatic-rings-once-considered-highly-stable.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom splits molecular structures chemists once struggled to dismantle."},{"title":"Vertical Farming Systems Stack Oyster Mushrooms in Multi-Tier Towers Indoors","slug":"vertical-farming-systems-stack-oyster-mushrooms-in-multi-tier-towers-indoors","url":"/categories/wild-mushrooms/oyster-mushroom/vertical-farming-systems-stack-oyster-mushrooms-in-multi-tier-towers-indoors.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms grow upward in stacked towers instead of across fields."},{"title":"Volatile Compounds Released by Oyster Mushrooms Can Attract or Repel Insects","slug":"volatile-compounds-released-by-oyster-mushrooms-can-attract-or-repel-insects","url":"/categories/wild-mushrooms/oyster-mushroom/volatile-compounds-released-by-oyster-mushrooms-can-attract-or-repel-insects.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms manipulate insects using invisible airborne chemicals."},{"title":"Water Content in Fresh Oyster Mushrooms Exceeds 85 Percent by Weight","slug":"water-content-in-fresh-oyster-mushrooms-exceeds-85-percent-by-weight","url":"/categories/wild-mushrooms/oyster-mushroom/water-content-in-fresh-oyster-mushrooms-exceeds-85-percent-by-weight.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom is mostly water yet feels solid to the touch."},{"title":"Xylan and Cellulose Breakdown by Oyster Mushrooms Unlocks Locked Plant Energy","slug":"xylan-and-cellulose-breakdown-by-oyster-mushrooms-unlocks-locked-plant-energy","url":"/categories/wild-mushrooms/oyster-mushroom/xylan-and-cellulose-breakdown-by-oyster-mushrooms-unlocks-locked-plant-energy.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom releases energy from plant fibers humans cannot digest."},{"title":"Young Oyster Mushroom Primordia Form from Invisible Mycelial Knots","slug":"young-oyster-mushroom-primordia-form-from-invisible-mycelial-knots","url":"/categories/wild-mushrooms/oyster-mushroom/young-oyster-mushroom-primordia-form-from-invisible-mycelial-knots.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Before the mushroom appears, microscopic knots quietly assemble inside wood."},{"title":"Zero Sunlight Requirement Allows Oyster Mushrooms to Grow in Complete Darkness","slug":"zero-sunlight-requirement-allows-oyster-mushrooms-to-grow-in-complete-darkness","url":"/categories/wild-mushrooms/oyster-mushroom/zero-sunlight-requirement-allows-oyster-mushrooms-to-grow-in-complete-darkness.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This organism grows fully formed without any sunlight exposure."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

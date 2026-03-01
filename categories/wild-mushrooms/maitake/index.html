@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maitake</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Maitake</h1>
+  <p>Explore all facts in "Maitake".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Maitake</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"B-Cell Activation Studies Suggest Maitake Polysaccharides Influence Adaptive Immunity Pathways","slug":"b-cell-activation-studies-suggest-maitake-polysaccharides-influence-adaptive-immunity-pathways","url":"/categories/wild-mushrooms/maitake/b-cell-activation-studies-suggest-maitake-polysaccharides-influence-adaptive-immunity-pathways.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its molecules do not stop at innate immunity."},{"title":"Beta-Glucan Molecular Weight Variability in Maitake Influences Solubility and Immune Interaction","slug":"beta-glucan-molecular-weight-variability-in-maitake-influences-solubility-and-immune-interaction","url":"/categories/wild-mushrooms/maitake/beta-glucan-molecular-weight-variability-in-maitake-influences-solubility-and-immune-interaction.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same molecule changes behavior depending on its size."},{"title":"Biodiversity Loss Models Predict Reduced Maitake Habitat as Oak Forests Decline","slug":"biodiversity-loss-models-predict-reduced-maitake-habitat-as-oak-forests-decline","url":"/categories/wild-mushrooms/maitake/biodiversity-loss-models-predict-reduced-maitake-habitat-as-oak-forests-decline.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Lose the oak forests and this mushroom largely disappears with them."},{"title":"Carbon-to-Nitrogen Ratios in Oak Roots Influence Maitake Mycelial Expansion Speed","slug":"carbon-to-nitrogen-ratios-in-oak-roots-influence-maitake-mycelial-expansion-speed","url":"/categories/wild-mushrooms/maitake/carbon-to-nitrogen-ratios-in-oak-roots-influence-maitake-mycelial-expansion-speed.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Nutrient balance beneath the soil determines how fast it spreads."},{"title":"Cell Wall Chitin in Maitake Contributes to Structural Rigidity Comparable to Insect Exoskeleton Material","slug":"cell-wall-chitin-in-maitake-contributes-to-structural-rigidity-comparable-to-insect-exoskeleton-material","url":"/categories/wild-mushrooms/maitake/cell-wall-chitin-in-maitake-contributes-to-structural-rigidity-comparable-to-insect-exoskeleton-material.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its framework shares chemistry with armored insects."},{"title":"Controlled Fermentation Studies Show Maitake Fiber Alters Gut Microbiota Composition","slug":"controlled-fermentation-studies-show-maitake-fiber-alters-gut-microbiota-composition","url":"/categories/wild-mushrooms/maitake/controlled-fermentation-studies-show-maitake-fiber-alters-gut-microbiota-composition.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its indigestible fibers feed bacteria you cannot see."},{"title":"Dectin-1 Receptor Discovery Clarified How Maitake Beta-Glucans Trigger Innate Immunity","slug":"dectin-1-receptor-discovery-clarified-how-maitake-beta-glucans-trigger-innate-immunity","url":"/categories/wild-mushrooms/maitake/dectin-1-receptor-discovery-clarified-how-maitake-beta-glucans-trigger-innate-immunity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Human immune cells recognize mushroom molecules as molecular alarms."},{"title":"Enoki and Maitake Comparative Studies Show Distinct Beta-Glucan Structural Branching Patterns","slug":"enoki-and-maitake-comparative-studies-show-distinct-beta-glucan-structural-branching-patterns","url":"/categories/wild-mushrooms/maitake/enoki-and-maitake-comparative-studies-show-distinct-beta-glucan-structural-branching-patterns.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two edible mushrooms share a molecule yet trigger different immune responses."},{"title":"Forest Health Monitoring Data Link Grifola frondosa to Advanced Oak Root Decay Stages","slug":"forest-health-monitoring-data-link-grifola-frondosa-to-advanced-oak-root-decay-stages","url":"/categories/wild-mushrooms/maitake/forest-health-monitoring-data-link-grifola-frondosa-to-advanced-oak-root-decay-stages.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A prized mushroom often signals a tree’s structural failure."},{"title":"Grifola frondosa Clusters Can Exceed 100 Pounds on a Single Oak Tree","slug":"grifola-frondosa-clusters-can-exceed-100-pounds-on-a-single-oak-tree","url":"/categories/wild-mushrooms/maitake/grifola-frondosa-clusters-can-exceed-100-pounds-on-a-single-oak-tree.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One mushroom cluster can weigh more than an adult human."},{"title":"Hiroshima 1940s Food Shortages Elevated Maitake from Forest Find to Survival Resource","slug":"hiroshima-1940s-food-shortages-elevated-maitake-from-forest-find-to-survival-resource","url":"/categories/wild-mushrooms/maitake/hiroshima-1940s-food-shortages-elevated-maitake-from-forest-find-to-survival-resource.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"During wartime scarcity, a forest mushroom became a survival asset."},{"title":"Hydration Content of Maitake Exceeds 85 Percent Yet Maintains Structural Integrity When Cooked","slug":"hydration-content-of-maitake-exceeds-85-percent-yet-maintains-structural-integrity-when-cooked","url":"/categories/wild-mushrooms/maitake/hydration-content-of-maitake-exceeds-85-percent-yet-maintains-structural-integrity-when-cooked.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom is mostly water yet resists dissolving in heat."},{"title":"Immune Cell Receptor Cross-Talk Amplifies Maitake Beta-Glucan Signaling Beyond Single Pathways","slug":"immune-cell-receptor-cross-talk-amplifies-maitake-beta-glucan-signaling-beyond-single-pathways","url":"/categories/wild-mushrooms/maitake/immune-cell-receptor-cross-talk-amplifies-maitake-beta-glucan-signaling-beyond-single-pathways.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One fungal molecule can activate multiple immune alarms at once."},{"title":"Japanese Ministry of Agriculture 1980s Research Standardized Maitake Cultivation After Centuries of Wild Reliance","slug":"japanese-ministry-of-agriculture-1980s-research-standardized-maitake-cultivation-after-centuries-of-wild-reliance","url":"/categories/wild-mushrooms/maitake/japanese-ministry-of-agriculture-1980s-research-standardized-maitake-cultivation-after-centuries-of-wild-reliance.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A once unpredictable forest fungus entered controlled agricultural production."},{"title":"Kawaguchi 1980s Clinical Observations Reported Immune Marker Elevation After Maitake Intake","slug":"kawaguchi-1980s-clinical-observations-reported-immune-marker-elevation-after-maitake-intake","url":"/categories/wild-mushrooms/maitake/kawaguchi-1980s-clinical-observations-reported-immune-marker-elevation-after-maitake-intake.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Hospital patients showed measurable immune shifts after eating mushroom extracts."},{"title":"Keto-Compatible Fiber Density in Maitake Allows High Volume Intake with Minimal Glycemic Impact","slug":"keto-compatible-fiber-density-in-maitake-allows-high-volume-intake-with-minimal-glycemic-impact","url":"/categories/wild-mushrooms/maitake/keto-compatible-fiber-density-in-maitake-allows-high-volume-intake-with-minimal-glycemic-impact.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"You can eat a full plate and barely move blood sugar."},{"title":"Kyoto University Studies Linked Maitake Extract to Measurable Insulin Sensitivity Shifts","slug":"kyoto-university-studies-linked-maitake-extract-to-measurable-insulin-sensitivity-shifts","url":"/categories/wild-mushrooms/maitake/kyoto-university-studies-linked-maitake-extract-to-measurable-insulin-sensitivity-shifts.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A culinary mushroom altered glucose metabolism in controlled studies."},{"title":"Laccase Enzyme Production in Maitake Enables Oxidation of Complex Phenolic Compounds","slug":"laccase-enzyme-production-in-maitake-enables-oxidation-of-complex-phenolic-compounds","url":"/categories/wild-mushrooms/maitake/laccase-enzyme-production-in-maitake-enables-oxidation-of-complex-phenolic-compounds.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It chemically alters stubborn plant molecules other organisms cannot touch."},{"title":"Low-Calorie Density of Maitake Masks High Micronutrient Concentration per 100 Grams","slug":"low-calorie-density-of-maitake-masks-high-micronutrient-concentration-per-100-grams","url":"/categories/wild-mushrooms/maitake/low-calorie-density-of-maitake-masks-high-micronutrient-concentration-per-100-grams.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A 100-gram serving delivers nutrients with almost no caloric load."},{"title":"Maitake D-Fraction Patents Filed in the 1990s Sparked Supplement Industry Expansion","slug":"maitake-d-fraction-patents-filed-in-the-1990s-sparked-supplement-industry-expansion","url":"/categories/wild-mushrooms/maitake/maitake-d-fraction-patents-filed-in-the-1990s-sparked-supplement-industry-expansion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A wild mushroom extract triggered a wave of commercial patent filings."},{"title":"Maitake Mushroom 1990s Beta-Glucan Research Showed 45% Tumor Reduction in Animal Trials","slug":"maitake-mushroom-1990s-beta-glucan-research-showed-45-tumor-reduction-in-animal-trials","url":"/categories/wild-mushrooms/maitake/maitake-mushroom-1990s-beta-glucan-research-showed-45-tumor-reduction-in-animal-trials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom triggered tumor shrinkage rates that rivaled early chemotherapy trials."},{"title":"Nanogram-Level Cytokine Shifts Recorded After Maitake Beta-Glucan Exposure in Laboratory Assays","slug":"nanogram-level-cytokine-shifts-recorded-after-maitake-beta-glucan-exposure-in-laboratory-assays","url":"/categories/wild-mushrooms/maitake/nanogram-level-cytokine-shifts-recorded-after-maitake-beta-glucan-exposure-in-laboratory-assays.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Immune signaling changed at concentrations measured in billionths of a gram."},{"title":"Natural Killer Cell Cytotoxicity Increased in Controlled Trials After Maitake D-Fraction Supplementation","slug":"natural-killer-cell-cytotoxicity-increased-in-controlled-trials-after-maitake-d-fraction-supplementation","url":"/categories/wild-mushrooms/maitake/natural-killer-cell-cytotoxicity-increased-in-controlled-trials-after-maitake-d-fraction-supplementation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Immune cells became measurably more aggressive after exposure."},{"title":"Oak Tree Root Rot Associated with Grifola frondosa Alters Forest Carbon Cycling","slug":"oak-tree-root-rot-associated-with-grifola-frondosa-alters-forest-carbon-cycling","url":"/categories/wild-mushrooms/maitake/oak-tree-root-rot-associated-with-grifola-frondosa-alters-forest-carbon-cycling.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom quietly rewires how forests store carbon."},{"title":"Oxidative Stress Markers Decreased in Controlled Animal Models After Maitake Fraction Administration","slug":"oxidative-stress-markers-decreased-in-controlled-animal-models-after-maitake-fraction-administration","url":"/categories/wild-mushrooms/maitake/oxidative-stress-markers-decreased-in-controlled-animal-models-after-maitake-fraction-administration.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Laboratory biomarkers of cellular damage shifted after mushroom extract exposure."},{"title":"Peroxidase Enzymes in Maitake Operate at Ambient Temperatures That Industrial Reactors Cannot Match","slug":"peroxidase-enzymes-in-maitake-operate-at-ambient-temperatures-that-industrial-reactors-cannot-match","url":"/categories/wild-mushrooms/maitake/peroxidase-enzymes-in-maitake-operate-at-ambient-temperatures-that-industrial-reactors-cannot-match.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom performs high-energy chemistry without heat or pressure."},{"title":"Qing Dynasty Herbal Texts Documented Maitake Use in Traditional Formulations","slug":"qing-dynasty-herbal-texts-documented-maitake-use-in-traditional-formulations","url":"/categories/wild-mushrooms/maitake/qing-dynasty-herbal-texts-documented-maitake-use-in-traditional-formulations.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Imperial-era medical texts cataloged this forest fungus centuries ago."},{"title":"Quercus Forests Across North America Host Wild Maitake Worth Thousands per Season","slug":"quercus-forests-across-north-america-host-wild-maitake-worth-thousands-per-season","url":"/categories/wild-mushrooms/maitake/quercus-forests-across-north-america-host-wild-maitake-worth-thousands-per-season.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One oak grove can hide thousands of dollars in edible fungus."},{"title":"Quorum-Like Chemical Signaling Observed in Fungal Networks Resembles Microbial Communication Systems","slug":"quorum-like-chemical-signaling-observed-in-fungal-networks-resembles-microbial-communication-systems","url":"/categories/wild-mushrooms/maitake/quorum-like-chemical-signaling-observed-in-fungal-networks-resembles-microbial-communication-systems.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its underground network behaves like a coordinated chemical society."},{"title":"Radiocarbon Analysis Shows Some Maitake Mycelial Networks Persist for Multiple Decades Underground","slug":"radiocarbon-analysis-shows-some-maitake-mycelial-networks-persist-for-multiple-decades-underground","url":"/categories/wild-mushrooms/maitake/radiocarbon-analysis-shows-some-maitake-mycelial-networks-persist-for-multiple-decades-underground.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible mushroom lasts days; the organism can endure decades."},{"title":"Tannin-Rich Oak Substrates Influence Maitake Growth Patterns and Biomass Output","slug":"tannin-rich-oak-substrates-influence-maitake-growth-patterns-and-biomass-output","url":"/categories/wild-mushrooms/maitake/tannin-rich-oak-substrates-influence-maitake-growth-patterns-and-biomass-output.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Tree chemistry quietly shapes mushroom size and density."},{"title":"Temporal Fruiting Windows of Maitake Often Last Less Than Two Weeks in Wild Forests","slug":"temporal-fruiting-windows-of-maitake-often-last-less-than-two-weeks-in-wild-forests","url":"/categories/wild-mushrooms/maitake/temporal-fruiting-windows-of-maitake-often-last-less-than-two-weeks-in-wild-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Miss a single week and an entire 50-pound cluster vanishes."},{"title":"Thermal Stability Tests Show Maitake Beta-Glucans Retain Structure After Standard Cooking Temperatures","slug":"thermal-stability-tests-show-maitake-beta-glucans-retain-structure-after-standard-cooking-temperatures","url":"/categories/wild-mushrooms/maitake/thermal-stability-tests-show-maitake-beta-glucans-retain-structure-after-standard-cooking-temperatures.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Boiling heat does not destroy its key immune-active molecules."},{"title":"U.S. 1994 Dietary Supplement Law Allowed Maitake Extracts to Enter Market Without Drug Trials","slug":"u-s-1994-dietary-supplement-law-allowed-maitake-extracts-to-enter-market-without-drug-trials","url":"/categories/wild-mushrooms/maitake/u-s-1994-dietary-supplement-law-allowed-maitake-extracts-to-enter-market-without-drug-trials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A federal law let potent mushroom extracts bypass pharmaceutical testing entirely."},{"title":"Ultraviolet Exposure Converts Maitake Ergosterol into Measurable Vitamin D2 Levels","slug":"ultraviolet-exposure-converts-maitake-ergosterol-into-measurable-vitamin-d2-levels","url":"/categories/wild-mushrooms/maitake/ultraviolet-exposure-converts-maitake-ergosterol-into-measurable-vitamin-d2-levels.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Sunlight turns this mushroom into a vitamin factory within hours."},{"title":"Urban Heat Island Effects Alter Maitake Fruiting Timing in City-Adjacent Forests","slug":"urban-heat-island-effects-alter-maitake-fruiting-timing-in-city-adjacent-forests","url":"/categories/wild-mushrooms/maitake/urban-heat-island-effects-alter-maitake-fruiting-timing-in-city-adjacent-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"City warmth can shift when this wild mushroom appears."},{"title":"Viral Hepatitis Animal Models Showed Maitake Beta-Glucan Immune Activation Effects","slug":"viral-hepatitis-animal-models-showed-maitake-beta-glucan-immune-activation-effects","url":"/categories/wild-mushrooms/maitake/viral-hepatitis-animal-models-showed-maitake-beta-glucan-immune-activation-effects.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom extract altered immune response in viral infection experiments."},{"title":"Volatile Aromatic Compounds in Maitake Activate Human Olfactory Receptors Before Cooking","slug":"volatile-aromatic-compounds-in-maitake-activate-human-olfactory-receptors-before-cooking","url":"/categories/wild-mushrooms/maitake/volatile-aromatic-compounds-in-maitake-activate-human-olfactory-receptors-before-cooking.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your nose detects its chemistry long before your stomach does."},{"title":"Water Activity Levels in Maitake Tissue Limit Pathogenic Bacterial Growth Despite High Moisture Content","slug":"water-activity-levels-in-maitake-tissue-limit-pathogenic-bacterial-growth-despite-high-moisture-content","url":"/categories/wild-mushrooms/maitake/water-activity-levels-in-maitake-tissue-limit-pathogenic-bacterial-growth-despite-high-moisture-content.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It is mostly water yet resists rapid bacterial takeover."},{"title":"White-Rot Enzymes in Maitake Break Down Lignin Once Considered Nearly Indestructible","slug":"white-rot-enzymes-in-maitake-break-down-lignin-once-considered-nearly-indestructible","url":"/categories/wild-mushrooms/maitake/white-rot-enzymes-in-maitake-break-down-lignin-once-considered-nearly-indestructible.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom digests one of Earth’s toughest plant polymers."},{"title":"White-Rot Fungal Activity from Maitake Accelerates Soil Organic Matter Formation","slug":"white-rot-fungal-activity-from-maitake-accelerates-soil-organic-matter-formation","url":"/categories/wild-mushrooms/maitake/white-rot-fungal-activity-from-maitake-accelerates-soil-organic-matter-formation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It helps turn solid wood into fertile soil within years."},{"title":"Wood Moisture Content Directly Regulates Maitake Fruiting Probability in Controlled Forestry Studies","slug":"wood-moisture-content-directly-regulates-maitake-fruiting-probability-in-controlled-forestry-studies","url":"/categories/wild-mushrooms/maitake/wood-moisture-content-directly-regulates-maitake-fruiting-probability-in-controlled-forestry-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A few percentage points of wood moisture determine whether it appears at all."},{"title":"Xerophytic Hardwood Decline Zones Show Higher Maitake Fruiting Density in Measured Forest Surveys","slug":"xerophytic-hardwood-decline-zones-show-higher-maitake-fruiting-density-in-measured-forest-surveys","url":"/categories/wild-mushrooms/maitake/xerophytic-hardwood-decline-zones-show-higher-maitake-fruiting-density-in-measured-forest-surveys.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Drier stressed forests can produce heavier mushroom clusters."},{"title":"Xylan-Degrading Enzymes in Maitake Expand Its Ability to Access Complex Plant Polymers","slug":"xylan-degrading-enzymes-in-maitake-expand-its-ability-to-access-complex-plant-polymers","url":"/categories/wild-mushrooms/maitake/xylan-degrading-enzymes-in-maitake-expand-its-ability-to-access-complex-plant-polymers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It dismantles more than lignin; hemicellulose is also on the menu."},{"title":"Xylose-Rich Polysaccharides in Maitake Activate Human Immune Receptors Identified in 2000s Research","slug":"xylose-rich-polysaccharides-in-maitake-activate-human-immune-receptors-identified-in-2000s-research","url":"/categories/wild-mushrooms/maitake/xylose-rich-polysaccharides-in-maitake-activate-human-immune-receptors-identified-in-2000s-research.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A sugar molecule from a mushroom flips immune switches in human cells."},{"title":"Yale School of Medicine 2009 Study Reported Measurable NK Cell Increase After Maitake Extract Intake","slug":"yale-school-of-medicine-2009-study-reported-measurable-nk-cell-increase-after-maitake-extract-intake","url":"/categories/wild-mushrooms/maitake/yale-school-of-medicine-2009-study-reported-measurable-nk-cell-increase-after-maitake-extract-intake.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Human immune cells increased activity after consuming a mushroom extract."},{"title":"Yamaguchi 17th-Century Daimyo Taxed Villages in Maitake to Control Scarcity","slug":"yamaguchi-17th-century-daimyo-taxed-villages-in-maitake-to-control-scarcity","url":"/categories/wild-mushrooms/maitake/yamaguchi-17th-century-daimyo-taxed-villages-in-maitake-to-control-scarcity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A feudal lord once accepted mushrooms as regulated currency."},{"title":"Zelkova and Oak Root Systems Host Maitake for Decades Beneath the Soil","slug":"zelkova-and-oak-root-systems-host-maitake-for-decades-beneath-the-soil","url":"/categories/wild-mushrooms/maitake/zelkova-and-oak-root-systems-host-maitake-for-decades-beneath-the-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single hidden fungus can survive underground longer than some trees."},{"title":"Zinc and Copper Concentrations in Maitake Support Enzymatic Functions Despite Low Calorie Load","slug":"zinc-and-copper-concentrations-in-maitake-support-enzymatic-functions-despite-low-calorie-load","url":"/categories/wild-mushrooms/maitake/zinc-and-copper-concentrations-in-maitake-support-enzymatic-functions-despite-low-calorie-load.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It delivers trace metals essential for enzyme systems without energy cost."},{"title":"Zymosan Studies Helped Clarify How Maitake-Like Beta-Glucans Stimulate Human Immunity","slug":"zymosan-studies-helped-clarify-how-maitake-like-beta-glucans-stimulate-human-immunity","url":"/categories/wild-mushrooms/maitake/zymosan-studies-helped-clarify-how-maitake-like-beta-glucans-stimulate-human-immunity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungal cell wall compound rewrote immunology textbooks."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
