@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chicken Of The Woods</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Chicken Of The Woods</h1>
+  <p>Explore all facts in "Chicken Of The Woods".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Chicken Of The Woods</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Acetone-Extracted Compounds in Laetiporus Show Cytotoxic Effects in Laboratory Studies","slug":"acetone-extracted-compounds-in-laetiporus-show-cytotoxic-effects-in-laboratory-studies","url":"/categories/wild-mushrooms/chicken-of-the-woods/acetone-extracted-compounds-in-laetiporus-show-cytotoxic-effects-in-laboratory-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An edible forest mushroom produces compounds that kill human cancer cells in vitro."},{"title":"Acoustic Dampening Properties Observed in Decayed Wood Colonized by Laetiporus","slug":"acoustic-dampening-properties-observed-in-decayed-wood-colonized-by-laetiporus","url":"/categories/wild-mushrooms/chicken-of-the-woods/acoustic-dampening-properties-observed-in-decayed-wood-colonized-by-laetiporus.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Wood hollowed by this fungus can muffle sound like insulation."},{"title":"Biochemical Competition Between Laetiporus and Other Wood-Decay Fungi","slug":"biochemical-competition-between-laetiporus-and-other-wood-decay-fungi","url":"/categories/wild-mushrooms/chicken-of-the-woods/biochemical-competition-between-laetiporus-and-other-wood-decay-fungi.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom wages invisible chemical warfare inside tree trunks."},{"title":"Brittle Cube Fracture Pattern Caused by Brown Rot Cellulose Loss","slug":"brittle-cube-fracture-pattern-caused-by-brown-rot-cellulose-loss","url":"/categories/wild-mushrooms/chicken-of-the-woods/brittle-cube-fracture-pattern-caused-by-brown-rot-cellulose-loss.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Wood infected by this fungus can shatter into cubes like dried clay."},{"title":"Carbon Dioxide Emission Rates From Active Laetiporus Decay Sites","slug":"carbon-dioxide-emission-rates-from-active-laetiporus-decay-sites","url":"/categories/wild-mushrooms/chicken-of-the-woods/carbon-dioxide-emission-rates-from-active-laetiporus-decay-sites.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single infected log can steadily exhale carbon into the air."},{"title":"Cellulose Depolymerization Rates in Laetiporus-Infected Hardwood Logs","slug":"cellulose-depolymerization-rates-in-laetiporus-infected-hardwood-logs","url":"/categories/wild-mushrooms/chicken-of-the-woods/cellulose-depolymerization-rates-in-laetiporus-infected-hardwood-logs.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus can chemically dismantle hardwood faster than weather alone."},{"title":"Deciduous Forest Carbon Cycling Influenced by Laetiporus Brown Rot Activity","slug":"deciduous-forest-carbon-cycling-influenced-by-laetiporus-brown-rot-activity","url":"/categories/wild-mushrooms/chicken-of-the-woods/deciduous-forest-carbon-cycling-influenced-by-laetiporus-brown-rot-activity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This bright orange mushroom quietly alters how forests store carbon."},{"title":"Density-Driven Buoyancy Changes in Waterlogged Wood After Brown Rot Colonization","slug":"density-driven-buoyancy-changes-in-waterlogged-wood-after-brown-rot-colonization","url":"/categories/wild-mushrooms/chicken-of-the-woods/density-driven-buoyancy-changes-in-waterlogged-wood-after-brown-rot-colonization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus can make hardwood light enough to float differently."},{"title":"Electrochemical Fenton Reactions Driving Brown Rot in Laetiporus Species","slug":"electrochemical-fenton-reactions-driving-brown-rot-in-laetiporus-species","url":"/categories/wild-mushrooms/chicken-of-the-woods/electrochemical-fenton-reactions-driving-brown-rot-in-laetiporus-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom generates reactive radicals that rip apart wood polymers."},{"title":"Enzymatic Synergy Between Oxidative Radicals and Hydrolases in Laetiporus","slug":"enzymatic-synergy-between-oxidative-radicals-and-hydrolases-in-laetiporus","url":"/categories/wild-mushrooms/chicken-of-the-woods/enzymatic-synergy-between-oxidative-radicals-and-hydrolases-in-laetiporus.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom combines chemical radicals and enzymes to dismantle wood."},{"title":"Fungal Allergic Reactions Linked to Laetiporus Consumption in Clinical Case Reports","slug":"fungal-allergic-reactions-linked-to-laetiporus-consumption-in-clinical-case-reports","url":"/categories/wild-mushrooms/chicken-of-the-woods/fungal-allergic-reactions-linked-to-laetiporus-consumption-in-clinical-case-reports.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An edible forest mushroom has sent healthy adults to emergency rooms."},{"title":"Geometric Shelf Growth Patterns in Laetiporus Colonizing Vertical Oak Trunks","slug":"geometric-shelf-growth-patterns-in-laetiporus-colonizing-vertical-oak-trunks","url":"/categories/wild-mushrooms/chicken-of-the-woods/geometric-shelf-growth-patterns-in-laetiporus-colonizing-vertical-oak-trunks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom grows in layered arcs that defy gravity on sheer bark."},{"title":"High-Protein Dry Weight Composition Measured in Laetiporus Species","slug":"high-protein-dry-weight-composition-measured-in-laetiporus-species","url":"/categories/wild-mushrooms/chicken-of-the-woods/high-protein-dry-weight-composition-measured-in-laetiporus-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A tree-dwelling fungus can rival legumes in protein density."},{"title":"Hydration-Dependent Texture Shift From Tender to Chalky in Aging Laetiporus","slug":"hydration-dependent-texture-shift-from-tender-to-chalky-in-aging-laetiporus","url":"/categories/wild-mushrooms/chicken-of-the-woods/hydration-dependent-texture-shift-from-tender-to-chalky-in-aging-laetiporus.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Within days, this mushroom can turn from tender to woody."},{"title":"Internal Cavity Formation Within Oaks Following Prolonged Laetiporus Colonization","slug":"internal-cavity-formation-within-oaks-following-prolonged-laetiporus-colonization","url":"/categories/wild-mushrooms/chicken-of-the-woods/internal-cavity-formation-within-oaks-following-prolonged-laetiporus-colonization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus can hollow out sections of a tree from the inside."},{"title":"Iron-Dependent Radical Chemistry Enabling Rapid Hardwood Weakening","slug":"iron-dependent-radical-chemistry-enabling-rapid-hardwood-weakening","url":"/categories/wild-mushrooms/chicken-of-the-woods/iron-dependent-radical-chemistry-enabling-rapid-hardwood-weakening.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom uses iron to unleash one of nature’s most destructive radicals."},{"title":"Juvenile Laetiporus Texture Mimics Chicken Muscle Fiber Structure","slug":"juvenile-laetiporus-texture-mimics-chicken-muscle-fiber-structure","url":"/categories/wild-mushrooms/chicken-of-the-woods/juvenile-laetiporus-texture-mimics-chicken-muscle-fiber-structure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus growing on oak can shred like cooked poultry."},{"title":"Kilogram-Scale Fruiting Bodies of Laetiporus Documented in European Forests","slug":"kilogram-scale-fruiting-bodies-of-laetiporus-documented-in-european-forests","url":"/categories/wild-mushrooms/chicken-of-the-woods/kilogram-scale-fruiting-bodies-of-laetiporus-documented-in-european-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One wild mushroom can weigh more than a medium-sized dog."},{"title":"Kilometer-Scale Mycelial Networks Feeding Visible Chicken of the Woods Clusters","slug":"kilometer-scale-mycelial-networks-feeding-visible-chicken-of-the-woods-clusters","url":"/categories/wild-mushrooms/chicken-of-the-woods/kilometer-scale-mycelial-networks-feeding-visible-chicken-of-the-woods-clusters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The bright shelf you see is only a fraction of the organism."},{"title":"Lignin Residue Accumulation After Selective Cellulose Removal by Brown Rot","slug":"lignin-residue-accumulation-after-selective-cellulose-removal-by-brown-rot","url":"/categories/wild-mushrooms/chicken-of-the-woods/lignin-residue-accumulation-after-selective-cellulose-removal-by-brown-rot.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus leaves trees standing as hollow lignin shells."},{"title":"Massive Seasonal Flushes of Laetiporus Triggered by Summer Rainfall Patterns","slug":"massive-seasonal-flushes-of-laetiporus-triggered-by-summer-rainfall-patterns","url":"/categories/wild-mushrooms/chicken-of-the-woods/massive-seasonal-flushes-of-laetiporus-triggered-by-summer-rainfall-patterns.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After a single week of rain, entire tree trunks can ignite in orange growth."},{"title":"Mycelial Persistence for Years Before Visible Laetiporus Fruiting Occurs","slug":"mycelial-persistence-for-years-before-visible-laetiporus-fruiting-occurs","url":"/categories/wild-mushrooms/chicken-of-the-woods/mycelial-persistence-for-years-before-visible-laetiporus-fruiting-occurs.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus can live inside a tree for years before anyone sees it."},{"title":"Network-Level Nutrient Redistribution Within Laetiporus Mycelial Systems","slug":"network-level-nutrient-redistribution-within-laetiporus-mycelial-systems","url":"/categories/wild-mushrooms/chicken-of-the-woods/network-level-nutrient-redistribution-within-laetiporus-mycelial-systems.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom redistributes nutrients through wood like a living supply chain."},{"title":"Oak Tree Structural Failure Rates Linked to Laetiporus Brown Rot Infections","slug":"oak-tree-structural-failure-rates-linked-to-laetiporus-brown-rot-infections","url":"/categories/wild-mushrooms/chicken-of-the-woods/oak-tree-structural-failure-rates-linked-to-laetiporus-brown-rot-infections.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single orange fungus can turn a century-old oak into brittle wood."},{"title":"Polysaccharide Beta-Glucans Identified in Laetiporus With Immunomodulatory Potential","slug":"polysaccharide-beta-glucans-identified-in-laetiporus-with-immunomodulatory-potential","url":"/categories/wild-mushrooms/chicken-of-the-woods/polysaccharide-beta-glucans-identified-in-laetiporus-with-immunomodulatory-potential.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This forest mushroom contains compounds studied for immune interaction."},{"title":"Pore Surface Area Expansion in Laetiporus Maximizes Spore Output Efficiency","slug":"pore-surface-area-expansion-in-laetiporus-maximizes-spore-output-efficiency","url":"/categories/wild-mushrooms/chicken-of-the-woods/pore-surface-area-expansion-in-laetiporus-maximizes-spore-output-efficiency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The underside of this mushroom is engineered for exponential reproduction."},{"title":"Quantified Growth Rates of Laetiporus Reaching Several Centimeters Per Day","slug":"quantified-growth-rates-of-laetiporus-reaching-several-centimeters-per-day","url":"/categories/wild-mushrooms/chicken-of-the-woods/quantified-growth-rates-of-laetiporus-reaching-several-centimeters-per-day.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can visibly expand in less than 24 hours."},{"title":"Quantum-Level Enzyme Systems Allowing Lignin Breakdown Without Oxygen Rich Soil","slug":"quantum-level-enzyme-systems-allowing-lignin-breakdown-without-oxygen-rich-soil","url":"/categories/wild-mushrooms/chicken-of-the-woods/quantum-level-enzyme-systems-allowing-lignin-breakdown-without-oxygen-rich-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom dismantles wood using chemistry that rivals industrial processing."},{"title":"Radial Growth Rings Visible in Mature Laetiporus Fruiting Bodies","slug":"radial-growth-rings-visible-in-mature-laetiporus-fruiting-bodies","url":"/categories/wild-mushrooms/chicken-of-the-woods/radial-growth-rings-visible-in-mature-laetiporus-fruiting-bodies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can display growth bands like a miniature tree trunk."},{"title":"Resilient Spore Production Continuing After Partial Fruiting Body Damage","slug":"resilient-spore-production-continuing-after-partial-fruiting-body-damage","url":"/categories/wild-mushrooms/chicken-of-the-woods/resilient-spore-production-continuing-after-partial-fruiting-body-damage.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even when torn apart, this mushroom keeps releasing spores."},{"title":"Resistant Lignin Framework Preserved After Selective Cellulose Extraction by Laetiporus","slug":"resistant-lignin-framework-preserved-after-selective-cellulose-extraction-by-laetiporus","url":"/categories/wild-mushrooms/chicken-of-the-woods/resistant-lignin-framework-preserved-after-selective-cellulose-extraction-by-laetiporus.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus removes strength but leaves the tree’s skeleton standing."},{"title":"Seasonal Temperature Thresholds Governing Laetiporus Fruiting Cycles","slug":"seasonal-temperature-thresholds-governing-laetiporus-fruiting-cycles","url":"/categories/wild-mushrooms/chicken-of-the-woods/seasonal-temperature-thresholds-governing-laetiporus-fruiting-cycles.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A narrow temperature band can determine whether this fungus stays invisible."},{"title":"Selective Substrate Preference of Laetiporus for Hardwood Over Conifer Hosts","slug":"selective-substrate-preference-of-laetiporus-for-hardwood-over-conifer-hosts","url":"/categories/wild-mushrooms/chicken-of-the-woods/selective-substrate-preference-of-laetiporus-for-hardwood-over-conifer-hosts.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus targets hardwood trees while often ignoring nearby pines."},{"title":"Thermal Resilience Allowing Laetiporus Tissue to Withstand Surface Drying","slug":"thermal-resilience-allowing-laetiporus-tissue-to-withstand-surface-drying","url":"/categories/wild-mushrooms/chicken-of-the-woods/thermal-resilience-allowing-laetiporus-tissue-to-withstand-surface-drying.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even when sun-scorched, this mushroom can remain metabolically active inside."},{"title":"Translocation of Water Through Hyphal Networks Supporting Rapid Shelf Expansion","slug":"translocation-of-water-through-hyphal-networks-supporting-rapid-shelf-expansion","url":"/categories/wild-mushrooms/chicken-of-the-woods/translocation-of-water-through-hyphal-networks-supporting-rapid-shelf-expansion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can pull water through wood to inflate itself overnight."},{"title":"Ultrastructure of Laetiporus Sulfureus Pore Layers Exceeding 1 Million Tubes","slug":"ultrastructure-of-laetiporus-sulfureus-pore-layers-exceeding-1-million-tubes","url":"/categories/wild-mushrooms/chicken-of-the-woods/ultrastructure-of-laetiporus-sulfureus-pore-layers-exceeding-1-million-tubes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each orange shelf hides a microscopic city of over a million spore tubes."},{"title":"Unique Sulfur-Yellow Pigmentation Produced by Laetiporus Species","slug":"unique-sulfur-yellow-pigmentation-produced-by-laetiporus-species","url":"/categories/wild-mushrooms/chicken-of-the-woods/unique-sulfur-yellow-pigmentation-produced-by-laetiporus-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The color of this mushroom resembles warning paint yet attracts foragers."},{"title":"Volatile Organic Compounds Emitted by Laetiporus During Active Growth","slug":"volatile-organic-compounds-emitted-by-laetiporus-during-active-growth","url":"/categories/wild-mushrooms/chicken-of-the-woods/volatile-organic-compounds-emitted-by-laetiporus-during-active-growth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom releases airborne chemicals while it dismantles wood."},{"title":"Volumetric Expansion Allowing Laetiporus Clusters to Exceed 1 Cubic Meter on Large Oaks","slug":"volumetric-expansion-allowing-laetiporus-clusters-to-exceed-1-cubic-meter-on-large-oaks","url":"/categories/wild-mushrooms/chicken-of-the-woods/volumetric-expansion-allowing-laetiporus-clusters-to-exceed-1-cubic-meter-on-large-oaks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"On massive trees, this fungus can occupy space comparable to furniture."},{"title":"Wind-Assisted Spore Dispersal Carrying Laetiporus Across Forest Canopies","slug":"wind-assisted-spore-dispersal-carrying-laetiporus-across-forest-canopies","url":"/categories/wild-mushrooms/chicken-of-the-woods/wind-assisted-spore-dispersal-carrying-laetiporus-across-forest-canopies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Microscopic spores from this mushroom can ride air currents for miles."},{"title":"Wood Density Reduction Exceeding 50 Percent in Advanced Laetiporus Infections","slug":"wood-density-reduction-exceeding-50-percent-in-advanced-laetiporus-infections","url":"/categories/wild-mushrooms/chicken-of-the-woods/wood-density-reduction-exceeding-50-percent-in-advanced-laetiporus-infections.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus can cut a hardwood’s density in half before collapse."},{"title":"Wood Structural Failure Events Attributed to Advanced Brown Rot Colonization","slug":"wood-structural-failure-events-attributed-to-advanced-brown-rot-colonization","url":"/categories/wild-mushrooms/chicken-of-the-woods/wood-structural-failure-events-attributed-to-advanced-brown-rot-colonization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Storms often get blamed, but hidden fungi start the collapse."},{"title":"Xerocomus Polypore 90°C Internal Temperature Survival Threshold","slug":"xerocomus-polypore-90-c-internal-temperature-survival-threshold","url":"/categories/wild-mushrooms/chicken-of-the-woods/xerocomus-polypore-90-c-internal-temperature-survival-threshold.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This edible mushroom can reach temperatures that cook meat while still alive."},{"title":"Xylan-Degrading Enzymes Secreted by Laetiporus During Hardwood Decay","slug":"xylan-degrading-enzymes-secreted-by-laetiporus-during-hardwood-decay","url":"/categories/wild-mushrooms/chicken-of-the-woods/xylan-degrading-enzymes-secreted-by-laetiporus-during-hardwood-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus dismantles complex plant sugars that resist most digestion."},{"title":"Yellow Shelf Fungus 1-Meter Forest Spread in a Single Season","slug":"yellow-shelf-fungus-1-meter-forest-spread-in-a-single-season","url":"/categories/wild-mushrooms/chicken-of-the-woods/yellow-shelf-fungus-1-meter-forest-spread-in-a-single-season.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One mushroom cluster can silently span an entire tree trunk in months."},{"title":"Yolk-Colored Laetiporus Sulfureus Identified Across Three Continents","slug":"yolk-colored-laetiporus-sulfureus-identified-across-three-continents","url":"/categories/wild-mushrooms/chicken-of-the-woods/yolk-colored-laetiporus-sulfureus-identified-across-three-continents.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same blazing orange fungus appears on forests thousands of miles apart."},{"title":"Zonal Brown Rot Mechanism That Leaves Trees Standing but Hollow","slug":"zonal-brown-rot-mechanism-that-leaves-trees-standing-but-hollow","url":"/categories/wild-mushrooms/chicken-of-the-woods/zonal-brown-rot-mechanism-that-leaves-trees-standing-but-hollow.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A tree can look healthy while its strength has already vanished."},{"title":"Zonal Species Complex Revealing Multiple Cryptic Laetiporus Lineages Worldwide","slug":"zonal-species-complex-revealing-multiple-cryptic-laetiporus-lineages-worldwide","url":"/categories/wild-mushrooms/chicken-of-the-woods/zonal-species-complex-revealing-multiple-cryptic-laetiporus-lineages-worldwide.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"What looks like one mushroom species is actually several hidden lineages."},{"title":"Zoonotic Interactions as Insects and Mammals Feed on Laetiporus Clusters","slug":"zoonotic-interactions-as-insects-and-mammals-feed-on-laetiporus-clusters","url":"/categories/wild-mushrooms/chicken-of-the-woods/zoonotic-interactions-as-insects-and-mammals-feed-on-laetiporus-clusters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom becomes a feeding hub for entire micro-ecosystems."},{"title":"Zymotic Brown Rot Chemistry Documented in Laetiporus Species Since 19th Century Forestry Studies","slug":"zymotic-brown-rot-chemistry-documented-in-laetiporus-species-since-19th-century-forestry-studies","url":"/categories/wild-mushrooms/chicken-of-the-woods/zymotic-brown-rot-chemistry-documented-in-laetiporus-species-since-19th-century-forestry-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Foresters have studied this fungus for over 150 years because it dismantles timber from inside."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

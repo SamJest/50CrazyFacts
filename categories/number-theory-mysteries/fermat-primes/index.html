@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fermat Primes</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Fermat Primes</h1>
+  <p>Explore all facts in "Fermat Primes".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Fermat Primes</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Algebraic Structure of F8 in 1980s Distributed Factorization Projects","slug":"algebraic-structure-of-f8-in-1980s-distributed-factorization-projects","url":"/categories/number-theory-mysteries/fermat-primes/algebraic-structure-of-f8-in-1980s-distributed-factorization-projects.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 78-digit Fermat number resisted global computers for years."},{"title":"Archimedean Compass Limits Exposed by Fermat Prime Scarcity","slug":"archimedean-compass-limits-exposed-by-fermat-prime-scarcity","url":"/categories/number-theory-mysteries/fermat-primes/archimedean-compass-limits-exposed-by-fermat-prime-scarcity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Ancient tools depend on five rare numbers discovered centuries later."},{"title":"Billion-Digit Scale of Hypothetical F20 and Its Physical Storage Impossibility","slug":"billion-digit-scale-of-hypothetical-f20-and-its-physical-storage-impossibility","url":"/categories/number-theory-mysteries/fermat-primes/billion-digit-scale-of-hypothetical-f20-and-its-physical-storage-impossibility.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One Fermat number would require more digits than atoms in a skyscraper."},{"title":"Binary Architecture Influence of the Fermat Prime 65,537 in RSA Encryption","slug":"binary-architecture-influence-of-the-fermat-prime-65-537-in-rsa-encryption","url":"/categories/number-theory-mysteries/fermat-primes/binary-architecture-influence-of-the-fermat-prime-65-537-in-rsa-encryption.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 17th-century prime now governs trillions in digital transactions."},{"title":"Catalan’s Equation and the Exceptional Role of Fermat Prime 3","slug":"catalan-s-equation-and-the-exceptional-role-of-fermat-prime-3","url":"/categories/number-theory-mysteries/fermat-primes/catalan-s-equation-and-the-exceptional-role-of-fermat-prime-3.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Only one pair of perfect powers differ by exactly one."},{"title":"Coprimality Cascade Showing F(n) Equals Product of Prior Fermat Numbers Plus Two","slug":"coprimality-cascade-showing-f-n-equals-product-of-prior-fermat-numbers-plus-two","url":"/categories/number-theory-mysteries/fermat-primes/coprimality-cascade-showing-f-n-equals-product-of-prior-fermat-numbers-plus-two.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Multiplying every previous term almost recreates the next one."},{"title":"Cunningham Project Databases Tracking Fermat Number Factors Since 1925","slug":"cunningham-project-databases-tracking-fermat-number-factors-since-1925","url":"/categories/number-theory-mysteries/fermat-primes/cunningham-project-databases-tracking-fermat-number-factors-since-1925.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A century-long ledger catalogs fragments of impossible-sized numbers."},{"title":"Dedekind Domain Breakdown Exposed by Fermat-Type Prime Investigations","slug":"dedekind-domain-breakdown-exposed-by-fermat-type-prime-investigations","url":"/categories/number-theory-mysteries/fermat-primes/dedekind-domain-breakdown-exposed-by-fermat-type-prime-investigations.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A failed proof about primes forced mathematicians to reinvent divisibility itself."},{"title":"Euler’s 1732 Proof That 4,294,967,297 Is Composite","slug":"euler-s-1732-proof-that-4-294-967-297-is-composite","url":"/categories/number-theory-mysteries/fermat-primes/euler-s-1732-proof-that-4-294-967-297-is-composite.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 17-digit number once believed prime collapsed under a teenager’s calculation."},{"title":"Exponential Tower Growth of F11 Surpassing 600 Decimal Digits","slug":"exponential-tower-growth-of-f11-surpassing-600-decimal-digits","url":"/categories/number-theory-mysteries/fermat-primes/exponential-tower-growth-of-f11-surpassing-600-decimal-digits.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One step forward in this sequence adds hundreds of digits instantly."},{"title":"Field Extension Degree 16 Derived from Fermat Prime 17","slug":"field-extension-degree-16-derived-from-fermat-prime-17","url":"/categories/number-theory-mysteries/fermat-primes/field-extension-degree-16-derived-from-fermat-prime-17.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Seventeen determines a sixteen-layer algebraic tower."},{"title":"Gauss’s 1796 Heptadecagon Construction Using Fermat Prime 17","slug":"gauss-s-1796-heptadecagon-construction-using-fermat-prime-17","url":"/categories/number-theory-mysteries/fermat-primes/gauss-s-1796-heptadecagon-construction-using-fermat-prime-17.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 19-year-old proved a 2,000-year geometric barrier was breakable."},{"title":"Hardy’s 20th Century Reflections on Fermat Prime Scarcity","slug":"hardy-s-20th-century-reflections-on-fermat-prime-scarcity","url":"/categories/number-theory-mysteries/fermat-primes/hardy-s-20th-century-reflections-on-fermat-prime-scarcity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Five early successes misled centuries of mathematical optimism."},{"title":"Irreducibility of Fermat Polynomials Over Rational Numbers","slug":"irreducibility-of-fermat-polynomials-over-rational-numbers","url":"/categories/number-theory-mysteries/fermat-primes/irreducibility-of-fermat-polynomials-over-rational-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A compact polynomial hides an indivisible structure."},{"title":"Jacobi Symbol Simplifications Under Fermat Prime Moduli","slug":"jacobi-symbol-simplifications-under-fermat-prime-moduli","url":"/categories/number-theory-mysteries/fermat-primes/jacobi-symbol-simplifications-under-fermat-prime-moduli.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A rare prime can collapse complex residue tests into predictable patterns."},{"title":"Kronecker–Weber Theorem Special Case Highlighted by Fermat Prime Cyclotomy","slug":"kronecker-weber-theorem-special-case-highlighted-by-fermat-prime-cyclotomy","url":"/categories/number-theory-mysteries/fermat-primes/kronecker-weber-theorem-special-case-highlighted-by-fermat-prime-cyclotomy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"All finite abelian extensions hide inside roots of unity generated by rare primes."},{"title":"Kronecker’s 1850 Analysis Linking Fermat Primes to Cyclotomic Fields","slug":"kronecker-s-1850-analysis-linking-fermat-primes-to-cyclotomic-fields","url":"/categories/number-theory-mysteries/fermat-primes/kronecker-s-1850-analysis-linking-fermat-primes-to-cyclotomic-fields.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An abstract prime dictated the solvability of entire algebraic fields."},{"title":"Kummer’s 19th Century Insights Connecting Fermat-Type Primes to Ideal Theory","slug":"kummer-s-19th-century-insights-connecting-fermat-type-primes-to-ideal-theory","url":"/categories/number-theory-mysteries/fermat-primes/kummer-s-19th-century-insights-connecting-fermat-type-primes-to-ideal-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Attempts to solve Fermat’s Last Theorem reshaped prime arithmetic."},{"title":"Logarithmic Bit-Length Explosion in Successive Fermat Numbers","slug":"logarithmic-bit-length-explosion-in-successive-fermat-numbers","url":"/categories/number-theory-mysteries/fermat-primes/logarithmic-bit-length-explosion-in-successive-fermat-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each index increase doubles the number of binary digits required."},{"title":"Mersenne and Fermat Prime Contrast in Growth Behavior","slug":"mersenne-and-fermat-prime-contrast-in-growth-behavior","url":"/categories/number-theory-mysteries/fermat-primes/mersenne-and-fermat-prime-contrast-in-growth-behavior.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two prime formulas diverge into entirely different universes of scale."},{"title":"Noetherian Ring Framework Strengthened by Fermat-Type Prime Studies","slug":"noetherian-ring-framework-strengthened-by-fermat-type-prime-studies","url":"/categories/number-theory-mysteries/fermat-primes/noetherian-ring-framework-strengthened-by-fermat-type-prime-studies.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A stubborn prime pattern helped formalize the concept of algebraic finiteness."},{"title":"Ordinary Exponential Models Collapse Against Fermat Double-Exponential Scale","slug":"ordinary-exponential-models-collapse-against-fermat-double-exponential-scale","url":"/categories/number-theory-mysteries/fermat-primes/ordinary-exponential-models-collapse-against-fermat-double-exponential-scale.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Standard growth curves look flat beside this prime formula."},{"title":"Pepin’s 1877 Test That Reduces Massive Fermat Numbers to One Remainder","slug":"pepin-s-1877-test-that-reduces-massive-fermat-numbers-to-one-remainder","url":"/categories/number-theory-mysteries/fermat-primes/pepin-s-1877-test-that-reduces-massive-fermat-numbers-to-one-remainder.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A number with millions of digits can be tested using a single remainder."},{"title":"Pépin’s Congruence Threshold for Testing 300-Digit Fermat Numbers","slug":"p-pin-s-congruence-threshold-for-testing-300-digit-fermat-numbers","url":"/categories/number-theory-mysteries/fermat-primes/p-pin-s-congruence-threshold-for-testing-300-digit-fermat-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single modular equation can condemn a 300-digit giant instantly."},{"title":"Persistent Open Status of Fermat Prime Finiteness Problem Since 1640","slug":"persistent-open-status-of-fermat-prime-finiteness-problem-since-1640","url":"/categories/number-theory-mysteries/fermat-primes/persistent-open-status-of-fermat-prime-finiteness-problem-since-1640.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A conjecture written before calculus still resists final judgment."},{"title":"Proth’s Theorem and the 65,537 Fermat Prime Verification","slug":"proth-s-theorem-and-the-65-537-fermat-prime-verification","url":"/categories/number-theory-mysteries/fermat-primes/proth-s-theorem-and-the-65-537-fermat-prime-verification.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A five-digit number once verified by hand now secures modern encryption."},{"title":"Quantum Algorithms and the Hypothetical Factorization of 2^(2^n)+1","slug":"quantum-algorithms-and-the-hypothetical-factorization-of-2-2-n-1","url":"/categories/number-theory-mysteries/fermat-primes/quantum-algorithms-and-the-hypothetical-factorization-of-2-2-n-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A future quantum computer could dismantle numbers larger than galaxies."},{"title":"Quintic Equation Solvability Boundary Illuminated by Fermat Prime 17","slug":"quintic-equation-solvability-boundary-illuminated-by-fermat-prime-17","url":"/categories/number-theory-mysteries/fermat-primes/quintic-equation-solvability-boundary-illuminated-by-fermat-prime-17.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single prime determines whether certain fifth-degree equations yield to radicals."},{"title":"Rational Constructibility Criteria Limited by Five Known Fermat Primes","slug":"rational-constructibility-criteria-limited-by-five-known-fermat-primes","url":"/categories/number-theory-mysteries/fermat-primes/rational-constructibility-criteria-limited-by-five-known-fermat-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Only five numbers unlock every classical straightedge construction."},{"title":"Shanks’ 1970s Computational Tests Extending Fermat Non-Primality Evidence","slug":"shanks-1970s-computational-tests-extending-fermat-non-primality-evidence","url":"/categories/number-theory-mysteries/fermat-primes/shanks-1970s-computational-tests-extending-fermat-non-primality-evidence.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Supercomputers confirmed absence where patterns once promised infinity."},{"title":"Solvable Galois Group Structure Triggered by Fermat Prime Extensions","slug":"solvable-galois-group-structure-triggered-by-fermat-prime-extensions","url":"/categories/number-theory-mysteries/fermat-primes/solvable-galois-group-structure-triggered-by-fermat-prime-extensions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Certain primes force entire symmetry groups into orderly collapse."},{"title":"Square Geometry Collapse for Non-Fermat Prime Polygons After 1796","slug":"square-geometry-collapse-for-non-fermat-prime-polygons-after-1796","url":"/categories/number-theory-mysteries/fermat-primes/square-geometry-collapse-for-non-fermat-prime-polygons-after-1796.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Nineteen sides look simple until arithmetic forbids them."},{"title":"Theoretical Sixth Fermat Prime Would Exceed 10 to the 19 Millionth Power","slug":"theoretical-sixth-fermat-prime-would-exceed-10-to-the-19-millionth-power","url":"/categories/number-theory-mysteries/fermat-primes/theoretical-sixth-fermat-prime-would-exceed-10-to-the-19-millionth-power.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A hypothetical new prime would contain millions of digits instantly."},{"title":"Tonelli–Shanks Algorithm Efficiency for Fermat Prime Moduli","slug":"tonelli-shanks-algorithm-efficiency-for-fermat-prime-moduli","url":"/categories/number-theory-mysteries/fermat-primes/tonelli-shanks-algorithm-efficiency-for-fermat-prime-moduli.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Certain square roots exist instantly under rare prime conditions."},{"title":"Tower-of-Two Exponent Mechanism Driving Fermat Number Explosion","slug":"tower-of-two-exponent-mechanism-driving-fermat-number-explosion","url":"/categories/number-theory-mysteries/fermat-primes/tower-of-two-exponent-mechanism-driving-fermat-number-explosion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The exponent itself grows exponentially before the number even forms."},{"title":"Ultrarapid Growth Rate of 2^(2^n)+1 Compared to Exponential Functions","slug":"ultrarapid-growth-rate-of-2-2-n-1-compared-to-exponential-functions","url":"/categories/number-theory-mysteries/fermat-primes/ultrarapid-growth-rate-of-2-2-n-1-compared-to-exponential-functions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each step in this sequence doubles the previous exponent itself."},{"title":"Unique Coprimality of Fermat Numbers Proven by Euclid’s 3rd Century BCE Insight","slug":"unique-coprimality-of-fermat-numbers-proven-by-euclid-s-3rd-century-bce-insight","url":"/categories/number-theory-mysteries/fermat-primes/unique-coprimality-of-fermat-numbers-proven-by-euclid-s-3rd-century-bce-insight.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every Fermat number refuses to share a single factor with its siblings."},{"title":"Unresolved Finiteness Question of Fermat Primes After 380 Years","slug":"unresolved-finiteness-question-of-fermat-primes-after-380-years","url":"/categories/number-theory-mysteries/fermat-primes/unresolved-finiteness-question-of-fermat-primes-after-380-years.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Centuries of computation still cannot prove whether the list stops at five."},{"title":"Vast Digit Barrier Preventing Direct Storage of High-Index Fermat Numbers","slug":"vast-digit-barrier-preventing-direct-storage-of-high-index-fermat-numbers","url":"/categories/number-theory-mysteries/fermat-primes/vast-digit-barrier-preventing-direct-storage-of-high-index-fermat-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some Fermat numbers cannot be written out in full within practical memory limits."},{"title":"Vector-Space Dimension Control in Fermat Prime Cyclotomic Fields","slug":"vector-space-dimension-control-in-fermat-prime-cyclotomic-fields","url":"/categories/number-theory-mysteries/fermat-primes/vector-space-dimension-control-in-fermat-prime-cyclotomic-fields.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A rare prime fixes the dimension of an entire algebraic universe."},{"title":"Waveform Decomposition Symmetry Linked to 17th Roots of Unity","slug":"waveform-decomposition-symmetry-linked-to-17th-roots-of-unity","url":"/categories/number-theory-mysteries/fermat-primes/waveform-decomposition-symmetry-linked-to-17th-roots-of-unity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Seventeen equally spaced points encode a solvable harmonic system."},{"title":"Wider Prime Landscape Altered by Pairwise Coprimality of Fermat Numbers","slug":"wider-prime-landscape-altered-by-pairwise-coprimality-of-fermat-numbers","url":"/categories/number-theory-mysteries/fermat-primes/wider-prime-landscape-altered-by-pairwise-coprimality-of-fermat-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every term in this sequence introduces entirely new prime territory."},{"title":"X-Coordinate Symmetry in 17th Roots of Unity Driven by Fermat Prime Structure","slug":"x-coordinate-symmetry-in-17th-roots-of-unity-driven-by-fermat-prime-structure","url":"/categories/number-theory-mysteries/fermat-primes/x-coordinate-symmetry-in-17th-roots-of-unity-driven-by-fermat-prime-structure.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Seventeen evenly spaced points unlock a hidden algebraic symmetry."},{"title":"Xavier Gourdon’s 1999 Factorization of F7 Exceeding 10^38","slug":"xavier-gourdon-s-1999-factorization-of-f7-exceeding-10-38","url":"/categories/number-theory-mysteries/fermat-primes/xavier-gourdon-s-1999-factorization-of-f7-exceeding-10-38.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single Fermat number required factors longer than most novels."},{"title":"Y-Branching Decision Trees in Primality Testing of Fermat Numbers","slug":"y-branching-decision-trees-in-primality-testing-of-fermat-numbers","url":"/categories/number-theory-mysteries/fermat-primes/y-branching-decision-trees-in-primality-testing-of-fermat-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Testing one number can branch into millions of computational paths."},{"title":"Yields of New Prime Factors from Every Composite Fermat Number Proven in 1892","slug":"yields-of-new-prime-factors-from-every-composite-fermat-number-proven-in-1892","url":"/categories/number-theory-mysteries/fermat-primes/yields-of-new-prime-factors-from-every-composite-fermat-number-proven-in-1892.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Failure to be prime guarantees the birth of a brand-new divisor."},{"title":"Yoshida’s 1988 Proof That No New Fermat Primes Exist Below 2^32","slug":"yoshida-s-1988-proof-that-no-new-fermat-primes-exist-below-2-32","url":"/categories/number-theory-mysteries/fermat-primes/yoshida-s-1988-proof-that-no-new-fermat-primes-exist-below-2-32.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Billions of candidates were eliminated without testing them individually."},{"title":"Zero Shared Factors Phenomenon Across All Known Fermat Numbers","slug":"zero-shared-factors-phenomenon-across-all-known-fermat-numbers","url":"/categories/number-theory-mysteries/fermat-primes/zero-shared-factors-phenomenon-across-all-known-fermat-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No two Fermat numbers share even a single prime divisor."},{"title":"Zeta Function Connections Emerging from Cyclotomic Fields of Fermat Primes","slug":"zeta-function-connections-emerging-from-cyclotomic-fields-of-fermat-primes","url":"/categories/number-theory-mysteries/fermat-primes/zeta-function-connections-emerging-from-cyclotomic-fields-of-fermat-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Rare primes alter the behavior of entire analytic functions."},{"title":"Zsigmondy’s 1892 Theorem Guaranteeing New Prime Divisors in Fermat Sequences","slug":"zsigmondy-s-1892-theorem-guaranteeing-new-prime-divisors-in-fermat-sequences","url":"/categories/number-theory-mysteries/fermat-primes/zsigmondy-s-1892-theorem-guaranteeing-new-prime-divisors-in-fermat-sequences.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each failed Fermat number hides a brand-new prime divisor never seen before."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

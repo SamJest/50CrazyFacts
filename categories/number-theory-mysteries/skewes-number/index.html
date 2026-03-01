@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skewes Number</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Skewes Number</h1>
+  <p>Explore all facts in "Skewes Number".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Skewes Number</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Asymptotic Certainty Conceals Finite Chaos in Prime Distribution","slug":"asymptotic-certainty-conceals-finite-chaos-in-prime-distribution","url":"/categories/number-theory-mysteries/skewes-number/asymptotic-certainty-conceals-finite-chaos-in-prime-distribution.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes follow a smooth law at infinity yet rebel unpredictably at finite scales."},{"title":"Bays and Hudson 2000 Computation Located First Prime Sign Change Near 10^316","slug":"bays-and-hudson-2000-computation-located-first-prime-sign-change-near-10-316","url":"/categories/number-theory-mysteries/skewes-number/bays-and-hudson-2000-computation-located-first-prime-sign-change-near-10-316.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After a century of theory, the first reversal was finally pinned below a 316-digit ceiling."},{"title":"Binary Logarithm Perspective Shrinks Skewes Bound into 2^Magnitude Form","slug":"binary-logarithm-perspective-shrinks-skewes-bound-into-2-magnitude-form","url":"/categories/number-theory-mysteries/skewes-number/binary-logarithm-perspective-shrinks-skewes-bound-into-2-magnitude-form.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Rewriting the bound in base 2 reveals a magnitude beyond storage physics."},{"title":"Chaotic Oscillation in Prime Error Term Forces Extreme Upper Bounds","slug":"chaotic-oscillation-in-prime-error-term-forces-extreme-upper-bounds","url":"/categories/number-theory-mysteries/skewes-number/chaotic-oscillation-in-prime-error-term-forces-extreme-upper-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hidden fluctuations in a smooth curve inflate certainty into astronomical scale."},{"title":"Colossal Gap Between Observed Computation and Guaranteed Crossover Persists","slug":"colossal-gap-between-observed-computation-and-guaranteed-crossover-persists","url":"/categories/number-theory-mysteries/skewes-number/colossal-gap-between-observed-computation-and-guaranteed-crossover-persists.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Computers have searched trillions of primes without witnessing the guaranteed reversal."},{"title":"Critical Line Constraint Governs How Extreme Skewes Bound Must Be","slug":"critical-line-constraint-governs-how-extreme-skewes-bound-must-be","url":"/categories/number-theory-mysteries/skewes-number/critical-line-constraint-governs-how-extreme-skewes-bound-must-be.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Where imaginary zeros sit determines whether the crossover hides beyond galaxies."},{"title":"Crossover Certainty Exists Even If Human Computation Never Reaches It","slug":"crossover-certainty-exists-even-if-human-computation-never-reaches-it","url":"/categories/number-theory-mysteries/skewes-number/crossover-certainty-exists-even-if-human-computation-never-reaches-it.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The reversal is mathematically inevitable even if no computer ever witnesses it."},{"title":"Cumulative Analytic Refinement Turned Skewes Tower into Finite 316-Digit Ceiling","slug":"cumulative-analytic-refinement-turned-skewes-tower-into-finite-316-digit-ceiling","url":"/categories/number-theory-mysteries/skewes-number/cumulative-analytic-refinement-turned-skewes-tower-into-finite-316-digit-ceiling.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Decades of precision collapsed a legend-sized number into a single line of digits."},{"title":"Density Hypothesis Variants Would Reshape Skewes Bound Landscape","slug":"density-hypothesis-variants-would-reshape-skewes-bound-landscape","url":"/categories/number-theory-mysteries/skewes-number/density-hypothesis-variants-would-reshape-skewes-bound-landscape.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Changing assumptions about zero clustering rewrites astronomical ceilings instantly."},{"title":"Deuring 1938 Zero-Density Concepts Laid Groundwork for Skewes Reductions","slug":"deuring-1938-zero-density-concepts-laid-groundwork-for-skewes-reductions","url":"/categories/number-theory-mysteries/skewes-number/deuring-1938-zero-density-concepts-laid-groundwork-for-skewes-reductions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A pre-war refinement in complex analysis quietly shrank a number larger than the cosmos."},{"title":"Erdos 1949 Elementary Methods Bypassed Complex Analysis but Not Skewes Scale","slug":"erdos-1949-elementary-methods-bypassed-complex-analysis-but-not-skewes-scale","url":"/categories/number-theory-mysteries/skewes-number/erdos-1949-elementary-methods-bypassed-complex-analysis-but-not-skewes-scale.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime density was proven without complex numbers—yet the astronomical bound survived."},{"title":"Error Term Magnitude Dictates How Far Prime Sign Change Can Hide","slug":"error-term-magnitude-dictates-how-far-prime-sign-change-can-hide","url":"/categories/number-theory-mysteries/skewes-number/error-term-magnitude-dictates-how-far-prime-sign-change-can-hide.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny deviations in a formula can push certainty beyond cosmic scale."},{"title":"Explicit Formula Connects Prime Counting to Imaginary Zeta Zeros","slug":"explicit-formula-connects-prime-counting-to-imaginary-zeta-zeros","url":"/categories/number-theory-mysteries/skewes-number/explicit-formula-connects-prime-counting-to-imaginary-zeta-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every prime hides a whisper from an imaginary number."},{"title":"Explicit Zero Computations Into Trillions Reinforced Conditional Shrinkage","slug":"explicit-zero-computations-into-trillions-reinforced-conditional-shrinkage","url":"/categories/number-theory-mysteries/skewes-number/explicit-zero-computations-into-trillions-reinforced-conditional-shrinkage.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Trillions of imaginary coordinates were checked to compress one number."},{"title":"Exponential Tower Bounds Highlight Difference Between Existence and Construction","slug":"exponential-tower-bounds-highlight-difference-between-existence-and-construction","url":"/categories/number-theory-mysteries/skewes-number/exponential-tower-bounds-highlight-difference-between-existence-and-construction.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematics can prove something exists far beyond any hope of building it."},{"title":"Fourier Analysis Hidden Inside Skewes' Prime Bound Explosion","slug":"fourier-analysis-hidden-inside-skewes-prime-bound-explosion","url":"/categories/number-theory-mysteries/skewes-number/fourier-analysis-hidden-inside-skewes-prime-bound-explosion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Trigonometric waves in the complex plane inflate a number beyond cosmic scale."},{"title":"Generalized Riemann Hypothesis Would Collapse Skewes Bound Dramatically","slug":"generalized-riemann-hypothesis-would-collapse-skewes-bound-dramatically","url":"/categories/number-theory-mysteries/skewes-number/generalized-riemann-hypothesis-would-collapse-skewes-bound-dramatically.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One unproven extension could erase astronomical layers overnight."},{"title":"Growth Rate Contrast Between Polynomial and Exponential Bounds Explains Skewes Scale","slug":"growth-rate-contrast-between-polynomial-and-exponential-bounds-explains-skewes-scale","url":"/categories/number-theory-mysteries/skewes-number/growth-rate-contrast-between-polynomial-and-exponential-bounds-explains-skewes-scale.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Switching from polynomial growth to exponent towers detonates numerical size instantly."},{"title":"Hadamard 1896 Zero-Free Proof Enabled Prime Density Control","slug":"hadamard-1896-zero-free-proof-enabled-prime-density-control","url":"/categories/number-theory-mysteries/skewes-number/hadamard-1896-zero-free-proof-enabled-prime-density-control.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single complex-plane boundary made prime prediction possible."},{"title":"Hyper-Exponential Bounds Arise from Conservative Error Estimates","slug":"hyper-exponential-bounds-arise-from-conservative-error-estimates","url":"/categories/number-theory-mysteries/skewes-number/hyper-exponential-bounds-arise-from-conservative-error-estimates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Assuming the worst case across infinite oscillations builds a number beyond imagination."},{"title":"Integration of Complex Analysis into Prime Theory Created Skewes Shock","slug":"integration-of-complex-analysis-into-prime-theory-created-skewes-shock","url":"/categories/number-theory-mysteries/skewes-number/integration-of-complex-analysis-into-prime-theory-created-skewes-shock.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Counting whole numbers required diving into imaginary dimensions."},{"title":"Jacques de la Vallée Poussin's 1896 Proof Secured Prime Asymptotics","slug":"jacques-de-la-vall-e-poussin-s-1896-proof-secured-prime-asymptotics","url":"/categories/number-theory-mysteries/skewes-number/jacques-de-la-vall-e-poussin-s-1896-proof-secured-prime-asymptotics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers obey a smooth law—yet hide violent oscillations inside it."},{"title":"Knapowski and Turan's 1962 Oscillation Analysis Refined Skewes Bounds","slug":"knapowski-and-turan-s-1962-oscillation-analysis-refined-skewes-bounds","url":"/categories/number-theory-mysteries/skewes-number/knapowski-and-turan-s-1962-oscillation-analysis-refined-skewes-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A hidden oscillation in prime distribution keeps switching sides beyond any visible horizon."},{"title":"Knuth's 1976 Skewes Number Estimate Exceeds 10^10^10^34","slug":"knuth-s-1976-skewes-number-estimate-exceeds-10-10-10-34","url":"/categories/number-theory-mysteries/skewes-number/knuth-s-1976-skewes-number-estimate-exceeds-10-10-10-34.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One proven mathematical boundary is so large it dwarfs any physical quantity in the observable universe."},{"title":"Littlewood 1914 Result Proved Prime Counting Reversals Without Example","slug":"littlewood-1914-result-proved-prime-counting-reversals-without-example","url":"/categories/number-theory-mysteries/skewes-number/littlewood-1914-result-proved-prime-counting-reversals-without-example.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematics guaranteed a dramatic reversal that no one could see."},{"title":"Littlewood's 1914 Theorem Guarantees Prime Counting Reversal","slug":"littlewood-s-1914-theorem-guarantees-prime-counting-reversal","url":"/categories/number-theory-mysteries/skewes-number/littlewood-s-1914-theorem-guarantees-prime-counting-reversal.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"For millions of numbers, a famous formula predicts primes better than reality—until it suddenly does not."},{"title":"Logarithmic Integral li(x) Outperforms π(x) For Billions Yet Must Fail","slug":"logarithmic-integral-li-x-outperforms-x-for-billions-yet-must-fail","url":"/categories/number-theory-mysteries/skewes-number/logarithmic-integral-li-x-outperforms-x-for-billions-yet-must-fail.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A formula that wins for billions of inputs is mathematically destined to lose."},{"title":"Miller 1975 Bound Linked Skewes Number to Zero-Free Regions","slug":"miller-1975-bound-linked-skewes-number-to-zero-free-regions","url":"/categories/number-theory-mysteries/skewes-number/miller-1975-bound-linked-skewes-number-to-zero-free-regions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One refinement in 1975 compressed a number larger than galaxies into something merely beyond comprehension."},{"title":"Monstrous 10^10^10^34 Expression Popularized by Knuth's 1976 Notation","slug":"monstrous-10-10-10-34-expression-popularized-by-knuth-s-1976-notation","url":"/categories/number-theory-mysteries/skewes-number/monstrous-10-10-10-34-expression-popularized-by-knuth-s-1976-notation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A new symbolic language was invented partly to tame this number."},{"title":"Nagell 1960 Analysis Reduced Prime Sign-Change Ceiling by Exponential Factors","slug":"nagell-1960-analysis-reduced-prime-sign-change-ceiling-by-exponential-factors","url":"/categories/number-theory-mysteries/skewes-number/nagell-1960-analysis-reduced-prime-sign-change-ceiling-by-exponential-factors.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A mid-century inequality sliced entire exponent layers off a cosmic-scale bound."},{"title":"Nontrivial Zeros Beyond 10 Trillion Verified in 2004 Strengthened Bounds","slug":"nontrivial-zeros-beyond-10-trillion-verified-in-2004-strengthened-bounds","url":"/categories/number-theory-mysteries/skewes-number/nontrivial-zeros-beyond-10-trillion-verified-in-2004-strengthened-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians checked trillions of imaginary zeros to tighten one inequality."},{"title":"Oesterlé 1985 Refinements Further Compressed Skewes Upper Limits","slug":"oesterl-1985-refinements-further-compressed-skewes-upper-limits","url":"/categories/number-theory-mysteries/skewes-number/oesterl-1985-refinements-further-compressed-skewes-upper-limits.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A late-20th-century refinement quietly erased layers from a once legendary number."},{"title":"Oscillation Between π(x) and li(x) Must Occur Infinitely Often","slug":"oscillation-between-x-and-li-x-must-occur-infinitely-often","url":"/categories/number-theory-mysteries/skewes-number/oscillation-between-x-and-li-x-must-occur-infinitely-often.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No matter how long one formula wins, it must eventually lose again."},{"title":"Pintz 1987 Estimates Sharply Lowered Sign-Change Upper Bound","slug":"pintz-1987-estimates-sharply-lowered-sign-change-upper-bound","url":"/categories/number-theory-mysteries/skewes-number/pintz-1987-estimates-sharply-lowered-sign-change-upper-bound.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A late-1980s inequality removed astronomical territory from a legendary ceiling."},{"title":"Prime Number Theorem 1896 Proof Set Stage for Skewes Explosion","slug":"prime-number-theorem-1896-proof-set-stage-for-skewes-explosion","url":"/categories/number-theory-mysteries/skewes-number/prime-number-theorem-1896-proof-set-stage-for-skewes-explosion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 19th-century triumph quietly planted the seed for a 20th-century numerical monster."},{"title":"Quantifying Skewes Number Requires Triple Exponential Notation","slug":"quantifying-skewes-number-requires-triple-exponential-notation","url":"/categories/number-theory-mysteries/skewes-number/quantifying-skewes-number-requires-triple-exponential-notation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Writing this number out would require more digits than atoms available to store them."},{"title":"Riemann 1859 Hypothesis Sparked Century-Long Bound Explosion","slug":"riemann-1859-hypothesis-sparked-century-long-bound-explosion","url":"/categories/number-theory-mysteries/skewes-number/riemann-1859-hypothesis-sparked-century-long-bound-explosion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A two-page 1859 paper planted the seed for a number beyond galaxies."},{"title":"Riemann Hypothesis Assumption Halved Skewes' Astronomical Bound in 1933","slug":"riemann-hypothesis-assumption-halved-skewes-astronomical-bound-in-1933","url":"/categories/number-theory-mysteries/skewes-number/riemann-hypothesis-assumption-halved-skewes-astronomical-bound-in-1933.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One unproven assumption sliced a cosmic-scale number down to a merely incomprehensible one."},{"title":"Tower Notation Demonstrates How Small Analytic Errors Become Astronomical","slug":"tower-notation-demonstrates-how-small-analytic-errors-become-astronomical","url":"/categories/number-theory-mysteries/skewes-number/tower-notation-demonstrates-how-small-analytic-errors-become-astronomical.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One conservative estimate can explode into a power tower beyond galaxies."},{"title":"Triple Exponential Original Estimate Became Symbol of Mathematical Extremes","slug":"triple-exponential-original-estimate-became-symbol-of-mathematical-extremes","url":"/categories/number-theory-mysteries/skewes-number/triple-exponential-original-estimate-became-symbol-of-mathematical-extremes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Few numbers in mathematics ever needed three stacked exponents."},{"title":"Universe Atom Count Comparison Highlights Skewes Number Absurdity","slug":"universe-atom-count-comparison-highlights-skewes-number-absurdity","url":"/categories/number-theory-mysteries/skewes-number/universe-atom-count-comparison-highlights-skewes-number-absurdity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even counting every atom in the universe would not approach this bound."},{"title":"Upper Bound Reductions Since 1955 Cut Skewes Number by Exponential Layers","slug":"upper-bound-reductions-since-1955-cut-skewes-number-by-exponential-layers","url":"/categories/number-theory-mysteries/skewes-number/upper-bound-reductions-since-1955-cut-skewes-number-by-exponential-layers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians have sliced layers off a number that once defied imagination."},{"title":"Vast Sign-Change Guarantee Emerges from Littlewood's Oscillation Proof","slug":"vast-sign-change-guarantee-emerges-from-littlewood-s-oscillation-proof","url":"/categories/number-theory-mysteries/skewes-number/vast-sign-change-guarantee-emerges-from-littlewood-s-oscillation-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A function that predicts primes must eventually be wrong beyond any visible horizon."},{"title":"Walfisz 1963 Error-Term Improvements Reduced Prime Oscillation Bounds","slug":"walfisz-1963-error-term-improvements-reduced-prime-oscillation-bounds","url":"/categories/number-theory-mysteries/skewes-number/walfisz-1963-error-term-improvements-reduced-prime-oscillation-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An improved error estimate erased astronomical territory from a theoretical frontier."},{"title":"X-Large Prime Gap Bounds Emerged from Skewes' 1933 Calculation","slug":"x-large-prime-gap-bounds-emerged-from-skewes-1933-calculation","url":"/categories/number-theory-mysteries/skewes-number/x-large-prime-gap-bounds-emerged-from-skewes-1933-calculation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single inequality about primes produced a number larger than any conceivable measurement in physics."},{"title":"Yitang Zhang's 2013 Prime Gap Breakthrough Narrowed Extreme Bounds","slug":"yitang-zhang-s-2013-prime-gap-breakthrough-narrowed-extreme-bounds","url":"/categories/number-theory-mysteries/skewes-number/yitang-zhang-s-2013-prime-gap-breakthrough-narrowed-extreme-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After decades of stagnation, one proof shrank an infinite mystery to a concrete number."},{"title":"Zeta Function Zero Distribution Controls Skewes' Extreme Estimate","slug":"zeta-function-zero-distribution-controls-skewes-extreme-estimate","url":"/categories/number-theory-mysteries/skewes-number/zeta-function-zero-distribution-controls-skewes-extreme-estimate.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible complex numbers dictate when prime patterns finally break."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

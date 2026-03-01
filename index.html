@@ -22,7 +22,6 @@ body{
   animation:pageFade .6s ease;
 }
 @keyframes pageFade{from{opacity:0}to{opacity:1}}
-
 html{scroll-behavior:smooth}
 
 /* HEADER */
@@ -56,6 +55,7 @@ html{scroll-behavior:smooth}
   gap:18px;
   background:#222;
   padding:10px 20px;
+  overflow-x:auto;
 }
 .nav-strip a{
   color:#fff;
@@ -63,6 +63,7 @@ html{scroll-behavior:smooth}
   font-size:.9em;
   font-weight:bold;
   opacity:.85;
+  white-space:nowrap;
 }
 .nav-strip a:hover{opacity:1}
 
@@ -126,7 +127,6 @@ html{scroll-behavior:smooth}
   font-weight:bold;
 }
 
-/* pulse */
 @keyframes heroPulse{
   0%{box-shadow:0 0 0 0 rgba(233,30,99,.6)}
   70%{box-shadow:0 0 0 14px rgba(233,30,99,0)}
@@ -136,7 +136,7 @@ html{scroll-behavior:smooth}
   animation:heroPulse 2s ease 8s infinite;
 }
 
-/* STATS GLASS */
+/* STATS */
 .stats{
   display:flex;
   justify-content:center;
@@ -188,7 +188,6 @@ html{scroll-behavior:smooth}
   box-shadow:0 20px 40px rgba(0,0,0,.2);
 }
 
-/* animated accent */
 .card::before{
   content:'';
   position:absolute;
@@ -206,7 +205,6 @@ html{scroll-behavior:smooth}
   100%{background-position:0% 50%}
 }
 
-/* PREMIUM BADGES */
 .badge{
   display:inline-block;
   padding:5px 12px;
@@ -244,6 +242,48 @@ body.dark .site-bar{background:#000}
   z-index:1000;
 }
 
+/* ================= MOBILE FIX ================= */
+
+@media (max-width:768px){
+
+  .hero{
+    padding:50px 16px 80px;
+  }
+
+  .hero h1{font-size:2em}
+  .hero p{font-size:1em}
+
+  .hero-cards-container{
+    height:auto;
+    margin:30px auto 0;
+  }
+
+  .hero-card{
+    position:relative;
+    inset:auto;
+    margin-bottom:20px;
+    max-width:100%;
+    padding:20px;
+  }
+
+  .hero-card.show{
+    transform:none;
+  }
+
+  .hero-btn{
+    display:block;
+    text-align:center;
+    margin-top:16px;
+  }
+
+  .stats{
+    flex-direction:column;
+    gap:16px;
+    margin:-40px 20px 40px;
+  }
+
+}
+
 </style>
 </head>
 
@@ -270,9 +310,9 @@ body.dark .site-bar{background:#000}
 </div>
 
 <div class="stats">
-  <div class="stat"><div class="stat-number">4740</div><div>Facts</div></div>
-  <div class="stat"><div class="stat-number">106</div><div>Subjects</div></div>
-  <div class="stat"><div class="stat-number">5</div><div>Categories</div></div>
+  <div class="stat"><div class="stat-number">7223</div><div>Facts</div></div>
+  <div class="stat"><div class="stat-number">158</div><div>Subjects</div></div>
+  <div class="stat"><div class="stat-number">8</div><div>Categories</div></div>
 </div>
 
 <div class="section" id="featured">
@@ -303,13 +343,11 @@ try{
 
 const {heroPool=[],featuredPool=[],latest=[],randomPool=[]}=homeData;
 
-/* HELPER TO FORMAT LABELS */
 function formatLabel(slug){
   if(!slug) return '';
   return slug.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
-/* CARD BUILDER */
 function buildCard(f){
  const url=`/categories/${f.category}/${f.subject}/${f.SLUG}.html`;
  const div=document.createElement('div');
@@ -324,19 +362,9 @@ function buildCard(f){
    </a>
  `;
  setTimeout(()=>div.classList.add('loaded'),Math.random()*200);
-
- const link=div.querySelector('a');
- link.addEventListener('mouseenter',()=>{
-   const pre=document.createElement('link');
-   pre.rel='prefetch';
-   pre.href=link.href;
-   document.head.appendChild(pre);
- });
-
  return div;
 }
 
-/* HERO */
 const heroContainer=document.querySelector('.hero-cards-container');
 heroPool.slice(0,8).forEach(f=>{
  const div=document.createElement('div');
@@ -352,6 +380,7 @@ heroPool.slice(0,8).forEach(f=>{
  `;
  heroContainer.appendChild(div);
 });
+
 const heroCards=document.querySelectorAll('.hero-card');
 let heroIndex=0;
 if(heroCards.length){
@@ -363,7 +392,6 @@ if(heroCards.length){
  },5000);
 }
 
-/* GRID LOAD */
 function loadGrid(gridId,pool){
  const grid=document.getElementById(gridId);
  pool.slice(0,24).forEach(f=>grid.appendChild(buildCard(f)));
@@ -372,14 +400,12 @@ loadGrid('featuredGrid',featuredPool);
 loadGrid('latestGrid',latest);
 loadGrid('randomGrid',randomPool);
 
-/* BACK TO TOP */
 const backBtn=document.getElementById('backToTop');
 window.addEventListener('scroll',()=>{
  backBtn.style.display=window.scrollY>400?'block':'none';
 });
 backBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
-/* DARK MODE */
 const darkToggle=document.getElementById('darkToggle');
 if(localStorage.getItem('darkMode')==='true'){
  document.body.classList.add('dark');

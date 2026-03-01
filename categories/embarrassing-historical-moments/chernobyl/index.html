@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chernobyl</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Chernobyl</h1>
+  <p>Explore all facts in "Chernobyl".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Chernobyl</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A 1,000-Ton Steel Shield Was Installed Above the Reactor Debris","slug":"a-1-000-ton-steel-shield-was-installed-above-the-reactor-debris","url":"/categories/embarrassing-historical-moments/chernobyl/a-1-000-ton-steel-shield-was-installed-above-the-reactor-debris.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Engineers suspended a structure heavier than a blue whale over molten remains."},{"title":"Animals Reclaimed Chernobyl’s Radiation Zone Faster Than Scientists Expected","slug":"animals-reclaimed-chernobyl-s-radiation-zone-faster-than-scientists-expected","url":"/categories/embarrassing-historical-moments/chernobyl/animals-reclaimed-chernobyl-s-radiation-zone-faster-than-scientists-expected.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Wild wolves multiplied inside one of Earth’s most radioactive landscapes."},{"title":"Boron and Sand Were Dropped by Helicopter Directly Into the Burning Reactor Core","slug":"boron-and-sand-were-dropped-by-helicopter-directly-into-the-burning-reactor-core","url":"/categories/embarrassing-historical-moments/chernobyl/boron-and-sand-were-dropped-by-helicopter-directly-into-the-burning-reactor-core.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Pilots flew over an open nuclear crater to dump sand by hand."},{"title":"Cesium-137 From Chernobyl Will Remain in Soil for Over a Century","slug":"cesium-137-from-chernobyl-will-remain-in-soil-for-over-a-century","url":"/categories/embarrassing-historical-moments/chernobyl/cesium-137-from-chernobyl-will-remain-in-soil-for-over-a-century.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single night’s explosion contaminated farmland for generations."},{"title":"Chernobyl Fallout Contaminated Reindeer Meat in Scandinavia for Years","slug":"chernobyl-fallout-contaminated-reindeer-meat-in-scandinavia-for-years","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-fallout-contaminated-reindeer-meat-in-scandinavia-for-years.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A reactor explosion in Ukraine ruined Arctic reindeer meat thousands of kilometers away."},{"title":"Chernobyl Firefighters Absorbed Lethal Radiation Within Minutes on April 26, 1986","slug":"chernobyl-firefighters-absorbed-lethal-radiation-within-minutes-on-april-26-1986","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-firefighters-absorbed-lethal-radiation-within-minutes-on-april-26-1986.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Men who thought they were fighting a routine electrical fire absorbed fatal radiation in less time than it takes to brew coffee."},{"title":"Chernobyl Radiation Was Detected in Sweden Before the Soviet Union Admitted It","slug":"chernobyl-radiation-was-detected-in-sweden-before-the-soviet-union-admitted-it","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-radiation-was-detected-in-sweden-before-the-soviet-union-admitted-it.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Swedish workers discovered a Soviet nuclear disaster before the Soviet government did."},{"title":"Chernobyl Released More Radioactive Iodine Than the Hiroshima Bomb","slug":"chernobyl-released-more-radioactive-iodine-than-the-hiroshima-bomb","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-released-more-radioactive-iodine-than-the-hiroshima-bomb.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One reactor accident released more radioactive iodine than an atomic bomb."},{"title":"Chernobyl’s Control Rod Design Increased Power Instead of Reducing It","slug":"chernobyl-s-control-rod-design-increased-power-instead-of-reducing-it","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-s-control-rod-design-increased-power-instead-of-reducing-it.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A safety button meant to stop the reactor made it surge instead."},{"title":"Chernobyl’s Disaster Was Rated the Maximum Level on the Nuclear Event Scale","slug":"chernobyl-s-disaster-was-rated-the-maximum-level-on-the-nuclear-event-scale","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-s-disaster-was-rated-the-maximum-level-on-the-nuclear-event-scale.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An industrial accident reached the highest possible severity rating."},{"title":"Chernobyl’s Exclusion Zone Covers an Area Larger Than Some Countries","slug":"chernobyl-s-exclusion-zone-covers-an-area-larger-than-some-countries","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-s-exclusion-zone-covers-an-area-larger-than-some-countries.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A nuclear accident created a forbidden zone bigger than many nations."},{"title":"Chernobyl’s Fallout Altered Radiation Monitoring Policies Worldwide","slug":"chernobyl-s-fallout-altered-radiation-monitoring-policies-worldwide","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-s-fallout-altered-radiation-monitoring-policies-worldwide.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One reactor failure rewrote global nuclear oversight."},{"title":"Chernobyl’s Reactor Core Burned Hotter Than the Surface of the Sun","slug":"chernobyl-s-reactor-core-burned-hotter-than-the-surface-of-the-sun","url":"/categories/embarrassing-historical-moments/chernobyl/chernobyl-s-reactor-core-burned-hotter-than-the-surface-of-the-sun.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A power plant in Ukraine briefly reached temperatures rivaling the Sun’s surface."},{"title":"Divers Entered Flooded Tunnels Beneath Chernobyl to Prevent a Steam Explosion","slug":"divers-entered-flooded-tunnels-beneath-chernobyl-to-prevent-a-steam-explosion","url":"/categories/embarrassing-historical-moments/chernobyl/divers-entered-flooded-tunnels-beneath-chernobyl-to-prevent-a-steam-explosion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Three men waded into radioactive water to stop a second explosion."},{"title":"Engineers Considered Tunneling Under Chernobyl to Freeze the Ground","slug":"engineers-considered-tunneling-under-chernobyl-to-freeze-the-ground","url":"/categories/embarrassing-historical-moments/chernobyl/engineers-considered-tunneling-under-chernobyl-to-freeze-the-ground.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Officials planned to refrigerate the Earth beneath a melting reactor."},{"title":"Forest Fires Still Re-Mobilize Chernobyl Radiation Decades Later","slug":"forest-fires-still-re-mobilize-chernobyl-radiation-decades-later","url":"/categories/embarrassing-historical-moments/chernobyl/forest-fires-still-re-mobilize-chernobyl-radiation-decades-later.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Wildfires in Ukraine can lift 1986 radiation back into the sky."},{"title":"Graphite From the Reactor Core Landed on Nearby Rooftops","slug":"graphite-from-the-reactor-core-landed-on-nearby-rooftops","url":"/categories/embarrassing-historical-moments/chernobyl/graphite-from-the-reactor-core-landed-on-nearby-rooftops.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Chunks of nuclear reactor core rained onto city buildings."},{"title":"Half of Belarus’s Radioactive Fallout Came From Chernobyl","slug":"half-of-belarus-s-radioactive-fallout-came-from-chernobyl","url":"/categories/embarrassing-historical-moments/chernobyl/half-of-belarus-s-radioactive-fallout-came-from-chernobyl.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A neighboring country absorbed most of the disaster’s contamination."},{"title":"Ice Hockey Games in Kyiv Continued While Radiation Levels Rose","slug":"ice-hockey-games-in-kyiv-continued-while-radiation-levels-rose","url":"/categories/embarrassing-historical-moments/chernobyl/ice-hockey-games-in-kyiv-continued-while-radiation-levels-rose.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Sporting events proceeded under a drifting radioactive cloud."},{"title":"Jupiter-Sized Radiation Plume From Chernobyl Circled the Northern Hemisphere","slug":"jupiter-sized-radiation-plume-from-chernobyl-circled-the-northern-hemisphere","url":"/categories/embarrassing-historical-moments/chernobyl/jupiter-sized-radiation-plume-from-chernobyl-circled-the-northern-hemisphere.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A reactor explosion sent radioactive dust looping around the planet."},{"title":"Kilometers of Red Forest Trees Died Within Days of the Explosion","slug":"kilometers-of-red-forest-trees-died-within-days-of-the-explosion","url":"/categories/embarrassing-historical-moments/chernobyl/kilometers-of-red-forest-trees-died-within-days-of-the-explosion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A pine forest turned rust-colored almost overnight from radiation burn."},{"title":"Liquid Radioactive Waste Was Stored in Improvised Facilities","slug":"liquid-radioactive-waste-was-stored-in-improvised-facilities","url":"/categories/embarrassing-historical-moments/chernobyl/liquid-radioactive-waste-was-stored-in-improvised-facilities.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Emergency tanks held contaminated water with no long-term blueprint."},{"title":"Liquidators Cleared Chernobyl’s Roof by Hand Because Robots Failed","slug":"liquidators-cleared-chernobyl-s-roof-by-hand-because-robots-failed","url":"/categories/embarrassing-historical-moments/chernobyl/liquidators-cleared-chernobyl-s-roof-by-hand-because-robots-failed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Robots built for nuclear war collapsed under radiation, so humans replaced them."},{"title":"Liquidators Used Shovels to Clear Highly Radioactive Graphite","slug":"liquidators-used-shovels-to-clear-highly-radioactive-graphite","url":"/categories/embarrassing-historical-moments/chernobyl/liquidators-used-shovels-to-clear-highly-radioactive-graphite.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Men with hand tools replaced robots in a nuclear ruin."},{"title":"Miners Dug Beneath Chernobyl in 50°C Heat Without Ventilation","slug":"miners-dug-beneath-chernobyl-in-50-c-heat-without-ventilation","url":"/categories/embarrassing-historical-moments/chernobyl/miners-dug-beneath-chernobyl-in-50-c-heat-without-ventilation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hundreds tunneled under a nuclear reactor in suffocating heat."},{"title":"New Safe Confinement Arch Is the Largest Movable Land Structure Ever Built","slug":"new-safe-confinement-arch-is-the-largest-movable-land-structure-ever-built","url":"/categories/embarrassing-historical-moments/chernobyl/new-safe-confinement-arch-is-the-largest-movable-land-structure-ever-built.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Engineers slid a 36,000-ton steel arch over a radioactive ruin."},{"title":"Over 116,000 People Were Relocated in the First Year After Chernobyl","slug":"over-116-000-people-were-relocated-in-the-first-year-after-chernobyl","url":"/categories/embarrassing-historical-moments/chernobyl/over-116-000-people-were-relocated-in-the-first-year-after-chernobyl.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An industrial accident displaced more people than many wars."},{"title":"Plutonium Fuel Particles Were Scattered Across the Chernobyl Site","slug":"plutonium-fuel-particles-were-scattered-across-the-chernobyl-site","url":"/categories/embarrassing-historical-moments/chernobyl/plutonium-fuel-particles-were-scattered-across-the-chernobyl-site.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fragments of nuclear fuel were blasted into open air."},{"title":"Pripyat’s 49,000 Residents Were Evacuated 36 Hours After the Explosion","slug":"pripyat-s-49-000-residents-were-evacuated-36-hours-after-the-explosion","url":"/categories/embarrassing-historical-moments/chernobyl/pripyat-s-49-000-residents-were-evacuated-36-hours-after-the-explosion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An entire city continued daily life beside a burning reactor for 36 hours."},{"title":"Pripyat’s Ferris Wheel Opened After the Explosion but Never Carried Riders Again","slug":"pripyat-s-ferris-wheel-opened-after-the-explosion-but-never-carried-riders-again","url":"/categories/embarrassing-historical-moments/chernobyl/pripyat-s-ferris-wheel-opened-after-the-explosion-but-never-carried-riders-again.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An amusement park debuted under a radioactive sky."},{"title":"Quadruple Redundancy Failed During Chernobyl’s Safety Test","slug":"quadruple-redundancy-failed-during-chernobyl-s-safety-test","url":"/categories/embarrassing-historical-moments/chernobyl/quadruple-redundancy-failed-during-chernobyl-s-safety-test.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Four layers of supposed safety collapsed in under a minute."},{"title":"Radiation Levels Inside Reactor 4 Remain Deadly Decades Later","slug":"radiation-levels-inside-reactor-4-remain-deadly-decades-later","url":"/categories/embarrassing-historical-moments/chernobyl/radiation-levels-inside-reactor-4-remain-deadly-decades-later.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Forty years later, parts of Chernobyl still deliver lethal doses in minutes."},{"title":"Reactor 4’s Explosion Released 400 Times the Radiation of Hiroshima","slug":"reactor-4-s-explosion-released-400-times-the-radiation-of-hiroshima","url":"/categories/embarrassing-historical-moments/chernobyl/reactor-4-s-explosion-released-400-times-the-radiation-of-hiroshima.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A power plant accident exceeded an atomic bomb’s radiation release by hundreds of times."},{"title":"Soil Contamination From Chernobyl Affected Over 150,000 Square Kilometers","slug":"soil-contamination-from-chernobyl-affected-over-150-000-square-kilometers","url":"/categories/embarrassing-historical-moments/chernobyl/soil-contamination-from-chernobyl-affected-over-150-000-square-kilometers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An explosion in one plant tainted land larger than entire countries."},{"title":"The Chernobyl Sarcophagus Was Built in 206 Days Under Extreme Radiation","slug":"the-chernobyl-sarcophagus-was-built-in-206-days-under-extreme-radiation","url":"/categories/embarrassing-historical-moments/chernobyl/the-chernobyl-sarcophagus-was-built-in-206-days-under-extreme-radiation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Workers encased a shattered nuclear reactor in months while it still emitted deadly radiation."},{"title":"The Reactor Core Was Completely Destroyed in Seconds","slug":"the-reactor-core-was-completely-destroyed-in-seconds","url":"/categories/embarrassing-historical-moments/chernobyl/the-reactor-core-was-completely-destroyed-in-seconds.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A surge lasting seconds erased the heart of a nuclear plant."},{"title":"Thermal Energy From the Meltdown Melted Through Reinforced Concrete","slug":"thermal-energy-from-the-meltdown-melted-through-reinforced-concrete","url":"/categories/embarrassing-historical-moments/chernobyl/thermal-energy-from-the-meltdown-melted-through-reinforced-concrete.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Molten reactor fuel burned downward like industrial lava."},{"title":"Thousands of Tons of Contaminated Soil Were Removed After the Explosion","slug":"thousands-of-tons-of-contaminated-soil-were-removed-after-the-explosion","url":"/categories/embarrassing-historical-moments/chernobyl/thousands-of-tons-of-contaminated-soil-were-removed-after-the-explosion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Topsoil itself became hazardous waste overnight."},{"title":"Time to Build the Original Sarcophagus Was Less Than Seven Months","slug":"time-to-build-the-original-sarcophagus-was-less-than-seven-months","url":"/categories/embarrassing-historical-moments/chernobyl/time-to-build-the-original-sarcophagus-was-less-than-seven-months.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A massive concrete shell rose in record time over radioactive ruins."},{"title":"Ukraine Still Spends Billions Managing Chernobyl’s Aftermath","slug":"ukraine-still-spends-billions-managing-chernobyl-s-aftermath","url":"/categories/embarrassing-historical-moments/chernobyl/ukraine-still-spends-billions-managing-chernobyl-s-aftermath.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A few seconds of instability created a financial burden lasting generations."},{"title":"Valves Were Manually Operated in High-Radiation Areas After the Explosion","slug":"valves-were-manually-operated-in-high-radiation-areas-after-the-explosion","url":"/categories/embarrassing-historical-moments/chernobyl/valves-were-manually-operated-in-high-radiation-areas-after-the-explosion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Workers turned critical controls while radiation levels spiked around them."},{"title":"Villages Near Chernobyl Were Bulldozed and Buried as Radioactive Waste","slug":"villages-near-chernobyl-were-bulldozed-and-buried-as-radioactive-waste","url":"/categories/embarrassing-historical-moments/chernobyl/villages-near-chernobyl-were-bulldozed-and-buried-as-radioactive-waste.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Entire communities were flattened and entombed under soil."},{"title":"Water in Cooling Systems Became Radioactively Contaminated Within Hours","slug":"water-in-cooling-systems-became-radioactively-contaminated-within-hours","url":"/categories/embarrassing-historical-moments/chernobyl/water-in-cooling-systems-became-radioactively-contaminated-within-hours.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even the plant’s own cooling water turned into hazardous waste."},{"title":"Wild Mushrooms in Parts of Europe Still Show Elevated Cesium Levels","slug":"wild-mushrooms-in-parts-of-europe-still-show-elevated-cesium-levels","url":"/categories/embarrassing-historical-moments/chernobyl/wild-mushrooms-in-parts-of-europe-still-show-elevated-cesium-levels.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Forest mushrooms remain radioactive decades after the explosion."},{"title":"X-Ray Film Was Used to Measure Radiation When Dosimeters Saturated","slug":"x-ray-film-was-used-to-measure-radiation-when-dosimeters-saturated","url":"/categories/embarrassing-historical-moments/chernobyl/x-ray-film-was-used-to-measure-radiation-when-dosimeters-saturated.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Standard radiation meters maxed out, forcing improvised measurement methods."},{"title":"Xenon Gas Build-Up Contributed to the Reactor’s Unstable Conditions","slug":"xenon-gas-build-up-contributed-to-the-reactor-s-unstable-conditions","url":"/categories/embarrassing-historical-moments/chernobyl/xenon-gas-build-up-contributed-to-the-reactor-s-unstable-conditions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A buildup of invisible gas primed the reactor for disaster."},{"title":"Yearly Thyroid Cancer Cases Spiked Among Exposed Children After Chernobyl","slug":"yearly-thyroid-cancer-cases-spiked-among-exposed-children-after-chernobyl","url":"/categories/embarrassing-historical-moments/chernobyl/yearly-thyroid-cancer-cases-spiked-among-exposed-children-after-chernobyl.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Children developed rare cancers at unprecedented rates after fallout."},{"title":"Yttrium and Strontium Isotopes Entered Chernobyl’s Food Chain Within Weeks","slug":"yttrium-and-strontium-isotopes-entered-chernobyl-s-food-chain-within-weeks","url":"/categories/embarrassing-historical-moments/chernobyl/yttrium-and-strontium-isotopes-entered-chernobyl-s-food-chain-within-weeks.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Radioactive elements infiltrated milk and crops almost immediately."},{"title":"Zero Containment Dome Existed Over Chernobyl’s Reactor Core","slug":"zero-containment-dome-existed-over-chernobyl-s-reactor-core","url":"/categories/embarrassing-historical-moments/chernobyl/zero-containment-dome-existed-over-chernobyl-s-reactor-core.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The reactor exploded without a protective containment shell."},{"title":"Zirconium Cladding Reacted With Steam to Produce Explosive Hydrogen","slug":"zirconium-cladding-reacted-with-steam-to-produce-explosive-hydrogen","url":"/categories/embarrassing-historical-moments/chernobyl/zirconium-cladding-reacted-with-steam-to-produce-explosive-hydrogen.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fuel rod metal combined with steam to generate explosive gas."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

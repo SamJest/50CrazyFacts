@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>War Of Jenkins Ear</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>War Of Jenkins Ear</h1>
+  <p>Explore all facts in "War Of Jenkins Ear".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>War Of Jenkins Ear</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Admiral Edward Vernon’s 186-Ship Armada That Returned in Ruins","slug":"admiral-edward-vernon-s-186-ship-armada-that-returned-in-ruins","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/admiral-edward-vernon-s-186-ship-armada-that-returned-in-ruins.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain sent nearly 200 ships to crush Spain—and came home devastated."},{"title":"Aftermath of Cartagena: Britain’s Deadliest 18th-Century Amphibious Disaster","slug":"aftermath-of-cartagena-britain-s-deadliest-18th-century-amphibious-disaster","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/aftermath-of-cartagena-britain-s-deadliest-18th-century-amphibious-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain lost more men in weeks than some wars lose in years."},{"title":"Battle of Cartagena de Indias: Britain’s 186-Ship Armada That Collapsed in Disease","slug":"battle-of-cartagena-de-indias-britain-s-186-ship-armada-that-collapsed-in-disease","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/battle-of-cartagena-de-indias-britain-s-186-ship-armada-that-collapsed-in-disease.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An armada larger than the Spanish Armada was crushed by mosquitoes."},{"title":"Blas de Lezo: The One-Eyed, One-Legged Admiral Who Humiliated a Superpower","slug":"blas-de-lezo-the-one-eyed-one-legged-admiral-who-humiliated-a-superpower","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/blas-de-lezo-the-one-eyed-one-legged-admiral-who-humiliated-a-superpower.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A one-eyed, one-armed, one-legged admiral defeated a superpower."},{"title":"Bloody Marsh: The Failed Spanish Counterattack During the War of Jenkins’ Ear","slug":"bloody-marsh-the-failed-spanish-counterattack-during-the-war-of-jenkins-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/bloody-marsh-the-failed-spanish-counterattack-during-the-war-of-jenkins-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain invaded Georgia—and was repelled in a swamp."},{"title":"Cartagena’s Defensive Chain That Turned Britain’s Fleet Into a Target","slug":"cartagena-s-defensive-chain-that-turned-britain-s-fleet-into-a-target","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/cartagena-s-defensive-chain-that-turned-britain-s-fleet-into-a-target.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A harbor chain trapped one of the world’s largest fleets."},{"title":"Castillo de San Marcos: The Stone Fortress That Withstood British Siege","slug":"castillo-de-san-marcos-the-stone-fortress-that-withstood-british-siege","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/castillo-de-san-marcos-the-stone-fortress-that-withstood-british-siege.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A 17th-century stone fortress stopped a modern colonial invasion."},{"title":"Disease Death Rates in the War of Jenkins’ Ear That Reached Catastrophic Levels","slug":"disease-death-rates-in-the-war-of-jenkins-ear-that-reached-catastrophic-levels","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/disease-death-rates-in-the-war-of-jenkins-ear-that-reached-catastrophic-levels.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"More soldiers died from fever than from enemy gunfire."},{"title":"Disease-Carrying Mosquitoes That Decimated Britain’s Caribbean Campaign","slug":"disease-carrying-mosquitoes-that-decimated-britain-s-caribbean-campaign","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/disease-carrying-mosquitoes-that-decimated-britain-s-caribbean-campaign.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Insects accomplished what Spanish cannons could not."},{"title":"Early British Victory Medals That Commemorated a Defeat at Cartagena","slug":"early-british-victory-medals-that-commemorated-a-defeat-at-cartagena","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/early-british-victory-medals-that-commemorated-a-defeat-at-cartagena.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain minted victory medals for a battle it lost."},{"title":"Economic Shockwaves From Britain’s Caribbean Failures","slug":"economic-shockwaves-from-britain-s-caribbean-failures","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/economic-shockwaves-from-britain-s-caribbean-failures.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A distant siege rattled London’s financial confidence."},{"title":"Failed British Night Assault on Fort San Felipe That Collapsed in Confusion","slug":"failed-british-night-assault-on-fort-san-felipe-that-collapsed-in-confusion","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/failed-british-night-assault-on-fort-san-felipe-that-collapsed-in-confusion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A midnight attack dissolved into chaos under Spanish fire."},{"title":"From Smuggling Dispute to Global Conflict: The War of Jenkins’ Ear Escalation","slug":"from-smuggling-dispute-to-global-conflict-the-war-of-jenkins-ear-escalation","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/from-smuggling-dispute-to-global-conflict-the-war-of-jenkins-ear-escalation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A maritime customs dispute exploded into a multi-continent war."},{"title":"Georgia’s Failed Invasion of Florida During the War of Jenkins’ Ear","slug":"georgia-s-failed-invasion-of-florida-during-the-war-of-jenkins-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/georgia-s-failed-invasion-of-florida-during-the-war-of-jenkins-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A colonial army invaded Florida and retreated in frustration."},{"title":"Georgia’s Narrow Survival After Spanish Invasion Attempts","slug":"georgia-s-narrow-survival-after-spanish-invasion-attempts","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/georgia-s-narrow-survival-after-spanish-invasion-attempts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain nearly lost its youngest colony to Spain."},{"title":"Henry Pelham’s Political Crisis After the Cartagena Disaster","slug":"henry-pelham-s-political-crisis-after-the-cartagena-disaster","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/henry-pelham-s-political-crisis-after-the-cartagena-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A distant Caribbean defeat shook Britain’s government at home."},{"title":"High Mortality Among British Sailors During Prolonged Caribbean Deployment","slug":"high-mortality-among-british-sailors-during-prolonged-caribbean-deployment","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/high-mortality-among-british-sailors-during-prolonged-caribbean-deployment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Months at sea proved deadlier than battle."},{"title":"Illness-Stricken British Regiments That Collapsed Before Major Engagement","slug":"illness-stricken-british-regiments-that-collapsed-before-major-engagement","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/illness-stricken-british-regiments-that-collapsed-before-major-engagement.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Entire regiments disintegrated before firing decisive shots."},{"title":"Invasion Plans Against Cuba That Never Materialized","slug":"invasion-plans-against-cuba-that-never-materialized","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/invasion-plans-against-cuba-that-never-materialized.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain plotted to seize Havana—and never succeeded."},{"title":"James Oglethorpe’s Failed Siege of St. Augustine During the War of Jenkins’ Ear","slug":"james-oglethorpe-s-failed-siege-of-st-augustine-during-the-war-of-jenkins-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/james-oglethorpe-s-failed-siege-of-st-augustine-during-the-war-of-jenkins-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Georgia’s founder tried to erase Spanish Florida—and failed."},{"title":"Jenkins’ Ear in Parliament: The Object That Shifted Imperial Policy","slug":"jenkins-ear-in-parliament-the-object-that-shifted-imperial-policy","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/jenkins-ear-in-parliament-the-object-that-shifted-imperial-policy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One preserved ear altered the course of imperial strategy."},{"title":"King George II’s War That Began Over a Merchant’s Severed Ear","slug":"king-george-ii-s-war-that-began-over-a-merchant-s-severed-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/king-george-ii-s-war-that-began-over-a-merchant-s-severed-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A king mobilized fleets over one mutilated merchant."},{"title":"Kneeling Admiral Medals That Immortalized a Victory That Never Happened","slug":"kneeling-admiral-medals-that-immortalized-a-victory-that-never-happened","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/kneeling-admiral-medals-that-immortalized-a-victory-that-never-happened.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain engraved its own defeat into silver."},{"title":"Logistical Breakdown of Britain’s Largest 18th-Century Amphibious Assault","slug":"logistical-breakdown-of-britain-s-largest-18th-century-amphibious-assault","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/logistical-breakdown-of-britain-s-largest-18th-century-amphibious-assault.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The biggest amphibious assault of its century unraveled in chaos."},{"title":"Logistical Strain of Transporting 20,000 Troops Across the Atlantic","slug":"logistical-strain-of-transporting-20-000-troops-across-the-atlantic","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/logistical-strain-of-transporting-20-000-troops-across-the-atlantic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Moving an army across an ocean nearly broke Britain."},{"title":"Massive British Casualties at Cartagena That Shocked the Empire","slug":"massive-british-casualties-at-cartagena-that-shocked-the-empire","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/massive-british-casualties-at-cartagena-that-shocked-the-empire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands perished in a campaign Britain expected to win easily."},{"title":"Mounting British Casualties That Surpassed Combat Expectations","slug":"mounting-british-casualties-that-surpassed-combat-expectations","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/mounting-british-casualties-that-surpassed-combat-expectations.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Disease killed at a rate commanders never anticipated."},{"title":"Naval Overconfidence After Porto Bello That Led to Strategic Overreach","slug":"naval-overconfidence-after-porto-bello-that-led-to-strategic-overreach","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/naval-overconfidence-after-porto-bello-that-led-to-strategic-overreach.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A small victory convinced Britain it could dominate the Caribbean."},{"title":"Naval Prestige Undermined by Tropical Reality in 1741","slug":"naval-prestige-undermined-by-tropical-reality-in-1741","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/naval-prestige-undermined-by-tropical-reality-in-1741.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The world’s dominant navy faltered in Caribbean heat."},{"title":"Operational Chaos Between Army and Navy at Cartagena in 1741","slug":"operational-chaos-between-army-and-navy-at-cartagena-in-1741","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/operational-chaos-between-army-and-navy-at-cartagena-in-1741.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain’s army and navy clashed while Spain held firm."},{"title":"Operational Overreach That Turned Early Victory Into Strategic Failure","slug":"operational-overreach-that-turned-early-victory-into-strategic-failure","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/operational-overreach-that-turned-early-victory-into-strategic-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One easy win convinced Britain it could conquer everything."},{"title":"Political Backlash in Parliament After the Cartagena Catastrophe","slug":"political-backlash-in-parliament-after-the-cartagena-catastrophe","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/political-backlash-in-parliament-after-the-cartagena-catastrophe.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Victory speeches turned into defensive explanations overnight."},{"title":"Propaganda Prints That Predicted Spanish Surrender Before the Battle Was Won","slug":"propaganda-prints-that-predicted-spanish-surrender-before-the-battle-was-won","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/propaganda-prints-that-predicted-spanish-surrender-before-the-battle-was-won.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"British artists depicted Spanish surrender before it happened."},{"title":"Queen Anne’s Treaty of Utrecht Deal That Set the Stage for War","slug":"queen-anne-s-treaty-of-utrecht-deal-that-set-the-stage-for-war","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/queen-anne-s-treaty-of-utrecht-deal-that-set-the-stage-for-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A peace treaty planted the seeds of the next war."},{"title":"Royal Navy Losses in the Caribbean That Exposed Environmental Limits","slug":"royal-navy-losses-in-the-caribbean-that-exposed-environmental-limits","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/royal-navy-losses-in-the-caribbean-that-exposed-environmental-limits.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Sea power faltered where climate ruled the battlefield."},{"title":"Spanish Fortifications That Absorbed Cannon Fire Instead of Shattering","slug":"spanish-fortifications-that-absorbed-cannon-fire-instead-of-shattering","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/spanish-fortifications-that-absorbed-cannon-fire-instead-of-shattering.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Shellstone walls bent under bombardment—and refused to break."},{"title":"Spanish Privateers Who Captured British Ships Before the War Officially Began","slug":"spanish-privateers-who-captured-british-ships-before-the-war-officially-began","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/spanish-privateers-who-captured-british-ships-before-the-war-officially-began.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Merchant ships were seized long before war was declared."},{"title":"The Asiento Trade Dispute That Exploded Into the War of Jenkins’ Ear","slug":"the-asiento-trade-dispute-that-exploded-into-the-war-of-jenkins-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/the-asiento-trade-dispute-that-exploded-into-the-war-of-jenkins-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A slave-trading contract spiraled into open war between empires."},{"title":"The Caribbean Disease Toll That Killed More Soldiers Than Combat","slug":"the-caribbean-disease-toll-that-killed-more-soldiers-than-combat","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/the-caribbean-disease-toll-that-killed-more-soldiers-than-combat.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Mosquitoes killed more British troops than Spanish cannons."},{"title":"The Parliamentary Ear Display That Helped Push Britain Into War","slug":"the-parliamentary-ear-display-that-helped-push-britain-into-war","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/the-parliamentary-ear-display-that-helped-push-britain-into-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An amputated ear was displayed in Parliament to justify war."},{"title":"The Porto Bello Celebrations That Backfired in the War of Jenkins’ Ear","slug":"the-porto-bello-celebrations-that-backfired-in-the-war-of-jenkins-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/the-porto-bello-celebrations-that-backfired-in-the-war-of-jenkins-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain celebrated victory before the real disaster even began."},{"title":"The Siege of Cartagena’s Fort San Felipe That Withstood British Assault","slug":"the-siege-of-cartagena-s-fort-san-felipe-that-withstood-british-assault","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/the-siege-of-cartagena-s-fort-san-felipe-that-withstood-british-assault.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"British troops stormed a fortress and were driven back in chaos."},{"title":"Transatlantic Communication Delays That Prolonged Strategic Misjudgment","slug":"transatlantic-communication-delays-that-prolonged-strategic-misjudgment","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/transatlantic-communication-delays-that-prolonged-strategic-misjudgment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"By the time London learned the truth, the damage was done."},{"title":"Underestimated Spanish Naval Resilience in the Caribbean","slug":"underestimated-spanish-naval-resilience-in-the-caribbean","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/underestimated-spanish-naval-resilience-in-the-caribbean.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain expected a crumbling empire and met fierce resistance."},{"title":"Unrealized British Ambitions for Caribbean Dominance in 1740","slug":"unrealized-british-ambitions-for-caribbean-dominance-in-1740","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/unrealized-british-ambitions-for-caribbean-dominance-in-1740.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain aimed to dominate the Caribbean—and failed to secure it."},{"title":"Vast Financial Costs of the War of Jenkins’ Ear That Strained Britain","slug":"vast-financial-costs-of-the-war-of-jenkins-ear-that-strained-britain","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/vast-financial-costs-of-the-war-of-jenkins-ear-that-strained-britain.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An ear cost Britain millions in war expenditure."},{"title":"War of Jenkins’ Ear: How One Severed Ear Sparked a Transatlantic War","slug":"war-of-jenkins-ear-how-one-severed-ear-sparked-a-transatlantic-war","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/war-of-jenkins-ear-how-one-severed-ear-sparked-a-transatlantic-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single severed ear ignited a war between two global empires."},{"title":"Why the War of Jenkins’ Ear Merged Into a Much Larger European Conflict","slug":"why-the-war-of-jenkins-ear-merged-into-a-much-larger-european-conflict","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/why-the-war-of-jenkins-ear-merged-into-a-much-larger-european-conflict.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A colonial quarrel became a continental war."},{"title":"Xenophobic Public Outrage in Britain That Fueled the War of Jenkins’ Ear","slug":"xenophobic-public-outrage-in-britain-that-fueled-the-war-of-jenkins-ear","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/xenophobic-public-outrage-in-britain-that-fueled-the-war-of-jenkins-ear.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Public fury over Spain turned outrage into war fever."},{"title":"Zero Territorial Gains Despite Massive British Investment","slug":"zero-territorial-gains-despite-massive-british-investment","url":"/categories/embarrassing-historical-moments/war-of-jenkins-ear/zero-territorial-gains-despite-massive-british-investment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"After years of war, Britain gained almost nothing in the Caribbean."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

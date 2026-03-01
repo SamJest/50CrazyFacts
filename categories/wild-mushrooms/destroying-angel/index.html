@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Destroying Angel</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Destroying Angel</h1>
+  <p>Explore all facts in "Destroying Angel".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Destroying Angel</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Acute Coagulation Failure Following Amanita virosa Hepatic Necrosis","slug":"acute-coagulation-failure-following-amanita-virosa-hepatic-necrosis","url":"/categories/wild-mushrooms/destroying-angel/acute-coagulation-failure-following-amanita-virosa-hepatic-necrosis.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can stop your blood from clotting within days."},{"title":"Amanita virosa Mortality Rate and 24-Hour Organ Failure Timeline","slug":"amanita-virosa-mortality-rate-and-24-hour-organ-failure-timeline","url":"/categories/wild-mushrooms/destroying-angel/amanita-virosa-mortality-rate-and-24-hour-organ-failure-timeline.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One elegant white mushroom can shut down your liver before symptoms feel serious."},{"title":"Amatoxin Heat Stability at Standard Cooking Temperatures","slug":"amatoxin-heat-stability-at-standard-cooking-temperatures","url":"/categories/wild-mushrooms/destroying-angel/amatoxin-heat-stability-at-standard-cooking-temperatures.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Boiling water does not neutralize this mushroom’s lethal chemistry."},{"title":"Autopsy Findings in Fatal Amanita virosa Poisoning Cases","slug":"autopsy-findings-in-fatal-amanita-virosa-poisoning-cases","url":"/categories/wild-mushrooms/destroying-angel/autopsy-findings-in-fatal-amanita-virosa-poisoning-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Post-mortem examinations reveal a liver reduced to fragile tissue within days."},{"title":"Biliary Excretion Pathways and Recirculation of Amatoxins in Humans","slug":"biliary-excretion-pathways-and-recirculation-of-amatoxins-in-humans","url":"/categories/wild-mushrooms/destroying-angel/biliary-excretion-pathways-and-recirculation-of-amatoxins-in-humans.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This toxin can cycle through your liver more than once."},{"title":"Bone Marrow Suppression Reported in Severe Amatoxin Intoxication Cases","slug":"bone-marrow-suppression-reported-in-severe-amatoxin-intoxication-cases","url":"/categories/wild-mushrooms/destroying-angel/bone-marrow-suppression-reported-in-severe-amatoxin-intoxication-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"In rare cases, this mushroom disrupts blood cell production itself."},{"title":"Delayed Symptom Window in Destroying Angel Poisoning Cases","slug":"delayed-symptom-window-in-destroying-angel-poisoning-cases","url":"/categories/wild-mushrooms/destroying-angel/delayed-symptom-window-in-destroying-angel-poisoning-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Victims often feel better before their liver collapses."},{"title":"Endoplasmic Reticulum Stress Pathways Activated by Alpha-Amanitin Exposure","slug":"endoplasmic-reticulum-stress-pathways-activated-by-alpha-amanitin-exposure","url":"/categories/wild-mushrooms/destroying-angel/endoplasmic-reticulum-stress-pathways-activated-by-alpha-amanitin-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This toxin triggers cellular stress alarms before organs fail."},{"title":"Epidemiological Mapping of Amanita virosa Across Temperate Forest Regions","slug":"epidemiological-mapping-of-amanita-virosa-across-temperate-forest-regions","url":"/categories/wild-mushrooms/destroying-angel/epidemiological-mapping-of-amanita-virosa-across-temperate-forest-regions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This lethal mushroom grows across multiple continents in ordinary woodlands."},{"title":"European Foraging Death Clusters Linked to Destroying Angel Misidentification","slug":"european-foraging-death-clusters-linked-to-destroying-angel-misidentification","url":"/categories/wild-mushrooms/destroying-angel/european-foraging-death-clusters-linked-to-destroying-angel-misidentification.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Entire family dinners have turned lethal because one mushroom looked ordinary."},{"title":"Kew Herbarium Specimens Document 19th-Century Amanita virosa Fatalities","slug":"kew-herbarium-specimens-document-19th-century-amanita-virosa-fatalities","url":"/categories/wild-mushrooms/destroying-angel/kew-herbarium-specimens-document-19th-century-amanita-virosa-fatalities.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Victorian botanists preserved the very species that was killing foragers."},{"title":"Kew Herbarium Specimens Document 19th-Century Amanita virosa Fatalities","slug":"kew-herbarium-specimens-document-19th-century-amanita-virosa-fatalities","url":"/categories/wild-mushrooms/destroying-angel/kew-herbarium-specimens-document-19th-century-amanita-virosa-fatalities.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Victorian botanists preserved the very species that was killing foragers."},{"title":"Kidney Dialysis Utilization Rates in Severe Amanita virosa Poisoning Cases","slug":"kidney-dialysis-utilization-rates-in-severe-amanita-virosa-poisoning-cases","url":"/categories/wild-mushrooms/destroying-angel/kidney-dialysis-utilization-rates-in-severe-amanita-virosa-poisoning-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Some patients require artificial blood filtration within 48 hours of eating this mushroom."},{"title":"Kinetic Half-Life of Alpha-Amanitin in Human Plasma","slug":"kinetic-half-life-of-alpha-amanitin-in-human-plasma","url":"/categories/wild-mushrooms/destroying-angel/kinetic-half-life-of-alpha-amanitin-in-human-plasma.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This toxin can persist in your bloodstream long after symptoms begin."},{"title":"Laboratory Detection of Amatoxins Using High-Performance Liquid Chromatography","slug":"laboratory-detection-of-amatoxins-using-high-performance-liquid-chromatography","url":"/categories/wild-mushrooms/destroying-angel/laboratory-detection-of-amatoxins-using-high-performance-liquid-chromatography.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Hospitals detect this mushroom’s toxin at concentrations invisible to the naked eye."},{"title":"Laboratory Detection of Amatoxins Using High-Performance Liquid Chromatography","slug":"laboratory-detection-of-amatoxins-using-high-performance-liquid-chromatography","url":"/categories/wild-mushrooms/destroying-angel/laboratory-detection-of-amatoxins-using-high-performance-liquid-chromatography.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Hospitals detect this mushroom’s toxin at concentrations invisible to the naked eye."},{"title":"Liver Transplant Demand Spikes After Amanita Poisoning in Europe","slug":"liver-transplant-demand-spikes-after-amanita-poisoning-in-europe","url":"/categories/wild-mushrooms/destroying-angel/liver-transplant-demand-spikes-after-amanita-poisoning-in-europe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest foraging mistake can trigger emergency organ replacement within days."},{"title":"Mitochondrial Collapse Timeline in Acute Amanita virosa Poisoning","slug":"mitochondrial-collapse-timeline-in-acute-amanita-virosa-poisoning","url":"/categories/wild-mushrooms/destroying-angel/mitochondrial-collapse-timeline-in-acute-amanita-virosa-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Within hours, liver cell power stations begin to fail irreversibly."},{"title":"Mitochondrial Collapse Timeline in Acute Amanita virosa Poisoning","slug":"mitochondrial-collapse-timeline-in-acute-amanita-virosa-poisoning","url":"/categories/wild-mushrooms/destroying-angel/mitochondrial-collapse-timeline-in-acute-amanita-virosa-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Within hours, liver cell power stations begin to fail irreversibly."},{"title":"National Poison Data System Reports on Amanita-Related Liver Failure","slug":"national-poison-data-system-reports-on-amanita-related-liver-failure","url":"/categories/wild-mushrooms/destroying-angel/national-poison-data-system-reports-on-amanita-related-liver-failure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"U.S. poison centers log life-threatening mushroom exposures every year."},{"title":"National Poison Data System Reports on Amanita-Related Liver Failure","slug":"national-poison-data-system-reports-on-amanita-related-liver-failure","url":"/categories/wild-mushrooms/destroying-angel/national-poison-data-system-reports-on-amanita-related-liver-failure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"U.S. poison centers log life-threatening mushroom exposures every year."},{"title":"Organ Allocation Ethics in Acute Liver Failure from Wild Mushroom Poisoning","slug":"organ-allocation-ethics-in-acute-liver-failure-from-wild-mushroom-poisoning","url":"/categories/wild-mushrooms/destroying-angel/organ-allocation-ethics-in-acute-liver-failure-from-wild-mushroom-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A misidentified mushroom can move a patient to the top of a transplant list."},{"title":"Organ Allocation Ethics in Acute Liver Failure from Wild Mushroom Poisoning","slug":"organ-allocation-ethics-in-acute-liver-failure-from-wild-mushroom-poisoning","url":"/categories/wild-mushrooms/destroying-angel/organ-allocation-ethics-in-acute-liver-failure-from-wild-mushroom-poisoning.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A misidentified mushroom can move a patient to the top of a transplant list."},{"title":"Organ Failure Mortality Statistics in Confirmed Amanita virosa Cases","slug":"organ-failure-mortality-statistics-in-confirmed-amanita-virosa-cases","url":"/categories/wild-mushrooms/destroying-angel/organ-failure-mortality-statistics-in-confirmed-amanita-virosa-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even with modern medicine, a single mushroom still carries double-digit fatality risk."},{"title":"Organophosphate Comparison Misconceptions in Amanita Poisoning Cases","slug":"organophosphate-comparison-misconceptions-in-amanita-poisoning-cases","url":"/categories/wild-mushrooms/destroying-angel/organophosphate-comparison-misconceptions-in-amanita-poisoning-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Early symptoms mimic pesticide exposure but the mechanism is entirely different."},{"title":"Pediatric Vulnerability in Amanita virosa Ingestion Cases","slug":"pediatric-vulnerability-in-amanita-virosa-ingestion-cases","url":"/categories/wild-mushrooms/destroying-angel/pediatric-vulnerability-in-amanita-virosa-ingestion-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Children require less toxin to reach irreversible liver failure."},{"title":"Quality-Control Failure of Visual Mushroom Identification in Field Studies","slug":"quality-control-failure-of-visual-mushroom-identification-in-field-studies","url":"/categories/wild-mushrooms/destroying-angel/quality-control-failure-of-visual-mushroom-identification-in-field-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Expert-looking mushrooms can bypass amateur safety checks with lethal consequences."},{"title":"Quantified Transplant Survival Rates After Amatoxin-Induced Liver Failure","slug":"quantified-transplant-survival-rates-after-amatoxin-induced-liver-failure","url":"/categories/wild-mushrooms/destroying-angel/quantified-transplant-survival-rates-after-amatoxin-induced-liver-failure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Survival after this mushroom sometimes depends on replacing an entire organ."},{"title":"Quantitative Liver Enzyme Surge Patterns in Alpha-Amanitin Toxicity","slug":"quantitative-liver-enzyme-surge-patterns-in-alpha-amanitin-toxicity","url":"/categories/wild-mushrooms/destroying-angel/quantitative-liver-enzyme-surge-patterns-in-alpha-amanitin-toxicity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Blood enzyme levels can spike to thousands of units within days of ingestion."},{"title":"Quaternary Ammonium Decontamination Failure Against Amatoxins in Clinical Settings","slug":"quaternary-ammonium-decontamination-failure-against-amatoxins-in-clinical-settings","url":"/categories/wild-mushrooms/destroying-angel/quaternary-ammonium-decontamination-failure-against-amatoxins-in-clinical-settings.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Standard hospital disinfectants do not neutralize this mushroom’s lethal toxin."},{"title":"Renal Failure Complications Following Destroying Angel Toxicity","slug":"renal-failure-complications-following-destroying-angel-toxicity","url":"/categories/wild-mushrooms/destroying-angel/renal-failure-complications-following-destroying-angel-toxicity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can shut down kidneys after attacking the liver."},{"title":"RNA Polymerase II Crystal Structure Studies Clarify Amanitin Binding Site","slug":"rna-polymerase-ii-crystal-structure-studies-clarify-amanitin-binding-site","url":"/categories/wild-mushrooms/destroying-angel/rna-polymerase-ii-crystal-structure-studies-clarify-amanitin-binding-site.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom toxin locks into a human enzyme with atomic precision."},{"title":"RNA Polymerase II Inhibition Mechanism Behind Destroying Angel Toxicity","slug":"rna-polymerase-ii-inhibition-mechanism-behind-destroying-angel-toxicity","url":"/categories/wild-mushrooms/destroying-angel/rna-polymerase-ii-inhibition-mechanism-behind-destroying-angel-toxicity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom does not poison blood; it switches off cellular transcription."},{"title":"Silibinin Use in European Amanita Poisoning Treatment Protocols","slug":"silibinin-use-in-european-amanita-poisoning-treatment-protocols","url":"/categories/wild-mushrooms/destroying-angel/silibinin-use-in-european-amanita-poisoning-treatment-protocols.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A milk thistle extract is deployed against a mushroom that destroys livers."},{"title":"United Kingdom Hospital Admissions Linked to Wild Amanita Exposure","slug":"united-kingdom-hospital-admissions-linked-to-wild-amanita-exposure","url":"/categories/wild-mushrooms/destroying-angel/united-kingdom-hospital-admissions-linked-to-wild-amanita-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"British emergency rooms still treat lethal mushroom poisonings every year."},{"title":"Vacuum-Dried Amanita Specimens Retain Amatoxin Potency for Years","slug":"vacuum-dried-amanita-specimens-retain-amatoxin-potency-for-years","url":"/categories/wild-mushrooms/destroying-angel/vacuum-dried-amanita-specimens-retain-amatoxin-potency-for-years.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even decades-old dried samples can still contain active liver-destroying toxins."},{"title":"Volva Identification Failure Behind Amanita virosa Foraging Fatalities","slug":"volva-identification-failure-behind-amanita-virosa-foraging-fatalities","url":"/categories/wild-mushrooms/destroying-angel/volva-identification-failure-behind-amanita-virosa-foraging-fatalities.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hidden underground cup determines whether dinner is fatal."},{"title":"Xenobiotic Gene Expression Suppression After Alpha-Amanitin Exposure","slug":"xenobiotic-gene-expression-suppression-after-alpha-amanitin-exposure","url":"/categories/wild-mushrooms/destroying-angel/xenobiotic-gene-expression-suppression-after-alpha-amanitin-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This toxin silences genes your liver depends on for detoxification."},{"title":"Xenobiotic Transporter OATP1B3 Role in Alpha-Amanitin Liver Uptake","slug":"xenobiotic-transporter-oatp1b3-role-in-alpha-amanitin-liver-uptake","url":"/categories/wild-mushrooms/destroying-angel/xenobiotic-transporter-oatp1b3-role-in-alpha-amanitin-liver-uptake.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single liver transporter can determine whether this mushroom kills you."},{"title":"Year-Round Persistence of Amanita virosa Mycelium Beneath Forest Soil","slug":"year-round-persistence-of-amanita-virosa-mycelium-beneath-forest-soil","url":"/categories/wild-mushrooms/destroying-angel/year-round-persistence-of-amanita-virosa-mycelium-beneath-forest-soil.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even when no mushrooms are visible, the lethal organism is still alive underground."},{"title":"Yearly Autumn Poison Control Spikes During Amanita Fruiting Season","slug":"yearly-autumn-poison-control-spikes-during-amanita-fruiting-season","url":"/categories/wild-mushrooms/destroying-angel/yearly-autumn-poison-control-spikes-during-amanita-fruiting-season.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each autumn, poison centers anticipate a surge from a single white mushroom."},{"title":"Yield Variability of Amatoxin Concentration Among Amanita virosa Specimens","slug":"yield-variability-of-amatoxin-concentration-among-amanita-virosa-specimens","url":"/categories/wild-mushrooms/destroying-angel/yield-variability-of-amatoxin-concentration-among-amanita-virosa-specimens.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two identical-looking mushrooms can contain dramatically different toxin levels."},{"title":"Zealous Immune Activation Following Massive Amanita virosa Hepatocyte Death","slug":"zealous-immune-activation-following-massive-amanita-virosa-hepatocyte-death","url":"/categories/wild-mushrooms/destroying-angel/zealous-immune-activation-following-massive-amanita-virosa-hepatocyte-death.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom can trigger immune reactions against your own dying liver."},{"title":"Zero Thermal Degradation Observed in Alpha-Amanitin During Standard Cooking","slug":"zero-thermal-degradation-observed-in-alpha-amanitin-during-standard-cooking","url":"/categories/wild-mushrooms/destroying-angel/zero-thermal-degradation-observed-in-alpha-amanitin-during-standard-cooking.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Kitchen heat fails to break down this liver-destroying molecule."},{"title":"Zeta Potential Stability of Cyclic Peptide Toxins in Amanita Species","slug":"zeta-potential-stability-of-cyclic-peptide-toxins-in-amanita-species","url":"/categories/wild-mushrooms/destroying-angel/zeta-potential-stability-of-cyclic-peptide-toxins-in-amanita-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even the electrical charge of this toxin helps it persist."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

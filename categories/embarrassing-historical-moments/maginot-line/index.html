@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maginot Line</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Maginot Line</h1>
+  <p>Explore all facts in "Maginot Line".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Maginot Line</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Air Power Rendered Fixed Fortifications Strategically Outdated in 1940","slug":"air-power-rendered-fixed-fortifications-strategically-outdated-in-1940","url":"/categories/embarrassing-historical-moments/maginot-line/air-power-rendered-fixed-fortifications-strategically-outdated-in-1940.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Concrete stopped shells—aircraft simply flew over it."},{"title":"Ardennes Breakthrough Invalidated Years of Defensive Investment","slug":"ardennes-breakthrough-invalidated-years-of-defensive-investment","url":"/categories/embarrassing-historical-moments/maginot-line/ardennes-breakthrough-invalidated-years-of-defensive-investment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A forest deemed unsuitable for tanks unraveled Europe’s costliest wall."},{"title":"Armored Columns Turned a Defensive Masterpiece Into a Bystander","slug":"armored-columns-turned-a-defensive-masterpiece-into-a-bystander","url":"/categories/embarrassing-historical-moments/maginot-line/armored-columns-turned-a-defensive-masterpiece-into-a-bystander.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands of tanks drove around Europe’s strongest wall and left it watching."},{"title":"Battle of France Ended Before the Maginot Line’s Full Potential Was Tested","slug":"battle-of-france-ended-before-the-maginot-line-s-full-potential-was-tested","url":"/categories/embarrassing-historical-moments/maginot-line/battle-of-france-ended-before-the-maginot-line-s-full-potential-was-tested.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France surrendered in weeks—its grand defensive system was built for months."},{"title":"Belgium’s Neutrality Left the Maginot Line Strategically Exposed","slug":"belgium-s-neutrality-left-the-maginot-line-strategically-exposed","url":"/categories/embarrassing-historical-moments/maginot-line/belgium-s-neutrality-left-the-maginot-line-strategically-exposed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France fortified one border heavily—then political reality left a massive gap open next door."},{"title":"Bridgeheads at the Meuse Unraveled the Maginot Line’s Strategic Shield","slug":"bridgeheads-at-the-meuse-unraveled-the-maginot-line-s-strategic-shield","url":"/categories/embarrassing-historical-moments/maginot-line/bridgeheads-at-the-meuse-unraveled-the-maginot-line-s-strategic-shield.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Once German troops crossed one river, Europe’s strongest wall became a spectator."},{"title":"Command Communication Lag Amplified the Maginot Line’s Strategic Failure","slug":"command-communication-lag-amplified-the-maginot-line-s-strategic-failure","url":"/categories/embarrassing-historical-moments/maginot-line/command-communication-lag-amplified-the-maginot-line-s-strategic-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"By the time orders moved, armored columns had already changed the map."},{"title":"Concrete for the Maginot Line Was Poured Thicker Than Some Skyscraper Foundations","slug":"concrete-for-the-maginot-line-was-poured-thicker-than-some-skyscraper-foundations","url":"/categories/embarrassing-historical-moments/maginot-line/concrete-for-the-maginot-line-was-poured-thicker-than-some-skyscraper-foundations.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France buried entire fortresses under concrete slabs thicker than city skyscraper bases—and they never stopped the invasion."},{"title":"Dunkirk Evacuation Was Triggered by the Maginot Line’s Strategic Bypass","slug":"dunkirk-evacuation-was-triggered-by-the-maginot-line-s-strategic-bypass","url":"/categories/embarrassing-historical-moments/maginot-line/dunkirk-evacuation-was-triggered-by-the-maginot-line-s-strategic-bypass.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A defensive wall meant to prevent invasion indirectly led to one of history’s largest emergency evacuations."},{"title":"Encirclement at Dunkirk Highlighted the Limits of Border Fortification","slug":"encirclement-at-dunkirk-highlighted-the-limits-of-border-fortification","url":"/categories/embarrassing-historical-moments/maginot-line/encirclement-at-dunkirk-highlighted-the-limits-of-border-fortification.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A fortress border could not stop hundreds of thousands from being trapped against the sea."},{"title":"Engineers Installed Underground Railways Inside the Maginot Line","slug":"engineers-installed-underground-railways-inside-the-maginot-line","url":"/categories/embarrassing-historical-moments/maginot-line/engineers-installed-underground-railways-inside-the-maginot-line.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France built electric trains beneath its border forts—yet tanks rolled around them."},{"title":"France’s Most Expensive Defense Became a Global Metaphor for Failure","slug":"france-s-most-expensive-defense-became-a-global-metaphor-for-failure","url":"/categories/embarrassing-historical-moments/maginot-line/france-s-most-expensive-defense-became-a-global-metaphor-for-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The Maginot Line cost billions—and its name now means strategic embarrassment."},{"title":"Frontier Fortresses Became Isolated Pockets After the German Advance","slug":"frontier-fortresses-became-isolated-pockets-after-the-german-advance","url":"/categories/embarrassing-historical-moments/maginot-line/frontier-fortresses-became-isolated-pockets-after-the-german-advance.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"When the front moved west, Europe’s strongest forts were left behind."},{"title":"German Forces Used the Maginot Line After France Built It Against Them","slug":"german-forces-used-the-maginot-line-after-france-built-it-against-them","url":"/categories/embarrassing-historical-moments/maginot-line/german-forces-used-the-maginot-line-after-france-built-it-against-them.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France built a fortress to stop Germany—Germany later occupied and used parts of it."},{"title":"Great Depression Budget Constraints Shaped the Maginot Line’s Gaps","slug":"great-depression-budget-constraints-shaped-the-maginot-line-s-gaps","url":"/categories/embarrassing-historical-moments/maginot-line/great-depression-budget-constraints-shaped-the-maginot-line-s-gaps.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Economic caution left strategic space for invasion."},{"title":"Heavy Fortification Encouraged a False Sense of Security in 1940","slug":"heavy-fortification-encouraged-a-false-sense-of-security-in-1940","url":"/categories/embarrassing-historical-moments/maginot-line/heavy-fortification-encouraged-a-false-sense-of-security-in-1940.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The thicker the wall grew, the more confident leaders became."},{"title":"High Command Believed the Ardennes Was Naturally Impenetrable","slug":"high-command-believed-the-ardennes-was-naturally-impenetrable","url":"/categories/embarrassing-historical-moments/maginot-line/high-command-believed-the-ardennes-was-naturally-impenetrable.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Military planners labeled a forest impassable—thousands of German vehicles crossed it anyway."},{"title":"Immense Artillery Was Positioned for a Siege That Never Came","slug":"immense-artillery-was-positioned-for-a-siege-that-never-came","url":"/categories/embarrassing-historical-moments/maginot-line/immense-artillery-was-positioned-for-a-siege-that-never-came.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Guns built to endure months of bombardment barely engaged the main offensive."},{"title":"Interwar Trauma Shaped a Defensive System Anchored in the Past","slug":"interwar-trauma-shaped-a-defensive-system-anchored-in-the-past","url":"/categories/embarrassing-historical-moments/maginot-line/interwar-trauma-shaped-a-defensive-system-anchored-in-the-past.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France prepared to relive 1914—Germany arrived with 1940."},{"title":"Joffre-Class Planning Assumptions Shaped the Maginot Line’s Defensive Design","slug":"joffre-class-planning-assumptions-shaped-the-maginot-line-s-defensive-design","url":"/categories/embarrassing-historical-moments/maginot-line/joffre-class-planning-assumptions-shaped-the-maginot-line-s-defensive-design.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"French doctrine assumed the next war would replay 1914—so they engineered defenses for ghosts."},{"title":"Kesselschlacht Encirclement Tactics Rendered the Maginot Line Strategically Irrelevant","slug":"kesselschlacht-encirclement-tactics-rendered-the-maginot-line-strategically-irrelevant","url":"/categories/embarrassing-historical-moments/maginot-line/kesselschlacht-encirclement-tactics-rendered-the-maginot-line-strategically-irrelevant.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"German forces ignored the strongest forts and trapped entire armies instead."},{"title":"Leaders Debated Extending the Line to the Sea—but Chose Not To","slug":"leaders-debated-extending-the-line-to-the-sea-but-chose-not-to","url":"/categories/embarrassing-historical-moments/maginot-line/leaders-debated-extending-the-line-to-the-sea-but-chose-not-to.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France considered sealing its entire northern frontier—cost and politics left a fatal opening."},{"title":"Logistical Self-Sufficiency Could Not Prevent National Collapse","slug":"logistical-self-sufficiency-could-not-prevent-national-collapse","url":"/categories/embarrassing-historical-moments/maginot-line/logistical-self-sufficiency-could-not-prevent-national-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Forts could power themselves for months—France fell in weeks."},{"title":"Massive Forts Were Designed to House Thousands for Months","slug":"massive-forts-were-designed-to-house-thousands-for-months","url":"/categories/embarrassing-historical-moments/maginot-line/massive-forts-were-designed-to-house-thousands-for-months.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Some Maginot Line garrisons could survive underground for months—France surrendered in six weeks."},{"title":"Mobile Warfare Transformed Europe’s Strongest Defensive Line Into a Relic","slug":"mobile-warfare-transformed-europe-s-strongest-defensive-line-into-a-relic","url":"/categories/embarrassing-historical-moments/maginot-line/mobile-warfare-transformed-europe-s-strongest-defensive-line-into-a-relic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Years of construction met weeks of maneuver—and maneuver won."},{"title":"Northern Corridor Became the Decisive Route Around the Maginot Line","slug":"northern-corridor-became-the-decisive-route-around-the-maginot-line","url":"/categories/embarrassing-historical-moments/maginot-line/northern-corridor-became-the-decisive-route-around-the-maginot-line.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The strongest wall in Europe stopped nothing when armies entered through the side door."},{"title":"Northern Extension Debates Revealed Political Limits of the Maginot Line","slug":"northern-extension-debates-revealed-political-limits-of-the-maginot-line","url":"/categories/embarrassing-historical-moments/maginot-line/northern-extension-debates-revealed-political-limits-of-the-maginot-line.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Lawmakers hesitated over cost and diplomacy—leaving a corridor open for invasion."},{"title":"Overconfidence in Static Defense Shaped French Deployment in 1940","slug":"overconfidence-in-static-defense-shaped-french-deployment-in-1940","url":"/categories/embarrassing-historical-moments/maginot-line/overconfidence-in-static-defense-shaped-french-deployment-in-1940.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Confidence in a wall influenced where entire armies marched—straight into encirclement."},{"title":"Postwar Usage of the Maginot Line Acknowledged Its Strategic Failure","slug":"postwar-usage-of-the-maginot-line-acknowledged-its-strategic-failure","url":"/categories/embarrassing-historical-moments/maginot-line/postwar-usage-of-the-maginot-line-acknowledged-its-strategic-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France reactivated parts of a failed fortress system during the Cold War."},{"title":"Quasi-Invulnerable Forts Were Neutralized Without Being Destroyed","slug":"quasi-invulnerable-forts-were-neutralized-without-being-destroyed","url":"/categories/embarrassing-historical-moments/maginot-line/quasi-invulnerable-forts-were-neutralized-without-being-destroyed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France built fortresses designed to survive direct hits—Germany defeated them without blowing them up."},{"title":"Rapid Wehrmacht Advance Outpaced the Maginot Line’s Defensive Logic","slug":"rapid-wehrmacht-advance-outpaced-the-maginot-line-s-defensive-logic","url":"/categories/embarrassing-historical-moments/maginot-line/rapid-wehrmacht-advance-outpaced-the-maginot-line-s-defensive-logic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Armored divisions crossed France faster than planners imagined possible."},{"title":"Reinforced Turrets Survived Bombardment but Not Strategic Isolation","slug":"reinforced-turrets-survived-bombardment-but-not-strategic-isolation","url":"/categories/embarrassing-historical-moments/maginot-line/reinforced-turrets-survived-bombardment-but-not-strategic-isolation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Steel domes rose from concrete, fired, and lowered—while the war raced past them."},{"title":"Sedan Breakthrough Exposed the Weakest Sector Near the Maginot Line","slug":"sedan-breakthrough-exposed-the-weakest-sector-near-the-maginot-line","url":"/categories/embarrassing-historical-moments/maginot-line/sedan-breakthrough-exposed-the-weakest-sector-near-the-maginot-line.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The decisive breach occurred beside, not inside, France’s strongest defenses."},{"title":"Sedan’s Collapse Occurred Within Sight of the Maginot Line’s Sector","slug":"sedan-s-collapse-occurred-within-sight-of-the-maginot-line-s-sector","url":"/categories/embarrassing-historical-moments/maginot-line/sedan-s-collapse-occurred-within-sight-of-the-maginot-line-s-sector.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The decisive breach unfolded beside France’s strongest defenses—not inside them."},{"title":"The Ardennes Was Considered Impassable—German Tanks Crossed It in Days","slug":"the-ardennes-was-considered-impassable-german-tanks-crossed-it-in-days","url":"/categories/embarrassing-historical-moments/maginot-line/the-ardennes-was-considered-impassable-german-tanks-crossed-it-in-days.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"French generals declared the Ardennes forest impossible for tanks—German armor rolled through it in under a week."},{"title":"The Maginot Line Encouraged a Defensive Mindset That Slowed French Response","slug":"the-maginot-line-encouraged-a-defensive-mindset-that-slowed-french-response","url":"/categories/embarrassing-historical-moments/maginot-line/the-maginot-line-encouraged-a-defensive-mindset-that-slowed-french-response.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A wall meant to create security quietly reshaped how an entire army thought."},{"title":"The Maginot Line Had Underground Cities That Never Fought a Major Battle","slug":"the-maginot-line-had-underground-cities-that-never-fought-a-major-battle","url":"/categories/embarrassing-historical-moments/maginot-line/the-maginot-line-had-underground-cities-that-never-fought-a-major-battle.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France built self-sustaining underground cities to win the next war—no major battle ever reached them."},{"title":"The Maginot Line Was Built to Stop Germany—Germany Simply Went Around It","slug":"the-maginot-line-was-built-to-stop-germany-germany-simply-went-around-it","url":"/categories/embarrassing-historical-moments/maginot-line/the-maginot-line-was-built-to-stop-germany-germany-simply-went-around-it.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France built a fortress wall so advanced it made World War I trenches look primitive—then the enemy ignored it."},{"title":"The Maginot Line Was Designed for the Last War, Not the Next One","slug":"the-maginot-line-was-designed-for-the-last-war-not-the-next-one","url":"/categories/embarrassing-historical-moments/maginot-line/the-maginot-line-was-designed-for-the-last-war-not-the-next-one.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France solved the trench nightmare of 1914—only to face tanks and aircraft in 1940."},{"title":"The Maginot Line’s Forts Were So Deep They Survived France’s Surrender Intact","slug":"the-maginot-line-s-forts-were-so-deep-they-survived-france-s-surrender-intact","url":"/categories/embarrassing-historical-moments/maginot-line/the-maginot-line-s-forts-were-so-deep-they-survived-france-s-surrender-intact.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France fell in six weeks—its underground fortresses barely suffered structural damage."},{"title":"The Maginot Line’s Strongest Guns Never Faced the Main German Assault","slug":"the-maginot-line-s-strongest-guns-never-faced-the-main-german-assault","url":"/categories/embarrassing-historical-moments/maginot-line/the-maginot-line-s-strongest-guns-never-faced-the-main-german-assault.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France engineered rotating steel turrets to survive direct hits—those guns never confronted the invasion’s main thrust."},{"title":"Underground Ventilation Systems Prepared for Gas Attacks That Never Came","slug":"underground-ventilation-systems-prepared-for-gas-attacks-that-never-came","url":"/categories/embarrassing-historical-moments/maginot-line/underground-ventilation-systems-prepared-for-gas-attacks-that-never-came.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France engineered filtered air for chemical warfare—blitzkrieg made it irrelevant."},{"title":"Vast Ammunition Stockpiles Remained Unused After France Fell","slug":"vast-ammunition-stockpiles-remained-unused-after-france-fell","url":"/categories/embarrassing-historical-moments/maginot-line/vast-ammunition-stockpiles-remained-unused-after-france-fell.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Forts stocked for months of siege surrendered with shells still stacked underground."},{"title":"Western Europe’s Strongest Fortifications Were Bypassed in Under Six Weeks","slug":"western-europe-s-strongest-fortifications-were-bypassed-in-under-six-weeks","url":"/categories/embarrassing-historical-moments/maginot-line/western-europe-s-strongest-fortifications-were-bypassed-in-under-six-weeks.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The continent’s most formidable defensive system became irrelevant in forty-two days."},{"title":"X-Factor of Blitzkrieg Was Speed the Maginot Line Could Not Counter","slug":"x-factor-of-blitzkrieg-was-speed-the-maginot-line-could-not-counter","url":"/categories/embarrassing-historical-moments/maginot-line/x-factor-of-blitzkrieg-was-speed-the-maginot-line-could-not-counter.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Concrete can stop shells—speed can outrun it entirely."},{"title":"Yards of Reinforced Steel Could Not Prevent Strategic Encirclement","slug":"yards-of-reinforced-steel-could-not-prevent-strategic-encirclement","url":"/categories/embarrassing-historical-moments/maginot-line/yards-of-reinforced-steel-could-not-prevent-strategic-encirclement.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Meters of steel and concrete shielded borders—none of it stopped armies being trapped."},{"title":"Zero Direct Assault Was Needed on the Strongest Maginot Forts","slug":"zero-direct-assault-was-needed-on-the-strongest-maginot-forts","url":"/categories/embarrassing-historical-moments/maginot-line/zero-direct-assault-was-needed-on-the-strongest-maginot-forts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Europe’s toughest bunkers never faced the attack they were built for."},{"title":"Zigzagging Defensive Geometry Could Not Match Fluid Maneuver Warfare","slug":"zigzagging-defensive-geometry-could-not-match-fluid-maneuver-warfare","url":"/categories/embarrassing-historical-moments/maginot-line/zigzagging-defensive-geometry-could-not-match-fluid-maneuver-warfare.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"France engineered layered defensive geometry—Germany redrew the map in weeks."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

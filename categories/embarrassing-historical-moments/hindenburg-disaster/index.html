@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hindenburg Disaster</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Hindenburg Disaster</h1>
+  <p>Explore all facts in "Hindenburg Disaster".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Hindenburg Disaster</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Fire Lasting Under 40 Seconds Ended 30 Years of Zeppelin Development","slug":"a-fire-lasting-under-40-seconds-ended-30-years-of-zeppelin-development","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-fire-lasting-under-40-seconds-ended-30-years-of-zeppelin-development.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Three decades of engineering vanished in half a minute."},{"title":"A Hydrogen Leak Invisible to the Eye Likely Preceded the Inferno","slug":"a-hydrogen-leak-invisible-to-the-eye-likely-preceded-the-inferno","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-hydrogen-leak-invisible-to-the-eye-likely-preceded-the-inferno.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Colorless gas escaping silently set the stage for a global spectacle."},{"title":"A Hydrogen-Filled Airship Once Rivaled Ocean Liners in Speed and Comfort","slug":"a-hydrogen-filled-airship-once-rivaled-ocean-liners-in-speed-and-comfort","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-hydrogen-filled-airship-once-rivaled-ocean-liners-in-speed-and-comfort.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A floating hotel crossed the Atlantic faster than many ships—until it burned."},{"title":"A Military Docking Field Became Synonymous With Catastrophe Overnight","slug":"a-military-docking-field-became-synonymous-with-catastrophe-overnight","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-military-docking-field-became-synonymous-with-catastrophe-overnight.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Lakehurst shifted from routine base to global headline in minutes."},{"title":"A Piano Flew Aboard the Hindenburg Before Burning in Seconds","slug":"a-piano-flew-aboard-the-hindenburg-before-burning-in-seconds","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-piano-flew-aboard-the-hindenburg-before-burning-in-seconds.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A grand piano floated across the Atlantic—then vanished in flames."},{"title":"A Propaganda Showcase Flight Ended as a Public Relations Catastrophe","slug":"a-propaganda-showcase-flight-ended-as-a-public-relations-catastrophe","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-propaganda-showcase-flight-ended-as-a-public-relations-catastrophe.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Germany’s flying symbol of power collapsed before the world’s cameras."},{"title":"A Scheduled Arrival Turned Into the Most Famous Aviation Recording in History","slug":"a-scheduled-arrival-turned-into-the-most-famous-aviation-recording-in-history","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-scheduled-arrival-turned-into-the-most-famous-aviation-recording-in-history.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A routine landing produced the most replayed cry in broadcasting."},{"title":"A Scheduled Dinner Service Was Imminent When the Hindenburg Caught Fire","slug":"a-scheduled-dinner-service-was-imminent-when-the-hindenburg-caught-fire","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-scheduled-dinner-service-was-imminent-when-the-hindenburg-caught-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Passengers prepared for a meal before the ceiling turned to flame."},{"title":"A Single Spark May Have Destroyed an Aircraft Larger Than Most Skyscrapers","slug":"a-single-spark-may-have-destroyed-an-aircraft-larger-than-most-skyscrapers","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-single-spark-may-have-destroyed-an-aircraft-larger-than-most-skyscrapers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One invisible discharge may have toppled an 804-foot giant."},{"title":"A Structure Longer Than Two Football Fields Collapsed in View of Hundreds","slug":"a-structure-longer-than-two-football-fields-collapsed-in-view-of-hundreds","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/a-structure-longer-than-two-football-fields-collapsed-in-view-of-hundreds.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An 804-foot giant folded before a live audience."},{"title":"Ballast Water Dropped From the Hindenburg Moments Before It Ignited","slug":"ballast-water-dropped-from-the-hindenburg-moments-before-it-ignited","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/ballast-water-dropped-from-the-hindenburg-moments-before-it-ignited.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Crew dumped tons of water ballast minutes before the sky exploded."},{"title":"Crewmen Held the Hindenburg’s Mooring Lines as Flames Raced Overhead","slug":"crewmen-held-the-hindenburg-s-mooring-lines-as-flames-raced-overhead","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/crewmen-held-the-hindenburg-s-mooring-lines-as-flames-raced-overhead.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Ground crew gripped ropes beneath an 800-foot firestorm."},{"title":"Debris From the Hindenburg Rained Down Like Burning Confetti","slug":"debris-from-the-hindenburg-rained-down-like-burning-confetti","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/debris-from-the-hindenburg-rained-down-like-burning-confetti.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An airborne palace disintegrated into flaming fragments over spectators."},{"title":"Even After the Fire, the Hindenburg’s Tail Section Briefly Pointed Skyward","slug":"even-after-the-fire-the-hindenburg-s-tail-section-briefly-pointed-skyward","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/even-after-the-fire-the-hindenburg-s-tail-section-briefly-pointed-skyward.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A burning giant stood upright for seconds before collapsing completely."},{"title":"Fifty Tons of Hydrogen Turned the Hindenburg Into a Midair Torch","slug":"fifty-tons-of-hydrogen-turned-the-hindenburg-into-a-midair-torch","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/fifty-tons-of-hydrogen-turned-the-hindenburg-into-a-midair-torch.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Tens of thousands of cubic meters of gas ignited above a crowd."},{"title":"Graf Zeppelin II Never Carried Passengers After the Hindenburg Fire","slug":"graf-zeppelin-ii-never-carried-passengers-after-the-hindenburg-fire","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/graf-zeppelin-ii-never-carried-passengers-after-the-hindenburg-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sister airship waited for glory but never carried a single paying traveler."},{"title":"Helium Existed but Politics Kept It Out of the Hindenburg","slug":"helium-existed-but-politics-kept-it-out-of-the-hindenburg","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/helium-existed-but-politics-kept-it-out-of-the-hindenburg.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A safer gas was available, yet diplomacy locked it away."},{"title":"Investigators Never Reached a Final Consensus on What Ignited the Hindenburg","slug":"investigators-never-reached-a-final-consensus-on-what-ignited-the-hindenburg","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/investigators-never-reached-a-final-consensus-on-what-ignited-the-hindenburg.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One of history’s most filmed disasters still lacks a single confirmed cause."},{"title":"Journalists Were Waiting With Cameras Before the Hindenburg Ignited","slug":"journalists-were-waiting-with-cameras-before-the-hindenburg-ignited","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/journalists-were-waiting-with-cameras-before-the-hindenburg-ignited.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Dozens of cameras were already rolling when the sky caught fire."},{"title":"Known Hydrogen Risks Did Not Stop the Hindenburg From Carrying Passengers","slug":"known-hydrogen-risks-did-not-stop-the-hindenburg-from-carrying-passengers","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/known-hydrogen-risks-did-not-stop-the-hindenburg-from-carrying-passengers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Engineers understood hydrogen burned—yet 97 people still boarded."},{"title":"Lakehurst Became the Site Where the Airship Era Collapsed","slug":"lakehurst-became-the-site-where-the-airship-era-collapsed","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/lakehurst-became-the-site-where-the-airship-era-collapsed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A quiet New Jersey naval base became aviation’s most infamous stage."},{"title":"Massive Swastikas Burned on the Hindenburg’s Tail During the Fire","slug":"massive-swastikas-burned-on-the-hindenburg-s-tail-during-the-fire","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/massive-swastikas-burned-on-the-hindenburg-s-tail-during-the-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Nazi symbols went up in flames before a global audience."},{"title":"No Explosion Shockwave Followed the Hindenburg’s Massive Fire","slug":"no-explosion-shockwave-followed-the-hindenburg-s-massive-fire","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/no-explosion-shockwave-followed-the-hindenburg-s-massive-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Seven million cubic feet of hydrogen burned without a city-level blast."},{"title":"Passengers Jumped From Windows as the Hindenburg Descended","slug":"passengers-jumped-from-windows-as-the-hindenburg-descended","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/passengers-jumped-from-windows-as-the-hindenburg-descended.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Survivors leapt from a burning aircraft taller than a house."},{"title":"Quick Rescue Response Limited Deaths Despite the Hindenburg’s Scale","slug":"quick-rescue-response-limited-deaths-despite-the-hindenburg-s-scale","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/quick-rescue-response-limited-deaths-despite-the-hindenburg-s-scale.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An 800-foot inferno killed fewer than half onboard."},{"title":"Radio Reporter Herbert Morrison Accidentally Narrated History’s Most Famous Airship Disaster","slug":"radio-reporter-herbert-morrison-accidentally-narrated-history-s-most-famous-airship-disaster","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/radio-reporter-herbert-morrison-accidentally-narrated-history-s-most-famous-airship-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A routine news assignment turned into the most replayed scream in broadcasting history."},{"title":"Repeated Safe Flights in 1936 Created Overconfidence Before the Disaster","slug":"repeated-safe-flights-in-1936-created-overconfidence-before-the-disaster","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/repeated-safe-flights-in-1936-created-overconfidence-before-the-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Dozens of flawless crossings bred confidence—then one landing erased it."},{"title":"Static Electricity May Have Ignited the Hindenburg During Stormy Conditions","slug":"static-electricity-may-have-ignited-the-hindenburg-during-stormy-conditions","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/static-electricity-may-have-ignited-the-hindenburg-during-stormy-conditions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A buildup of invisible charge may have destroyed a flying giant."},{"title":"The Hindenburg Burned for 34 Seconds Yet Was Filmed Live in 1937","slug":"the-hindenburg-burned-for-34-seconds-yet-was-filmed-live-in-1937","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-burned-for-34-seconds-yet-was-filmed-live-in-1937.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The largest aircraft ever built ignited in midair and the world watched it happen in real time."},{"title":"The Hindenburg Carried Hydrogen Because the U.S. Refused Helium Exports","slug":"the-hindenburg-carried-hydrogen-because-the-u-s-refused-helium-exports","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-carried-hydrogen-because-the-u-s-refused-helium-exports.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A diplomatic embargo turned the world’s largest airship into a flying tinderbox."},{"title":"The Hindenburg Disaster Ended Commercial Airships Almost Overnight","slug":"the-hindenburg-disaster-ended-commercial-airships-almost-overnight","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-disaster-ended-commercial-airships-almost-overnight.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One 37-second fire erased decades of lighter-than-air ambition."},{"title":"The Hindenburg Fire Was Visible for Miles Across New Jersey","slug":"the-hindenburg-fire-was-visible-for-miles-across-new-jersey","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-fire-was-visible-for-miles-across-new-jersey.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A floating city ignited so brightly it lit the sky for miles."},{"title":"The Hindenburg Survived Atlantic Storms but Failed While Docking","slug":"the-hindenburg-survived-atlantic-storms-but-failed-while-docking","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-survived-atlantic-storms-but-failed-while-docking.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"After crossing an ocean safely, the Hindenburg exploded while parking."},{"title":"The Hindenburg Was a Luxury Hotel in the Sky Before It Became a Fireball","slug":"the-hindenburg-was-a-luxury-hotel-in-the-sky-before-it-became-a-fireball","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-was-a-luxury-hotel-in-the-sky-before-it-became-a-fireball.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Passengers dined on fine china at 650 feet before plunging through flames."},{"title":"The Hindenburg Was Longer Than the Titanic and Collapsed Like Paper","slug":"the-hindenburg-was-longer-than-the-titanic-and-collapsed-like-paper","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-was-longer-than-the-titanic-and-collapsed-like-paper.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An aircraft longer than the Titanic folded into flames in half a minute."},{"title":"The Hindenburg’s Aluminum Frame Survived the Fire Long Enough to Trap Passengers","slug":"the-hindenburg-s-aluminum-frame-survived-the-fire-long-enough-to-trap-passengers","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-s-aluminum-frame-survived-the-fire-long-enough-to-trap-passengers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A metal skeleton glowing red held shape as flames swallowed everything else."},{"title":"The Hindenburg’s Final Descent Took Less Time Than a Modern Elevator Ride","slug":"the-hindenburg-s-final-descent-took-less-time-than-a-modern-elevator-ride","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/the-hindenburg-s-final-descent-took-less-time-than-a-modern-elevator-ride.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An 804-foot airship died faster than an elevator reaches the lobby."},{"title":"United States Helium Policy Indirectly Shaped the Hindenburg’s Fate","slug":"united-states-helium-policy-indirectly-shaped-the-hindenburg-s-fate","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/united-states-helium-policy-indirectly-shaped-the-hindenburg-s-fate.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single export law altered the chemistry of transatlantic travel."},{"title":"Victims of the Hindenburg Included International Passengers on a Routine Flight","slug":"victims-of-the-hindenburg-included-international-passengers-on-a-routine-flight","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/victims-of-the-hindenburg-included-international-passengers-on-a-routine-flight.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A scheduled transatlantic journey ended in flames before a crowd."},{"title":"Wind Shifts Delayed the Hindenburg’s Landing Just Before Disaster","slug":"wind-shifts-delayed-the-hindenburg-s-landing-just-before-disaster","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/wind-shifts-delayed-the-hindenburg-s-landing-just-before-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Changing winds postponed docking hours before ignition struck."},{"title":"Wireless Messages From the Hindenburg Reported Routine Conditions Minutes Before Fire","slug":"wireless-messages-from-the-hindenburg-reported-routine-conditions-minutes-before-fire","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/wireless-messages-from-the-hindenburg-reported-routine-conditions-minutes-before-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Radio operators described normal flight—then the signal turned to chaos."},{"title":"With 16 Separate Gas Cells, the Hindenburg Was Designed to Contain Leaks","slug":"with-16-separate-gas-cells-the-hindenburg-was-designed-to-contain-leaks","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/with-16-separate-gas-cells-the-hindenburg-was-designed-to-contain-leaks.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Sixteen hydrogen chambers were meant to prevent disaster—yet fire outran them all."},{"title":"Witnesses Smelled Burning Fabric Seconds Before Seeing Flames on the Hindenburg","slug":"witnesses-smelled-burning-fabric-seconds-before-seeing-flames-on-the-hindenburg","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/witnesses-smelled-burning-fabric-seconds-before-seeing-flames-on-the-hindenburg.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A faint odor of smoke preceded the sky’s most famous fire."},{"title":"Wreckage of the Hindenburg Was Cleared Within Weeks Despite Its Massive Size","slug":"wreckage-of-the-hindenburg-was-cleared-within-weeks-despite-its-massive-size","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/wreckage-of-the-hindenburg-was-cleared-within-weeks-despite-its-massive-size.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An 800-foot skeleton vanished from Lakehurst in less than a month."},{"title":"X-Ray Analysis of Hindenburg Materials Decades Later Reignited Debate","slug":"x-ray-analysis-of-hindenburg-materials-decades-later-reignited-debate","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/x-ray-analysis-of-hindenburg-materials-decades-later-reignited-debate.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Modern imaging technology reexamined a 1937 catastrophe decades after it burned."},{"title":"Yards of Mooring Lines Anchored the Hindenburg Before It Ignited","slug":"yards-of-mooring-lines-anchored-the-hindenburg-before-it-ignited","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/yards-of-mooring-lines-anchored-the-hindenburg-before-it-ignited.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hundreds of feet of rope tethered a floating giant seconds before flames."},{"title":"Zepplins Once Symbolized the Future Before the Hindenburg Redefined Them","slug":"zepplins-once-symbolized-the-future-before-the-hindenburg-redefined-them","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/zepplins-once-symbolized-the-future-before-the-hindenburg-redefined-them.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Floating giants promised a new era—then became symbols of failure."},{"title":"Zero Passenger Airships Crossed the Atlantic After the Hindenburg","slug":"zero-passenger-airships-crossed-the-atlantic-after-the-hindenburg","url":"/categories/embarrassing-historical-moments/hindenburg-disaster/zero-passenger-airships-crossed-the-atlantic-after-the-hindenburg.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One fiery landing ended all commercial hydrogen crossings overnight."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

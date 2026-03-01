@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fly Agaric</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Fly Agaric</h1>
+  <p>Explore all facts in "Fly Agaric".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Fly Agaric</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Alaska 2006 Amanita muscaria Toxicology Case and Ibotenic Acid Neurochemistry","slug":"alaska-2006-amanita-muscaria-toxicology-case-and-ibotenic-acid-neurochemistry","url":"/categories/wild-mushrooms/fly-agaric/alaska-2006-amanita-muscaria-toxicology-case-and-ibotenic-acid-neurochemistry.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom that looks like a fairy-tale prop can chemically hijack your brain within an hour."},{"title":"Autonomic Nervous System Disruption During Acute Fly Agaric Intoxication Cases","slug":"autonomic-nervous-system-disruption-during-acute-fly-agaric-intoxication-cases","url":"/categories/wild-mushrooms/fly-agaric/autonomic-nervous-system-disruption-during-acute-fly-agaric-intoxication-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A decorative red mushroom can destabilize heart rate within an hour."},{"title":"Boreal Forest Carbon Cycling Influenced by Amanita muscaria Mycorrhiza Networks","slug":"boreal-forest-carbon-cycling-influenced-by-amanita-muscaria-mycorrhiza-networks","url":"/categories/wild-mushrooms/fly-agaric/boreal-forest-carbon-cycling-influenced-by-amanita-muscaria-mycorrhiza-networks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A red-capped mushroom quietly influences carbon flow across millions of hectares."},{"title":"Brainstem GABA Receptor Binding Affinity of Muscimol Quantified in 1978 Research","slug":"brainstem-gaba-receptor-binding-affinity-of-muscimol-quantified-in-1978-research","url":"/categories/wild-mushrooms/fly-agaric/brainstem-gaba-receptor-binding-affinity-of-muscimol-quantified-in-1978-research.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from a fairy-tale mushroom binds directly to receptors controlling consciousness."},{"title":"Carbon Allocation Shifts in Birch Trees Colonized by Amanita muscaria 2009 Study","slug":"carbon-allocation-shifts-in-birch-trees-colonized-by-amanita-muscaria-2009-study","url":"/categories/wild-mushrooms/fly-agaric/carbon-allocation-shifts-in-birch-trees-colonized-by-amanita-muscaria-2009-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom can redirect a measurable fraction of a tree’s carbon underground."},{"title":"Clinical Differentiation Between Fly Agaric and Death Cap Poisoning Protocols 2015 NHS Guidance","slug":"clinical-differentiation-between-fly-agaric-and-death-cap-poisoning-protocols-2015-nhs-guidance","url":"/categories/wild-mushrooms/fly-agaric/clinical-differentiation-between-fly-agaric-and-death-cap-poisoning-protocols-2015-nhs-guidance.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two mushrooms can send patients to hospital for completely different reasons."},{"title":"Denmark 2014 Hospital Admissions Linked to Amanita muscaria Foraging Errors","slug":"denmark-2014-hospital-admissions-linked-to-amanita-muscaria-foraging-errors","url":"/categories/wild-mushrooms/fly-agaric/denmark-2014-hospital-admissions-linked-to-amanita-muscaria-foraging-errors.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single misidentified forest mushroom sent multiple adults to Danish hospitals in one weekend."},{"title":"Dorset 2013 Fly Agaric Public Health Advisory Following Seasonal Fruiting Surge","slug":"dorset-2013-fly-agaric-public-health-advisory-following-seasonal-fruiting-surge","url":"/categories/wild-mushrooms/fly-agaric/dorset-2013-fly-agaric-public-health-advisory-following-seasonal-fruiting-surge.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An autumn rainstorm triggered a regional toxic mushroom warning."},{"title":"Electrophysiological Effects of Muscimol on Cortical Neurons Documented 1982","slug":"electrophysiological-effects-of-muscimol-on-cortical-neurons-documented-1982","url":"/categories/wild-mushrooms/fly-agaric/electrophysiological-effects-of-muscimol-on-cortical-neurons-documented-1982.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from a forest mushroom can silence firing neurons in laboratory cortex within minutes."},{"title":"Extreme Neurological Symptom Variability in Amanita muscaria Ingestions Reported 1960–1990","slug":"extreme-neurological-symptom-variability-in-amanita-muscaria-ingestions-reported-1960-1990","url":"/categories/wild-mushrooms/fly-agaric/extreme-neurological-symptom-variability-in-amanita-muscaria-ingestions-reported-1960-1990.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom can produce euphoria in one person and seizures in another."},{"title":"Fungal Host Specificity of Amanita muscaria Across Eurasian Birch Species","slug":"fungal-host-specificity-of-amanita-muscaria-across-eurasian-birch-species","url":"/categories/wild-mushrooms/fly-agaric/fungal-host-specificity-of-amanita-muscaria-across-eurasian-birch-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toxic mushroom selectively partners with specific tree species across thousands of kilometers."},{"title":"Fungal Neurochemistry of Ibotenic Acid Decarboxylation During Drying Processes","slug":"fungal-neurochemistry-of-ibotenic-acid-decarboxylation-during-drying-processes","url":"/categories/wild-mushrooms/fly-agaric/fungal-neurochemistry-of-ibotenic-acid-decarboxylation-during-drying-processes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Simply air-drying a mushroom chemically rewires its primary toxin."},{"title":"Glasgow 2009 Pediatric Fly Agaric Exposure Reported by NHS Greater Glasgow","slug":"glasgow-2009-pediatric-fly-agaric-exposure-reported-by-nhs-greater-glasgow","url":"/categories/wild-mushrooms/fly-agaric/glasgow-2009-pediatric-fly-agaric-exposure-reported-by-nhs-greater-glasgow.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A bright red mushroom in a city park triggered a pediatric emergency response."},{"title":"Glutamate Receptor Activation by Ibotenic Acid in Experimental Neurobiology Research","slug":"glutamate-receptor-activation-by-ibotenic-acid-in-experimental-neurobiology-research","url":"/categories/wild-mushrooms/fly-agaric/glutamate-receptor-activation-by-ibotenic-acid-in-experimental-neurobiology-research.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A woodland fungus produces a compound neuroscientists use to intentionally damage brain cells."},{"title":"Hallucinatory Perception Distortion During Amanita muscaria Intoxication Described in 20th Century Case Literature","slug":"hallucinatory-perception-distortion-during-amanita-muscaria-intoxication-described-in-20th-century-case-literature","url":"/categories/wild-mushrooms/fly-agaric/hallucinatory-perception-distortion-during-amanita-muscaria-intoxication-described-in-20th-century-case-literature.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Users have reported objects shrinking or expanding after ingesting a forest mushroom."},{"title":"Hokkaido Distribution of Amanita muscaria in Association With Birch Forests Documented 1998","slug":"hokkaido-distribution-of-amanita-muscaria-in-association-with-birch-forests-documented-1998","url":"/categories/wild-mushrooms/fly-agaric/hokkaido-distribution-of-amanita-muscaria-in-association-with-birch-forests-documented-1998.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A European fairy-tale mushroom anchors itself in Japanese birch forests."},{"title":"Immunological Response Patterns Following Amanita muscaria Exposure in 2008 Case Analysis","slug":"immunological-response-patterns-following-amanita-muscaria-exposure-in-2008-case-analysis","url":"/categories/wild-mushrooms/fly-agaric/immunological-response-patterns-following-amanita-muscaria-exposure-in-2008-case-analysis.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom best known for hallucinations can also trigger systemic immune stress."},{"title":"Italy 2016 Emergency Department Review of Amanita muscaria Neurological Cases","slug":"italy-2016-emergency-department-review-of-amanita-muscaria-neurological-cases","url":"/categories/wild-mushrooms/fly-agaric/italy-2016-emergency-department-review-of-amanita-muscaria-neurological-cases.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Within 90 minutes, a countryside mushroom forced Italian hospitals into neurological triage."},{"title":"Japan 2005 Field Guide Warning on Amanita muscaria Misidentification Risks","slug":"japan-2005-field-guide-warning-on-amanita-muscaria-misidentification-risks","url":"/categories/wild-mushrooms/fly-agaric/japan-2005-field-guide-warning-on-amanita-muscaria-misidentification-risks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom illustrated in children’s books appears unchanged in Japanese field guides labeled toxic."},{"title":"Kew Gardens Taxonomic Revision of Amanita muscaria Varieties 2018 Study","slug":"kew-gardens-taxonomic-revision-of-amanita-muscaria-varieties-2018-study","url":"/categories/wild-mushrooms/fly-agaric/kew-gardens-taxonomic-revision-of-amanita-muscaria-varieties-2018-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The classic red mushroom is not a single species everywhere."},{"title":"Korea 2003 Field Survey Documenting Amanita muscaria Distribution in Mixed Forests","slug":"korea-2003-field-survey-documenting-amanita-muscaria-distribution-in-mixed-forests","url":"/categories/wild-mushrooms/fly-agaric/korea-2003-field-survey-documenting-amanita-muscaria-distribution-in-mixed-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A European fairy-tale mushroom thrives across Korean birch forests unchanged."},{"title":"Lethal Dose Misconceptions Surrounding Amanita muscaria Documented in Modern Toxicology","slug":"lethal-dose-misconceptions-surrounding-amanita-muscaria-documented-in-modern-toxicology","url":"/categories/wild-mushrooms/fly-agaric/lethal-dose-misconceptions-surrounding-amanita-muscaria-documented-in-modern-toxicology.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom rumored to kill rarely does, yet still overwhelms emergency rooms."},{"title":"Lithuania 2011 Poison Control Advisory Following Mass Amanita muscaria Fruiting","slug":"lithuania-2011-poison-control-advisory-following-mass-amanita-muscaria-fruiting","url":"/categories/wild-mushrooms/fly-agaric/lithuania-2011-poison-control-advisory-following-mass-amanita-muscaria-fruiting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Heavy autumn rain in Lithuania triggered a nationwide mushroom poisoning warning."},{"title":"Montana 1998 Veterinary Reports of Canine Amanita muscaria Exposure","slug":"montana-1998-veterinary-reports-of-canine-amanita-muscaria-exposure","url":"/categories/wild-mushrooms/fly-agaric/montana-1998-veterinary-reports-of-canine-amanita-muscaria-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A backyard mushroom in Montana triggered seizures in household dogs."},{"title":"Muscaria Variant Guessowii North American Toxicity Differences Identified 2006","slug":"muscaria-variant-guessowii-north-american-toxicity-differences-identified-2006","url":"/categories/wild-mushrooms/fly-agaric/muscaria-variant-guessowii-north-american-toxicity-differences-identified-2006.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A yellow version of the famous red mushroom alters brains just as effectively."},{"title":"Neuropharmacological Comparison Between Muscimol and Benzodiazepines Published 1980","slug":"neuropharmacological-comparison-between-muscimol-and-benzodiazepines-published-1980","url":"/categories/wild-mushrooms/fly-agaric/neuropharmacological-comparison-between-muscimol-and-benzodiazepines-published-1980.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A wild mushroom compound acts on the same inhibitory receptors targeted by prescription sedatives."},{"title":"Norway 2012 Poison Center Data Showing Autumn Spike in Fly Agaric Calls","slug":"norway-2012-poison-center-data-showing-autumn-spike-in-fly-agaric-calls","url":"/categories/wild-mushrooms/fly-agaric/norway-2012-poison-center-data-showing-autumn-spike-in-fly-agaric-calls.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One mushroom season can double regional poisoning calls within weeks."},{"title":"Ontario 2017 Poison Centre Advisory After Amanita muscaria Park Exposures","slug":"ontario-2017-poison-centre-advisory-after-amanita-muscaria-park-exposures","url":"/categories/wild-mushrooms/fly-agaric/ontario-2017-poison-centre-advisory-after-amanita-muscaria-park-exposures.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A city park mushroom in Ontario triggered a province-wide toxicology warning."},{"title":"Oregon State University 1997 Study on Amanita muscaria Soil Symbiosis","slug":"oregon-state-university-1997-study-on-amanita-muscaria-soil-symbiosis","url":"/categories/wild-mushrooms/fly-agaric/oregon-state-university-1997-study-on-amanita-muscaria-soil-symbiosis.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toxic mushroom quietly boosts tree nutrient uptake beneath Pacific Northwest forests."},{"title":"Pacific Northwest 2001 Soil Analysis Linking Amanita muscaria to Nitrogen Uptake Efficiency","slug":"pacific-northwest-2001-soil-analysis-linking-amanita-muscaria-to-nitrogen-uptake-efficiency","url":"/categories/wild-mushrooms/fly-agaric/pacific-northwest-2001-soil-analysis-linking-amanita-muscaria-to-nitrogen-uptake-efficiency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toxic mushroom measurably improves nitrogen absorption in towering conifers."},{"title":"Pine Forest Ectomycorrhizal Dependency on Amanita muscaria Documented in 2004 Soil Studies","slug":"pine-forest-ectomycorrhizal-dependency-on-amanita-muscaria-documented-in-2004-soil-studies","url":"/categories/wild-mushrooms/fly-agaric/pine-forest-ectomycorrhizal-dependency-on-amanita-muscaria-documented-in-2004-soil-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Remove one red mushroom and entire pine nutrient systems weaken underground."},{"title":"Quebec 2019 Pediatric Exposure Data Highlighting Amanita muscaria Rapid Onset","slug":"quebec-2019-pediatric-exposure-data-highlighting-amanita-muscaria-rapid-onset","url":"/categories/wild-mushrooms/fly-agaric/quebec-2019-pediatric-exposure-data-highlighting-amanita-muscaria-rapid-onset.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A child in Quebec developed neurological symptoms less than an hour after touching a red mushroom."},{"title":"Quebec Autumn Poison Control Data on Fly Agaric Exposure 2000–2020","slug":"quebec-autumn-poison-control-data-on-fly-agaric-exposure-2000-2020","url":"/categories/wild-mushrooms/fly-agaric/quebec-autumn-poison-control-data-on-fly-agaric-exposure-2000-2020.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Poison control lines light up when red mushrooms appear."},{"title":"Queensland 1981 Hospitalizations After Fly Agaric Misidentification","slug":"queensland-1981-hospitalizations-after-fly-agaric-misidentification","url":"/categories/wild-mushrooms/fly-agaric/queensland-1981-hospitalizations-after-fly-agaric-misidentification.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A decorative forest mushroom sent multiple adults to intensive care."},{"title":"Rare 1992 Pediatric Fly Agaric Ingestion Case Documented in European Toxicology Literature","slug":"rare-1992-pediatric-fly-agaric-ingestion-case-documented-in-european-toxicology-literature","url":"/categories/wild-mushrooms/fly-agaric/rare-1992-pediatric-fly-agaric-ingestion-case-documented-in-european-toxicology-literature.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A child’s curiosity about a red mushroom triggered a full neurological crisis."},{"title":"Receptor-Level Mapping of Muscimol Binding Sites in Mammalian Brain Tissue 1978 Study","slug":"receptor-level-mapping-of-muscimol-binding-sites-in-mammalian-brain-tissue-1978-study","url":"/categories/wild-mushrooms/fly-agaric/receptor-level-mapping-of-muscimol-binding-sites-in-mammalian-brain-tissue-1978-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Scientists mapped the exact brain receptors targeted by a forest mushroom compound."},{"title":"Russia 1890s Ethnographic Records of Fly Agaric Ceremonial Intoxication","slug":"russia-1890s-ethnographic-records-of-fly-agaric-ceremonial-intoxication","url":"/categories/wild-mushrooms/fly-agaric/russia-1890s-ethnographic-records-of-fly-agaric-ceremonial-intoxication.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Nineteenth-century observers documented villagers deliberately ingesting a neurotoxin for ritual clarity."},{"title":"Sámi 19th Century Accounts of Fly Agaric Trade in Northern Scandinavia","slug":"s-mi-19th-century-accounts-of-fly-agaric-trade-in-northern-scandinavia","url":"/categories/wild-mushrooms/fly-agaric/s-mi-19th-century-accounts-of-fly-agaric-trade-in-northern-scandinavia.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hallucinogenic mushroom moved through Arctic trade routes like currency."},{"title":"Scotland 2018 Forestry Commission Advisory on Amanita muscaria in Public Woodlands","slug":"scotland-2018-forestry-commission-advisory-on-amanita-muscaria-in-public-woodlands","url":"/categories/wild-mushrooms/fly-agaric/scotland-2018-forestry-commission-advisory-on-amanita-muscaria-in-public-woodlands.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A government forestry notice warned hikers about a mushroom that looks decorative."},{"title":"Sweden 2020 Public Health Campaign Addressing Amanita muscaria Foraging Risks","slug":"sweden-2020-public-health-campaign-addressing-amanita-muscaria-foraging-risks","url":"/categories/wild-mushrooms/fly-agaric/sweden-2020-public-health-campaign-addressing-amanita-muscaria-foraging-risks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A national campaign warned Swedes about a mushroom that appears in children’s illustrations."},{"title":"Tachycardia Episodes During Acute Amanita muscaria Intoxication Documented 1985 Clinical Study","slug":"tachycardia-episodes-during-acute-amanita-muscaria-intoxication-documented-1985-clinical-study","url":"/categories/wild-mushrooms/fly-agaric/tachycardia-episodes-during-acute-amanita-muscaria-intoxication-documented-1985-clinical-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A woodland mushroom can accelerate heart rate while slowing perception."},{"title":"Toxicokinetics of Muscimol Absorption in Human Amanita muscaria Cases 1970–2000","slug":"toxicokinetics-of-muscimol-absorption-in-human-amanita-muscaria-cases-1970-2000","url":"/categories/wild-mushrooms/fly-agaric/toxicokinetics-of-muscimol-absorption-in-human-amanita-muscaria-cases-1970-2000.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest mushroom can cross the blood-brain barrier faster than many prescription drugs."},{"title":"Ural Region Ethnomycology and Fly Agaric Ritual Documentation 18th Century","slug":"ural-region-ethnomycology-and-fly-agaric-ritual-documentation-18th-century","url":"/categories/wild-mushrooms/fly-agaric/ural-region-ethnomycology-and-fly-agaric-ritual-documentation-18th-century.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"An Arctic ritual relied on a mushroom that can induce temporary coma."},{"title":"Viral Social Media Trends 2021 Increasing Interest in Amanita muscaria Consumption","slug":"viral-social-media-trends-2021-increasing-interest-in-amanita-muscaria-consumption","url":"/categories/wild-mushrooms/fly-agaric/viral-social-media-trends-2021-increasing-interest-in-amanita-muscaria-consumption.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Online videos turned a toxic woodland mushroom into a trending experiment."},{"title":"Weather-Driven Mass Fruiting Events of Amanita muscaria Observed in 2019 European Surveys","slug":"weather-driven-mass-fruiting-events-of-amanita-muscaria-observed-in-2019-european-surveys","url":"/categories/wild-mushrooms/fly-agaric/weather-driven-mass-fruiting-events-of-amanita-muscaria-observed-in-2019-european-surveys.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"After sustained rain, thousands of toxic mushrooms can erupt across a single forest."},{"title":"Xerophilic Adaptation Patterns of Amanita muscaria Across Boreal Forests","slug":"xerophilic-adaptation-patterns-of-amanita-muscaria-across-boreal-forests","url":"/categories/wild-mushrooms/fly-agaric/xerophilic-adaptation-patterns-of-amanita-muscaria-across-boreal-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom thrives from Scotland to Alaska despite freezing winters."},{"title":"Yakutia Reindeer Poisonings Linked to Fly Agaric Consumption in Siberia","slug":"yakutia-reindeer-poisonings-linked-to-fly-agaric-consumption-in-siberia","url":"/categories/wild-mushrooms/fly-agaric/yakutia-reindeer-poisonings-linked-to-fly-agaric-consumption-in-siberia.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Entire reindeer herds have staggered and collapsed after eating a red mushroom."},{"title":"Yellow River Basin Reports of Fly Agaric Growth in Urban Parks 2010 Survey","slug":"yellow-river-basin-reports-of-fly-agaric-growth-in-urban-parks-2010-survey","url":"/categories/wild-mushrooms/fly-agaric/yellow-river-basin-reports-of-fly-agaric-growth-in-urban-parks-2010-survey.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A toxic forest fungus grows beside city playgrounds in China."},{"title":"Zoological Reports of Fly Agaric Intoxication in Domestic Dogs 1995–2015","slug":"zoological-reports-of-fly-agaric-intoxication-in-domestic-dogs-1995-2015","url":"/categories/wild-mushrooms/fly-agaric/zoological-reports-of-fly-agaric-intoxication-in-domestic-dogs-1995-2015.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A backyard mushroom can send a 30-kilogram dog into seizures."},{"title":"Zoonotic Misconceptions About Fly Agaric Versus Deadly Amanita phalloides","slug":"zoonotic-misconceptions-about-fly-agaric-versus-deadly-amanita-phalloides","url":"/categories/wild-mushrooms/fly-agaric/zoonotic-misconceptions-about-fly-agaric-versus-deadly-amanita-phalloides.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One red mushroom rarely kills; its pale cousin often does."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

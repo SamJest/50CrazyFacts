@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collatz Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Collatz Conjecture</h1>
+  <p>Explore all facts in "Collatz Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Collatz Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Binary Analysis Reveals Hidden Structure Inside Collatz Steps","slug":"binary-analysis-reveals-hidden-structure-inside-collatz-steps","url":"/categories/number-theory-mysteries/collatz-conjecture/binary-analysis-reveals-hidden-structure-inside-collatz-steps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Switch to binary and the chaos begins to expose patterns."},{"title":"Borisov and Others Proved No Small Nontrivial Collatz Cycles Exist","slug":"borisov-and-others-proved-no-small-nontrivial-collatz-cycles-exist","url":"/categories/number-theory-mysteries/collatz-conjecture/borisov-and-others-proved-no-small-nontrivial-collatz-cycles-exist.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"If a hidden Collatz loop exists, it must contain astronomically large numbers."},{"title":"Collatz Dynamics Connect to Undecidability Theory","slug":"collatz-dynamics-connect-to-undecidability-theory","url":"/categories/number-theory-mysteries/collatz-conjecture/collatz-dynamics-connect-to-undecidability-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A children’s arithmetic rule brushes against the limits of computation."},{"title":"Collatz Sequences Mimic Randomness Despite Deterministic Rules","slug":"collatz-sequences-mimic-randomness-despite-deterministic-rules","url":"/categories/number-theory-mysteries/collatz-conjecture/collatz-sequences-mimic-randomness-despite-deterministic-rules.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A rigid formula produces patterns that look completely random."},{"title":"Collatz Trajectories Can Climb Above 10^100 Before Descending","slug":"collatz-trajectories-can-climb-above-10-100-before-descending","url":"/categories/number-theory-mysteries/collatz-conjecture/collatz-trajectories-can-climb-above-10-100-before-descending.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some numbers briefly grow larger than atoms in the observable universe."},{"title":"Delayed Descent Phenomenon Shows Collatz Numbers Can Hover Near Peaks","slug":"delayed-descent-phenomenon-shows-collatz-numbers-can-hover-near-peaks","url":"/categories/number-theory-mysteries/collatz-conjecture/delayed-descent-phenomenon-shows-collatz-numbers-can-hover-near-peaks.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some numbers refuse to fall, hovering near their maximum like stalled rockets."},{"title":"Extreme Total Stopping Time Records Continue to Rise with Larger Searches","slug":"extreme-total-stopping-time-records-continue-to-rise-with-larger-searches","url":"/categories/number-theory-mysteries/collatz-conjecture/extreme-total-stopping-time-records-continue-to-rise-with-larger-searches.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each new computational frontier reveals even longer arithmetic odysseys."},{"title":"Extremely Large Starting Values Often Collapse Surprisingly Fast","slug":"extremely-large-starting-values-often-collapse-surprisingly-fast","url":"/categories/number-theory-mysteries/collatz-conjecture/extremely-large-starting-values-often-collapse-surprisingly-fast.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some trillion-digit numbers shrink faster than two-digit ones."},{"title":"Finite State Machine Models Cannot Fully Capture Collatz Dynamics","slug":"finite-state-machine-models-cannot-fully-capture-collatz-dynamics","url":"/categories/number-theory-mysteries/collatz-conjecture/finite-state-machine-models-cannot-fully-capture-collatz-dynamics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No finite machine can perfectly predict every Collatz outcome."},{"title":"Finite Verification Can Never Bridge the Infinite Proof Gap","slug":"finite-verification-can-never-bridge-the-infinite-proof-gap","url":"/categories/number-theory-mysteries/collatz-conjecture/finite-verification-can-never-bridge-the-infinite-proof-gap.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No matter how far computers check, infinity still waits beyond."},{"title":"Forward Collapse Contrasts with Exponential Backward Proliferation","slug":"forward-collapse-contrasts-with-exponential-backward-proliferation","url":"/categories/number-theory-mysteries/collatz-conjecture/forward-collapse-contrasts-with-exponential-backward-proliferation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Numbers collapse forward but explode outward when traced backward."},{"title":"Forward Iteration Always Produces Even Numbers After 3n+1 Steps","slug":"forward-iteration-always-produces-even-numbers-after-3n-1-steps","url":"/categories/number-theory-mysteries/collatz-conjecture/forward-iteration-always-produces-even-numbers-after-3n-1-steps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every explosive jump immediately plants the seed of its own collapse."},{"title":"Functional Graphs of Collatz Form a Single Giant Tree Rooted at 1","slug":"functional-graphs-of-collatz-form-a-single-giant-tree-rooted-at-1","url":"/categories/number-theory-mysteries/collatz-conjecture/functional-graphs-of-collatz-form-a-single-giant-tree-rooted-at-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Billions of integers funnel into one tiny three-number loop."},{"title":"Global Density Shrinkage Heuristics Predict Logarithmic Decline Over Time","slug":"global-density-shrinkage-heuristics-predict-logarithmic-decline-over-time","url":"/categories/number-theory-mysteries/collatz-conjecture/global-density-shrinkage-heuristics-predict-logarithmic-decline-over-time.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"On average, Collatz numbers drift downward in logarithmic space."},{"title":"Graph Depth Analysis Reveals Extreme Variation in Total Stopping Times","slug":"graph-depth-analysis-reveals-extreme-variation-in-total-stopping-times","url":"/categories/number-theory-mysteries/collatz-conjecture/graph-depth-analysis-reveals-extreme-variation-in-total-stopping-times.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two neighboring integers can differ by hundreds of steps to reach 1."},{"title":"Growth Rate Bounds Remain One of the Hardest Barriers to Proof","slug":"growth-rate-bounds-remain-one-of-the-hardest-barriers-to-proof","url":"/categories/number-theory-mysteries/collatz-conjecture/growth-rate-bounds-remain-one-of-the-hardest-barriers-to-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"To prove Collatz, someone must tame its most explosive surges."},{"title":"Growth Records Show Some Peaks Exceed 10^200 During Iteration","slug":"growth-records-show-some-peaks-exceed-10-200-during-iteration","url":"/categories/number-theory-mysteries/collatz-conjecture/growth-records-show-some-peaks-exceed-10-200-during-iteration.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A modest integer can briefly exceed numbers with 200 digits."},{"title":"Heuristic Models Predict a Downward Drift Yet Cannot Guarantee It","slug":"heuristic-models-predict-a-downward-drift-yet-cannot-guarantee-it","url":"/categories/number-theory-mysteries/collatz-conjecture/heuristic-models-predict-a-downward-drift-yet-cannot-guarantee-it.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Probability insists Collatz must shrink, but logic refuses to confirm it."},{"title":"Iterated Collatz Maps Produce Fractal-Like Visual Structures","slug":"iterated-collatz-maps-produce-fractal-like-visual-structures","url":"/categories/number-theory-mysteries/collatz-conjecture/iterated-collatz-maps-produce-fractal-like-visual-structures.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Plot the sequence lengths and hidden geometric patterns emerge."},{"title":"John Conway Showed Related Systems Can Encode Universal Computation","slug":"john-conway-showed-related-systems-can-encode-universal-computation","url":"/categories/number-theory-mysteries/collatz-conjecture/john-conway-showed-related-systems-can-encode-universal-computation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A Collatz-like rule can simulate a computer."},{"title":"K-Step Lookahead Strategies Have Failed to Predict Ultimate Behavior","slug":"k-step-lookahead-strategies-have-failed-to-predict-ultimate-behavior","url":"/categories/number-theory-mysteries/collatz-conjecture/k-step-lookahead-strategies-have-failed-to-predict-ultimate-behavior.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Peeking dozens of steps ahead still reveals nothing about the end."},{"title":"Kinetic-Like Oscillation Between Multiplication and Division Defines Collatz","slug":"kinetic-like-oscillation-between-multiplication-and-division-defines-collatz","url":"/categories/number-theory-mysteries/collatz-conjecture/kinetic-like-oscillation-between-multiplication-and-division-defines-collatz.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each trajectory swings violently between explosive thrust and sudden collapse."},{"title":"Kolmogorov Complexity Studies Suggest Collatz Encodes High Information Density","slug":"kolmogorov-complexity-studies-suggest-collatz-encodes-high-information-density","url":"/categories/number-theory-mysteries/collatz-conjecture/kolmogorov-complexity-studies-suggest-collatz-encodes-high-information-density.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A two-line rule may conceal enormous informational complexity."},{"title":"Lagarias Catalogued Over 50 Equivalent Reformulations of Collatz","slug":"lagarias-catalogued-over-50-equivalent-reformulations-of-collatz","url":"/categories/number-theory-mysteries/collatz-conjecture/lagarias-catalogued-over-50-equivalent-reformulations-of-collatz.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One problem hides behind dozens of mathematically different masks."},{"title":"Massive Distributed Computing Projects Continuously Extend Verification Limits","slug":"massive-distributed-computing-projects-continuously-extend-verification-limits","url":"/categories/number-theory-mysteries/collatz-conjecture/massive-distributed-computing-projects-continuously-extend-verification-limits.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Volunteers worldwide test numbers beyond human imagination daily."},{"title":"No Counterexample Has Been Found Below 295 Quintillion","slug":"no-counterexample-has-been-found-below-295-quintillion","url":"/categories/number-theory-mysteries/collatz-conjecture/no-counterexample-has-been-found-below-295-quintillion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every tested number up to 295 quintillion eventually hits 1."},{"title":"No One Knows If a Collatz Cycle Exists Beyond 4-2-1","slug":"no-one-knows-if-a-collatz-cycle-exists-beyond-4-2-1","url":"/categories/number-theory-mysteries/collatz-conjecture/no-one-knows-if-a-collatz-cycle-exists-beyond-4-2-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematics cannot rule out a hidden loop that never touches 1."},{"title":"Odd Numbers Drive the Explosive Growth Phases in Collatz Dynamics","slug":"odd-numbers-drive-the-explosive-growth-phases-in-collatz-dynamics","url":"/categories/number-theory-mysteries/collatz-conjecture/odd-numbers-drive-the-explosive-growth-phases-in-collatz-dynamics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every surge toward astronomical heights begins with a single odd step."},{"title":"Paul Erdős Admitted Mathematics May Not Be Ready for Collatz","slug":"paul-erd-s-admitted-mathematics-may-not-be-ready-for-collatz","url":"/categories/number-theory-mysteries/collatz-conjecture/paul-erd-s-admitted-mathematics-may-not-be-ready-for-collatz.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One of history’s greatest mathematicians said this problem might outlast us."},{"title":"Quasi-Cycles in Collatz Mimic Infinite Loops Without Ever Escaping","slug":"quasi-cycles-in-collatz-mimic-infinite-loops-without-ever-escaping","url":"/categories/number-theory-mysteries/collatz-conjecture/quasi-cycles-in-collatz-mimic-infinite-loops-without-ever-escaping.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some sequences behave like permanent loops but still collapse at the last moment."},{"title":"Random Walk Models Approximate Collatz as a Biased Logarithmic Process","slug":"random-walk-models-approximate-collatz-as-a-biased-logarithmic-process","url":"/categories/number-theory-mysteries/collatz-conjecture/random-walk-models-approximate-collatz-as-a-biased-logarithmic-process.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"On a logarithmic scale, Collatz behaves like a drifting particle."},{"title":"Record Trajectories Demonstrate Peaks Thousands of Times Larger Than Start Values","slug":"record-trajectories-demonstrate-peaks-thousands-of-times-larger-than-start-values","url":"/categories/number-theory-mysteries/collatz-conjecture/record-trajectories-demonstrate-peaks-thousands-of-times-larger-than-start-values.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A humble starting number can balloon thousands of times before shrinking."},{"title":"Recursive Formulations Show Collatz Can Be Encoded as a Single Function","slug":"recursive-formulations-show-collatz-can-be-encoded-as-a-single-function","url":"/categories/number-theory-mysteries/collatz-conjecture/recursive-formulations-show-collatz-can-be-encoded-as-a-single-function.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A branching rule can be rewritten as one compact recursive expression."},{"title":"Some Collatz Paths Take More Than 1,000 Steps to Reach 1","slug":"some-collatz-paths-take-more-than-1-000-steps-to-reach-1","url":"/categories/number-theory-mysteries/collatz-conjecture/some-collatz-paths-take-more-than-1-000-steps-to-reach-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single integer can wander for over a thousand moves before settling."},{"title":"Statistical Density Results Suggest Almost All Numbers Behave Regularly","slug":"statistical-density-results-suggest-almost-all-numbers-behave-regularly","url":"/categories/number-theory-mysteries/collatz-conjecture/statistical-density-results-suggest-almost-all-numbers-behave-regularly.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Nearly every integer appears to obey Collatz—almost."},{"title":"Terence Tao Proved Almost All Collatz Orbits Stay Bounded","slug":"terence-tao-proved-almost-all-collatz-orbits-stay-bounded","url":"/categories/number-theory-mysteries/collatz-conjecture/terence-tao-proved-almost-all-collatz-orbits-stay-bounded.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A Fields Medalist proved most Collatz paths cannot escape forever."},{"title":"The Collatz Conjecture Has Survived Over 10^20 Verified Cases Without Proof","slug":"the-collatz-conjecture-has-survived-over-10-20-verified-cases-without-proof","url":"/categories/number-theory-mysteries/collatz-conjecture/the-collatz-conjecture-has-survived-over-10-20-verified-cases-without-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A rule simple enough for a child has resisted proof for nearly a century."},{"title":"The Collatz Problem Is Also Known as the 3x+1 Enigma","slug":"the-collatz-problem-is-also-known-as-the-3x-1-enigma","url":"/categories/number-theory-mysteries/collatz-conjecture/the-collatz-problem-is-also-known-as-the-3x-1-enigma.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Three times a number plus one hides one of math’s deepest traps."},{"title":"The Number 27 Soars Above 9,000 Before Collapsing to 1","slug":"the-number-27-soars-above-9-000-before-collapsing-to-1","url":"/categories/number-theory-mysteries/collatz-conjecture/the-number-27-soars-above-9-000-before-collapsing-to-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The tiny number 27 explodes past nine thousand before calming down."},{"title":"Trajectory Trees Reveal Exponential Branching Backward from 1","slug":"trajectory-trees-reveal-exponential-branching-backward-from-1","url":"/categories/number-theory-mysteries/collatz-conjecture/trajectory-trees-reveal-exponential-branching-backward-from-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Trace Collatz backward and the tree explodes outward exponentially."},{"title":"Universal Convergence Would Imply Hidden Global Constraints on Integers","slug":"universal-convergence-would-imply-hidden-global-constraints-on-integers","url":"/categories/number-theory-mysteries/collatz-conjecture/universal-convergence-would-imply-hidden-global-constraints-on-integers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"If Collatz is true, every positive integer obeys an invisible law."},{"title":"Vast Numerical Searches Have Found No Divergent Collatz Trajectories","slug":"vast-numerical-searches-have-found-no-divergent-collatz-trajectories","url":"/categories/number-theory-mysteries/collatz-conjecture/vast-numerical-searches-have-found-no-divergent-collatz-trajectories.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After testing quintillions of starts, not one has escaped to infinity."},{"title":"Wave-Like Patterns Appear in Record-Holding Stopping Time Charts","slug":"wave-like-patterns-appear-in-record-holding-stopping-time-charts","url":"/categories/number-theory-mysteries/collatz-conjecture/wave-like-patterns-appear-in-record-holding-stopping-time-charts.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Record charts ripple like ocean swells across millions of integers."},{"title":"Wavefront Analysis Suggests Structured Bands in Peak Distribution","slug":"wavefront-analysis-suggests-structured-bands-in-peak-distribution","url":"/categories/number-theory-mysteries/collatz-conjecture/wavefront-analysis-suggests-structured-bands-in-peak-distribution.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Collatz peaks cluster in hidden bands across enormous ranges."},{"title":"Weak Convergence Results Narrow but Do Not Eliminate Exceptional Sets","slug":"weak-convergence-results-narrow-but-do-not-eliminate-exceptional-sets","url":"/categories/number-theory-mysteries/collatz-conjecture/weak-convergence-results-narrow-but-do-not-eliminate-exceptional-sets.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Proof nearly captures every number—except potentially infinitely many."},{"title":"X-Scale Verification Grows Faster Than Theoretical Progress","slug":"x-scale-verification-grows-faster-than-theoretical-progress","url":"/categories/number-theory-mysteries/collatz-conjecture/x-scale-verification-grows-faster-than-theoretical-progress.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Computers race forward while proofs barely move."},{"title":"Yields of Consecutive Halving Phases Create Sudden Magnitude Collapses","slug":"yields-of-consecutive-halving-phases-create-sudden-magnitude-collapses","url":"/categories/number-theory-mysteries/collatz-conjecture/yields-of-consecutive-halving-phases-create-sudden-magnitude-collapses.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After explosive growth, a cascade of divisions can erase astronomical peaks instantly."},{"title":"Z-Function Approaches Attempt to Encode Collatz Behavior Analytically","slug":"z-function-approaches-attempt-to-encode-collatz-behavior-analytically","url":"/categories/number-theory-mysteries/collatz-conjecture/z-function-approaches-attempt-to-encode-collatz-behavior-analytically.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Analysts have tried to trap Collatz inside complex generating functions."},{"title":"Zero and Negative Extensions of Collatz Create Entirely Different Dynamics","slug":"zero-and-negative-extensions-of-collatz-create-entirely-different-dynamics","url":"/categories/number-theory-mysteries/collatz-conjecture/zero-and-negative-extensions-of-collatz-create-entirely-different-dynamics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Extend Collatz to negative numbers and new cycles suddenly appear."},{"title":"Zero Probability Heuristics Still Cannot Eliminate Infinite Exceptional Sets","slug":"zero-probability-heuristics-still-cannot-eliminate-infinite-exceptional-sets","url":"/categories/number-theory-mysteries/collatz-conjecture/zero-probability-heuristics-still-cannot-eliminate-infinite-exceptional-sets.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even a vanishingly small chance can hide infinitely many rebels."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hodge Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Hodge Conjecture</h1>
+  <p>Explore all facts in "Hodge Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Hodge Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Single Polynomial Equation Can Define a Six-Dimensional Universe","slug":"a-single-polynomial-equation-can-define-a-six-dimensional-universe","url":"/categories/number-theory-mysteries/hodge-conjecture/a-single-polynomial-equation-can-define-a-six-dimensional-universe.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One equation can generate a universe six dimensions wide."},{"title":"Absolute Hodge Classes Intensify the Arithmetic Stakes","slug":"absolute-hodge-classes-intensify-the-arithmetic-stakes","url":"/categories/number-theory-mysteries/hodge-conjecture/absolute-hodge-classes-intensify-the-arithmetic-stakes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some cohomology classes refuse to change under any field embedding."},{"title":"Algebraic Cycles Can Exist in Codimensions Humans Cannot Imagine","slug":"algebraic-cycles-can-exist-in-codimensions-humans-cannot-imagine","url":"/categories/number-theory-mysteries/hodge-conjecture/algebraic-cycles-can-exist-in-codimensions-humans-cannot-imagine.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some geometric objects live in dimensions beyond spatial comprehension."},{"title":"Betti Numbers Predict Invisible Subspaces in Complex Projective Varieties","slug":"betti-numbers-predict-invisible-subspaces-in-complex-projective-varieties","url":"/categories/number-theory-mysteries/hodge-conjecture/betti-numbers-predict-invisible-subspaces-in-complex-projective-varieties.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Abstract numbers can predict hidden subspaces you will never see."},{"title":"Birational Transformations Preserve Deep Hodge-Theoretic Mysteries","slug":"birational-transformations-preserve-deep-hodge-theoretic-mysteries","url":"/categories/number-theory-mysteries/hodge-conjecture/birational-transformations-preserve-deep-hodge-theoretic-mysteries.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Radically reshape a variety and its hidden invariants still survive."},{"title":"Coniveau Filtration Suggests Hidden Depths Beneath Hodge Classes","slug":"coniveau-filtration-suggests-hidden-depths-beneath-hodge-classes","url":"/categories/number-theory-mysteries/hodge-conjecture/coniveau-filtration-suggests-hidden-depths-beneath-hodge-classes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Cohomology layers conceal geometric depth no one can directly see."},{"title":"Cubic Fourfolds and the Search for Phantom Algebraic Surfaces","slug":"cubic-fourfolds-and-the-search-for-phantom-algebraic-surfaces","url":"/categories/number-theory-mysteries/hodge-conjecture/cubic-fourfolds-and-the-search-for-phantom-algebraic-surfaces.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Six-dimensional spaces may conceal phantom surfaces no one can isolate."},{"title":"Degeneration of Hodge Structures Can Shatter Geometric Intuition","slug":"degeneration-of-hodge-structures-can-shatter-geometric-intuition","url":"/categories/number-theory-mysteries/hodge-conjecture/degeneration-of-hodge-structures-can-shatter-geometric-intuition.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Push a smooth variety to its limit and its hidden structure fractures."},{"title":"Degeneration of Hodge Structures Can Shatter Geometric Intuition","slug":"degeneration-of-hodge-structures-can-shatter-geometric-intuition","url":"/categories/number-theory-mysteries/hodge-conjecture/degeneration-of-hodge-structures-can-shatter-geometric-intuition.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Push a smooth variety to its limit and its hidden structure fractures."},{"title":"Derived Categories Reveal Hidden Symmetries Linked to the Hodge Conjecture","slug":"derived-categories-reveal-hidden-symmetries-linked-to-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/derived-categories-reveal-hidden-symmetries-linked-to-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Entire geometric symmetries hide inside abstract algebraic categories."},{"title":"Equivariant Cohomology Adds Symmetry Constraints to the Hodge Conjecture","slug":"equivariant-cohomology-adds-symmetry-constraints-to-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/equivariant-cohomology-adds-symmetry-constraints-to-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Impose symmetry and hidden dimensions must obey stricter laws."},{"title":"Equivariant Cohomology Adds Symmetry Constraints to the Hodge Conjecture","slug":"equivariant-cohomology-adds-symmetry-constraints-to-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/equivariant-cohomology-adds-symmetry-constraints-to-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Impose symmetry and hidden dimensions must obey stricter laws."},{"title":"Exotic Kähler Manifolds Test the Limits of the Hodge Conjecture","slug":"exotic-k-hler-manifolds-test-the-limits-of-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/exotic-k-hler-manifolds-test-the-limits-of-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some eight-dimensional manifolds defy every geometric intuition we have."},{"title":"Fano Varieties Contain Cohomological Signatures That May Hide Algebraic Cycles","slug":"fano-varieties-contain-cohomological-signatures-that-may-hide-algebraic-cycles","url":"/categories/number-theory-mysteries/hodge-conjecture/fano-varieties-contain-cohomological-signatures-that-may-hide-algebraic-cycles.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Certain high-dimensional varieties carry signatures of shapes no one can locate."},{"title":"Fibrations Transfer Hodge Mysteries Across Entire Geometric Towers","slug":"fibrations-transfer-hodge-mysteries-across-entire-geometric-towers","url":"/categories/number-theory-mysteries/hodge-conjecture/fibrations-transfer-hodge-mysteries-across-entire-geometric-towers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Stack spaces atop one another and hidden invariants cascade downward."},{"title":"Fibrations Transfer Hodge Mysteries Across Entire Geometric Towers","slug":"fibrations-transfer-hodge-mysteries-across-entire-geometric-towers","url":"/categories/number-theory-mysteries/hodge-conjecture/fibrations-transfer-hodge-mysteries-across-entire-geometric-towers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Stack spaces atop one another and hidden invariants cascade downward."},{"title":"Galois Actions on Cohomology Intensify the Hodge Conjecture Mystery","slug":"galois-actions-on-cohomology-intensify-the-hodge-conjecture-mystery","url":"/categories/number-theory-mysteries/hodge-conjecture/galois-actions-on-cohomology-intensify-the-hodge-conjecture-mystery.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Field symmetries twist geometric invariants in dimensions beyond sight."},{"title":"Griffiths Groups Measure the Gap Between Homology and Algebraic Cycles","slug":"griffiths-groups-measure-the-gap-between-homology-and-algebraic-cycles","url":"/categories/number-theory-mysteries/hodge-conjecture/griffiths-groups-measure-the-gap-between-homology-and-algebraic-cycles.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some cycles vanish topologically yet refuse algebraic explanation."},{"title":"Griffiths Groups Measure the Gap Between Homology and Algebraic Cycles","slug":"griffiths-groups-measure-the-gap-between-homology-and-algebraic-cycles","url":"/categories/number-theory-mysteries/hodge-conjecture/griffiths-groups-measure-the-gap-between-homology-and-algebraic-cycles.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some cycles vanish topologically yet refuse algebraic explanation."},{"title":"Harmonic Forms Encode Geometry in Dimensions Humans Cannot Visualize","slug":"harmonic-forms-encode-geometry-in-dimensions-humans-cannot-visualize","url":"/categories/number-theory-mysteries/hodge-conjecture/harmonic-forms-encode-geometry-in-dimensions-humans-cannot-visualize.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Smooth differential forms secretly map invisible high-dimensional structures."},{"title":"Hodge Classes Exist That No One Can Explicitly Construct","slug":"hodge-classes-exist-that-no-one-can-explicitly-construct","url":"/categories/number-theory-mysteries/hodge-conjecture/hodge-classes-exist-that-no-one-can-explicitly-construct.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematics predicts shapes that no human can explicitly build."},{"title":"Hodge Conjecture and the Hidden Geometry of Four-Dimensional Shapes","slug":"hodge-conjecture-and-the-hidden-geometry-of-four-dimensional-shapes","url":"/categories/number-theory-mysteries/hodge-conjecture/hodge-conjecture-and-the-hidden-geometry-of-four-dimensional-shapes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Entire four-dimensional surfaces hide inside equations no one can see."},{"title":"Hodge Loci Form Thin Sets That Control Massive Cohomological Behavior","slug":"hodge-loci-form-thin-sets-that-control-massive-cohomological-behavior","url":"/categories/number-theory-mysteries/hodge-conjecture/hodge-loci-form-thin-sets-that-control-massive-cohomological-behavior.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny parameter subsets can dictate entire high-dimensional structures."},{"title":"Hodge Loci Form Thin Sets That Control Massive Cohomological Behavior","slug":"hodge-loci-form-thin-sets-that-control-massive-cohomological-behavior","url":"/categories/number-theory-mysteries/hodge-conjecture/hodge-loci-form-thin-sets-that-control-massive-cohomological-behavior.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny parameter subsets can dictate entire high-dimensional structures."},{"title":"Intermediate Jacobians Translate Cohomology Into Complex Tori","slug":"intermediate-jacobians-translate-cohomology-into-complex-tori","url":"/categories/number-theory-mysteries/hodge-conjecture/intermediate-jacobians-translate-cohomology-into-complex-tori.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"High-dimensional holes can transform into intricate multi-dimensional tori."},{"title":"Intermediate Jacobians Translate Cohomology Into Complex Tori","slug":"intermediate-jacobians-translate-cohomology-into-complex-tori","url":"/categories/number-theory-mysteries/hodge-conjecture/intermediate-jacobians-translate-cohomology-into-complex-tori.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"High-dimensional holes can transform into intricate multi-dimensional tori."},{"title":"Intersection Theory Predicts Cycles in Spaces Beyond Physical Dimensions","slug":"intersection-theory-predicts-cycles-in-spaces-beyond-physical-dimensions","url":"/categories/number-theory-mysteries/hodge-conjecture/intersection-theory-predicts-cycles-in-spaces-beyond-physical-dimensions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Intersection numbers hint at surfaces hidden in eight-dimensional realms."},{"title":"Jacobian Varieties Link Complex Tori to the Hodge Conjecture Puzzle","slug":"jacobian-varieties-link-complex-tori-to-the-hodge-conjecture-puzzle","url":"/categories/number-theory-mysteries/hodge-conjecture/jacobian-varieties-link-complex-tori-to-the-hodge-conjecture-puzzle.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Higher-dimensional tori encode algebraic cycles nobody can see."},{"title":"Jump Phenomena in Cohomology Defy Continuous Geometric Expectation","slug":"jump-phenomena-in-cohomology-defy-continuous-geometric-expectation","url":"/categories/number-theory-mysteries/hodge-conjecture/jump-phenomena-in-cohomology-defy-continuous-geometric-expectation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Slide parameters smoothly and hidden dimensions can jump abruptly."},{"title":"Jump Phenomena in Cohomology Defy Continuous Geometric Expectation","slug":"jump-phenomena-in-cohomology-defy-continuous-geometric-expectation","url":"/categories/number-theory-mysteries/hodge-conjecture/jump-phenomena-in-cohomology-defy-continuous-geometric-expectation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Slide parameters smoothly and hidden dimensions can jump abruptly."},{"title":"K3 Surfaces Exhibit Cohomology That Tests the Boundaries of the Hodge Conjecture","slug":"k3-surfaces-exhibit-cohomology-that-tests-the-boundaries-of-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/k3-surfaces-exhibit-cohomology-that-tests-the-boundaries-of-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"These four-dimensional surfaces defy intuition yet obey hidden symmetries."},{"title":"Kodaira Vanishing Theorem Hints at Deep Structural Rigidity","slug":"kodaira-vanishing-theorem-hints-at-deep-structural-rigidity","url":"/categories/number-theory-mysteries/hodge-conjecture/kodaira-vanishing-theorem-hints-at-deep-structural-rigidity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Certain cohomology groups simply disappear in high dimensions."},{"title":"Kodaira Vanishing Theorem Hints at Deep Structural Rigidity","slug":"kodaira-vanishing-theorem-hints-at-deep-structural-rigidity","url":"/categories/number-theory-mysteries/hodge-conjecture/kodaira-vanishing-theorem-hints-at-deep-structural-rigidity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Certain cohomology groups simply disappear in high dimensions."},{"title":"Lefschetz Theorems Force High-Dimensional Geometry Into Lower Dimensions","slug":"lefschetz-theorems-force-high-dimensional-geometry-into-lower-dimensions","url":"/categories/number-theory-mysteries/hodge-conjecture/lefschetz-theorems-force-high-dimensional-geometry-into-lower-dimensions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Massive high-dimensional spaces can be controlled by slicing them once."},{"title":"Leray Spectral Sequences Reveal Hidden Multi-Layer Cohomology","slug":"leray-spectral-sequences-reveal-hidden-multi-layer-cohomology","url":"/categories/number-theory-mysteries/hodge-conjecture/leray-spectral-sequences-reveal-hidden-multi-layer-cohomology.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Cohomology can unfold in cascading pages like a hidden blueprint."},{"title":"Leray Spectral Sequences Reveal Hidden Multi-Layer Cohomology","slug":"leray-spectral-sequences-reveal-hidden-multi-layer-cohomology","url":"/categories/number-theory-mysteries/hodge-conjecture/leray-spectral-sequences-reveal-hidden-multi-layer-cohomology.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Cohomology can unfold in cascading pages like a hidden blueprint."},{"title":"Monodromy Representations Can Twist Hodge Structures Beyond Recognition","slug":"monodromy-representations-can-twist-hodge-structures-beyond-recognition","url":"/categories/number-theory-mysteries/hodge-conjecture/monodromy-representations-can-twist-hodge-structures-beyond-recognition.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Circle a singularity once and entire high-dimensional invariants rotate."},{"title":"Monodromy Representations Can Twist Hodge Structures Beyond Recognition","slug":"monodromy-representations-can-twist-hodge-structures-beyond-recognition","url":"/categories/number-theory-mysteries/hodge-conjecture/monodromy-representations-can-twist-hodge-structures-beyond-recognition.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Circle a singularity once and entire high-dimensional invariants rotate."},{"title":"Motives Aim to Unify Every Cohomology Theory Behind the Hodge Conjecture","slug":"motives-aim-to-unify-every-cohomology-theory-behind-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/motives-aim-to-unify-every-cohomology-theory-behind-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians are building a universal theory to explain every shape at once."},{"title":"Non-Algebraic Kähler Manifolds Expose the Limits of Hodge Theory","slug":"non-algebraic-k-hler-manifolds-expose-the-limits-of-hodge-theory","url":"/categories/number-theory-mysteries/hodge-conjecture/non-algebraic-k-hler-manifolds-expose-the-limits-of-hodge-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some perfectly smooth spaces can never come from polynomial equations."},{"title":"Orthogonal Decompositions in Hodge Structures Hide Geometric Constraints","slug":"orthogonal-decompositions-in-hodge-structures-hide-geometric-constraints","url":"/categories/number-theory-mysteries/hodge-conjecture/orthogonal-decompositions-in-hodge-structures-hide-geometric-constraints.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible orthogonal splits dictate the fate of high-dimensional geometry."},{"title":"Period Integrals Encode Hidden Algebraic Cycles Across Dimensions","slug":"period-integrals-encode-hidden-algebraic-cycles-across-dimensions","url":"/categories/number-theory-mysteries/hodge-conjecture/period-integrals-encode-hidden-algebraic-cycles-across-dimensions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Definite integrals over unseen spaces predict hidden geometric bodies."},{"title":"Quantum Field Theory Compactifications Depend on Hodge Structures","slug":"quantum-field-theory-compactifications-depend-on-hodge-structures","url":"/categories/number-theory-mysteries/hodge-conjecture/quantum-field-theory-compactifications-depend-on-hodge-structures.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The shape of hidden dimensions may hinge on an unsolved math problem."},{"title":"Rational Hodge Classes Are the Exact Frontier of the Conjecture","slug":"rational-hodge-classes-are-the-exact-frontier-of-the-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/rational-hodge-classes-are-the-exact-frontier-of-the-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Only rational pieces of cohomology stand on the edge of proof."},{"title":"Singular Cohomology Aligns with Algebraic Geometry in Unexpected Ways","slug":"singular-cohomology-aligns-with-algebraic-geometry-in-unexpected-ways","url":"/categories/number-theory-mysteries/hodge-conjecture/singular-cohomology-aligns-with-algebraic-geometry-in-unexpected-ways.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Topological holes in vast dimensions may come from polynomial equations."},{"title":"Transcendental Lattices in K3 Surfaces Push the Conjecture to Its Edge","slug":"transcendental-lattices-in-k3-surfaces-push-the-conjecture-to-its-edge","url":"/categories/number-theory-mysteries/hodge-conjecture/transcendental-lattices-in-k3-surfaces-push-the-conjecture-to-its-edge.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hidden lattices inside four-dimensional surfaces resist algebraic capture."},{"title":"Universal Families of Varieties Multiply the Hodge Conjecture’s Complexity","slug":"universal-families-of-varieties-multiply-the-hodge-conjecture-s-complexity","url":"/categories/number-theory-mysteries/hodge-conjecture/universal-families-of-varieties-multiply-the-hodge-conjecture-s-complexity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Move a single parameter and entire high-dimensional worlds rearrange."},{"title":"Variations of Hodge Structure Can Warp Geometry Across Entire Moduli Spaces","slug":"variations-of-hodge-structure-can-warp-geometry-across-entire-moduli-spaces","url":"/categories/number-theory-mysteries/hodge-conjecture/variations-of-hodge-structure-can-warp-geometry-across-entire-moduli-spaces.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Shift one complex parameter and invisible dimensions reconfigure instantly."},{"title":"Weight Filtrations Add Hidden Layers to the Hodge Conjecture","slug":"weight-filtrations-add-hidden-layers-to-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/weight-filtrations-add-hidden-layers-to-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Cohomology hides layered weights that geometry must somehow obey."},{"title":"X-Dimensional Calabi-Yau Manifolds Amplify the Stakes of the Hodge Conjecture","slug":"x-dimensional-calabi-yau-manifolds-amplify-the-stakes-of-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/x-dimensional-calabi-yau-manifolds-amplify-the-stakes-of-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Six hidden dimensions may depend on an unproven geometric promise."},{"title":"Yoneda Extensions in Derived Geometry Echo the Hodge Conjecture","slug":"yoneda-extensions-in-derived-geometry-echo-the-hodge-conjecture","url":"/categories/number-theory-mysteries/hodge-conjecture/yoneda-extensions-in-derived-geometry-echo-the-hodge-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Abstract extension groups whisper about shapes no equation reveals."},{"title":"Zariski Topology Masks Algebraic Cycles Within Vast Geometric Spaces","slug":"zariski-topology-masks-algebraic-cycles-within-vast-geometric-spaces","url":"/categories/number-theory-mysteries/hodge-conjecture/zariski-topology-masks-algebraic-cycles-within-vast-geometric-spaces.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"In this topology, closed sets can be unimaginably large."},{"title":"Zero Loci of Sections Can Encode Massive Hidden Subvarieties","slug":"zero-loci-of-sections-can-encode-massive-hidden-subvarieties","url":"/categories/number-theory-mysteries/hodge-conjecture/zero-loci-of-sections-can-encode-massive-hidden-subvarieties.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single vanishing condition can carve out vast unseen geometry."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

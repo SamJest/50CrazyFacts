@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odd Perfect Number</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Odd Perfect Number</h1>
+  <p>Explore all facts in "Odd Perfect Number".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Odd Perfect Number</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Asymptotic Bounds Show Odd Perfect Numbers Would Outpace Most Extremal Integer Functions","slug":"asymptotic-bounds-show-odd-perfect-numbers-would-outpace-most-extremal-integer-functions","url":"/categories/number-theory-mysteries/odd-perfect-number/asymptotic-bounds-show-odd-perfect-numbers-would-outpace-most-extremal-integer-functions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would grow faster than nearly every familiar extremal integer benchmark."},{"title":"Balance Between Abundance and Deficiency Makes Odd Perfection a Mathematical Knife-Edge","slug":"balance-between-abundance-and-deficiency-makes-odd-perfection-a-mathematical-knife-edge","url":"/categories/number-theory-mysteries/odd-perfect-number/balance-between-abundance-and-deficiency-makes-odd-perfection-a-mathematical-knife-edge.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would sit exactly between two vast oceans of imbalance."},{"title":"Bounded Divisor Density Makes Odd Perfect Numbers Incredibly Sparse","slug":"bounded-divisor-density-makes-odd-perfect-numbers-incredibly-sparse","url":"/categories/number-theory-mysteries/odd-perfect-number/bounded-divisor-density-makes-odd-perfect-numbers-incredibly-sparse.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would sit inside a numerical desert almost completely empty of similar integers."},{"title":"Combinatorial Explosion of Divisors Makes Exact Equality Increasingly Improbable","slug":"combinatorial-explosion-of-divisors-makes-exact-equality-increasingly-improbable","url":"/categories/number-theory-mysteries/odd-perfect-number/combinatorial-explosion-of-divisors-makes-exact-equality-increasingly-improbable.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Add enough prime factors and the divisor count explodes beyond controllable balance."},{"title":"Congruence Restrictions Force Odd Perfect Numbers Into Narrow Residue Classes","slug":"congruence-restrictions-force-odd-perfect-numbers-into-narrow-residue-classes","url":"/categories/number-theory-mysteries/odd-perfect-number/congruence-restrictions-force-odd-perfect-numbers-into-narrow-residue-classes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number must dodge nearly every possible remainder pattern."},{"title":"Density Zero Among Odds Suggests Odd Perfect Numbers May Be Rarer Than Rare Primes","slug":"density-zero-among-odds-suggests-odd-perfect-numbers-may-be-rarer-than-rare-primes","url":"/categories/number-theory-mysteries/odd-perfect-number/density-zero-among-odds-suggests-odd-perfect-numbers-may-be-rarer-than-rare-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Within the infinite sea of odd numbers, perfection would occupy virtually no space at all."},{"title":"Divisor Function Growth Makes Odd Perfect Numbers Hyper-Sensitive to Prime Exponents","slug":"divisor-function-growth-makes-odd-perfect-numbers-hyper-sensitive-to-prime-exponents","url":"/categories/number-theory-mysteries/odd-perfect-number/divisor-function-growth-makes-odd-perfect-numbers-hyper-sensitive-to-prime-exponents.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Increase one exponent slightly and perfection instantly collapses."},{"title":"Euler Proved Any Odd Perfect Number Must Follow a Rigid Prime Power Form","slug":"euler-proved-any-odd-perfect-number-must-follow-a-rigid-prime-power-form","url":"/categories/number-theory-mysteries/odd-perfect-number/euler-proved-any-odd-perfect-number-must-follow-a-rigid-prime-power-form.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would be forced into a single rigid algebraic shape discovered in 1747."},{"title":"Every Known Perfect Number Is Even Despite 2,000 Years of Searching","slug":"every-known-perfect-number-is-even-despite-2-000-years-of-searching","url":"/categories/number-theory-mysteries/odd-perfect-number/every-known-perfect-number-is-even-despite-2-000-years-of-searching.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After two millennia of searching, every perfect number found is even."},{"title":"Exponent Parity Restrictions Create a Structural Asymmetry Unique to Odd Perfect Numbers","slug":"exponent-parity-restrictions-create-a-structural-asymmetry-unique-to-odd-perfect-numbers","url":"/categories/number-theory-mysteries/odd-perfect-number/exponent-parity-restrictions-create-a-structural-asymmetry-unique-to-odd-perfect-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Only one prime exponent in an odd perfect number may break even symmetry."},{"title":"Factor Chain Arguments Push Odd Perfect Numbers Beyond Trillions of Digits","slug":"factor-chain-arguments-push-odd-perfect-numbers-beyond-trillions-of-digits","url":"/categories/number-theory-mysteries/odd-perfect-number/factor-chain-arguments-push-odd-perfect-numbers-beyond-trillions-of-digits.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Following the prime factor chain forces any odd perfect number into digit lengths beyond imagination."},{"title":"Final Logical Gap Keeps Odd Perfect Numbers Alive Despite Overwhelming Evidence","slug":"final-logical-gap-keeps-odd-perfect-numbers-alive-despite-overwhelming-evidence","url":"/categories/number-theory-mysteries/odd-perfect-number/final-logical-gap-keeps-odd-perfect-numbers-alive-despite-overwhelming-evidence.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After centuries of failure, one slender logical gap still prevents declaring odd perfection impossible."},{"title":"Generalized Abundance Results Make Odd Perfection Increasingly Unstable","slug":"generalized-abundance-results-make-odd-perfection-increasingly-unstable","url":"/categories/number-theory-mysteries/odd-perfect-number/generalized-abundance-results-make-odd-perfection-increasingly-unstable.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Most large odd numbers drift toward abundance, not perfect balance."},{"title":"Global Prime Distribution Laws Indirectly Pressure Odd Perfect Number Structure","slug":"global-prime-distribution-laws-indirectly-pressure-odd-perfect-number-structure","url":"/categories/number-theory-mysteries/odd-perfect-number/global-prime-distribution-laws-indirectly-pressure-odd-perfect-number-structure.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The statistical distribution of primes itself works against odd perfection."},{"title":"Heuristic Probability Models Predict Odd Perfect Numbers Are Astronomically Unlikely","slug":"heuristic-probability-models-predict-odd-perfect-numbers-are-astronomically-unlikely","url":"/categories/number-theory-mysteries/odd-perfect-number/heuristic-probability-models-predict-odd-perfect-numbers-are-astronomically-unlikely.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Statistical models suggest an odd perfect number is less likely than winning cosmic lotteries repeatedly."},{"title":"High Lower Bounds Mean Proof of Existence Would Instantly Break Computational Records","slug":"high-lower-bounds-mean-proof-of-existence-would-instantly-break-computational-records","url":"/categories/number-theory-mysteries/odd-perfect-number/high-lower-bounds-mean-proof-of-existence-would-instantly-break-computational-records.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Discovering an odd perfect number would shatter every known record for explicitly described integers."},{"title":"If an Odd Perfect Number Exists, It Defies All Known Construction Methods","slug":"if-an-odd-perfect-number-exists-it-defies-all-known-construction-methods","url":"/categories/number-theory-mysteries/odd-perfect-number/if-an-odd-perfect-number-exists-it-defies-all-known-construction-methods.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No formula, no pattern, no algorithm has ever generated a single odd perfect number."},{"title":"Interlocking Inequalities Suggest Any Odd Perfect Number Would Be Structurally Extreme","slug":"interlocking-inequalities-suggest-any-odd-perfect-number-would-be-structurally-extreme","url":"/categories/number-theory-mysteries/odd-perfect-number/interlocking-inequalities-suggest-any-odd-perfect-number-would-be-structurally-extreme.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Stack enough inequalities together and only an arithmetic extreme could survive."},{"title":"Just One Prime Exponent Must Be Congruent to 1 Modulo 4 in Odd Perfect Numbers","slug":"just-one-prime-exponent-must-be-congruent-to-1-modulo-4-in-odd-perfect-numbers","url":"/categories/number-theory-mysteries/odd-perfect-number/just-one-prime-exponent-must-be-congruent-to-1-modulo-4-in-odd-perfect-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Exactly one prime power in an odd perfect number must break symmetry in a specific modular way."},{"title":"Known Lower Bounds Eliminate All Odd Perfect Numbers Below Massive Computational Frontiers","slug":"known-lower-bounds-eliminate-all-odd-perfect-numbers-below-massive-computational-frontiers","url":"/categories/number-theory-mysteries/odd-perfect-number/known-lower-bounds-eliminate-all-odd-perfect-numbers-below-massive-computational-frontiers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every odd number below unimaginable computational frontiers has already failed the perfection test."},{"title":"Layered Inequality Proofs Keep Raising the Minimum Prime Count in Odd Perfect Numbers","slug":"layered-inequality-proofs-keep-raising-the-minimum-prime-count-in-odd-perfect-numbers","url":"/categories/number-theory-mysteries/odd-perfect-number/layered-inequality-proofs-keep-raising-the-minimum-prime-count-in-odd-perfect-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every decade, new inequalities squeeze odd perfect numbers into even tighter corners."},{"title":"Layered Theorems Have Reduced Possible Residue Classes to a Tiny Arithmetic Corridor","slug":"layered-theorems-have-reduced-possible-residue-classes-to-a-tiny-arithmetic-corridor","url":"/categories/number-theory-mysteries/odd-perfect-number/layered-theorems-have-reduced-possible-residue-classes-to-a-tiny-arithmetic-corridor.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After centuries of constraints, only a microscopic residue corridor remains open for odd perfection."},{"title":"Massive Divisor Sum Constraints Force Odd Perfect Numbers Into Extreme Structural Imbalance","slug":"massive-divisor-sum-constraints-force-odd-perfect-numbers-into-extreme-structural-imbalance","url":"/categories/number-theory-mysteries/odd-perfect-number/massive-divisor-sum-constraints-force-odd-perfect-numbers-into-extreme-structural-imbalance.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would need to balance explosive divisor growth without tipping into excess."},{"title":"No Odd Perfect Number Can Be Divisible by 105","slug":"no-odd-perfect-number-can-be-divisible-by-105","url":"/categories/number-theory-mysteries/odd-perfect-number/no-odd-perfect-number-can-be-divisible-by-105.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A number divisible by 3, 5, and 7 simultaneously can never be an odd perfect number."},{"title":"Odd Perfect Numbers Cannot Be Smaller Than a Googol of Digits in Prime Power Balance","slug":"odd-perfect-numbers-cannot-be-smaller-than-a-googol-of-digits-in-prime-power-balance","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-cannot-be-smaller-than-a-googol-of-digits-in-prime-power-balance.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Balancing its divisors would force an odd perfect number into almost unfathomable prime power symmetry."},{"title":"Odd Perfect Numbers Must Avoid Small Prime Clusters That Dominate Divisor Contributions","slug":"odd-perfect-numbers-must-avoid-small-prime-clusters-that-dominate-divisor-contributions","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-must-avoid-small-prime-clusters-that-dominate-divisor-contributions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Pack too many small primes together and perfection instantly collapses."},{"title":"Odd Perfect Numbers Must Be Congruent to 1 Modulo 12","slug":"odd-perfect-numbers-must-be-congruent-to-1-modulo-12","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-must-be-congruent-to-1-modulo-12.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would leave a remainder of 1 when divided by 12."},{"title":"Odd Perfect Numbers Must Contain At Least Nine Distinct Prime Factors","slug":"odd-perfect-numbers-must-contain-at-least-nine-distinct-prime-factors","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-must-contain-at-least-nine-distinct-prime-factors.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Any odd perfect number would need at least nine different prime numbers inside it."},{"title":"Odd Perfect Numbers Must Exceed 10^1500 If They Exist","slug":"odd-perfect-numbers-must-exceed-10-1500-if-they-exist","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-must-exceed-10-1500-if-they-exist.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Any odd perfect number would be larger than a one followed by 1,500 zeros."},{"title":"Odd Perfect Numbers Must Have a Prime Factor Exceeding 10 Million","slug":"odd-perfect-numbers-must-have-a-prime-factor-exceeding-10-million","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-must-have-a-prime-factor-exceeding-10-million.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Any odd perfect number would contain a prime larger than ten million hidden inside it."},{"title":"Odd Perfect Numbers Must Have More Than 75 Prime Factors Counting Multiplicity","slug":"odd-perfect-numbers-must-have-more-than-75-prime-factors-counting-multiplicity","url":"/categories/number-theory-mysteries/odd-perfect-number/odd-perfect-numbers-must-have-more-than-75-prime-factors-counting-multiplicity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would need over 75 prime factors woven together."},{"title":"Prime Power Restrictions Imply Odd Perfect Numbers Cannot Be Close to Squares","slug":"prime-power-restrictions-imply-odd-perfect-numbers-cannot-be-close-to-squares","url":"/categories/number-theory-mysteries/odd-perfect-number/prime-power-restrictions-imply-odd-perfect-numbers-cannot-be-close-to-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would look almost like a square yet can never actually be one."},{"title":"Quadratic Residue Conditions Further Restrict the Special Prime in Odd Perfect Numbers","slug":"quadratic-residue-conditions-further-restrict-the-special-prime-in-odd-perfect-numbers","url":"/categories/number-theory-mysteries/odd-perfect-number/quadratic-residue-conditions-further-restrict-the-special-prime-in-odd-perfect-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The lone unsquared prime in an odd perfect number must obey hidden quadratic laws."},{"title":"Recursive Factor Arguments Inflate Hypothetical Odd Perfect Numbers Beyond Physical Representation","slug":"recursive-factor-arguments-inflate-hypothetical-odd-perfect-numbers-beyond-physical-representation","url":"/categories/number-theory-mysteries/odd-perfect-number/recursive-factor-arguments-inflate-hypothetical-odd-perfect-numbers-beyond-physical-representation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Assume one prime factor and arithmetic forces an expanding cascade of others."},{"title":"Statistical Models Suggest Divisor Equality Becomes Vanishingly Rare at Extreme Scales","slug":"statistical-models-suggest-divisor-equality-becomes-vanishingly-rare-at-extreme-scales","url":"/categories/number-theory-mysteries/odd-perfect-number/statistical-models-suggest-divisor-equality-becomes-vanishingly-rare-at-extreme-scales.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Exact equality between a number and half its divisor sum nearly disappears as numbers grow."},{"title":"The Special Prime in Odd Perfect Numbers Must Dominate Certain Divisor Ratios","slug":"the-special-prime-in-odd-perfect-numbers-must-dominate-certain-divisor-ratios","url":"/categories/number-theory-mysteries/odd-perfect-number/the-special-prime-in-odd-perfect-numbers-must-dominate-certain-divisor-ratios.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One prime inside an odd perfect number must secretly control the divisor balance."},{"title":"Upper Bound Estimates Still Leave Odd Perfect Numbers Beyond Human Computation","slug":"upper-bound-estimates-still-leave-odd-perfect-numbers-beyond-human-computation","url":"/categories/number-theory-mysteries/odd-perfect-number/upper-bound-estimates-still-leave-odd-perfect-numbers-beyond-human-computation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even the smallest possible odd perfect number would dwarf any number humanity can fully compute."},{"title":"Valuation Constraints Force Extreme Exponent Patterns in Odd Perfect Numbers","slug":"valuation-constraints-force-extreme-exponent-patterns-in-odd-perfect-numbers","url":"/categories/number-theory-mysteries/odd-perfect-number/valuation-constraints-force-extreme-exponent-patterns-in-odd-perfect-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The exponent pattern inside an odd perfect number must obey valuation rules so strict they resemble a code."},{"title":"Vast Prime Count Requirements Make Odd Perfect Numbers Structurally Denser Than Typical Integers","slug":"vast-prime-count-requirements-make-odd-perfect-numbers-structurally-denser-than-typical-integers","url":"/categories/number-theory-mysteries/odd-perfect-number/vast-prime-count-requirements-make-odd-perfect-numbers-structurally-denser-than-typical-integers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An odd perfect number would contain more prime factors than most massive integers ever studied."},{"title":"Weakening Any Single Constraint Still Leaves Odd Perfect Numbers Astronomically Large","slug":"weakening-any-single-constraint-still-leaves-odd-perfect-numbers-astronomically-large","url":"/categories/number-theory-mysteries/odd-perfect-number/weakening-any-single-constraint-still-leaves-odd-perfect-numbers-astronomically-large.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even if several restrictions are relaxed, any odd perfect number would still explode beyond human scale."},{"title":"Wild Growth of the Divisor Function Opposes Stable Odd Perfection","slug":"wild-growth-of-the-divisor-function-opposes-stable-odd-perfection","url":"/categories/number-theory-mysteries/odd-perfect-number/wild-growth-of-the-divisor-function-opposes-stable-odd-perfection.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The divisor function’s explosive behavior fights against the calm balance perfection demands."},{"title":"X-Factor Absence: No Partial Construction Has Ever Approached Odd Perfection","slug":"x-factor-absence-no-partial-construction-has-ever-approached-odd-perfection","url":"/categories/number-theory-mysteries/odd-perfect-number/x-factor-absence-no-partial-construction-has-ever-approached-odd-perfection.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians have never even produced a near-miss odd number close to perfection at massive scale."},{"title":"Xenial Comparisons Show Odd Perfect Numbers Would Outscale Physical Reality","slug":"xenial-comparisons-show-odd-perfect-numbers-would-outscale-physical-reality","url":"/categories/number-theory-mysteries/odd-perfect-number/xenial-comparisons-show-odd-perfect-numbers-would-outscale-physical-reality.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Any confirmed odd perfect number would contain more digits than atoms in the observable universe."},{"title":"Yield Conditions from Divisor Ratios Create Near-Paradoxical Balance Requirements","slug":"yield-conditions-from-divisor-ratios-create-near-paradoxical-balance-requirements","url":"/categories/number-theory-mysteries/odd-perfect-number/yield-conditions-from-divisor-ratios-create-near-paradoxical-balance-requirements.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The ratio between an odd perfect number and its divisors must hit an exact value that most integers never approach."},{"title":"Yielding No Contradiction Yet, Odd Perfect Numbers Remain Logically Possible","slug":"yielding-no-contradiction-yet-odd-perfect-numbers-remain-logically-possible","url":"/categories/number-theory-mysteries/odd-perfect-number/yielding-no-contradiction-yet-odd-perfect-numbers-remain-logically-possible.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Despite crushing constraints, mathematics has not proved odd perfect numbers impossible."},{"title":"Zero Confirmed Examples Make Odd Perfect Numbers a 2,000-Year Mathematical Phantom","slug":"zero-confirmed-examples-make-odd-perfect-numbers-a-2-000-year-mathematical-phantom","url":"/categories/number-theory-mysteries/odd-perfect-number/zero-confirmed-examples-make-odd-perfect-numbers-a-2-000-year-mathematical-phantom.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"For over two millennia, not a single verified odd perfect number has surfaced."},{"title":"Zsigmondy-Type Arguments Complicate Prime Factor Chains in Odd Perfect Numbers","slug":"zsigmondy-type-arguments-complicate-prime-factor-chains-in-odd-perfect-numbers","url":"/categories/number-theory-mysteries/odd-perfect-number/zsigmondy-type-arguments-complicate-prime-factor-chains-in-odd-perfect-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primitive prime divisor results trigger unavoidable new primes inside any odd perfect candidate."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

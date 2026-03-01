@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boston Police Strike</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Boston Police Strike</h1>
+  <p>Explore all facts in "Boston Police Strike".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Boston Police Strike</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Armed Crowds Overran Scollay Square During the Boston Police Strike","slug":"armed-crowds-overran-scollay-square-during-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/armed-crowds-overran-scollay-square-during-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Downtown Boston turned into a smashed-glass battleground within hours of the strike."},{"title":"Boston Police Strike Became a National Campaign Issue in 1920","slug":"boston-police-strike-became-a-national-campaign-issue-in-1920","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-became-a-national-campaign-issue-in-1920.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A local police walkout helped shape a U.S. presidential election."},{"title":"Boston Police Strike Became One of the Most Publicized Labor Disputes of 1919","slug":"boston-police-strike-became-one-of-the-most-publicized-labor-disputes-of-1919","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-became-one-of-the-most-publicized-labor-disputes-of-1919.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A local strike in Boston became front-page news across America within days."},{"title":"Boston Police Strike Exposed Officers’ Low Wages in a Wealthy City","slug":"boston-police-strike-exposed-officers-low-wages-in-a-wealthy-city","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-exposed-officers-low-wages-in-a-wealthy-city.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Boston police earned less than many unskilled laborers before walking out."},{"title":"Boston Police Strike Forced State Troops to Patrol With Bayonets","slug":"boston-police-strike-forced-state-troops-to-patrol-with-bayonets","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-forced-state-troops-to-patrol-with-bayonets.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Armed soldiers with fixed bayonets replaced city police in Boston streets."},{"title":"Boston Police Strike Led to Permanent Dismissal of Over 1,000 Officers","slug":"boston-police-strike-led-to-permanent-dismissal-of-over-1-000-officers","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-led-to-permanent-dismissal-of-over-1-000-officers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"More than a thousand police officers lost their jobs in a single political backlash."},{"title":"Boston Police Strike Occurred During America’s Postwar Labor Explosion","slug":"boston-police-strike-occurred-during-america-s-postwar-labor-explosion","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-occurred-during-america-s-postwar-labor-explosion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The police strike hit at the peak of nationwide labor unrest in 1919."},{"title":"Boston Police Strike of 1919 Left a Major U.S. City Without Law Enforcement for Days","slug":"boston-police-strike-of-1919-left-a-major-u-s-city-without-law-enforcement-for-days","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-of-1919-left-a-major-u-s-city-without-law-enforcement-for-days.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An entire American city lost its police force overnight and chaos erupted immediately."},{"title":"Boston Police Strike Revealed How Quickly Urban Order Can Collapse","slug":"boston-police-strike-revealed-how-quickly-urban-order-can-collapse","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-revealed-how-quickly-urban-order-can-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Less than 24 hours without police pushed Boston into violent disorder."},{"title":"Boston Police Strike Sparked Riots Within 24 Hours of Officers Walking Out","slug":"boston-police-strike-sparked-riots-within-24-hours-of-officers-walking-out","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-sparked-riots-within-24-hours-of-officers-walking-out.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Boston descended into riots less than a day after police abandoned their posts."},{"title":"Boston Police Strike Undermined Public Support for Police Unionization Nationwide","slug":"boston-police-strike-undermined-public-support-for-police-unionization-nationwide","url":"/categories/embarrassing-historical-moments/boston-police-strike/boston-police-strike-undermined-public-support-for-police-unionization-nationwide.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single city strike stalled police union movements across America."},{"title":"City Leadership Faced National Ridicule After the Boston Police Strike","slug":"city-leadership-faced-national-ridicule-after-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/city-leadership-faced-national-ridicule-after-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A major American city became a symbol of disorder in under a week."},{"title":"Coolidge’s Boston Police Strike Telegram Went Viral in 1919 Newspapers","slug":"coolidge-s-boston-police-strike-telegram-went-viral-in-1919-newspapers","url":"/categories/embarrassing-historical-moments/boston-police-strike/coolidge-s-boston-police-strike-telegram-went-viral-in-1919-newspapers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One blunt telegram turned a local labor dispute into a national political earthquake."},{"title":"Crowd Sizes Swelled Into the Thousands During the Boston Police Strike Nights","slug":"crowd-sizes-swelled-into-the-thousands-during-the-boston-police-strike-nights","url":"/categories/embarrassing-historical-moments/boston-police-strike/crowd-sizes-swelled-into-the-thousands-during-the-boston-police-strike-nights.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Mass gatherings formed instantly once patrol whistles stopped echoing."},{"title":"Discipline Codes and Long Shifts Fueled Frustration Before the Boston Police Strike","slug":"discipline-codes-and-long-shifts-fueled-frustration-before-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/discipline-codes-and-long-shifts-fueled-frustration-before-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Officers endured up to 98-hour weeks before abandoning their posts."},{"title":"Dockworkers and Crowds Exploited the Police Vacuum During the 1919 Strike","slug":"dockworkers-and-crowds-exploited-the-police-vacuum-during-the-1919-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/dockworkers-and-crowds-exploited-the-police-vacuum-during-the-1919-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands tested the city’s limits the moment patrol whistles fell silent."},{"title":"Emergency Volunteer Patrols Failed Within Hours of the Boston Police Strike","slug":"emergency-volunteer-patrols-failed-within-hours-of-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/emergency-volunteer-patrols-failed-within-hours-of-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Untrained civilians tried to police Boston and were instantly overwhelmed."},{"title":"Escalating Newspaper Headlines Amplified the Boston Police Strike Crisis","slug":"escalating-newspaper-headlines-amplified-the-boston-police-strike-crisis","url":"/categories/embarrassing-historical-moments/boston-police-strike/escalating-newspaper-headlines-amplified-the-boston-police-strike-crisis.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Sensational front pages spread panic faster than officials could respond."},{"title":"Faneuil Hall District Fell Silent After the Boston Police Strike Began","slug":"faneuil-hall-district-fell-silent-after-the-boston-police-strike-began","url":"/categories/embarrassing-historical-moments/boston-police-strike/faneuil-hall-district-fell-silent-after-the-boston-police-strike-began.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One of America’s most historic civic centers emptied overnight."},{"title":"Firing 1,100 Officers After the Boston Police Strike Was One of the Largest Mass Dismissals in U.S. Policing","slug":"firing-1-100-officers-after-the-boston-police-strike-was-one-of-the-largest-mass-dismissals-in-u-s-policing","url":"/categories/embarrassing-historical-moments/boston-police-strike/firing-1-100-officers-after-the-boston-police-strike-was-one-of-the-largest-mass-dismissals-in-u-s-policing.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Over a thousand armed officers were permanently fired in a single decision."},{"title":"Gambling and Speakeasies Reopened Publicly During the Boston Police Strike","slug":"gambling-and-speakeasies-reopened-publicly-during-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/gambling-and-speakeasies-reopened-publicly-during-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Illegal gambling houses operated openly once patrols vanished from Boston streets."},{"title":"Harvard Students Patrolled Boston Streets During the 1919 Police Strike","slug":"harvard-students-patrolled-boston-streets-during-the-1919-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/harvard-students-patrolled-boston-streets-during-the-1919-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Elite college students replaced armed police in a city sliding into chaos."},{"title":"Harvard Students Patrolled Boston Streets During the 1919 Police Strike","slug":"harvard-students-patrolled-boston-streets-during-the-1919-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/harvard-students-patrolled-boston-streets-during-the-1919-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Elite college students replaced armed police in a city sliding into chaos."},{"title":"Inflation After World War I Fueled the Boston Police Strike Crisis","slug":"inflation-after-world-war-i-fueled-the-boston-police-strike-crisis","url":"/categories/embarrassing-historical-moments/boston-police-strike/inflation-after-world-war-i-fueled-the-boston-police-strike-crisis.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Police wages collapsed against wartime inflation before the city collapsed into unrest."},{"title":"Inflation of 1919 Eroded Police Purchasing Power Before the Boston Strike","slug":"inflation-of-1919-eroded-police-purchasing-power-before-the-boston-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/inflation-of-1919-eroded-police-purchasing-power-before-the-boston-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Postwar prices rose so fast that police salaries effectively shrank overnight."},{"title":"Judge’s Ruling Against Police Unionization Sparked the Boston Strike Crisis","slug":"judge-s-ruling-against-police-unionization-sparked-the-boston-strike-crisis","url":"/categories/embarrassing-historical-moments/boston-police-strike/judge-s-ruling-against-police-unionization-sparked-the-boston-strike-crisis.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single legal denial triggered a citywide collapse of law enforcement."},{"title":"Judge’s Ruling Against Police Unionization Sparked the Boston Strike Crisis","slug":"judge-s-ruling-against-police-unionization-sparked-the-boston-strike-crisis","url":"/categories/embarrassing-historical-moments/boston-police-strike/judge-s-ruling-against-police-unionization-sparked-the-boston-strike-crisis.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single legal denial triggered a citywide collapse of law enforcement."},{"title":"Kerosene-Lit Streets Amplified Fear During the Boston Police Strike Nights","slug":"kerosene-lit-streets-amplified-fear-during-the-boston-police-strike-nights","url":"/categories/embarrassing-historical-moments/boston-police-strike/kerosene-lit-streets-amplified-fear-during-the-boston-police-strike-nights.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Dimly lit streets magnified chaos in a city suddenly without police."},{"title":"Kerosene-Lit Streets Amplified Fear During the Boston Police Strike Nights","slug":"kerosene-lit-streets-amplified-fear-during-the-boston-police-strike-nights","url":"/categories/embarrassing-historical-moments/boston-police-strike/kerosene-lit-streets-amplified-fear-during-the-boston-police-strike-nights.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Dimly lit streets magnified chaos in a city suddenly without police."},{"title":"Lawyers Warned the Boston Police Strike Threatened Constitutional Order","slug":"lawyers-warned-the-boston-police-strike-threatened-constitutional-order","url":"/categories/embarrassing-historical-moments/boston-police-strike/lawyers-warned-the-boston-police-strike-threatened-constitutional-order.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Legal scholars feared a municipal labor dispute could destabilize democracy itself."},{"title":"Lawyers Warned the Boston Police Strike Threatened Constitutional Order","slug":"lawyers-warned-the-boston-police-strike-threatened-constitutional-order","url":"/categories/embarrassing-historical-moments/boston-police-strike/lawyers-warned-the-boston-police-strike-threatened-constitutional-order.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Legal scholars feared a municipal labor dispute could destabilize democracy itself."},{"title":"Mounted State Guards Restored Order After the Boston Police Strike Escalated","slug":"mounted-state-guards-restored-order-after-the-boston-police-strike-escalated","url":"/categories/embarrassing-historical-moments/boston-police-strike/mounted-state-guards-restored-order-after-the-boston-police-strike-escalated.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Rifles and cavalry patrols replaced whistles and badges in Boston streets."},{"title":"Nine Deaths During the Boston Police Strike Exposed the Cost of a Law Enforcement Vacuum","slug":"nine-deaths-during-the-boston-police-strike-exposed-the-cost-of-a-law-enforcement-vacuum","url":"/categories/embarrassing-historical-moments/boston-police-strike/nine-deaths-during-the-boston-police-strike-exposed-the-cost-of-a-law-enforcement-vacuum.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A five-day strike left multiple citizens dead in a major American city."},{"title":"Nine Deaths During the Boston Police Strike Exposed the Cost of a Law Enforcement Vacuum","slug":"nine-deaths-during-the-boston-police-strike-exposed-the-cost-of-a-law-enforcement-vacuum","url":"/categories/embarrassing-historical-moments/boston-police-strike/nine-deaths-during-the-boston-police-strike-exposed-the-cost-of-a-law-enforcement-vacuum.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A five-day strike left multiple citizens dead in a major American city."},{"title":"Over 200 Arrests Followed the Boston Police Strike Riots","slug":"over-200-arrests-followed-the-boston-police-strike-riots","url":"/categories/embarrassing-historical-moments/boston-police-strike/over-200-arrests-followed-the-boston-police-strike-riots.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hundreds were detained only after soldiers reclaimed Boston’s streets."},{"title":"Over 200 Arrests Followed the Boston Police Strike Riots","slug":"over-200-arrests-followed-the-boston-police-strike-riots","url":"/categories/embarrassing-historical-moments/boston-police-strike/over-200-arrests-followed-the-boston-police-strike-riots.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hundreds were detained only after soldiers reclaimed Boston’s streets."},{"title":"Property Damage During the Boston Police Strike Ran Into the Hundreds of Thousands of Dollars","slug":"property-damage-during-the-boston-police-strike-ran-into-the-hundreds-of-thousands-of-dollars","url":"/categories/embarrassing-historical-moments/boston-police-strike/property-damage-during-the-boston-police-strike-ran-into-the-hundreds-of-thousands-of-dollars.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Five days of disorder inflicted staggering financial losses on Boston businesses."},{"title":"Property Damage During the Boston Police Strike Ran Into the Hundreds of Thousands of Dollars","slug":"property-damage-during-the-boston-police-strike-ran-into-the-hundreds-of-thousands-of-dollars","url":"/categories/embarrassing-historical-moments/boston-police-strike/property-damage-during-the-boston-police-strike-ran-into-the-hundreds-of-thousands-of-dollars.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Five days of disorder inflicted staggering financial losses on Boston businesses."},{"title":"Quincy Market Merchants Boarded Up Overnight During the Boston Police Strike","slug":"quincy-market-merchants-boarded-up-overnight-during-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/quincy-market-merchants-boarded-up-overnight-during-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Historic market stalls were barricaded like a war zone within hours."},{"title":"Streetcar Disruptions Amplified Panic During the Boston Police Strike","slug":"streetcar-disruptions-amplified-panic-during-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/streetcar-disruptions-amplified-panic-during-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Crowded transit lines carried rumors faster than officials could respond."},{"title":"Telegraph Wires Carried News of the Boston Police Strike Across America in Hours","slug":"telegraph-wires-carried-news-of-the-boston-police-strike-across-america-in-hours","url":"/categories/embarrassing-historical-moments/boston-police-strike/telegraph-wires-carried-news-of-the-boston-police-strike-across-america-in-hours.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A local crisis reached the entire nation before Boston regained control."},{"title":"Troops With Fixed Bayonets Became the Face of Order After the Boston Police Strike","slug":"troops-with-fixed-bayonets-became-the-face-of-order-after-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/troops-with-fixed-bayonets-became-the-face-of-order-after-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Military rifles replaced city badges in one of America’s oldest cities."},{"title":"Troops With Fixed Bayonets Became the Face of Order After the Boston Police Strike","slug":"troops-with-fixed-bayonets-became-the-face-of-order-after-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/troops-with-fixed-bayonets-became-the-face-of-order-after-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Military rifles replaced city badges in one of America’s oldest cities."},{"title":"Union Affiliation With the AFL Triggered Political Alarm During the Boston Police Strike","slug":"union-affiliation-with-the-afl-triggered-political-alarm-during-the-boston-police-strike","url":"/categories/embarrassing-historical-moments/boston-police-strike/union-affiliation-with-the-afl-triggered-political-alarm-during-the-boston-police-strike.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Police joining a national labor federation sparked fears of divided loyalty."},{"title":"Vice Dens Operated Openly During the Boston Police Strike’s First Night","slug":"vice-dens-operated-openly-during-the-boston-police-strike-s-first-night","url":"/categories/embarrassing-historical-moments/boston-police-strike/vice-dens-operated-openly-during-the-boston-police-strike-s-first-night.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Illegal gambling flourished the same night law enforcement vanished."},{"title":"Vice Dens Operated Openly During the Boston Police Strike’s First Night","slug":"vice-dens-operated-openly-during-the-boston-police-strike-s-first-night","url":"/categories/embarrassing-historical-moments/boston-police-strike/vice-dens-operated-openly-during-the-boston-police-strike-s-first-night.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Illegal gambling flourished the same night law enforcement vanished."},{"title":"Working-Class Neighborhoods Bore the Brunt of the Boston Police Strike Violence","slug":"working-class-neighborhoods-bore-the-brunt-of-the-boston-police-strike-violence","url":"/categories/embarrassing-historical-moments/boston-police-strike/working-class-neighborhoods-bore-the-brunt-of-the-boston-police-strike-violence.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Crowded immigrant districts felt the strike’s chaos most intensely."},{"title":"Working-Class Neighborhoods Bore the Brunt of the Boston Police Strike Violence","slug":"working-class-neighborhoods-bore-the-brunt-of-the-boston-police-strike-violence","url":"/categories/embarrassing-historical-moments/boston-police-strike/working-class-neighborhoods-bore-the-brunt-of-the-boston-police-strike-violence.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Crowded immigrant districts felt the strike’s chaos most intensely."},{"title":"Xenophobic Fears Intensified During the Boston Police Strike of 1919","slug":"xenophobic-fears-intensified-during-the-boston-police-strike-of-1919","url":"/categories/embarrassing-historical-moments/boston-police-strike/xenophobic-fears-intensified-during-the-boston-police-strike-of-1919.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A police walkout ignited ethnic suspicion in already tense neighborhoods."},{"title":"Zero Police Patrols Covered Large Sections of Boston at the Strike’s Peak","slug":"zero-police-patrols-covered-large-sections-of-boston-at-the-strike-s-peak","url":"/categories/embarrassing-historical-moments/boston-police-strike/zero-police-patrols-covered-large-sections-of-boston-at-the-strike-s-peak.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Entire neighborhoods went completely without law enforcement for days."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

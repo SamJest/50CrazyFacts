@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emu War</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Emu War</h1>
+  <p>Explore all facts in "Emu War".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Emu War</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adaptive Evasion That Undermined the Emu War","slug":"adaptive-evasion-that-undermined-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/adaptive-evasion-that-undermined-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Birds without weapons consistently escaped automatic fire."},{"title":"Aftermath Audits That Cemented the Emu War’s Reputation","slug":"aftermath-audits-that-cemented-the-emu-war-s-reputation","url":"/categories/embarrassing-historical-moments/emu-war/aftermath-audits-that-cemented-the-emu-war-s-reputation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Post-operation reviews confirmed the birds outlasted the bullets."},{"title":"Australia’s 1932 Emu War: When Machine Guns Failed Against Flightless Birds","slug":"australia-s-1932-emu-war-when-machine-guns-failed-against-flightless-birds","url":"/categories/embarrassing-historical-moments/emu-war/australia-s-1932-emu-war-when-machine-guns-failed-against-flightless-birds.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Australia deployed soldiers with machine guns against birds — and lost."},{"title":"Ballistic Limits Exposed During the Emu War","slug":"ballistic-limits-exposed-during-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/ballistic-limits-exposed-during-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Automatic firepower struggled to hit fast-moving targets in open land."},{"title":"Bizarre Logistics of the 1932 Emu War in Western Australia","slug":"bizarre-logistics-of-the-1932-emu-war-in-western-australia","url":"/categories/embarrassing-historical-moments/emu-war/bizarre-logistics-of-the-1932-emu-war-in-western-australia.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A military campaign stalled because soldiers could not outrun birds."},{"title":"Bureaucratic Overreach in the Emu War Response","slug":"bureaucratic-overreach-in-the-emu-war-response","url":"/categories/embarrassing-historical-moments/emu-war/bureaucratic-overreach-in-the-emu-war-response.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A wildlife problem triggered formal military orders."},{"title":"Churchill’s Rejected Emu War Escalation Plan","slug":"churchill-s-rejected-emu-war-escalation-plan","url":"/categories/embarrassing-historical-moments/emu-war/churchill-s-rejected-emu-war-escalation-plan.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Officials considered escalating the Emu War with heavier weaponry."},{"title":"Civilian Bounty Success Compared to the Emu War","slug":"civilian-bounty-success-compared-to-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/civilian-bounty-success-compared-to-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Farmers achieved more with payments than soldiers did with guns."},{"title":"Climate-Driven Movement That Overpowered the Emu War","slug":"climate-driven-movement-that-overpowered-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/climate-driven-movement-that-overpowered-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Rainfall patterns defeated sustained gunfire."},{"title":"Decentralized Bird Movement That Frustrated the Emu War","slug":"decentralized-bird-movement-that-frustrated-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/decentralized-bird-movement-that-frustrated-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"There was no single flock to defeat."},{"title":"Depression-Era Optics That Intensified the Emu War Backlash","slug":"depression-era-optics-that-intensified-the-emu-war-backlash","url":"/categories/embarrassing-historical-moments/emu-war/depression-era-optics-that-intensified-the-emu-war-backlash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Economic collapse met highly visible ammunition expenditure."},{"title":"Disproportionate Firepower in the 1932 Emu War","slug":"disproportionate-firepower-in-the-1932-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/disproportionate-firepower-in-the-1932-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Automatic weapons met animals with no natural armor."},{"title":"Economic Desperation That Sparked the Emu War","slug":"economic-desperation-that-sparked-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/economic-desperation-that-sparked-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Wheat fields collapsed under pressure from thousands of birds."},{"title":"Emu Behavior That Outmaneuvered Machine Guns in 1932","slug":"emu-behavior-that-outmaneuvered-machine-guns-in-1932","url":"/categories/embarrassing-historical-moments/emu-war/emu-behavior-that-outmaneuvered-machine-guns-in-1932.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Unarmed birds used dispersion tactics that defeated automatic weapons."},{"title":"Escalation Avoided After Early Emu War Setbacks","slug":"escalation-avoided-after-early-emu-war-setbacks","url":"/categories/embarrassing-historical-moments/emu-war/escalation-avoided-after-early-emu-war-setbacks.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Authorities chose retreat over doubling down on failure."},{"title":"Field Reports That Undermined the Emu War Campaign","slug":"field-reports-that-undermined-the-emu-war-campaign","url":"/categories/embarrassing-historical-moments/emu-war/field-reports-that-undermined-the-emu-war-campaign.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Official dispatches revealed fewer kills than bullets fired."},{"title":"Fragmented Engagements That Defined the Emu War","slug":"fragmented-engagements-that-defined-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/fragmented-engagements-that-defined-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"No single battle decided the campaign."},{"title":"Geographic Scale That Overextended the Emu War","slug":"geographic-scale-that-overextended-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/geographic-scale-that-overextended-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A vast wheat belt diluted concentrated firepower."},{"title":"Guerrilla-Like Bird Tactics in the Emu War","slug":"guerrilla-like-bird-tactics-in-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/guerrilla-like-bird-tactics-in-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flightless birds behaved like mobile insurgents."},{"title":"How 10,000 Bullets Failed to Stop Australia’s Emu Migration","slug":"how-10-000-bullets-failed-to-stop-australia-s-emu-migration","url":"/categories/embarrassing-historical-moments/emu-war/how-10-000-bullets-failed-to-stop-australia-s-emu-migration.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Nearly ten thousand rounds were fired — the birds kept coming."},{"title":"Human-Wildlife Conflict That Turned Symbolic in 1932","slug":"human-wildlife-conflict-that-turned-symbolic-in-1932","url":"/categories/embarrassing-historical-moments/emu-war/human-wildlife-conflict-that-turned-symbolic-in-1932.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An agricultural dispute transformed into military theater."},{"title":"Ineffective Concentration Attempts During the Emu War","slug":"ineffective-concentration-attempts-during-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/ineffective-concentration-attempts-during-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Efforts to herd birds into kill zones repeatedly failed."},{"title":"Infrastructure Limits Exposed During the Emu War","slug":"infrastructure-limits-exposed-during-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/infrastructure-limits-exposed-during-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Rough farmland crippled military mobility against birds."},{"title":"Institutional Learning After the Emu War","slug":"institutional-learning-after-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/institutional-learning-after-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Military force gave way to civilian bounty systems."},{"title":"Journalistic Amplification of the Emu War","slug":"journalistic-amplification-of-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/journalistic-amplification-of-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Headlines turned a wildlife cull into national comedy."},{"title":"Journalistic Memory That Preserved the Emu War","slug":"journalistic-memory-that-preserved-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/journalistic-memory-that-preserved-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Satire ensured the episode would never fade quietly."},{"title":"Kilometers of Fencing Failed Before the Emu War","slug":"kilometers-of-fencing-failed-before-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/kilometers-of-fencing-failed-before-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Physical barriers collapsed under pressure from migrating birds."},{"title":"Limited Military Detachment in the Emu War","slug":"limited-military-detachment-in-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/limited-military-detachment-in-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A tiny armed unit confronted tens of thousands of birds."},{"title":"Logistical Imbalance Between Birds and Bullets in 1932","slug":"logistical-imbalance-between-birds-and-bullets-in-1932","url":"/categories/embarrassing-historical-moments/emu-war/logistical-imbalance-between-birds-and-bullets-in-1932.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A handful of soldiers confronted tens of thousands."},{"title":"Logistical Restraint That Closed the Emu War Chapter","slug":"logistical-restraint-that-closed-the-emu-war-chapter","url":"/categories/embarrassing-historical-moments/emu-war/logistical-restraint-that-closed-the-emu-war-chapter.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A small detachment stepped back from an unwinnable scale."},{"title":"Media Satire During the 1932 Emu War Crisis","slug":"media-satire-during-the-1932-emu-war-crisis","url":"/categories/embarrassing-historical-moments/emu-war/media-satire-during-the-1932-emu-war-crisis.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Newspapers portrayed emus as victors over trained soldiers."},{"title":"Migration Patterns That Fueled the Emu War Crisis","slug":"migration-patterns-that-fueled-the-emu-war-crisis","url":"/categories/embarrassing-historical-moments/emu-war/migration-patterns-that-fueled-the-emu-war-crisis.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Seasonal rains unleashed a biological surge across farmland."},{"title":"Migration Scale That Rendered the Emu War Ineffective","slug":"migration-scale-that-rendered-the-emu-war-ineffective","url":"/categories/embarrassing-historical-moments/emu-war/migration-scale-that-rendered-the-emu-war-ineffective.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Twenty thousand birds overwhelmed a tactical response."},{"title":"National Embarrassment After the Emu War Withdrawal","slug":"national-embarrassment-after-the-emu-war-withdrawal","url":"/categories/embarrassing-historical-moments/emu-war/national-embarrassment-after-the-emu-war-withdrawal.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A wildlife operation became a symbol of national humiliation."},{"title":"Operational Miscalculation in the 1932 Emu War","slug":"operational-miscalculation-in-the-1932-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/operational-miscalculation-in-the-1932-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Military doctrine collapsed against migratory biology."},{"title":"Public Ridicule That Defined the Emu War Legacy","slug":"public-ridicule-that-defined-the-emu-war-legacy","url":"/categories/embarrassing-historical-moments/emu-war/public-ridicule-that-defined-the-emu-war-legacy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Cartoons crowned birds as victors over soldiers."},{"title":"Questionable Cost Efficiency During the Emu War","slug":"questionable-cost-efficiency-during-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/questionable-cost-efficiency-during-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands of rounds translated into minimal measurable reduction."},{"title":"Resilient Migration That Overwhelmed Emu War Efforts","slug":"resilient-migration-that-overwhelmed-emu-war-efforts","url":"/categories/embarrassing-historical-moments/emu-war/resilient-migration-that-overwhelmed-emu-war-efforts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Seasonal biology outpaced sustained gunfire."},{"title":"Strategic Retreat That Ended the Emu War","slug":"strategic-retreat-that-ended-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/strategic-retreat-that-ended-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Authorities halted the campaign before deeper humiliation unfolded."},{"title":"Terrain Advantage That Favored Emus in 1932","slug":"terrain-advantage-that-favored-emus-in-1932","url":"/categories/embarrassing-historical-moments/emu-war/terrain-advantage-that-favored-emus-in-1932.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Open scrubland neutralized mounted machine guns."},{"title":"The Emu War’s Lasting Reputation in Military History","slug":"the-emu-war-s-lasting-reputation-in-military-history","url":"/categories/embarrassing-historical-moments/emu-war/the-emu-war-s-lasting-reputation-in-military-history.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One of Australia’s strangest military operations targeted wildlife."},{"title":"The Great Depression Context Behind the Emu War","slug":"the-great-depression-context-behind-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/the-great-depression-context-behind-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A collapsing economy collided with 20,000 hungry birds."},{"title":"The Political Fallout of Australia’s Emu War Debacle","slug":"the-political-fallout-of-australia-s-emu-war-debacle","url":"/categories/embarrassing-historical-moments/emu-war/the-political-fallout-of-australia-s-emu-war-debacle.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A flock of birds triggered parliamentary ridicule across Australia."},{"title":"Unintended Global Attention from the Emu War","slug":"unintended-global-attention-from-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/unintended-global-attention-from-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A regional bird cull became international news."},{"title":"Vast Wheat Belt Geography That Complicated the Emu War","slug":"vast-wheat-belt-geography-that-complicated-the-emu-war","url":"/categories/embarrassing-historical-moments/emu-war/vast-wheat-belt-geography-that-complicated-the-emu-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands of square kilometers dwarfed a small armed unit."},{"title":"Why the 1932 Emu War Still Resonates Globally","slug":"why-the-1932-emu-war-still-resonates-globally","url":"/categories/embarrassing-historical-moments/emu-war/why-the-1932-emu-war-still-resonates-globally.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A failed bird cull became one of history’s most shared war stories."},{"title":"Why the Emu War Ended Without Victory in 1932","slug":"why-the-emu-war-ended-without-victory-in-1932","url":"/categories/embarrassing-historical-moments/emu-war/why-the-emu-war-ended-without-victory-in-1932.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Australia declared war on birds — then quietly withdrew."},{"title":"Xenial Irony in the Emu War’s Symbolism","slug":"xenial-irony-in-the-emu-war-s-symbolism","url":"/categories/embarrassing-historical-moments/emu-war/xenial-irony-in-the-emu-war-s-symbolism.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"World War I veterans found themselves battling wildlife."},{"title":"Yield Losses That Triggered the Emu War Response","slug":"yield-losses-that-triggered-the-emu-war-response","url":"/categories/embarrassing-historical-moments/emu-war/yield-losses-that-triggered-the-emu-war-response.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Single migrations threatened entire annual harvests."},{"title":"Zero Strategic Gain from the 1932 Emu War Deployment","slug":"zero-strategic-gain-from-the-1932-emu-war-deployment","url":"/categories/embarrassing-historical-moments/emu-war/zero-strategic-gain-from-the-1932-emu-war-deployment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Weeks of gunfire produced no lasting territorial control."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

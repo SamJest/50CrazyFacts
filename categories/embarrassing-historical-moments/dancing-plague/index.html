@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dancing Plague</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Dancing Plague</h1>
+  <p>Explore all facts in "Dancing Plague".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Dancing Plague</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Aachen 1374: When Devout Citizens Danced Until Collapse","slug":"aachen-1374-when-devout-citizens-danced-until-collapse","url":"/categories/embarrassing-historical-moments/dancing-plague/aachen-1374-when-devout-citizens-danced-until-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Entire church crowds began convulsively dancing during mass — and could not stop."},{"title":"Alpine Pilgrimage Routes That Carried the Dance Across Borders","slug":"alpine-pilgrimage-routes-that-carried-the-dance-across-borders","url":"/categories/embarrassing-historical-moments/dancing-plague/alpine-pilgrimage-routes-that-carried-the-dance-across-borders.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Pilgrims seeking healing spread the frenzy instead."},{"title":"Basel 1418: A City Council Publicly Humiliated by Unstoppable Dancers","slug":"basel-1418-a-city-council-publicly-humiliated-by-unstoppable-dancers","url":"/categories/embarrassing-historical-moments/dancing-plague/basel-1418-a-city-council-publicly-humiliated-by-unstoppable-dancers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"City guards tried to arrest dancers — and joined them."},{"title":"Broken Feet and Torn Skin: Physical Injuries from Relentless Dancing","slug":"broken-feet-and-torn-skin-physical-injuries-from-relentless-dancing","url":"/categories/embarrassing-historical-moments/dancing-plague/broken-feet-and-torn-skin-physical-injuries-from-relentless-dancing.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Some dancers bled through their shoes and kept moving."},{"title":"Clergy Divisions: When Priests Disagreed on the Cause of the Dance","slug":"clergy-divisions-when-priests-disagreed-on-the-cause-of-the-dance","url":"/categories/embarrassing-historical-moments/dancing-plague/clergy-divisions-when-priests-disagreed-on-the-cause-of-the-dance.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even church leaders argued whether God or demons were responsible."},{"title":"Cologne 1374: When Trade Routes Carried a Dancing Epidemic","slug":"cologne-1374-when-trade-routes-carried-a-dancing-epidemic","url":"/categories/embarrassing-historical-moments/dancing-plague/cologne-1374-when-trade-routes-carried-a-dancing-epidemic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Merchants watched entire streets pulse with bodies jumping in agony."},{"title":"Dachstein Region 15th Century: Alpine Villages Struck by Dance Frenzy","slug":"dachstein-region-15th-century-alpine-villages-struck-by-dance-frenzy","url":"/categories/embarrassing-historical-moments/dancing-plague/dachstein-region-15th-century-alpine-villages-struck-by-dance-frenzy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Remote mountain villagers danced until they collapsed in snow."},{"title":"Dietary Theories: Bread Blamed for Triggering Medieval Frenzy","slug":"dietary-theories-bread-blamed-for-triggering-medieval-frenzy","url":"/categories/embarrassing-historical-moments/dancing-plague/dietary-theories-bread-blamed-for-triggering-medieval-frenzy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Citizens accused their own food of causing madness."},{"title":"Emotional Echo: How One Dancer Could Ignite Hundreds","slug":"emotional-echo-how-one-dancer-could-ignite-hundreds","url":"/categories/embarrassing-historical-moments/dancing-plague/emotional-echo-how-one-dancer-could-ignite-hundreds.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single body in motion triggered a citywide collapse."},{"title":"Epidemic Without a Pathogen: Why the Dancing Plague Defied Biology","slug":"epidemic-without-a-pathogen-why-the-dancing-plague-defied-biology","url":"/categories/embarrassing-historical-moments/dancing-plague/epidemic-without-a-pathogen-why-the-dancing-plague-defied-biology.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Doctors searched for poison — but found nothing."},{"title":"Erfurt 1237: Children Who Danced Across a Bridge in Trance","slug":"erfurt-1237-children-who-danced-across-a-bridge-in-trance","url":"/categories/embarrassing-historical-moments/dancing-plague/erfurt-1237-children-who-danced-across-a-bridge-in-trance.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hundreds of children reportedly danced in trance until they reached a distant shrine."},{"title":"Famine and Fear: The Psychological Fuel Behind 1518 Strasbourg","slug":"famine-and-fear-the-psychological-fuel-behind-1518-strasbourg","url":"/categories/embarrassing-historical-moments/dancing-plague/famine-and-fear-the-psychological-fuel-behind-1518-strasbourg.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Starving citizens danced through one of Europe’s worst summers."},{"title":"Guilt and God: Religious Terror as a Trigger for Mass Dancing","slug":"guilt-and-god-religious-terror-as-a-trigger-for-mass-dancing","url":"/categories/embarrassing-historical-moments/dancing-plague/guilt-and-god-religious-terror-as-a-trigger-for-mass-dancing.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Belief in divine punishment pushed bodies past exhaustion."},{"title":"Haguenau 1518: Smaller Towns Caught in Strasbourg’s Shadow","slug":"haguenau-1518-smaller-towns-caught-in-strasbourg-s-shadow","url":"/categories/embarrassing-historical-moments/dancing-plague/haguenau-1518-smaller-towns-caught-in-strasbourg-s-shadow.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Neighboring towns feared the dance would spill across borders."},{"title":"Involuntary Motion: Neurological Theories Behind Medieval Frenzy","slug":"involuntary-motion-neurological-theories-behind-medieval-frenzy","url":"/categories/embarrassing-historical-moments/dancing-plague/involuntary-motion-neurological-theories-behind-medieval-frenzy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Brains under siege can override voluntary muscle control."},{"title":"Jerking Chains: How Dancers Linked Arms in Public Squares","slug":"jerking-chains-how-dancers-linked-arms-in-public-squares","url":"/categories/embarrassing-historical-moments/dancing-plague/jerking-chains-how-dancers-linked-arms-in-public-squares.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Victims locked arms and spun until collapsing together."},{"title":"Kinetics of Collapse: Cardiovascular Limits in 1518 Strasbourg","slug":"kinetics-of-collapse-cardiovascular-limits-in-1518-strasbourg","url":"/categories/embarrassing-historical-moments/dancing-plague/kinetics-of-collapse-cardiovascular-limits-in-1518-strasbourg.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Extended dancing pushed hearts beyond survivable thresholds."},{"title":"Loss of Control: Why Medieval Europe Remembered the Dance for Centuries","slug":"loss-of-control-why-medieval-europe-remembered-the-dance-for-centuries","url":"/categories/embarrassing-historical-moments/dancing-plague/loss-of-control-why-medieval-europe-remembered-the-dance-for-centuries.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An entire region watched reason collapse in public."},{"title":"Mass Psychogenic Illness: The Modern Explanation for Medieval Dancing","slug":"mass-psychogenic-illness-the-modern-explanation-for-medieval-dancing","url":"/categories/embarrassing-historical-moments/dancing-plague/mass-psychogenic-illness-the-modern-explanation-for-medieval-dancing.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"No toxin, no virus — yet entire cities convulsed in sync."},{"title":"Medical Bloodletting Prescribed for Relentless Dancers","slug":"medical-bloodletting-prescribed-for-relentless-dancers","url":"/categories/embarrassing-historical-moments/dancing-plague/medical-bloodletting-prescribed-for-relentless-dancers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Doctors drained blood from patients who were already collapsing."},{"title":"Metz 1374: Authorities Forced to Watch as Citizens Danced in Agony","slug":"metz-1374-authorities-forced-to-watch-as-citizens-danced-in-agony","url":"/categories/embarrassing-historical-moments/dancing-plague/metz-1374-authorities-forced-to-watch-as-citizens-danced-in-agony.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"City officials stood helpless as citizens convulsed for days."},{"title":"Nuremberg 1374: Reports of Dancers Collapsing in Market Squares","slug":"nuremberg-1374-reports-of-dancers-collapsing-in-market-squares","url":"/categories/embarrassing-historical-moments/dancing-plague/nuremberg-1374-reports-of-dancers-collapsing-in-market-squares.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Merchants watched buyers convulse between bread stalls."},{"title":"Orchard Fields 15th Century: Rural Dancers Spinning Among Crops","slug":"orchard-fields-15th-century-rural-dancers-spinning-among-crops","url":"/categories/embarrassing-historical-moments/dancing-plague/orchard-fields-15th-century-rural-dancers-spinning-among-crops.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Farm laborers abandoned harvests to whirl until collapse."},{"title":"Overcrowded Streets: Urban Density as an Amplifier","slug":"overcrowded-streets-urban-density-as-an-amplifier","url":"/categories/embarrassing-historical-moments/dancing-plague/overcrowded-streets-urban-density-as-an-amplifier.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Packed medieval streets turned panic into performance."},{"title":"Persistent Memory: Chronicles That Preserved the Humiliation","slug":"persistent-memory-chronicles-that-preserved-the-humiliation","url":"/categories/embarrassing-historical-moments/dancing-plague/persistent-memory-chronicles-that-preserved-the-humiliation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Writers recorded the chaos so future generations would remember."},{"title":"Public Exorcisms: Priests Attempted to Cast Out the Dance","slug":"public-exorcisms-priests-attempted-to-cast-out-the-dance","url":"/categories/embarrassing-historical-moments/dancing-plague/public-exorcisms-priests-attempted-to-cast-out-the-dance.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Clergy shouted prayers at crowds already screaming."},{"title":"Quarantine Attempts That Failed to Stop the Dance","slug":"quarantine-attempts-that-failed-to-stop-the-dance","url":"/categories/embarrassing-historical-moments/dancing-plague/quarantine-attempts-that-failed-to-stop-the-dance.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Officials isolated dancers — and the frenzy spread anyway."},{"title":"Rhine Valley 14th Century: A Psychological Epidemic Before Germ Theory","slug":"rhine-valley-14th-century-a-psychological-epidemic-before-germ-theory","url":"/categories/embarrassing-historical-moments/dancing-plague/rhine-valley-14th-century-a-psychological-epidemic-before-germ-theory.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A disease spread with no pathogen — only panic."},{"title":"Saint Vitus Pilgrimages: Dancing as a Prescribed Cure","slug":"saint-vitus-pilgrimages-dancing-as-a-prescribed-cure","url":"/categories/embarrassing-historical-moments/dancing-plague/saint-vitus-pilgrimages-dancing-as-a-prescribed-cure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Officials sent sufferers to shrines — to dance even harder."},{"title":"Strasbourg 1518: The Summer 400 People Danced Toward Death","slug":"strasbourg-1518-the-summer-400-people-danced-toward-death","url":"/categories/embarrassing-historical-moments/dancing-plague/strasbourg-1518-the-summer-400-people-danced-toward-death.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One woman danced nonstop for days — and hundreds followed."},{"title":"Sudden Recovery: How the Dance Stopped as Abruptly as It Began","slug":"sudden-recovery-how-the-dance-stopped-as-abruptly-as-it-began","url":"/categories/embarrassing-historical-moments/dancing-plague/sudden-recovery-how-the-dance-stopped-as-abruptly-as-it-began.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"After weeks of chaos, the dancers simply stopped."},{"title":"Trade Fairs Interrupted by Convulsive Crowds","slug":"trade-fairs-interrupted-by-convulsive-crowds","url":"/categories/embarrassing-historical-moments/dancing-plague/trade-fairs-interrupted-by-convulsive-crowds.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"International merchants fled as dancers filled the plaza."},{"title":"Tremors Without Rhythm: When the Dance Lost All Musical Structure","slug":"tremors-without-rhythm-when-the-dance-lost-all-musical-structure","url":"/categories/embarrassing-historical-moments/dancing-plague/tremors-without-rhythm-when-the-dance-lost-all-musical-structure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Bodies jerked violently with no tempo to guide them."},{"title":"Trier 1374: Cathedral Steps Overtaken by Compulsive Dancers","slug":"trier-1374-cathedral-steps-overtaken-by-compulsive-dancers","url":"/categories/embarrassing-historical-moments/dancing-plague/trier-1374-cathedral-steps-overtaken-by-compulsive-dancers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Worshippers exiting mass found bodies convulsing on cathedral stairs."},{"title":"Ulm 15th Century: Guild Halls Forced to Close Amid Frenzied Movement","slug":"ulm-15th-century-guild-halls-forced-to-close-amid-frenzied-movement","url":"/categories/embarrassing-historical-moments/dancing-plague/ulm-15th-century-guild-halls-forced-to-close-amid-frenzied-movement.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Craft guild meetings dissolved as members began shaking uncontrollably."},{"title":"Uncontrolled Laughter and Weeping Among Medieval Dancers","slug":"uncontrolled-laughter-and-weeping-among-medieval-dancers","url":"/categories/embarrassing-historical-moments/dancing-plague/uncontrolled-laughter-and-weeping-among-medieval-dancers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Some dancers laughed hysterically while collapsing in tears."},{"title":"Unexpected Gender Balance Among Reported Dancers","slug":"unexpected-gender-balance-among-reported-dancers","url":"/categories/embarrassing-historical-moments/dancing-plague/unexpected-gender-balance-among-reported-dancers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Men and women collapsed side by side in equal measure."},{"title":"Urban Bells Ringing to Drown Out the Dance","slug":"urban-bells-ringing-to-drown-out-the-dance","url":"/categories/embarrassing-historical-moments/dancing-plague/urban-bells-ringing-to-drown-out-the-dance.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Church bells tolled as officials tried to overpower convulsions with sound."},{"title":"Villach 16th Century: Reports of Dancing Along the Drava River","slug":"villach-16th-century-reports-of-dancing-along-the-drava-river","url":"/categories/embarrassing-historical-moments/dancing-plague/villach-16th-century-reports-of-dancing-along-the-drava-river.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Riverside markets turned into arenas of relentless motion."},{"title":"Visionary Claims: Dancers Reporting Saints Ordering Movement","slug":"visionary-claims-dancers-reporting-saints-ordering-movement","url":"/categories/embarrassing-historical-moments/dancing-plague/visionary-claims-dancers-reporting-saints-ordering-movement.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Participants insisted a saint commanded every step."},{"title":"When Strasbourg Built Stages for the Sick to Dance On","slug":"when-strasbourg-built-stages-for-the-sick-to-dance-on","url":"/categories/embarrassing-historical-moments/dancing-plague/when-strasbourg-built-stages-for-the-sick-to-dance-on.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Authorities constructed platforms so the afflicted could keep dancing."},{"title":"Winter Outbreaks That Defied Seasonal Logic","slug":"winter-outbreaks-that-defied-seasonal-logic","url":"/categories/embarrassing-historical-moments/dancing-plague/winter-outbreaks-that-defied-seasonal-logic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Some dancing frenzies erupted in freezing weather."},{"title":"Worms 1374: Imperial City Witnesses Public Convulsive Chains","slug":"worms-1374-imperial-city-witnesses-public-convulsive-chains","url":"/categories/embarrassing-historical-moments/dancing-plague/worms-1374-imperial-city-witnesses-public-convulsive-chains.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Citizens linked arms in spasms beneath imperial banners."},{"title":"Xenial Panic: Foreign Visitors Interpreting the Dance as Curse","slug":"xenial-panic-foreign-visitors-interpreting-the-dance-as-curse","url":"/categories/embarrassing-historical-moments/dancing-plague/xenial-panic-foreign-visitors-interpreting-the-dance-as-curse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Travelers wrote home about cities possessed by motion."},{"title":"Youth Participation: Why Children and Teenagers Joined the Frenzy","slug":"youth-participation-why-children-and-teenagers-joined-the-frenzy","url":"/categories/embarrassing-historical-moments/dancing-plague/youth-participation-why-children-and-teenagers-joined-the-frenzy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Adolescents abandoned chores to convulse beside adults."},{"title":"Ypres 15th Century: Flemish Towns Reporting Sudden Movement Frenzies","slug":"ypres-15th-century-flemish-towns-reporting-sudden-movement-frenzies","url":"/categories/embarrassing-historical-moments/dancing-plague/ypres-15th-century-flemish-towns-reporting-sudden-movement-frenzies.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Textile workers dropped looms and began spinning uncontrollably."},{"title":"Zealous Flagellants Mistaken for Dancers During Outbreak Panic","slug":"zealous-flagellants-mistaken-for-dancers-during-outbreak-panic","url":"/categories/embarrassing-historical-moments/dancing-plague/zealous-flagellants-mistaken-for-dancers-during-outbreak-panic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Penitents whipping themselves were confused with convulsing victims."},{"title":"Zero Cure Recorded: Why No Definitive Treatment Ever Emerged","slug":"zero-cure-recorded-why-no-definitive-treatment-ever-emerged","url":"/categories/embarrassing-historical-moments/dancing-plague/zero-cure-recorded-why-no-definitive-treatment-ever-emerged.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Centuries passed and no medieval doctor cured the dance."},{"title":"Zonal Spread: Mapping the Rhine Corridor of Dancing Outbreaks","slug":"zonal-spread-mapping-the-rhine-corridor-of-dancing-outbreaks","url":"/categories/embarrassing-historical-moments/dancing-plague/zonal-spread-mapping-the-rhine-corridor-of-dancing-outbreaks.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The frenzy traced a geographic corridor along one river."},{"title":"Zurich 1500s: Authorities Banned Music to Halt Dancing Mania","slug":"zurich-1500s-authorities-banned-music-to-halt-dancing-mania","url":"/categories/embarrassing-historical-moments/dancing-plague/zurich-1500s-authorities-banned-music-to-halt-dancing-mania.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"City leaders outlawed music — and the dancing continued anyway."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

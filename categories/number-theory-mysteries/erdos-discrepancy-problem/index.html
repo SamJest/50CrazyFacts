@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Erdos Discrepancy Problem</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Erdos Discrepancy Problem</h1>
+  <p>Explore all facts in "Erdos Discrepancy Problem".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Erdos Discrepancy Problem</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Absolute Certainty: The Erdős Discrepancy Theorem Has Zero Exceptions","slug":"absolute-certainty-the-erd-s-discrepancy-theorem-has-zero-exceptions","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/absolute-certainty-the-erd-s-discrepancy-theorem-has-zero-exceptions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"There is not a single infinite sequence that escapes."},{"title":"Analytic Number Theory Turned a Combinatorial Puzzle into a Universal Law","slug":"analytic-number-theory-turned-a-combinatorial-puzzle-into-a-universal-law","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/analytic-number-theory-turned-a-combinatorial-puzzle-into-a-universal-law.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A plus-minus riddle became a theorem about arithmetic structure itself."},{"title":"Arithmetic Progressions That Expose Hidden Bias in Any Sequence","slug":"arithmetic-progressions-that-expose-hidden-bias-in-any-sequence","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/arithmetic-progressions-that-expose-hidden-bias-in-any-sequence.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Sampling every third or seventh term guarantees runaway imbalance."},{"title":"Binary Chaos Emerges from Deterministic Arithmetic Progressions","slug":"binary-chaos-emerges-from-deterministic-arithmetic-progressions","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/binary-chaos-emerges-from-deterministic-arithmetic-progressions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Rigid stepping rules unleash uncontrollable binary turbulence."},{"title":"Binary Sequences That Cannot Stay Bounded Under Multiples","slug":"binary-sequences-that-cannot-stay-bounded-under-multiples","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/binary-sequences-that-cannot-stay-bounded-under-multiples.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No infinite binary code escapes explosive imbalance under multiplication."},{"title":"Computational Proofs Pushed the Erdős Discrepancy Boundary to 1160 Terms","slug":"computational-proofs-pushed-the-erd-s-discrepancy-boundary-to-1160-terms","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/computational-proofs-pushed-the-erd-s-discrepancy-boundary-to-1160-terms.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A supercomputer proved balance dies exactly at term 1160."},{"title":"Cumulative Sums Grow Without Limit Along Some Infinite Path","slug":"cumulative-sums-grow-without-limit-along-some-infinite-path","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/cumulative-sums-grow-without-limit-along-some-infinite-path.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Follow the right arithmetic trail and the total never stops climbing."},{"title":"Deep Correlation Bounds Destroy the Dream of Bounded Discrepancy","slug":"deep-correlation-bounds-destroy-the-dream-of-bounded-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/deep-correlation-bounds-destroy-the-dream-of-bounded-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hidden correlations with prime patterns force imbalance past every ceiling."},{"title":"Dirichlet Characters Exposed Hidden Structure in the Discrepancy Conjecture","slug":"dirichlet-characters-exposed-hidden-structure-in-the-discrepancy-conjecture","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/dirichlet-characters-exposed-hidden-structure-in-the-discrepancy-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime-driven symmetries secretly force infinite imbalance."},{"title":"Erdős’s Simple Question That Required 21st-Century Mathematics","slug":"erd-s-s-simple-question-that-required-21st-century-mathematics","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/erd-s-s-simple-question-that-required-21st-century-mathematics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 1930s puzzle demanded tools invented nearly a century later."},{"title":"Extreme Sparsity Cannot Prevent Infinite Arithmetic Explosion","slug":"extreme-sparsity-cannot-prevent-infinite-arithmetic-explosion","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/extreme-sparsity-cannot-prevent-infinite-arithmetic-explosion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even vanishingly thin sampling eventually triggers runaway sums."},{"title":"Finite Success Stories Collapse Under Infinite Extension","slug":"finite-success-stories-collapse-under-infinite-extension","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/finite-success-stories-collapse-under-infinite-extension.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Thousands of perfect terms still guarantee eventual failure."},{"title":"Finite Windows Mask Infinite Collapse in the Erdős Discrepancy Problem","slug":"finite-windows-mask-infinite-collapse-in-the-erd-s-discrepancy-problem","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/finite-windows-mask-infinite-collapse-in-the-erd-s-discrepancy-problem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Millions of balanced terms still guarantee eventual arithmetic explosion."},{"title":"Global Divergence Emerges from Purely Local Rules","slug":"global-divergence-emerges-from-purely-local-rules","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/global-divergence-emerges-from-purely-local-rules.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Assign signs one by one—global imbalance still explodes."},{"title":"Growth Beyond Every Bound: The Core Theorem of Erdős Discrepancy","slug":"growth-beyond-every-bound-the-core-theorem-of-erd-s-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/growth-beyond-every-bound-the-core-theorem-of-erd-s-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No ceiling exists—imbalance outruns every fixed number."},{"title":"Hidden Arithmetic Symmetries Cannot Contain Infinite Fluctuation","slug":"hidden-arithmetic-symmetries-cannot-contain-infinite-fluctuation","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/hidden-arithmetic-symmetries-cannot-contain-infinite-fluctuation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even carefully engineered symmetry collapses under scaling."},{"title":"How Multiplicative Functions Secretly Drive Discrepancy to Infinity","slug":"how-multiplicative-functions-secretly-drive-discrepancy-to-infinity","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/how-multiplicative-functions-secretly-drive-discrepancy-to-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Multiplication alone forces infinite imbalance in simple sign sequences."},{"title":"Hypergraph Reformulation Revealed the Depth of the Discrepancy Problem","slug":"hypergraph-reformulation-revealed-the-depth-of-the-discrepancy-problem","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/hypergraph-reformulation-revealed-the-depth-of-the-discrepancy-problem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple sign puzzle secretly encodes a massive hypergraph imbalance."},{"title":"Infinite Arithmetic Sampling Acts Like a Resonance Amplifier","slug":"infinite-arithmetic-sampling-acts-like-a-resonance-amplifier","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/infinite-arithmetic-sampling-acts-like-a-resonance-amplifier.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Multiplying positions works like turning up a hidden volume knob."},{"title":"Infinite Binary Universes Share the Same Arithmetic Fate","slug":"infinite-binary-universes-share-the-same-arithmetic-fate","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/infinite-binary-universes-share-the-same-arithmetic-fate.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Uncountably many sequences—one unavoidable destiny."},{"title":"Interplay Between Additive and Multiplicative Worlds in Discrepancy Theory","slug":"interplay-between-additive-and-multiplicative-worlds-in-discrepancy-theory","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/interplay-between-additive-and-multiplicative-worlds-in-discrepancy-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Addition and multiplication collide—and infinite balance loses."},{"title":"Jumping by Primes Guarantees Discrepancy Blow-Up","slug":"jumping-by-primes-guarantees-discrepancy-blow-up","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/jumping-by-primes-guarantees-discrepancy-blow-up.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Sampling only prime positions still detonates infinite imbalance."},{"title":"Killing Discrepancy Two Required Eliminating Trillions of Logical Possibilities","slug":"killing-discrepancy-two-required-eliminating-trillions-of-logical-possibilities","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/killing-discrepancy-two-required-eliminating-trillions-of-logical-possibilities.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Billions of configurations vanished before the 1160-term ceiling emerged."},{"title":"Logarithmic Averaging and the Collapse of Bounded Discrepancy","slug":"logarithmic-averaging-and-the-collapse-of-bounded-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/logarithmic-averaging-and-the-collapse-of-bounded-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A subtle averaging trick shattered an 80-year conjecture barrier."},{"title":"Logarithmic Averaging Was the Hidden Key to Infinite Discrepancy","slug":"logarithmic-averaging-was-the-hidden-key-to-infinite-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/logarithmic-averaging-was-the-hidden-key-to-infinite-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A subtle weighting trick shattered 80 years of resistance."},{"title":"Logarithmic Averaging Was the Hidden Key to Infinite Discrepancy","slug":"logarithmic-averaging-was-the-hidden-key-to-infinite-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/logarithmic-averaging-was-the-hidden-key-to-infinite-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A subtle weighting trick shattered 80 years of resistance."},{"title":"Lurking Infinite Instability Hides in the Simplest Two-Symbol System","slug":"lurking-infinite-instability-hides-in-the-simplest-two-symbol-system","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/lurking-infinite-instability-hides-in-the-simplest-two-symbol-system.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two symbols, one rule of sampling—and boundless escalation follows."},{"title":"Lurking Infinite Instability Hides in the Simplest Two-Symbol System","slug":"lurking-infinite-instability-hides-in-the-simplest-two-symbol-system","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/lurking-infinite-instability-hides-in-the-simplest-two-symbol-system.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two symbols, one rule of sampling—and boundless escalation follows."},{"title":"Modern Analytic Tools Solved a Pre-War Arithmetic Puzzle","slug":"modern-analytic-tools-solved-a-pre-war-arithmetic-puzzle","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/modern-analytic-tools-solved-a-pre-war-arithmetic-puzzle.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A problem born before World War II needed 21st-century theory to fall."},{"title":"Multiplicative Mimicry Forces the Discrepancy Contradiction","slug":"multiplicative-mimicry-forces-the-discrepancy-contradiction","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/multiplicative-mimicry-forces-the-discrepancy-contradiction.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"To stay balanced, a sequence must impersonate prime structure—and that fails."},{"title":"No Infinite Construction Escapes the Discrepancy Explosion","slug":"no-infinite-construction-escapes-the-discrepancy-explosion","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/no-infinite-construction-escapes-the-discrepancy-explosion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every infinite design eventually detonates under arithmetic sampling."},{"title":"Overlapping Progressions Create an Infinite Web of Constraints","slug":"overlapping-progressions-create-an-infinite-web-of-constraints","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/overlapping-progressions-create-an-infinite-web-of-constraints.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every new step size adds another unavoidable imbalance trap."},{"title":"Parity Tricks Cannot Outsmart Infinite Discrepancy","slug":"parity-tricks-cannot-outsmart-infinite-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/parity-tricks-cannot-outsmart-infinite-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even clever even-odd alternation collapses under multiplication."},{"title":"Quasi-Random Constructions Still Succumb to Arithmetic Amplification","slug":"quasi-random-constructions-still-succumb-to-arithmetic-amplification","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/quasi-random-constructions-still-succumb-to-arithmetic-amplification.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even sequences designed to look random explode under systematic sampling."},{"title":"Rescaling by Large Multipliers Guarantees Eventual Runaway Sums","slug":"rescaling-by-large-multipliers-guarantees-eventual-runaway-sums","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/rescaling-by-large-multipliers-guarantees-eventual-runaway-sums.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Choose a huge step size—imbalance still spirals beyond control."},{"title":"Structural Rigidity Replaces Random Freedom in Infinite Sequences","slug":"structural-rigidity-replaces-random-freedom-in-infinite-sequences","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/structural-rigidity-replaces-random-freedom-in-infinite-sequences.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite choice still locks into unavoidable arithmetic destiny."},{"title":"The 1160-Term Wall in the Erdős Discrepancy Problem","slug":"the-1160-term-wall-in-the-erd-s-discrepancy-problem","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/the-1160-term-wall-in-the-erd-s-discrepancy-problem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematical balance survives exactly 1160 steps—then mathematically collapses."},{"title":"The Erdős Discrepancy Problem That Defied Mathematics for 80 Years","slug":"the-erd-s-discrepancy-problem-that-defied-mathematics-for-80-years","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/the-erd-s-discrepancy-problem-that-defied-mathematics-for-80-years.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A child’s plus-minus pattern broke professional mathematics for 80 years."},{"title":"The Universal Divergence Law Hidden in the Erdős Discrepancy Problem","slug":"the-universal-divergence-law-hidden-in-the-erd-s-discrepancy-problem","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/the-universal-divergence-law-hidden-in-the-erd-s-discrepancy-problem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every infinite plus-minus universe secretly explodes somewhere."},{"title":"The Young Conjecture That Demanded Generational Innovation","slug":"the-young-conjecture-that-demanded-generational-innovation","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/the-young-conjecture-that-demanded-generational-innovation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 1932 question waited eight decades for the right tools."},{"title":"The Young Conjecture That Demanded Generational Innovation","slug":"the-young-conjecture-that-demanded-generational-innovation","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/the-young-conjecture-that-demanded-generational-innovation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 1932 question waited eight decades for the right tools."},{"title":"Tight Bounds in Finite Segments Cannot Extend to Infinity","slug":"tight-bounds-in-finite-segments-cannot-extend-to-infinity","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/tight-bounds-in-finite-segments-cannot-extend-to-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Perfect control over long stretches still guarantees ultimate failure."},{"title":"Universal Divergence Emerges From the Simplest Binary Alphabet","slug":"universal-divergence-emerges-from-the-simplest-binary-alphabet","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/universal-divergence-emerges-from-the-simplest-binary-alphabet.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two symbols are enough to guarantee infinite arithmetic chaos."},{"title":"Vanishing Density Does Not Save Infinite Binary Sequences","slug":"vanishing-density-does-not-save-infinite-binary-sequences","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/vanishing-density-does-not-save-infinite-binary-sequences.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Make sampling arbitrarily rare—imbalance still grows without limit."},{"title":"Vanishing Density Does Not Save Infinite Binary Sequences","slug":"vanishing-density-does-not-save-infinite-binary-sequences","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/vanishing-density-does-not-save-infinite-binary-sequences.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Make sampling arbitrarily rare—imbalance still grows without limit."},{"title":"Webs of Overlapping Multiples Make Perfect Balance Impossible","slug":"webs-of-overlapping-multiples-make-perfect-balance-impossible","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/webs-of-overlapping-multiples-make-perfect-balance-impossible.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every multiple intertwines with countless others—no sign pattern escapes."},{"title":"Webs of Overlapping Multiples Make Perfect Balance Impossible","slug":"webs-of-overlapping-multiples-make-perfect-balance-impossible","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/webs-of-overlapping-multiples-make-perfect-balance-impossible.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every multiple intertwines with countless others—no sign pattern escapes."},{"title":"When Additive Calm Meets Multiplicative Scaling, Turbulence Is Guaranteed","slug":"when-additive-calm-meets-multiplicative-scaling-turbulence-is-guaranteed","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/when-additive-calm-meets-multiplicative-scaling-turbulence-is-guaranteed.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Smooth local sums erupt under multiplicative magnification."},{"title":"When Additive Calm Meets Multiplicative Scaling, Turbulence Is Guaranteed","slug":"when-additive-calm-meets-multiplicative-scaling-turbulence-is-guaranteed","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/when-additive-calm-meets-multiplicative-scaling-turbulence-is-guaranteed.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Smooth local sums erupt under multiplicative magnification."},{"title":"Why Infinite Alternation Fails Under Certain Step Sizes","slug":"why-infinite-alternation-fails-under-certain-step-sizes","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/why-infinite-alternation-fails-under-certain-step-sizes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Alternate perfectly—and a single multiplier destroys everything."},{"title":"Why Infinite Alternation Fails Under Certain Step Sizes","slug":"why-infinite-alternation-fails-under-certain-step-sizes","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/why-infinite-alternation-fails-under-certain-step-sizes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Alternate perfectly—and a single multiplier destroys everything."},{"title":"Why Infinite Plus-Minus Sequences Cannot Stay Fair","slug":"why-infinite-plus-minus-sequences-cannot-stay-fair","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/why-infinite-plus-minus-sequences-cannot-stay-fair.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite fairness in binary sequences is mathematically impossible."},{"title":"Why No Algorithm Can Engineer Perfect Infinite Balance","slug":"why-no-algorithm-can-engineer-perfect-infinite-balance","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/why-no-algorithm-can-engineer-perfect-infinite-balance.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"No computer program can design eternal arithmetic fairness."},{"title":"X-Factor of the Discrepancy Proof: Correlation Collapse","slug":"x-factor-of-the-discrepancy-proof-correlation-collapse","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/x-factor-of-the-discrepancy-proof-correlation-collapse.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Maintain bounded sums and hidden correlations must stay impossibly strong."},{"title":"X-Factor of the Discrepancy Proof: Correlation Collapse","slug":"x-factor-of-the-discrepancy-proof-correlation-collapse","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/x-factor-of-the-discrepancy-proof-correlation-collapse.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Maintain bounded sums and hidden correlations must stay impossibly strong."},{"title":"Yielding Finite Control Cannot Override Infinite Arithmetic Law","slug":"yielding-finite-control-cannot-override-infinite-arithmetic-law","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/yielding-finite-control-cannot-override-infinite-arithmetic-law.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Control thousands of terms—arithmetic still wins forever."},{"title":"Yielding Finite Control Cannot Override Infinite Arithmetic Law","slug":"yielding-finite-control-cannot-override-infinite-arithmetic-law","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/yielding-finite-control-cannot-override-infinite-arithmetic-law.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Control thousands of terms—arithmetic still wins forever."},{"title":"Zero Probability of Escape Across an Uncountable Universe","slug":"zero-probability-of-escape-across-an-uncountable-universe","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/zero-probability-of-escape-across-an-uncountable-universe.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Uncountably many binary worlds—none avoid infinite divergence."},{"title":"Zero Probability of Escape Across an Uncountable Universe","slug":"zero-probability-of-escape-across-an-uncountable-universe","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/zero-probability-of-escape-across-an-uncountable-universe.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Uncountably many binary worlds—none avoid infinite divergence."},{"title":"Zeta-Function Techniques Helped Unlock Infinite Discrepancy","slug":"zeta-function-techniques-helped-unlock-infinite-discrepancy","url":"/categories/number-theory-mysteries/erdos-discrepancy-problem/zeta-function-techniques-helped-unlock-infinite-discrepancy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Methods born from prime research cracked a plus-minus paradox."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twin Prime Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Twin Prime Conjecture</h1>
+  <p>Explore all facts in "Twin Prime Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Twin Prime Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Admissible Prime Constellations and the Architecture of Twin Primes","slug":"admissible-prime-constellations-and-the-architecture-of-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/admissible-prime-constellations-and-the-architecture-of-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple pattern of numbers can forbid twin primes before calculation even begins."},{"title":"Brun’s Constant: Twin Primes Sum to a Finite Number","slug":"brun-s-constant-twin-primes-sum-to-a-finite-number","url":"/categories/number-theory-mysteries/twin-prime-conjecture/brun-s-constant-twin-primes-sum-to-a-finite-number.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Add up the reciprocals of all twin primes—the total stays finite."},{"title":"Chen’s Theorem: One Prime Away From Twin Primes","slug":"chen-s-theorem-one-prime-away-from-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/chen-s-theorem-one-prime-away-from-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians proved infinitely many almost-twin primes—but stopped one prime short."},{"title":"Cramér’s Model Predicts Rare but Endless Twin Prime Occurrences","slug":"cram-r-s-model-predicts-rare-but-endless-twin-prime-occurrences","url":"/categories/number-theory-mysteries/twin-prime-conjecture/cram-r-s-model-predicts-rare-but-endless-twin-prime-occurrences.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A probabilistic model treats primes like coin flips—and still predicts infinite twins."},{"title":"de Polignac’s Conjecture Extends the Twin Prime Question to Every Even Gap","slug":"de-polignac-s-conjecture-extends-the-twin-prime-question-to-every-even-gap","url":"/categories/number-theory-mysteries/twin-prime-conjecture/de-polignac-s-conjecture-extends-the-twin-prime-question-to-every-even-gap.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"If twin primes exist infinitely, so might primes six, eight, or 100 apart."},{"title":"Erdős’ Probabilistic Model Predicts Infinite Twin Primes","slug":"erd-s-probabilistic-model-predicts-infinite-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/erd-s-probabilistic-model-predicts-infinite-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Randomness models insist twin primes never end—proof still refuses to appear."},{"title":"Finite Verification of Twin Primes Can Never Prove the Infinite","slug":"finite-verification-of-twin-primes-can-never-prove-the-infinite","url":"/categories/number-theory-mysteries/twin-prime-conjecture/finite-verification-of-twin-primes-can-never-prove-the-infinite.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"You could check twin primes for trillions of numbers and still know nothing about infinity."},{"title":"Goldston–Pintz–Yıldırım Method Opened the Door to Bounded Prime Gaps","slug":"goldston-pintz-y-ld-r-m-method-opened-the-door-to-bounded-prime-gaps","url":"/categories/number-theory-mysteries/twin-prime-conjecture/goldston-pintz-y-ld-r-m-method-opened-the-door-to-bounded-prime-gaps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A new sieve technique proved primes cluster closer than anyone expected."},{"title":"Hardy–Littlewood’s Prediction of Twin Prime Density","slug":"hardy-littlewood-s-prediction-of-twin-prime-density","url":"/categories/number-theory-mysteries/twin-prime-conjecture/hardy-littlewood-s-prediction-of-twin-prime-density.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians can estimate how often twin primes should appear—without proving they exist infinitely."},{"title":"Infinitely Many Prime Triples Remain as Elusive as Twin Primes","slug":"infinitely-many-prime-triples-remain-as-elusive-as-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/infinitely-many-prime-triples-remain-as-elusive-as-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Three primes within four numbers seem simple—yet infinity hides the answer."},{"title":"Jacobi’s Identity and Deep Correlations Between Close Primes","slug":"jacobi-s-identity-and-deep-correlations-between-close-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/jacobi-s-identity-and-deep-correlations-between-close-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hidden algebraic identities secretly link primes that sit only two apart."},{"title":"Kummer’s Work on Primes Revealed Unexpected Structural Constraints","slug":"kummer-s-work-on-primes-revealed-unexpected-structural-constraints","url":"/categories/number-theory-mysteries/twin-prime-conjecture/kummer-s-work-on-primes-revealed-unexpected-structural-constraints.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Nineteenth-century algebra exposed rigid patterns hiding inside prime chaos."},{"title":"Large Prime Gaps Can Exceed Any Fixed Length","slug":"large-prime-gaps-can-exceed-any-fixed-length","url":"/categories/number-theory-mysteries/twin-prime-conjecture/large-prime-gaps-can-exceed-any-fixed-length.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers sometimes vanish across stretches longer than skyscrapers laid end to end."},{"title":"Maynard–Tao Theorem Guarantees Infinite Clusters of Primes","slug":"maynard-tao-theorem-guarantees-infinite-clusters-of-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/maynard-tao-theorem-guarantees-infinite-clusters-of-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes do not just pair—they cluster in bounded groups infinitely often."},{"title":"Newman’s Conjecture Suggests Tiny Deviations Could Alter Prime Patterns","slug":"newman-s-conjecture-suggests-tiny-deviations-could-alter-prime-patterns","url":"/categories/number-theory-mysteries/twin-prime-conjecture/newman-s-conjecture-suggests-tiny-deviations-could-alter-prime-patterns.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A microscopic change in a complex function could reshape prime spacing forever."},{"title":"Optimal Sieve Weights Nearly Isolate Twin Primes","slug":"optimal-sieve-weights-nearly-isolate-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/optimal-sieve-weights-nearly-isolate-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Modern sieves come within a single factor of capturing infinite twin primes."},{"title":"Quadratic Polynomials Can Generate Long Runs of Twin-Prime Candidates","slug":"quadratic-polynomials-can-generate-long-runs-of-twin-prime-candidates","url":"/categories/number-theory-mysteries/twin-prime-conjecture/quadratic-polynomials-can-generate-long-runs-of-twin-prime-candidates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple quadratic formula spits out twin-prime pairs—until it suddenly fails."},{"title":"Quantum Chaos Analogies Suggest Hidden Order in Prime Gaps","slug":"quantum-chaos-analogies-suggest-hidden-order-in-prime-gaps","url":"/categories/number-theory-mysteries/twin-prime-conjecture/quantum-chaos-analogies-suggest-hidden-order-in-prime-gaps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime gaps behave like energy levels in chaotic quantum systems."},{"title":"Ramanujan’s Insights Influenced Modern Prime Distribution Theory","slug":"ramanujan-s-insights-influenced-modern-prime-distribution-theory","url":"/categories/number-theory-mysteries/twin-prime-conjecture/ramanujan-s-insights-influenced-modern-prime-distribution-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Ramanujan’s notebooks hinted at structures later vital for prime gap research."},{"title":"Riemann Hypothesis Alone Cannot Prove Twin Primes","slug":"riemann-hypothesis-alone-cannot-prove-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/riemann-hypothesis-alone-cannot-prove-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even solving the most famous problem in mathematics would not settle twin primes."},{"title":"Skewes’ Number and the Unpredictability of Prime Comparisons","slug":"skewes-number-and-the-unpredictability-of-prime-comparisons","url":"/categories/number-theory-mysteries/twin-prime-conjecture/skewes-number-and-the-unpredictability-of-prime-comparisons.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime irregularities explode at numbers so large they dwarf imagination."},{"title":"The Bombieri–Vinogradov Theorem Paved the Road Toward Bounded Gaps","slug":"the-bombieri-vinogradov-theorem-paved-the-road-toward-bounded-gaps","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-bombieri-vinogradov-theorem-paved-the-road-toward-bounded-gaps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A mid-20th-century theorem quietly set the stage for shrinking prime gaps."},{"title":"The Distribution of Twin Primes Mirrors a Logarithmic Decay Curve","slug":"the-distribution-of-twin-primes-mirrors-a-logarithmic-decay-curve","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-distribution-of-twin-primes-mirrors-a-logarithmic-decay-curve.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Twin primes thin predictably—even as infinity looms."},{"title":"The Elliott–Halberstam Conjecture and Its Connection to Twin Primes","slug":"the-elliott-halberstam-conjecture-and-its-connection-to-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-elliott-halberstam-conjecture-and-its-connection-to-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A deeper conjecture about prime distribution could unlock twin primes instantly."},{"title":"The First Recorded Study of Twin Primes Dates Back to Ancient Greece","slug":"the-first-recorded-study-of-twin-primes-dates-back-to-ancient-greece","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-first-recorded-study-of-twin-primes-dates-back-to-ancient-greece.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Over two thousand years ago, mathematicians noticed primes that refused to separate."},{"title":"The Generalized Riemann Hypothesis Still Falls Short of Proving Twin Primes","slug":"the-generalized-riemann-hypothesis-still-falls-short-of-proving-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-generalized-riemann-hypothesis-still-falls-short-of-proving-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even a strengthened form of the most famous hypothesis would not guarantee twin primes."},{"title":"The Hardy–Littlewood k-Tuple Conjecture Predicts Infinite Twin Primes Explicitly","slug":"the-hardy-littlewood-k-tuple-conjecture-predicts-infinite-twin-primes-explicitly","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-hardy-littlewood-k-tuple-conjecture-predicts-infinite-twin-primes-explicitly.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A sweeping formula predicts exactly how many twin primes should exist."},{"title":"The Largest Known Twin Primes Contain Over 388,000 Digits","slug":"the-largest-known-twin-primes-contain-over-388-000-digits","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-largest-known-twin-primes-contain-over-388-000-digits.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some twin primes are longer than entire novels—yet still only two numbers apart."},{"title":"The Paradox of Expanding Prime Gaps Versus Persistent Twin Primes","slug":"the-paradox-of-expanding-prime-gaps-versus-persistent-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-paradox-of-expanding-prime-gaps-versus-persistent-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers drift farther apart—yet twins keep reappearing."},{"title":"The Parity Problem Blocks Direct Proof of Twin Primes","slug":"the-parity-problem-blocks-direct-proof-of-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-parity-problem-blocks-direct-proof-of-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A hidden symmetry flaw prevents standard sieve methods from proving twin primes."},{"title":"The Polymath Project’s Rapid Reduction of Prime Gap Bounds","slug":"the-polymath-project-s-rapid-reduction-of-prime-gap-bounds","url":"/categories/number-theory-mysteries/twin-prime-conjecture/the-polymath-project-s-rapid-reduction-of-prime-gap-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hundreds of mathematicians slashed a 70-million gap to under 250 in months."},{"title":"Twin Prime Conjecture Has Withstood Every Major Analytic Breakthrough","slug":"twin-prime-conjecture-has-withstood-every-major-analytic-breakthrough","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-prime-conjecture-has-withstood-every-major-analytic-breakthrough.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Fields Medals, millennium problems, and supercomputers have not cracked this two-number gap."},{"title":"Twin Prime Conjecture: The Unsolved Question of Infinite Prime Pairs","slug":"twin-prime-conjecture-the-unsolved-question-of-infinite-prime-pairs","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-prime-conjecture-the-unsolved-question-of-infinite-prime-pairs.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"There might be infinitely many prime numbers separated by exactly two—and no one can prove it."},{"title":"Twin Prime Distribution Reflects Deep Multiplicative Structure","slug":"twin-prime-distribution-reflects-deep-multiplicative-structure","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-prime-distribution-reflects-deep-multiplicative-structure.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Multiplying simple divisibility rules creates complex twin prime patterns."},{"title":"Twin Prime Searches Now Span Numbers Larger Than 10 to the 18","slug":"twin-prime-searches-now-span-numbers-larger-than-10-to-the-18","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-prime-searches-now-span-numbers-larger-than-10-to-the-18.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Computers scan ranges beyond a billion billion—and still find twin primes."},{"title":"Twin Primes Appear Random Yet Follow Deep Arithmetic Constraints","slug":"twin-primes-appear-random-yet-follow-deep-arithmetic-constraints","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-primes-appear-random-yet-follow-deep-arithmetic-constraints.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Twin primes look chaotic—but obey rigid invisible rules."},{"title":"Twin Primes Are the Smallest Possible Prime Constellation","slug":"twin-primes-are-the-smallest-possible-prime-constellation","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-primes-are-the-smallest-possible-prime-constellation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two is the tightest gap primes can ever share beyond trivial cases."},{"title":"Twin Primes Survive Even as Prime Gaps Break All Records","slug":"twin-primes-survive-even-as-prime-gaps-break-all-records","url":"/categories/number-theory-mysteries/twin-prime-conjecture/twin-primes-survive-even-as-prime-gaps-break-all-records.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime gaps shatter records into the billions—yet pairs two apart still appear."},{"title":"Unconditional Results Now Guarantee Infinite Prime Pairs Below 246 Apart","slug":"unconditional-results-now-guarantee-infinite-prime-pairs-below-246-apart","url":"/categories/number-theory-mysteries/twin-prime-conjecture/unconditional-results-now-guarantee-infinite-prime-pairs-below-246-apart.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes are proven to repeat within 246 units—forever."},{"title":"Van der Corput’s Work Strengthened Evidence for Small Prime Gaps","slug":"van-der-corput-s-work-strengthened-evidence-for-small-prime-gaps","url":"/categories/number-theory-mysteries/twin-prime-conjecture/van-der-corput-s-work-strengthened-evidence-for-small-prime-gaps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Early twentieth-century analysis hinted primes huddle closer than averages predict."},{"title":"Weak Elliott–Halberstam Results Already Shrink Prime Gap Barriers","slug":"weak-elliott-halberstam-results-already-shrink-prime-gap-barriers","url":"/categories/number-theory-mysteries/twin-prime-conjecture/weak-elliott-halberstam-results-already-shrink-prime-gap-barriers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Partial progress on a deeper conjecture slashed prime gaps by hundreds."},{"title":"When Prime Density Approaches Zero but Pairs May Persist Forever","slug":"when-prime-density-approaches-zero-but-pairs-may-persist-forever","url":"/categories/number-theory-mysteries/twin-prime-conjecture/when-prime-density-approaches-zero-but-pairs-may-persist-forever.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Twin primes may survive even as their density collapses to nothing."},{"title":"Wider Prime Constellations Depend on the Same Barrier as Twin Primes","slug":"wider-prime-constellations-depend-on-the-same-barrier-as-twin-primes","url":"/categories/number-theory-mysteries/twin-prime-conjecture/wider-prime-constellations-depend-on-the-same-barrier-as-twin-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every larger prime pattern crashes into the same invisible wall blocking twins."},{"title":"X Marks the Spot: Exceptional Zeros Can Distort Prime Gap Estimates","slug":"x-marks-the-spot-exceptional-zeros-can-distort-prime-gap-estimates","url":"/categories/number-theory-mysteries/twin-prime-conjecture/x-marks-the-spot-exceptional-zeros-can-distort-prime-gap-estimates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A hypothetical single zero could dramatically warp prime spacing predictions."},{"title":"Xylouris Improved Error Terms That Shape Prime Gap Precision","slug":"xylouris-improved-error-terms-that-shape-prime-gap-precision","url":"/categories/number-theory-mysteries/twin-prime-conjecture/xylouris-improved-error-terms-that-shape-prime-gap-precision.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Sharper error bounds in obscure formulas tighten the hunt for twin primes."},{"title":"Yitang Zhang’s 70 Million Breakthrough on Bounded Prime Gaps","slug":"yitang-zhang-s-70-million-breakthrough-on-bounded-prime-gaps","url":"/categories/number-theory-mysteries/twin-prime-conjecture/yitang-zhang-s-70-million-breakthrough-on-bounded-prime-gaps.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"In 2013, a single proof shattered a 160-year deadlock on how close primes can be."},{"title":"Zero-Density Estimates Shape the Limits of Twin Prime Progress","slug":"zero-density-estimates-shape-the-limits-of-twin-prime-progress","url":"/categories/number-theory-mysteries/twin-prime-conjecture/zero-density-estimates-shape-the-limits-of-twin-prime-progress.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The spacing of invisible complex zeros dictates how close primes can approach."},{"title":"Zero-Free Regions of the Zeta Function Restrict Prime Gap Chaos","slug":"zero-free-regions-of-the-zeta-function-restrict-prime-gap-chaos","url":"/categories/number-theory-mysteries/twin-prime-conjecture/zero-free-regions-of-the-zeta-function-restrict-prime-gap-chaos.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Carving out forbidden zones in the complex plane tames prime irregularity."},{"title":"Zhang’s Original Bound Was Larger Than Most Human Populations","slug":"zhang-s-original-bound-was-larger-than-most-human-populations","url":"/categories/number-theory-mysteries/twin-prime-conjecture/zhang-s-original-bound-was-larger-than-most-human-populations.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The first proven prime gap bound exceeded 70 million—yet it was revolutionary."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

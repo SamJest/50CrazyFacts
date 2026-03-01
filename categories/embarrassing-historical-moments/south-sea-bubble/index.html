@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>South Sea Bubble</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>South Sea Bubble</h1>
+  <p>Explore all facts in "South Sea Bubble".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>South Sea Bubble</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Anonymous Pamphleteers Predicted National Bankruptcy During the South Sea Mania","slug":"anonymous-pamphleteers-predicted-national-bankruptcy-during-the-south-sea-mania","url":"/categories/embarrassing-historical-moments/south-sea-bubble/anonymous-pamphleteers-predicted-national-bankruptcy-during-the-south-sea-mania.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Writers warned Britain could go bankrupt from a stock bubble."},{"title":"Archibald Hutcheson Exposed the South Sea Bubble Before It Burst","slug":"archibald-hutcheson-exposed-the-south-sea-bubble-before-it-burst","url":"/categories/embarrassing-historical-moments/south-sea-bubble/archibald-hutcheson-exposed-the-south-sea-bubble-before-it-burst.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One MP publicly warned of disaster while everyone else cheered."},{"title":"Britain’s National Debt Conversion Scheme Backfired Spectacularly","slug":"britain-s-national-debt-conversion-scheme-backfired-spectacularly","url":"/categories/embarrassing-historical-moments/south-sea-bubble/britain-s-national-debt-conversion-scheme-backfired-spectacularly.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A plan to stabilize debt nearly destabilized the nation."},{"title":"Brokers Used Coffeehouses as High-Speed Trading Floors in 1720","slug":"brokers-used-coffeehouses-as-high-speed-trading-floors-in-1720","url":"/categories/embarrassing-historical-moments/south-sea-bubble/brokers-used-coffeehouses-as-high-speed-trading-floors-in-1720.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Stock prices spread through coffeehouses faster than official records."},{"title":"Clerics and Churches Invested Heavily in South Sea Shares","slug":"clerics-and-churches-invested-heavily-in-south-sea-shares","url":"/categories/embarrassing-historical-moments/south-sea-bubble/clerics-and-churches-invested-heavily-in-south-sea-shares.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even the Church gambled sacred funds on speculative stock."},{"title":"Confiscated Fortunes of Directors Funded Partial Restitution","slug":"confiscated-fortunes-of-directors-funded-partial-restitution","url":"/categories/embarrassing-historical-moments/south-sea-bubble/confiscated-fortunes-of-directors-funded-partial-restitution.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Executives lost estates to repay ruined investors."},{"title":"Debate in Parliament Turned Publicly Hostile After the Crash","slug":"debate-in-parliament-turned-publicly-hostile-after-the-crash","url":"/categories/embarrassing-historical-moments/south-sea-bubble/debate-in-parliament-turned-publicly-hostile-after-the-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Lawmakers shouted accusations over billions in vanished wealth."},{"title":"Directors Secretly Sold Shares Before the South Sea Collapse","slug":"directors-secretly-sold-shares-before-the-south-sea-collapse","url":"/categories/embarrassing-historical-moments/south-sea-bubble/directors-secretly-sold-shares-before-the-south-sea-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Company insiders exited quietly while the public kept buying."},{"title":"Exaggerated Dividend Promises Drove Irrational Buying Frenzy","slug":"exaggerated-dividend-promises-drove-irrational-buying-frenzy","url":"/categories/embarrassing-historical-moments/south-sea-bubble/exaggerated-dividend-promises-drove-irrational-buying-frenzy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors expected dividends larger than real trade profits."},{"title":"Exchange Alley Became So Crowded It Required Crowd Control","slug":"exchange-alley-became-so-crowded-it-required-crowd-control","url":"/categories/embarrassing-historical-moments/south-sea-bubble/exchange-alley-became-so-crowded-it-required-crowd-control.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"London’s financial district nearly collapsed under its own crowds."},{"title":"Foreign Diplomats Observed Britain’s Financial Frenzy with Alarm","slug":"foreign-diplomats-observed-britain-s-financial-frenzy-with-alarm","url":"/categories/embarrassing-historical-moments/south-sea-bubble/foreign-diplomats-observed-britain-s-financial-frenzy-with-alarm.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"European courts watched London gamble with national credibility."},{"title":"Foreign Investors Flooded Britain During the South Sea Mania","slug":"foreign-investors-flooded-britain-during-the-south-sea-mania","url":"/categories/embarrassing-historical-moments/south-sea-bubble/foreign-investors-flooded-britain-during-the-south-sea-mania.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"International money poured into a trade empire that barely traded."},{"title":"Government Ministers Accepted South Sea Shares Instead of Salaries","slug":"government-ministers-accepted-south-sea-shares-instead-of-salaries","url":"/categories/embarrassing-historical-moments/south-sea-bubble/government-ministers-accepted-south-sea-shares-instead-of-salaries.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Top officials were paid in speculative stock at the peak."},{"title":"Hysteria in London Triggered Suicides After the South Sea Crash","slug":"hysteria-in-london-triggered-suicides-after-the-south-sea-crash","url":"/categories/embarrassing-historical-moments/south-sea-bubble/hysteria-in-london-triggered-suicides-after-the-south-sea-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fortunes vanished so fast some investors chose death."},{"title":"Insiders Received Shares at Below-Market Prices During the Boom","slug":"insiders-received-shares-at-below-market-prices-during-the-boom","url":"/categories/embarrassing-historical-moments/south-sea-bubble/insiders-received-shares-at-below-market-prices-during-the-boom.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Elite investors bought stock cheaper than the public ever could."},{"title":"Isaac Newton Lost a Fortune in the South Sea Bubble","slug":"isaac-newton-lost-a-fortune-in-the-south-sea-bubble","url":"/categories/embarrassing-historical-moments/south-sea-bubble/isaac-newton-lost-a-fortune-in-the-south-sea-bubble.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The man who explained gravity was crushed by speculation."},{"title":"Joint-Stock Hype Created Britain’s First Mass Investment Craze","slug":"joint-stock-hype-created-britain-s-first-mass-investment-craze","url":"/categories/embarrassing-historical-moments/south-sea-bubble/joint-stock-hype-created-britain-s-first-mass-investment-craze.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Ordinary citizens speculated like seasoned financiers overnight."},{"title":"Joint-Stock Imitation Schemes Multiplied to Absurd Levels in 1720","slug":"joint-stock-imitation-schemes-multiplied-to-absurd-levels-in-1720","url":"/categories/embarrassing-historical-moments/south-sea-bubble/joint-stock-imitation-schemes-multiplied-to-absurd-levels-in-1720.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hundreds of companies formed overnight with impossible promises."},{"title":"Key Financial Reforms Followed the South Sea Collapse","slug":"key-financial-reforms-followed-the-south-sea-collapse","url":"/categories/embarrassing-historical-moments/south-sea-bubble/key-financial-reforms-followed-the-south-sea-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A speculative disaster reshaped Britain’s financial architecture."},{"title":"King George I Was Publicly Associated with the South Sea Company","slug":"king-george-i-was-publicly-associated-with-the-south-sea-company","url":"/categories/embarrassing-historical-moments/south-sea-bubble/king-george-i-was-publicly-associated-with-the-south-sea-company.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The monarchy’s prestige became tied to a collapsing stock."},{"title":"London Goldsmith Bankers Nearly Sparked a Secondary Panic in 1720","slug":"london-goldsmith-bankers-nearly-sparked-a-secondary-panic-in-1720","url":"/categories/embarrassing-historical-moments/south-sea-bubble/london-goldsmith-bankers-nearly-sparked-a-secondary-panic-in-1720.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Private bankers faced runs as South Sea shares imploded."},{"title":"London Streets Filled with South Sea Share Promoters in 1720","slug":"london-streets-filled-with-south-sea-share-promoters-in-1720","url":"/categories/embarrassing-historical-moments/south-sea-bubble/london-streets-filled-with-south-sea-share-promoters-in-1720.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Street hawkers sold stock like lottery tickets to crowds."},{"title":"Long-Term Investor Confidence in Joint-Stock Companies Collapsed","slug":"long-term-investor-confidence-in-joint-stock-companies-collapsed","url":"/categories/embarrassing-historical-moments/south-sea-bubble/long-term-investor-confidence-in-joint-stock-companies-collapsed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One crash poisoned trust in corporations for decades."},{"title":"Market Capitalization of the South Sea Company Rivaled Britain’s Economy","slug":"market-capitalization-of-the-south-sea-company-rivaled-britain-s-economy","url":"/categories/embarrassing-historical-moments/south-sea-bubble/market-capitalization-of-the-south-sea-company-rivaled-britain-s-economy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One speculative company briefly rivaled the nation’s entire output."},{"title":"Market Optimism Ignored Spain’s Tight Trade Restrictions","slug":"market-optimism-ignored-spain-s-tight-trade-restrictions","url":"/categories/embarrassing-historical-moments/south-sea-bubble/market-optimism-ignored-spain-s-tight-trade-restrictions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors priced freedom where treaties imposed limits."},{"title":"Massive Paper Wealth Evaporated Faster Than Britain’s Annual Tax Revenue","slug":"massive-paper-wealth-evaporated-faster-than-britain-s-annual-tax-revenue","url":"/categories/embarrassing-historical-moments/south-sea-bubble/massive-paper-wealth-evaporated-faster-than-britain-s-annual-tax-revenue.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Weeks erased sums rivaling the government’s yearly income."},{"title":"Noble Estates Were Mortgaged to Buy South Sea Shares","slug":"noble-estates-were-mortgaged-to-buy-south-sea-shares","url":"/categories/embarrassing-historical-moments/south-sea-bubble/noble-estates-were-mortgaged-to-buy-south-sea-shares.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Aristocrats gambled ancestral lands on speculative paper."},{"title":"Overconfidence in Colonial Silver Fueled Unrealistic Valuations","slug":"overconfidence-in-colonial-silver-fueled-unrealistic-valuations","url":"/categories/embarrassing-historical-moments/south-sea-bubble/overconfidence-in-colonial-silver-fueled-unrealistic-valuations.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors priced in treasure that Britain could barely access."},{"title":"Overnight Fortunes Created a Culture of Visible Excess in London","slug":"overnight-fortunes-created-a-culture-of-visible-excess-in-london","url":"/categories/embarrassing-historical-moments/south-sea-bubble/overnight-fortunes-created-a-culture-of-visible-excess-in-london.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"New millionaires flaunted wealth that lasted mere weeks."},{"title":"Pamphlets Promised Profits from a Company for \"An Undertaking of Great Advantage\"","slug":"pamphlets-promised-profits-from-a-company-for-an-undertaking-of-great-advantage","url":"/categories/embarrassing-historical-moments/south-sea-bubble/pamphlets-promised-profits-from-a-company-for-an-undertaking-of-great-advantage.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors funded a company that refused to reveal its purpose."},{"title":"Parliament Forced Directors to Reveal Hidden Asset Transfers","slug":"parliament-forced-directors-to-reveal-hidden-asset-transfers","url":"/categories/embarrassing-historical-moments/south-sea-bubble/parliament-forced-directors-to-reveal-hidden-asset-transfers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Secret asset movements surfaced under intense investigation."},{"title":"Rapid Price Swings of 50 Percent Occurred Within Days","slug":"rapid-price-swings-of-50-percent-occurred-within-days","url":"/categories/embarrassing-historical-moments/south-sea-bubble/rapid-price-swings-of-50-percent-occurred-within-days.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fortunes doubled and halved faster than ships could sail."},{"title":"Rapid Share Appreciation Encouraged False Belief in Endless Growth","slug":"rapid-share-appreciation-encouraged-false-belief-in-endless-growth","url":"/categories/embarrassing-historical-moments/south-sea-bubble/rapid-share-appreciation-encouraged-false-belief-in-endless-growth.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Prices rose so fast investors assumed gravity no longer applied."},{"title":"Royal Assent Gave the South Sea Company an Aura of Safety","slug":"royal-assent-gave-the-south-sea-company-an-aura-of-safety","url":"/categories/embarrassing-historical-moments/south-sea-bubble/royal-assent-gave-the-south-sea-company-an-aura-of-safety.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A royal charter convinced investors risk was impossible."},{"title":"South Sea Bubble: The Company That Promised Silver Mountains and Delivered Ruin","slug":"south-sea-bubble-the-company-that-promised-silver-mountains-and-delivered-ruin","url":"/categories/embarrassing-historical-moments/south-sea-bubble/south-sea-bubble-the-company-that-promised-silver-mountains-and-delivered-ruin.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain bet its national debt on a company with almost no trade."},{"title":"Speculative Mania Spread Beyond London into Provincial Towns","slug":"speculative-mania-spread-beyond-london-into-provincial-towns","url":"/categories/embarrassing-historical-moments/south-sea-bubble/speculative-mania-spread-beyond-london-into-provincial-towns.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Financial fever infected towns far from the capital."},{"title":"Speculators Borrowed at High Interest to Chase Soaring Shares","slug":"speculators-borrowed-at-high-interest-to-chase-soaring-shares","url":"/categories/embarrassing-historical-moments/south-sea-bubble/speculators-borrowed-at-high-interest-to-chase-soaring-shares.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors paid steep interest for stock that soon collapsed."},{"title":"Temporary Suspension of Trading Failed to Halt the Collapse","slug":"temporary-suspension-of-trading-failed-to-halt-the-collapse","url":"/categories/embarrassing-historical-moments/south-sea-bubble/temporary-suspension-of-trading-failed-to-halt-the-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even halting trades could not stop the freefall."},{"title":"The 1720 Subscription Scheme That Multiplied Shares Overnight","slug":"the-1720-subscription-scheme-that-multiplied-shares-overnight","url":"/categories/embarrassing-historical-moments/south-sea-bubble/the-1720-subscription-scheme-that-multiplied-shares-overnight.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors bought stock on installments for prices that kept doubling."},{"title":"The Bubble Act of 1720: Britain Tried to Outlaw Competition Mid-Crash","slug":"the-bubble-act-of-1720-britain-tried-to-outlaw-competition-mid-crash","url":"/categories/embarrassing-historical-moments/south-sea-bubble/the-bubble-act-of-1720-britain-tried-to-outlaw-competition-mid-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Parliament banned new companies while its own bubble inflated."},{"title":"The French Mississippi Bubble Collapsed Simultaneously with the South Sea Crash","slug":"the-french-mississippi-bubble-collapsed-simultaneously-with-the-south-sea-crash","url":"/categories/embarrassing-historical-moments/south-sea-bubble/the-french-mississippi-bubble-collapsed-simultaneously-with-the-south-sea-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Two nations inflated financial fantasies at the same time."},{"title":"The South Sea Directors Were Impeached for Bribing Parliament","slug":"the-south-sea-directors-were-impeached-for-bribing-parliament","url":"/categories/embarrassing-historical-moments/south-sea-bubble/the-south-sea-directors-were-impeached-for-bribing-parliament.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Company directors secretly bribed lawmakers while shares skyrocketed."},{"title":"The Sword Blade Bank Collapse During the South Sea Crash","slug":"the-sword-blade-bank-collapse-during-the-south-sea-crash","url":"/categories/embarrassing-historical-moments/south-sea-bubble/the-sword-blade-bank-collapse-during-the-south-sea-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A major bank collapsed because it tied itself to paper riches."},{"title":"Thousands of Shareholders Petitioned Parliament After the Crash","slug":"thousands-of-shareholders-petitioned-parliament-after-the-crash","url":"/categories/embarrassing-historical-moments/south-sea-bubble/thousands-of-shareholders-petitioned-parliament-after-the-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Ruined investors flooded lawmakers with desperate pleas."},{"title":"Valuations Ignored the Company’s Minimal Shipping Fleet","slug":"valuations-ignored-the-company-s-minimal-shipping-fleet","url":"/categories/embarrassing-historical-moments/south-sea-bubble/valuations-ignored-the-company-s-minimal-shipping-fleet.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A global trade empire existed mostly on paper."},{"title":"Widows and Orphans Lost Life Savings in the South Sea Collapse","slug":"widows-and-orphans-lost-life-savings-in-the-south-sea-collapse","url":"/categories/embarrassing-historical-moments/south-sea-bubble/widows-and-orphans-lost-life-savings-in-the-south-sea-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Charitable trust funds evaporated in a matter of weeks."},{"title":"Writers and Satirists Publicly Mocked the South Sea Speculators","slug":"writers-and-satirists-publicly-mocked-the-south-sea-speculators","url":"/categories/embarrassing-historical-moments/south-sea-bubble/writers-and-satirists-publicly-mocked-the-south-sea-speculators.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Poets turned financial ruin into national ridicule."},{"title":"Year 1720 Became a Benchmark for Financial Folly","slug":"year-1720-became-a-benchmark-for-financial-folly","url":"/categories/embarrassing-historical-moments/south-sea-bubble/year-1720-became-a-benchmark-for-financial-folly.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An entire year turned into shorthand for greed."},{"title":"Years of Litigation Followed the South Sea Financial Disaster","slug":"years-of-litigation-followed-the-south-sea-financial-disaster","url":"/categories/embarrassing-historical-moments/south-sea-bubble/years-of-litigation-followed-the-south-sea-financial-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The crash triggered lawsuits that dragged on for years."},{"title":"Zero Operational Growth Justified Soaring Share Prices in 1720","slug":"zero-operational-growth-justified-soaring-share-prices-in-1720","url":"/categories/embarrassing-historical-moments/south-sea-bubble/zero-operational-growth-justified-soaring-share-prices-in-1720.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A company barely expanding saw its stock multiply tenfold."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

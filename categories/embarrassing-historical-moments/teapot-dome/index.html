@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teapot Dome</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Teapot Dome</h1>
+  <p>Explore all facts in "Teapot Dome".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Teapot Dome</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"After Teapot Dome, Cabinet Ethics Faced Unprecedented Scrutiny","slug":"after-teapot-dome-cabinet-ethics-faced-unprecedented-scrutiny","url":"/categories/embarrassing-historical-moments/teapot-dome/after-teapot-dome-cabinet-ethics-faced-unprecedented-scrutiny.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One oil scandal forced Americans to question every Cabinet appointment."},{"title":"Albert B. Fall’s Hidden Ranch Fortune Raised Red Flags in Teapot Dome","slug":"albert-b-fall-s-hidden-ranch-fortune-raised-red-flags-in-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/albert-b-fall-s-hidden-ranch-fortune-raised-red-flags-in-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A struggling public official suddenly paid off massive ranch debts in cash."},{"title":"Behind Closed Doors: The Secret Transfer of Naval Oil to Interior","slug":"behind-closed-doors-the-secret-transfer-of-naval-oil-to-interior","url":"/categories/embarrassing-historical-moments/teapot-dome/behind-closed-doors-the-secret-transfer-of-naval-oil-to-interior.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Strategic naval oil reserves were quietly shifted between departments with a signature."},{"title":"Bribery at Teapot Dome Exceeded a Cabinet Secretary’s Lifetime Earnings","slug":"bribery-at-teapot-dome-exceeded-a-cabinet-secretary-s-lifetime-earnings","url":"/categories/embarrassing-historical-moments/teapot-dome/bribery-at-teapot-dome-exceeded-a-cabinet-secretary-s-lifetime-earnings.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The oil payments dwarfed what a Cabinet salary could ever provide."},{"title":"Corporate Oil Titans Gained Secret Access to Federal Reserves","slug":"corporate-oil-titans-gained-secret-access-to-federal-reserves","url":"/categories/embarrassing-historical-moments/teapot-dome/corporate-oil-titans-gained-secret-access-to-federal-reserves.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Powerful oil executives quietly tapped into America’s naval fuel supply."},{"title":"Courtroom Drama: The Criminal Trial That Made Teapot Dome Historic","slug":"courtroom-drama-the-criminal-trial-that-made-teapot-dome-historic","url":"/categories/embarrassing-historical-moments/teapot-dome/courtroom-drama-the-criminal-trial-that-made-teapot-dome-historic.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A Cabinet secretary stood in criminal court over oil worth millions."},{"title":"Documents Seized in Teapot Dome Proved Oil Leases and Payments Aligned","slug":"documents-seized-in-teapot-dome-proved-oil-leases-and-payments-aligned","url":"/categories/embarrassing-historical-moments/teapot-dome/documents-seized-in-teapot-dome-proved-oil-leases-and-payments-aligned.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Paper trails tied federal oil contracts directly to personal cash deposits."},{"title":"Doheny’s Cash Delivery: The $100,000 That Unraveled Teapot Dome","slug":"doheny-s-cash-delivery-the-100-000-that-unraveled-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/doheny-s-cash-delivery-the-100-000-that-unraveled-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A suitcase holding $100,000 in cash helped topple a Cabinet career."},{"title":"Elk Hills Oil Field: The Massive Reserve at the Center of Teapot Dome","slug":"elk-hills-oil-field-the-massive-reserve-at-the-center-of-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/elk-hills-oil-field-the-massive-reserve-at-the-center-of-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One of America’s largest oil fields was leased in secret without public competition."},{"title":"Energy Security Was Compromised by Teapot Dome’s Secret Deals","slug":"energy-security-was-compromised-by-teapot-dome-s-secret-deals","url":"/categories/embarrassing-historical-moments/teapot-dome/energy-security-was-compromised-by-teapot-dome-s-secret-deals.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Oil meant to fuel future wars was quietly pledged to private companies."},{"title":"Fall’s Prison Sentence Marked a Historic Breach in Executive Immunity","slug":"fall-s-prison-sentence-marked-a-historic-breach-in-executive-immunity","url":"/categories/embarrassing-historical-moments/teapot-dome/fall-s-prison-sentence-marked-a-historic-breach-in-executive-immunity.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"For the first time, a Cabinet member served time behind bars."},{"title":"Fall’s Resignation: The First Crack in the Teapot Dome Scandal","slug":"fall-s-resignation-the-first-crack-in-the-teapot-dome-scandal","url":"/categories/embarrassing-historical-moments/teapot-dome/fall-s-resignation-the-first-crack-in-the-teapot-dome-scandal.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A Cabinet secretary resigned before the full oil corruption was public."},{"title":"Government Secrecy in Teapot Dome Hid Millions in Strategic Oil Leases","slug":"government-secrecy-in-teapot-dome-hid-millions-in-strategic-oil-leases","url":"/categories/embarrassing-historical-moments/teapot-dome/government-secrecy-in-teapot-dome-hid-millions-in-strategic-oil-leases.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Millions of barrels of naval oil were leased before Congress even knew."},{"title":"Hidden Financial Records Finally Linked Oil Leases to Personal Wealth","slug":"hidden-financial-records-finally-linked-oil-leases-to-personal-wealth","url":"/categories/embarrassing-historical-moments/teapot-dome/hidden-financial-records-finally-linked-oil-leases-to-personal-wealth.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Bank documents exposed how federal oil turned into private fortune."},{"title":"How Senate Investigators Exposed the Teapot Dome Cover-Up","slug":"how-senate-investigators-exposed-the-teapot-dome-cover-up","url":"/categories/embarrassing-historical-moments/teapot-dome/how-senate-investigators-exposed-the-teapot-dome-cover-up.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A routine Senate inquiry accidentally uncovered millions in hidden oil corruption."},{"title":"How Teapot Dome Oil Reserves Were Leased Without a Single Public Bid","slug":"how-teapot-dome-oil-reserves-were-leased-without-a-single-public-bid","url":"/categories/embarrassing-historical-moments/teapot-dome/how-teapot-dome-oil-reserves-were-leased-without-a-single-public-bid.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"America’s naval oil reserves were handed over in secret without any public bidding process."},{"title":"Investigative Journalism Amplified the Teapot Dome Outrage","slug":"investigative-journalism-amplified-the-teapot-dome-outrage","url":"/categories/embarrassing-historical-moments/teapot-dome/investigative-journalism-amplified-the-teapot-dome-outrage.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Newspaper headlines turned a quiet oil lease into a national uproar."},{"title":"Investigative Subpoenas Forced Oil Executives Into Public Testimony","slug":"investigative-subpoenas-forced-oil-executives-into-public-testimony","url":"/categories/embarrassing-historical-moments/teapot-dome/investigative-subpoenas-forced-oil-executives-into-public-testimony.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Oil magnates were compelled to explain secret federal deals under oath."},{"title":"Judicial Precedent: How Teapot Dome Strengthened Contract Law","slug":"judicial-precedent-how-teapot-dome-strengthened-contract-law","url":"/categories/embarrassing-historical-moments/teapot-dome/judicial-precedent-how-teapot-dome-strengthened-contract-law.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Corrupt oil contracts were erased by Supreme Court authority."},{"title":"Kickbacks Disguised as Loans Fueled the Teapot Dome Scandal","slug":"kickbacks-disguised-as-loans-fueled-the-teapot-dome-scandal","url":"/categories/embarrassing-historical-moments/teapot-dome/kickbacks-disguised-as-loans-fueled-the-teapot-dome-scandal.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"What looked like private loans were actually payoffs for national oil."},{"title":"Legal Voiding of Oil Leases Preserved Federal Control Over Millions of Barrels","slug":"legal-voiding-of-oil-leases-preserved-federal-control-over-millions-of-barrels","url":"/categories/embarrassing-historical-moments/teapot-dome/legal-voiding-of-oil-leases-preserved-federal-control-over-millions-of-barrels.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The Supreme Court erased corrupt contracts tied to vast oil reserves."},{"title":"Legislative Persistence: How a Two-Year Inquiry Broke Teapot Dome Open","slug":"legislative-persistence-how-a-two-year-inquiry-broke-teapot-dome-open","url":"/categories/embarrassing-historical-moments/teapot-dome/legislative-persistence-how-a-two-year-inquiry-broke-teapot-dome-open.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A Senate investigation lasting nearly two years dismantled a secret oil empire."},{"title":"Mass Public Outrage Turned Teapot Dome into a National Obsession","slug":"mass-public-outrage-turned-teapot-dome-into-a-national-obsession","url":"/categories/embarrassing-historical-moments/teapot-dome/mass-public-outrage-turned-teapot-dome-into-a-national-obsession.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An oil field in Wyoming dominated headlines across the entire country."},{"title":"Massive Oil Wealth Concentrated in a Single Wyoming Field","slug":"massive-oil-wealth-concentrated-in-a-single-wyoming-field","url":"/categories/embarrassing-historical-moments/teapot-dome/massive-oil-wealth-concentrated-in-a-single-wyoming-field.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A remote Wyoming rock formation hid petroleum worth millions."},{"title":"Naval Strategy at Risk: The Military Stakes of Teapot Dome","slug":"naval-strategy-at-risk-the-military-stakes-of-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/naval-strategy-at-risk-the-military-stakes-of-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"America’s future warships depended on oil secretly traded for cash."},{"title":"Oil, Influence, and Immunity: Why Teapot Dome Shocked the 1920s","slug":"oil-influence-and-immunity-why-teapot-dome-shocked-the-1920s","url":"/categories/embarrassing-historical-moments/teapot-dome/oil-influence-and-immunity-why-teapot-dome-shocked-the-1920s.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Corporate oil giants secretly shaped federal policy at the highest level."},{"title":"Oversight Reforms Followed the Teapot Dome Embarrassment","slug":"oversight-reforms-followed-the-teapot-dome-embarrassment","url":"/categories/embarrassing-historical-moments/teapot-dome/oversight-reforms-followed-the-teapot-dome-embarrassment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A scandal over oil reshaped federal oversight for generations."},{"title":"Public Resource, Private Gain: The Core Paradox of Teapot Dome","slug":"public-resource-private-gain-the-core-paradox-of-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/public-resource-private-gain-the-core-paradox-of-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Oil reserved for warships became a private windfall overnight."},{"title":"Public Trust Collapsed as Teapot Dome Exposed Cabinet-Level Corruption","slug":"public-trust-collapsed-as-teapot-dome-exposed-cabinet-level-corruption","url":"/categories/embarrassing-historical-moments/teapot-dome/public-trust-collapsed-as-teapot-dome-exposed-cabinet-level-corruption.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An oil lease scandal shattered confidence in the entire executive branch."},{"title":"Questions of Presidential Knowledge Haunted the Teapot Dome Era","slug":"questions-of-presidential-knowledge-haunted-the-teapot-dome-era","url":"/categories/embarrassing-historical-moments/teapot-dome/questions-of-presidential-knowledge-haunted-the-teapot-dome-era.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A president died before Americans learned how much he knew."},{"title":"Ranch Improvements Funded by Oil Money Became Visible Evidence","slug":"ranch-improvements-funded-by-oil-money-became-visible-evidence","url":"/categories/embarrassing-historical-moments/teapot-dome/ranch-improvements-funded-by-oil-money-became-visible-evidence.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A New Mexico ranch upgrade exposed a Cabinet secretary’s secret fortune."},{"title":"Record-Breaking Bribery: The Unprecedented Conviction of Albert B. Fall","slug":"record-breaking-bribery-the-unprecedented-conviction-of-albert-b-fall","url":"/categories/embarrassing-historical-moments/teapot-dome/record-breaking-bribery-the-unprecedented-conviction-of-albert-b-fall.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"No Cabinet member had ever gone to prison before this oil scandal."},{"title":"Scale of Strategic Oil at Teapot Dome Redefined Political Scandal","slug":"scale-of-strategic-oil-at-teapot-dome-redefined-political-scandal","url":"/categories/embarrassing-historical-moments/teapot-dome/scale-of-strategic-oil-at-teapot-dome-redefined-political-scandal.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An oil field capable of fueling fleets became America’s corruption benchmark."},{"title":"Strategic Petroleum Before the Strategic Petroleum Reserve","slug":"strategic-petroleum-before-the-strategic-petroleum-reserve","url":"/categories/embarrassing-historical-moments/teapot-dome/strategic-petroleum-before-the-strategic-petroleum-reserve.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Decades before modern reserves, naval oil was already guarded as national insurance."},{"title":"Teapot Dome and the Naval Oil Reserves That Fueled a Scandal","slug":"teapot-dome-and-the-naval-oil-reserves-that-fueled-a-scandal","url":"/categories/embarrassing-historical-moments/teapot-dome/teapot-dome-and-the-naval-oil-reserves-that-fueled-a-scandal.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Oil meant for wartime survival was secretly turned into private profit."},{"title":"Teapot Dome Became the Benchmark for American Political Corruption","slug":"teapot-dome-became-the-benchmark-for-american-political-corruption","url":"/categories/embarrassing-historical-moments/teapot-dome/teapot-dome-became-the-benchmark-for-american-political-corruption.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"For decades, every U.S. scandal was measured against a single oil field in Wyoming."},{"title":"Teapot Dome Exposed the Fragility of Early 20th Century Federal Oversight","slug":"teapot-dome-exposed-the-fragility-of-early-20th-century-federal-oversight","url":"/categories/embarrassing-historical-moments/teapot-dome/teapot-dome-exposed-the-fragility-of-early-20th-century-federal-oversight.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single oil lease scandal revealed how easily federal safeguards could collapse."},{"title":"Teapot Dome: The Secret Oil Lease That Sent a U.S. Cabinet Member to Prison","slug":"teapot-dome-the-secret-oil-lease-that-sent-a-u-s-cabinet-member-to-prison","url":"/categories/embarrassing-historical-moments/teapot-dome/teapot-dome-the-secret-oil-lease-that-sent-a-u-s-cabinet-member-to-prison.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A U.S. Cabinet secretary took a bribe in cash so large it required livestock and suitcases to move."},{"title":"Teapot Dome’s Supreme Court Ruling Reversed Secret Oil Contracts","slug":"teapot-dome-s-supreme-court-ruling-reversed-secret-oil-contracts","url":"/categories/embarrassing-historical-moments/teapot-dome/teapot-dome-s-supreme-court-ruling-reversed-secret-oil-contracts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The U.S. Supreme Court voided multi-million-dollar oil leases obtained through corruption."},{"title":"The $400,000 “Loan” That Triggered the Teapot Dome Investigation","slug":"the-400-000-loan-that-triggered-the-teapot-dome-investigation","url":"/categories/embarrassing-historical-moments/teapot-dome/the-400-000-loan-that-triggered-the-teapot-dome-investigation.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A so-called personal loan worth millions today exposed one of America’s biggest political scandals."},{"title":"The Teapot Dome Bribes Included Livestock and Direct Cash Deliveries","slug":"the-teapot-dome-bribes-included-livestock-and-direct-cash-deliveries","url":"/categories/embarrassing-historical-moments/teapot-dome/the-teapot-dome-bribes-included-livestock-and-direct-cash-deliveries.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One of America’s biggest political bribes involved cattle and bags of cash."},{"title":"Unsealed Testimony Revealed the Financial Web of Teapot Dome","slug":"unsealed-testimony-revealed-the-financial-web-of-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/unsealed-testimony-revealed-the-financial-web-of-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Sworn testimony exposed a money trail tied to national oil."},{"title":"Vice Presidential Silence During Teapot Dome Raised National Suspicion","slug":"vice-presidential-silence-during-teapot-dome-raised-national-suspicion","url":"/categories/embarrassing-historical-moments/teapot-dome/vice-presidential-silence-during-teapot-dome-raised-national-suspicion.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The vice president inherited a scandal already burning at full force."},{"title":"Why Teapot Dome Tarnished President Harding’s Legacy","slug":"why-teapot-dome-tarnished-president-harding-s-legacy","url":"/categories/embarrassing-historical-moments/teapot-dome/why-teapot-dome-tarnished-president-harding-s-legacy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A president’s reputation collapsed because of oil deals he did not personally sign."},{"title":"Wyoming’s Quiet Landscape Became a National Symbol of Corruption","slug":"wyoming-s-quiet-landscape-became-a-national-symbol-of-corruption","url":"/categories/embarrassing-historical-moments/teapot-dome/wyoming-s-quiet-landscape-became-a-national-symbol-of-corruption.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A remote Wyoming oil field turned into a metaphor for political disgrace."},{"title":"Xeric Wyoming Terrain Masked Oil Critical to National Defense","slug":"xeric-wyoming-terrain-masked-oil-critical-to-national-defense","url":"/categories/embarrassing-historical-moments/teapot-dome/xeric-wyoming-terrain-masked-oil-critical-to-national-defense.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A barren Wyoming landscape concealed oil capable of fueling war fleets."},{"title":"Year-Long Appeals Delayed Final Accountability in Teapot Dome","slug":"year-long-appeals-delayed-final-accountability-in-teapot-dome","url":"/categories/embarrassing-historical-moments/teapot-dome/year-long-appeals-delayed-final-accountability-in-teapot-dome.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even after conviction, legal battles over oil corruption dragged on."},{"title":"Zero Competitive Bids Secured Some of America’s Most Valuable Oil","slug":"zero-competitive-bids-secured-some-of-america-s-most-valuable-oil","url":"/categories/embarrassing-historical-moments/teapot-dome/zero-competitive-bids-secured-some-of-america-s-most-valuable-oil.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Not a single public bid was required for oil worth millions."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brocard Problem</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Brocard Problem</h1>
+  <p>Explore all facts in "Brocard Problem".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Brocard Problem</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Asymptotic Gap Between n! Growth and Square Probability","slug":"asymptotic-gap-between-n-growth-and-square-probability","url":"/categories/number-theory-mysteries/brocard-problem/asymptotic-gap-between-n-growth-and-square-probability.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Factorials explode faster than probability can keep up."},{"title":"Brocard Problem: 45360 Equals 7 Factorial Plus 1","slug":"brocard-problem-45360-equals-7-factorial-plus-1","url":"/categories/number-theory-mysteries/brocard-problem/brocard-problem-45360-equals-7-factorial-plus-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One five-digit number hides inside a factorial so perfectly it feels staged."},{"title":"Catalan Equation Contrast Highlights Brocard Isolation","slug":"catalan-equation-contrast-highlights-brocard-isolation","url":"/categories/number-theory-mysteries/brocard-problem/catalan-equation-contrast-highlights-brocard-isolation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Another famous equation found one solution; Brocard may have three."},{"title":"Chinese Remainder Theorem Amplifies Exclusion Power","slug":"chinese-remainder-theorem-amplifies-exclusion-power","url":"/categories/number-theory-mysteries/brocard-problem/chinese-remainder-theorem-amplifies-exclusion-power.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Multiple small remainders can combine to silence astronomical integers."},{"title":"Density Threshold Collapse Beyond 7 in Brocard Equation","slug":"density-threshold-collapse-beyond-7-in-brocard-equation","url":"/categories/number-theory-mysteries/brocard-problem/density-threshold-collapse-beyond-7-in-brocard-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After seven, viable solutions appear to mathematically evaporate."},{"title":"Diophantine Rigidity in n! Plus 1 Square Equation","slug":"diophantine-rigidity-in-n-plus-1-square-equation","url":"/categories/number-theory-mysteries/brocard-problem/diophantine-rigidity-in-n-plus-1-square-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An equation using only multiplication and addition behaves like a locked vault."},{"title":"Exponent Layering Effect Intensifies Parity Imbalance","slug":"exponent-layering-effect-intensifies-parity-imbalance","url":"/categories/number-theory-mysteries/brocard-problem/exponent-layering-effect-intensifies-parity-imbalance.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each new factorial layer multiplies symmetry demands instantly."},{"title":"Exponential Digit Surge in 10! Plus 1 Square Testing","slug":"exponential-digit-surge-in-10-plus-1-square-testing","url":"/categories/number-theory-mysteries/brocard-problem/exponential-digit-surge-in-10-plus-1-square-testing.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"By 10 factorial, the numbers already dwarf classroom intuition."},{"title":"Factorial Digit Explosion Surpasses Astronomical Counts","slug":"factorial-digit-explosion-surpasses-astronomical-counts","url":"/categories/number-theory-mysteries/brocard-problem/factorial-digit-explosion-surpasses-astronomical-counts.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"By modest n, factorial digits exceed planetary scale comparisons."},{"title":"Factorial Prime Saturation Leaves No Room for Squares","slug":"factorial-prime-saturation-leaves-no-room-for-squares","url":"/categories/number-theory-mysteries/brocard-problem/factorial-prime-saturation-leaves-no-room-for-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Factorials absorb every small prime, then exile them instantly."},{"title":"Finite Solution Hypothesis Gains Empirical Momentum","slug":"finite-solution-hypothesis-gains-empirical-momentum","url":"/categories/number-theory-mysteries/brocard-problem/finite-solution-hypothesis-gains-empirical-momentum.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Billions of tests whisper the same conclusion."},{"title":"Galois Theory Offers No Easy Escape for n! Plus 1 Squares","slug":"galois-theory-offers-no-easy-escape-for-n-plus-1-squares","url":"/categories/number-theory-mysteries/brocard-problem/galois-theory-offers-no-easy-escape-for-n-plus-1-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even the mathematics that proved Fermat cannot tame this factorial."},{"title":"Hilbert Era Persistence of Brocard Conjecture","slug":"hilbert-era-persistence-of-brocard-conjecture","url":"/categories/number-theory-mysteries/brocard-problem/hilbert-era-persistence-of-brocard-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A puzzle from the 19th century still resists 21st century mathematics."},{"title":"Irrational Growth Barrier Blocks Further Brocard Solutions","slug":"irrational-growth-barrier-blocks-further-brocard-solutions","url":"/categories/number-theory-mysteries/brocard-problem/irrational-growth-barrier-blocks-further-brocard-solutions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Square roots of factorials accelerate beyond structural balance."},{"title":"Jacobi Symbol Constraints Narrow n! Plus 1 Square Candidates","slug":"jacobi-symbol-constraints-narrow-n-plus-1-square-candidates","url":"/categories/number-theory-mysteries/brocard-problem/jacobi-symbol-constraints-narrow-n-plus-1-square-candidates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single symbol from 1837 can erase vast numerical landscapes instantly."},{"title":"Kinetic Scale Jump from 5! to 7! Hides a 4920 Leap","slug":"kinetic-scale-jump-from-5-to-7-hides-a-4920-leap","url":"/categories/number-theory-mysteries/brocard-problem/kinetic-scale-jump-from-5-to-7-hides-a-4920-leap.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Between two Brocard solutions, the factorial jumps by 4920 in one step."},{"title":"Legendre Exponent Formula Exposes Square Imbalance","slug":"legendre-exponent-formula-exposes-square-imbalance","url":"/categories/number-theory-mysteries/brocard-problem/legendre-exponent-formula-exposes-square-imbalance.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single formula predicts why most candidates fail instantly."},{"title":"Logarithmic Growth Analysis Predicts Structural Incompatibility","slug":"logarithmic-growth-analysis-predicts-structural-incompatibility","url":"/categories/number-theory-mysteries/brocard-problem/logarithmic-growth-analysis-predicts-structural-incompatibility.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple logarithm hints the miracle cannot scale."},{"title":"Magnitude Disparity Between Consecutive Factorials Escalates Rapidly","slug":"magnitude-disparity-between-consecutive-factorials-escalates-rapidly","url":"/categories/number-theory-mysteries/brocard-problem/magnitude-disparity-between-consecutive-factorials-escalates-rapidly.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One step multiplies the entire numerical universe instantly."},{"title":"Minimal Solution Cluster Suggests Structural Ceiling","slug":"minimal-solution-cluster-suggests-structural-ceiling","url":"/categories/number-theory-mysteries/brocard-problem/minimal-solution-cluster-suggests-structural-ceiling.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Three small integers may define the entire universe of answers."},{"title":"Modular Arithmetic Filters Eliminate Billions of Candidates","slug":"modular-arithmetic-filters-eliminate-billions-of-candidates","url":"/categories/number-theory-mysteries/brocard-problem/modular-arithmetic-filters-eliminate-billions-of-candidates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Simple remainders can discard astronomical numbers instantly."},{"title":"Modular Cascade Effect Eliminates Successive n Values","slug":"modular-cascade-effect-eliminates-successive-n-values","url":"/categories/number-theory-mysteries/brocard-problem/modular-cascade-effect-eliminates-successive-n-values.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each added modulus wipes out entire numerical corridors."},{"title":"Multiplicative Saturation Leaves Additive Isolation","slug":"multiplicative-saturation-leaves-additive-isolation","url":"/categories/number-theory-mysteries/brocard-problem/multiplicative-saturation-leaves-additive-isolation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Factorials absorb every divisor, then addition isolates them completely."},{"title":"Near-Miss Values Cluster Around 6! Plus 1 Failure","slug":"near-miss-values-cluster-around-6-plus-1-failure","url":"/categories/number-theory-mysteries/brocard-problem/near-miss-values-cluster-around-6-plus-1-failure.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Between two perfect hits lies an immediate collapse at 721."},{"title":"Nonlinear Growth of Factorials Overwhelms Square Spacing","slug":"nonlinear-growth-of-factorials-overwhelms-square-spacing","url":"/categories/number-theory-mysteries/brocard-problem/nonlinear-growth-of-factorials-overwhelms-square-spacing.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Square gaps widen gently while factorials detonate exponentially."},{"title":"Number Field Methods Have Yet to Break Brocard Barrier","slug":"number-field-methods-have-yet-to-break-brocard-barrier","url":"/categories/number-theory-mysteries/brocard-problem/number-field-methods-have-yet-to-break-brocard-barrier.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Advanced algebraic machinery still cannot force a final answer."},{"title":"Odd Prime Exponent Paradox Blocks Most n! Plus 1 Squares","slug":"odd-prime-exponent-paradox-blocks-most-n-plus-1-squares","url":"/categories/number-theory-mysteries/brocard-problem/odd-prime-exponent-paradox-blocks-most-n-plus-1-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One mismatched prime exponent can destroy a perfect square instantly."},{"title":"Optimal Square Gap Growth Leaves Factorials Behind","slug":"optimal-square-gap-growth-leaves-factorials-behind","url":"/categories/number-theory-mysteries/brocard-problem/optimal-square-gap-growth-leaves-factorials-behind.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Squares drift apart steadily while factorials leap beyond reach."},{"title":"Oscillating Prime Thresholds Disrupt Square Alignment","slug":"oscillating-prime-thresholds-disrupt-square-alignment","url":"/categories/number-theory-mysteries/brocard-problem/oscillating-prime-thresholds-disrupt-square-alignment.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each new prime shifts the alignment target abruptly."},{"title":"Parity Constraint Amplification With Increasing Prime Count","slug":"parity-constraint-amplification-with-increasing-prime-count","url":"/categories/number-theory-mysteries/brocard-problem/parity-constraint-amplification-with-increasing-prime-count.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every new prime doubles the symmetry pressure instantly."},{"title":"Parity Preservation Fails Beyond 7 in Factorial Squares","slug":"parity-preservation-fails-beyond-7-in-factorial-squares","url":"/categories/number-theory-mysteries/brocard-problem/parity-preservation-fails-beyond-7-in-factorial-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After seven, evenness collapses under combinatorial weight."},{"title":"Prime Density Collapse Inside Factorial Growth","slug":"prime-density-collapse-inside-factorial-growth","url":"/categories/number-theory-mysteries/brocard-problem/prime-density-collapse-inside-factorial-growth.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Factorials swallow every prime below n in one multiplication storm."},{"title":"Quadratic Explosion in n! Plus 1 Diophantine Searches","slug":"quadratic-explosion-in-n-plus-1-diophantine-searches","url":"/categories/number-theory-mysteries/brocard-problem/quadratic-explosion-in-n-plus-1-diophantine-searches.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Computers have tested millions of factorials and found only three squares."},{"title":"Quadratic Residue Collapse Under Large Factorial Moduli","slug":"quadratic-residue-collapse-under-large-factorial-moduli","url":"/categories/number-theory-mysteries/brocard-problem/quadratic-residue-collapse-under-large-factorial-moduli.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Residue compatibility shrinks as moduli multiply."},{"title":"Quantum-Like Discreteness of Brocard Solutions","slug":"quantum-like-discreteness-of-brocard-solutions","url":"/categories/number-theory-mysteries/brocard-problem/quantum-like-discreteness-of-brocard-solutions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Three isolated integers behave like energy levels in arithmetic space."},{"title":"Rarity Threshold Suggests Finite Brocard Solutions","slug":"rarity-threshold-suggests-finite-brocard-solutions","url":"/categories/number-theory-mysteries/brocard-problem/rarity-threshold-suggests-finite-brocard-solutions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After 7, the arithmetic landscape turns silent."},{"title":"Square Residue Patterns Modulo 8 Disqualify Most Candidates","slug":"square-residue-patterns-modulo-8-disqualify-most-candidates","url":"/categories/number-theory-mysteries/brocard-problem/square-residue-patterns-modulo-8-disqualify-most-candidates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Eight simple residues can eliminate colossal numbers instantly."},{"title":"Stirling Approximation Reveals Vanishing Square Likelihood","slug":"stirling-approximation-reveals-vanishing-square-likelihood","url":"/categories/number-theory-mysteries/brocard-problem/stirling-approximation-reveals-vanishing-square-likelihood.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A logarithmic formula predicts why the miracle stops at seven."},{"title":"Systematic Parity Collapse Blocks High n Solutions","slug":"systematic-parity-collapse-blocks-high-n-solutions","url":"/categories/number-theory-mysteries/brocard-problem/systematic-parity-collapse-blocks-high-n-solutions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even one misplaced parity destroys astronomical symmetry."},{"title":"Ternary Prime Distribution Intensifies Brocard Improbability","slug":"ternary-prime-distribution-intensifies-brocard-improbability","url":"/categories/number-theory-mysteries/brocard-problem/ternary-prime-distribution-intensifies-brocard-improbability.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime clustering below n quietly sabotages square formation above it."},{"title":"Theoretical Upper Bounds Imply Astronomical Next Candidate","slug":"theoretical-upper-bounds-imply-astronomical-next-candidate","url":"/categories/number-theory-mysteries/brocard-problem/theoretical-upper-bounds-imply-astronomical-next-candidate.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"If a fourth solution exists, it may dwarf global data storage."},{"title":"Unsolved 1885 Brocard Conjecture Still Resists Proof","slug":"unsolved-1885-brocard-conjecture-still-resists-proof","url":"/categories/number-theory-mysteries/brocard-problem/unsolved-1885-brocard-conjecture-still-resists-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A problem older than radio technology still lacks a final answer."},{"title":"Vanishing Density of Perfect Squares Meets Factorial Expansion","slug":"vanishing-density-of-perfect-squares-meets-factorial-expansion","url":"/categories/number-theory-mysteries/brocard-problem/vanishing-density-of-perfect-squares-meets-factorial-expansion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Among enormous numbers, squares become statistically invisible."},{"title":"Weak Convergence Heuristics Predict Finite Brocard Set","slug":"weak-convergence-heuristics-predict-finite-brocard-set","url":"/categories/number-theory-mysteries/brocard-problem/weak-convergence-heuristics-predict-finite-brocard-set.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Probability models quietly predict the miracle will not repeat."},{"title":"Wilson Theorem Guarantees Divisibility Flip at Every Prime","slug":"wilson-theorem-guarantees-divisibility-flip-at-every-prime","url":"/categories/number-theory-mysteries/brocard-problem/wilson-theorem-guarantees-divisibility-flip-at-every-prime.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each prime enforces a sudden arithmetic reversal."},{"title":"Xerographic Growth Rate of Factorials Defies Square Density","slug":"xerographic-growth-rate-of-factorials-defies-square-density","url":"/categories/number-theory-mysteries/brocard-problem/xerographic-growth-rate-of-factorials-defies-square-density.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Factorials outrun squares so violently that matches almost never occur."},{"title":"Yoked Relationship Between Wilson's Theorem and n! Plus 1 Squares","slug":"yoked-relationship-between-wilson-s-theorem-and-n-plus-1-squares","url":"/categories/number-theory-mysteries/brocard-problem/yoked-relationship-between-wilson-s-theorem-and-n-plus-1-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every prime secretly forces factorials to sit one step from divisibility."},{"title":"Zealous Search Bounds Push Brocard Solutions Beyond 10^9","slug":"zealous-search-bounds-push-brocard-solutions-beyond-10-9","url":"/categories/number-theory-mysteries/brocard-problem/zealous-search-bounds-push-brocard-solutions-beyond-10-9.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematicians have hunted past a billion without finding a fourth case."},{"title":"Zero Density Argument Strengthens Scarcity Claim","slug":"zero-density-argument-strengthens-scarcity-claim","url":"/categories/number-theory-mysteries/brocard-problem/zero-density-argument-strengthens-scarcity-claim.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Among infinite integers, viable candidates may form a zero-density set."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

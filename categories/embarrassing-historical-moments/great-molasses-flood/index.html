@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Great Molasses Flood</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Great Molasses Flood</h1>
+  <p>Explore all facts in "Great Molasses Flood".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Great Molasses Flood</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Six-Year Court Battle Followed the Great Molasses Flood Disaster","slug":"a-six-year-court-battle-followed-the-great-molasses-flood-disaster","url":"/categories/embarrassing-historical-moments/great-molasses-flood/a-six-year-court-battle-followed-the-great-molasses-flood-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sugar spill triggered one of America’s first major class-action cases."},{"title":"After the Molasses Flood, Boston’s Court Case Became a Blueprint for Corporate Liability","slug":"after-the-molasses-flood-boston-s-court-case-became-a-blueprint-for-corporate-liability","url":"/categories/embarrassing-historical-moments/great-molasses-flood/after-the-molasses-flood-boston-s-court-case-became-a-blueprint-for-corporate-liability.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A river of sugar rewrote how corporations were held responsible."},{"title":"Alcohol Tank Failure Turned Boston Streets Into a Deadly Molasses River","slug":"alcohol-tank-failure-turned-boston-streets-into-a-deadly-molasses-river","url":"/categories/embarrassing-historical-moments/great-molasses-flood/alcohol-tank-failure-turned-boston-streets-into-a-deadly-molasses-river.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A storage tank explosion once drowned a city block in sugar syrup."},{"title":"Basements Filled Rapidly as Molasses Poured Through Ground-Level Openings","slug":"basements-filled-rapidly-as-molasses-poured-through-ground-level-openings","url":"/categories/embarrassing-historical-moments/great-molasses-flood/basements-filled-rapidly-as-molasses-poured-through-ground-level-openings.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Cellars flooded first as sugar surged indoors."},{"title":"Boston Harbor Turned Brown for Months After the 1919 Molasses Disaster","slug":"boston-harbor-turned-brown-for-months-after-the-1919-molasses-disaster","url":"/categories/embarrassing-historical-moments/great-molasses-flood/boston-harbor-turned-brown-for-months-after-the-1919-molasses-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An industrial accident tinted Boston Harbor the color of caramel."},{"title":"Boston Residents Reported Hearing the Molasses Tank Groan Before It Burst","slug":"boston-residents-reported-hearing-the-molasses-tank-groan-before-it-burst","url":"/categories/embarrassing-historical-moments/great-molasses-flood/boston-residents-reported-hearing-the-molasses-tank-groan-before-it-burst.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Neighbors heard the tank groaning like a dying animal."},{"title":"Boston’s Great Molasses Flood Created a 15-Foot-High Wave That Moved Buildings","slug":"boston-s-great-molasses-flood-created-a-15-foot-high-wave-that-moved-buildings","url":"/categories/embarrassing-historical-moments/great-molasses-flood/boston-s-great-molasses-flood-created-a-15-foot-high-wave-that-moved-buildings.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A wall of molasses taller than a giraffe tore through Boston at 35 miles per hour."},{"title":"Cleanup Crews Used Seawater to Wash Molasses From Boston Streets","slug":"cleanup-crews-used-seawater-to-wash-molasses-from-boston-streets","url":"/categories/embarrassing-historical-moments/great-molasses-flood/cleanup-crews-used-seawater-to-wash-molasses-from-boston-streets.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fireboats blasted city streets to dissolve a river of sugar."},{"title":"Cleanup Workers Reported Streets Stayed Sticky for Months After the Flood","slug":"cleanup-workers-reported-streets-stayed-sticky-for-months-after-the-flood","url":"/categories/embarrassing-historical-moments/great-molasses-flood/cleanup-workers-reported-streets-stayed-sticky-for-months-after-the-flood.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Boston sidewalks clung to shoes long after the wave receded."},{"title":"Court Testimony Revealed the Tank Had Never Been Properly Pressure-Tested","slug":"court-testimony-revealed-the-tank-had-never-been-properly-pressure-tested","url":"/categories/embarrassing-historical-moments/great-molasses-flood/court-testimony-revealed-the-tank-had-never-been-properly-pressure-tested.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A 50-foot tank went into service without full stress testing."},{"title":"Debris From the Molasses Flood Acted Like Shrapnel in Boston’s North End","slug":"debris-from-the-molasses-flood-acted-like-shrapnel-in-boston-s-north-end","url":"/categories/embarrassing-historical-moments/great-molasses-flood/debris-from-the-molasses-flood-acted-like-shrapnel-in-boston-s-north-end.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A syrup wave hurled timber and steel like battlefield shrapnel."},{"title":"Emergency Response Was Hampered Because Horses and Wagons Became Immobilized","slug":"emergency-response-was-hampered-because-horses-and-wagons-became-immobilized","url":"/categories/embarrassing-historical-moments/great-molasses-flood/emergency-response-was-hampered-because-horses-and-wagons-became-immobilized.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Rescue teams were trapped by the very streets they tried to cross."},{"title":"Engineers Found the Molasses Tank Steel Was Dangerously Thin","slug":"engineers-found-the-molasses-tank-steel-was-dangerously-thin","url":"/categories/embarrassing-historical-moments/great-molasses-flood/engineers-found-the-molasses-tank-steel-was-dangerously-thin.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The tank walls were barely thick enough to hold water, not pressure."},{"title":"Fermentation Odors Were Reportedly Noticeable Before the Molasses Tank Burst","slug":"fermentation-odors-were-reportedly-noticeable-before-the-molasses-tank-burst","url":"/categories/embarrassing-historical-moments/great-molasses-flood/fermentation-odors-were-reportedly-noticeable-before-the-molasses-tank-burst.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Residents smelled fermentation before catastrophe struck."},{"title":"Fermenting Molasses Built Explosive Pressure Inside Boston’s 1919 Tank","slug":"fermenting-molasses-built-explosive-pressure-inside-boston-s-1919-tank","url":"/categories/embarrassing-historical-moments/great-molasses-flood/fermenting-molasses-built-explosive-pressure-inside-boston-s-1919-tank.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Sugar fermentation turned a silent storage tank into an accidental bomb."},{"title":"Gas From Fermenting Molasses Increased Internal Tank Pressure Before the Collapse","slug":"gas-from-fermenting-molasses-increased-internal-tank-pressure-before-the-collapse","url":"/categories/embarrassing-historical-moments/great-molasses-flood/gas-from-fermenting-molasses-increased-internal-tank-pressure-before-the-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Invisible fermentation gases silently pushed a steel giant past its limits."},{"title":"Human Bodies Were Thrown Through the Air by the Molasses Wave","slug":"human-bodies-were-thrown-through-the-air-by-the-molasses-wave","url":"/categories/embarrassing-historical-moments/great-molasses-flood/human-bodies-were-thrown-through-the-air-by-the-molasses-wave.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"People were lifted off their feet by a surge of syrup."},{"title":"Hydrostatic Force at the Tank Base Increased With Every Additional Foot of Molasses","slug":"hydrostatic-force-at-the-tank-base-increased-with-every-additional-foot-of-molasses","url":"/categories/embarrassing-historical-moments/great-molasses-flood/hydrostatic-force-at-the-tank-base-increased-with-every-additional-foot-of-molasses.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Each added foot of syrup multiplied crushing outward pressure."},{"title":"Industrial Alcohol Production Demand Drove Rapid Construction of the Molasses Tank","slug":"industrial-alcohol-production-demand-drove-rapid-construction-of-the-molasses-tank","url":"/categories/embarrassing-historical-moments/great-molasses-flood/industrial-alcohol-production-demand-drove-rapid-construction-of-the-molasses-tank.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"World War I demand rushed a tank that could not withstand its own contents."},{"title":"Industrial Expansion After World War I Left Safety Oversight Lagging Behind","slug":"industrial-expansion-after-world-war-i-left-safety-oversight-lagging-behind","url":"/categories/embarrassing-historical-moments/great-molasses-flood/industrial-expansion-after-world-war-i-left-safety-oversight-lagging-behind.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Postwar industrial speed outran structural safety."},{"title":"January 15, 1919 Became One of Boston’s Strangest Disaster Dates","slug":"january-15-1919-became-one-of-boston-s-strangest-disaster-dates","url":"/categories/embarrassing-historical-moments/great-molasses-flood/january-15-1919-became-one-of-boston-s-strangest-disaster-dates.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A calm winter afternoon turned lethal in under sixty seconds."},{"title":"January Heat Fluctuations Helped Trigger the 1919 Molasses Tank Collapse","slug":"january-heat-fluctuations-helped-trigger-the-1919-molasses-tank-collapse","url":"/categories/embarrassing-historical-moments/great-molasses-flood/january-heat-fluctuations-helped-trigger-the-1919-molasses-tank-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A winter warm spell helped a frozen city drown in syrup."},{"title":"Kilograms of Molasses Per Square Foot Pushed Boston Buildings to Collapse","slug":"kilograms-of-molasses-per-square-foot-pushed-boston-buildings-to-collapse","url":"/categories/embarrassing-historical-moments/great-molasses-flood/kilograms-of-molasses-per-square-foot-pushed-boston-buildings-to-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Each square foot of street absorbed crushing sugar weight."},{"title":"Legal Investigators Reconstructed the Tank Failure Using Early Forensic Engineering","slug":"legal-investigators-reconstructed-the-tank-failure-using-early-forensic-engineering","url":"/categories/embarrassing-historical-moments/great-molasses-flood/legal-investigators-reconstructed-the-tank-failure-using-early-forensic-engineering.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sugar spill pioneered courtroom engineering science."},{"title":"Locomotive Tracks Near the Tank Were Twisted by Molasses Momentum","slug":"locomotive-tracks-near-the-tank-were-twisted-by-molasses-momentum","url":"/categories/embarrassing-historical-moments/great-molasses-flood/locomotive-tracks-near-the-tank-were-twisted-by-molasses-momentum.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thick syrup shoved rail lines off alignment."},{"title":"Metal Rivets Popped Like Gunfire During the Molasses Tank Rupture","slug":"metal-rivets-popped-like-gunfire-during-the-molasses-tank-rupture","url":"/categories/embarrassing-historical-moments/great-molasses-flood/metal-rivets-popped-like-gunfire-during-the-molasses-tank-rupture.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Witnesses mistook bursting rivets for machine-gun fire."},{"title":"Molasses Flowed So Fast Witnesses Compared It to a Tidal Wave","slug":"molasses-flowed-so-fast-witnesses-compared-it-to-a-tidal-wave","url":"/categories/embarrassing-historical-moments/great-molasses-flood/molasses-flowed-so-fast-witnesses-compared-it-to-a-tidal-wave.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Residents described a sugar tide racing down the street."},{"title":"Neighborhood Buildings Were Swept From Their Foundations by Molasses","slug":"neighborhood-buildings-were-swept-from-their-foundations-by-molasses","url":"/categories/embarrassing-historical-moments/great-molasses-flood/neighborhood-buildings-were-swept-from-their-foundations-by-molasses.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Entire wooden houses slid off foundations in a flood of syrup."},{"title":"Over 150 People Were Injured in a Flood of Molasses in 1919 Boston","slug":"over-150-people-were-injured-in-a-flood-of-molasses-in-1919-boston","url":"/categories/embarrassing-historical-moments/great-molasses-flood/over-150-people-were-injured-in-a-flood-of-molasses-in-1919-boston.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sugar surge injured more than a hundred residents in minutes."},{"title":"Pressure at the Base of the Molasses Tank Reached Massive Hydrostatic Loads","slug":"pressure-at-the-base-of-the-molasses-tank-reached-massive-hydrostatic-loads","url":"/categories/embarrassing-historical-moments/great-molasses-flood/pressure-at-the-base-of-the-molasses-tank-reached-massive-hydrostatic-loads.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The bottom of the tank endured crushing force equal to thousands of tons."},{"title":"Quick Temperature Shifts Altered the Viscosity of the Molasses Before the Disaster","slug":"quick-temperature-shifts-altered-the-viscosity-of-the-molasses-before-the-disaster","url":"/categories/embarrassing-historical-moments/great-molasses-flood/quick-temperature-shifts-altered-the-viscosity-of-the-molasses-before-the-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sudden thaw transformed sluggish syrup into a moving force."},{"title":"Rescuers Had to Shoot Trapped Horses During the Great Molasses Flood","slug":"rescuers-had-to-shoot-trapped-horses-during-the-great-molasses-flood","url":"/categories/embarrassing-historical-moments/great-molasses-flood/rescuers-had-to-shoot-trapped-horses-during-the-great-molasses-flood.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Boston police shot horses because molasses would not let them move."},{"title":"Residents Claimed the Neighborhood Smelled of Molasses for Years Afterward","slug":"residents-claimed-the-neighborhood-smelled-of-molasses-for-years-afterward","url":"/categories/embarrassing-historical-moments/great-molasses-flood/residents-claimed-the-neighborhood-smelled-of-molasses-for-years-afterward.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Hot summer days reportedly resurrected the scent of disaster."},{"title":"Riveted Construction Methods Amplified the Tank’s Structural Vulnerability","slug":"riveted-construction-methods-amplified-the-tank-s-structural-vulnerability","url":"/categories/embarrassing-historical-moments/great-molasses-flood/riveted-construction-methods-amplified-the-tank-s-structural-vulnerability.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Rows of rivets became a chain reaction of failure."},{"title":"Seawater Cleanup Required Weeks of Continuous Pumping After the Molasses Flood","slug":"seawater-cleanup-required-weeks-of-continuous-pumping-after-the-molasses-flood","url":"/categories/embarrassing-historical-moments/great-molasses-flood/seawater-cleanup-required-weeks-of-continuous-pumping-after-the-molasses-flood.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Boston had to wash itself with the Atlantic to remove sugar."},{"title":"Secondary Structural Collapses Occurred After the Initial Molasses Wave","slug":"secondary-structural-collapses-occurred-after-the-initial-molasses-wave","url":"/categories/embarrassing-historical-moments/great-molasses-flood/secondary-structural-collapses-occurred-after-the-initial-molasses-wave.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Buildings kept failing even after the surge stopped."},{"title":"Sugar Density Made the Molasses Flood Heavier Than a Comparable Water Surge","slug":"sugar-density-made-the-molasses-flood-heavier-than-a-comparable-water-surge","url":"/categories/embarrassing-historical-moments/great-molasses-flood/sugar-density-made-the-molasses-flood-heavier-than-a-comparable-water-surge.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"This flood weighed far more than water would have."},{"title":"The Molasses Flood Bent Elevated Railway Tracks in Boston","slug":"the-molasses-flood-bent-elevated-railway-tracks-in-boston","url":"/categories/embarrassing-historical-moments/great-molasses-flood/the-molasses-flood-bent-elevated-railway-tracks-in-boston.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thick syrup twisted steel railway tracks like soft wire."},{"title":"The Tank’s 90-Foot Diameter Created Enormous Structural Stress at Full Capacity","slug":"the-tank-s-90-foot-diameter-created-enormous-structural-stress-at-full-capacity","url":"/categories/embarrassing-historical-moments/great-molasses-flood/the-tank-s-90-foot-diameter-created-enormous-structural-stress-at-full-capacity.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A steel cylinder wider than a basketball court held lethal force."},{"title":"Twenty-One Lives Were Lost in One of America’s Strangest Industrial Disasters","slug":"twenty-one-lives-were-lost-in-one-of-america-s-strangest-industrial-disasters","url":"/categories/embarrassing-historical-moments/great-molasses-flood/twenty-one-lives-were-lost-in-one-of-america-s-strangest-industrial-disasters.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A food storage tank killed 21 people in seconds."},{"title":"Underestimated Fermentation Turned Stored Molasses Into a Pressurized System","slug":"underestimated-fermentation-turned-stored-molasses-into-a-pressurized-system","url":"/categories/embarrassing-historical-moments/great-molasses-flood/underestimated-fermentation-turned-stored-molasses-into-a-pressurized-system.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Biology quietly converted sugar storage into a pressure vessel."},{"title":"Urban Density Magnified Casualties During the Molasses Flood","slug":"urban-density-magnified-casualties-during-the-molasses-flood","url":"/categories/embarrassing-historical-moments/great-molasses-flood/urban-density-magnified-casualties-during-the-molasses-flood.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A crowded neighborhood turned sugar into a mass-casualty event."},{"title":"Viscosity Increased as Temperatures Dropped, Trapping Victims in Place","slug":"viscosity-increased-as-temperatures-dropped-trapping-victims-in-place","url":"/categories/embarrassing-historical-moments/great-molasses-flood/viscosity-increased-as-temperatures-dropped-trapping-victims-in-place.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Cooling air turned flowing syrup into adhesive restraint."},{"title":"Viscous Molasses Created Suction Effects Similar to Quicksand","slug":"viscous-molasses-created-suction-effects-similar-to-quicksand","url":"/categories/embarrassing-historical-moments/great-molasses-flood/viscous-molasses-created-suction-effects-similar-to-quicksand.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Victims sank into sugar as if trapped in quicksand."},{"title":"Warning Leaks Were Visible Months Before the Molasses Tank Catastrophe","slug":"warning-leaks-were-visible-months-before-the-molasses-tank-catastrophe","url":"/categories/embarrassing-historical-moments/great-molasses-flood/warning-leaks-were-visible-months-before-the-molasses-tank-catastrophe.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The tank visibly seeped long before it exploded."},{"title":"Weight of the Molasses Exceeded 27 Million Pounds at Full Capacity","slug":"weight-of-the-molasses-exceeded-27-million-pounds-at-full-capacity","url":"/categories/embarrassing-historical-moments/great-molasses-flood/weight-of-the-molasses-exceeded-27-million-pounds-at-full-capacity.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The tank held a mass heavier than many warships."},{"title":"Workers Had Previously Reported Visible Leaks From the Molasses Tank","slug":"workers-had-previously-reported-visible-leaks-from-the-molasses-tank","url":"/categories/embarrassing-historical-moments/great-molasses-flood/workers-had-previously-reported-visible-leaks-from-the-molasses-tank.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The tank bled sugar long before it burst."},{"title":"X-Factor of Scale Made the Molasses Flood Seem Impossible Yet Real","slug":"x-factor-of-scale-made-the-molasses-flood-seem-impossible-yet-real","url":"/categories/embarrassing-historical-moments/great-molasses-flood/x-factor-of-scale-made-the-molasses-flood-seem-impossible-yet-real.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Two million gallons turned absurdity into catastrophe."},{"title":"Yellow-Brown Molasses Wave Reached Second-Story Windows in 1919 Boston","slug":"yellow-brown-molasses-wave-reached-second-story-windows-in-1919-boston","url":"/categories/embarrassing-historical-moments/great-molasses-flood/yellow-brown-molasses-wave-reached-second-story-windows-in-1919-boston.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A caramel-colored surge climbed toward second-story windows."},{"title":"Zoning Reforms Accelerated After the Great Molasses Flood Disaster","slug":"zoning-reforms-accelerated-after-the-great-molasses-flood-disaster","url":"/categories/embarrassing-historical-moments/great-molasses-flood/zoning-reforms-accelerated-after-the-great-molasses-flood-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sugar tank collapse reshaped urban zoning rules."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

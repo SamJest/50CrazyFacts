@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fyre Festival</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Fyre Festival</h1>
+  <p>Explore all facts in "Fyre Festival".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Fyre Festival</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Bankruptcy Filing Revealed Fyre Festival Owed Millions Across Dozens of Creditors","slug":"a-bankruptcy-filing-revealed-fyre-festival-owed-millions-across-dozens-of-creditors","url":"/categories/embarrassing-historical-moments/fyre-festival/a-bankruptcy-filing-revealed-fyre-festival-owed-millions-across-dozens-of-creditors.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A party weekend left a paper trail of multi-million-dollar debt."},{"title":"After Fyre Festival Collapsed, Bahamian Workers Reported Hundreds of Thousands in Unpaid Wages","slug":"after-fyre-festival-collapsed-bahamian-workers-reported-hundreds-of-thousands-in-unpaid-wages","url":"/categories/embarrassing-historical-moments/fyre-festival/after-fyre-festival-collapsed-bahamian-workers-reported-hundreds-of-thousands-in-unpaid-wages.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Local workers built a luxury fantasy and were never paid."},{"title":"Bahamian Officials Publicly Denounced Fyre Festival as a National Embarrassment","slug":"bahamian-officials-publicly-denounced-fyre-festival-as-a-national-embarrassment","url":"/categories/embarrassing-historical-moments/fyre-festival/bahamian-officials-publicly-denounced-fyre-festival-as-a-national-embarrassment.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An international tourism campaign turned into global ridicule overnight."},{"title":"Billy McFarland Sold Fake VIP Access to the Met Gala After Fyre Festival","slug":"billy-mcfarland-sold-fake-vip-access-to-the-met-gala-after-fyre-festival","url":"/categories/embarrassing-historical-moments/fyre-festival/billy-mcfarland-sold-fake-vip-access-to-the-met-gala-after-fyre-festival.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"After a federal fraud charge, he tried selling tickets to an event no one can buy."},{"title":"Billy McFarland’s Sentencing Marked a Rare Criminal Outcome for a Music Festival Failure","slug":"billy-mcfarland-s-sentencing-marked-a-rare-criminal-outcome-for-a-music-festival-failure","url":"/categories/embarrassing-historical-moments/fyre-festival/billy-mcfarland-s-sentencing-marked-a-rare-criminal-outcome-for-a-music-festival-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A collapsed concert weekend ended with a six-year prison term."},{"title":"Celebrity Endorsements Fueled Fyre Festival Ticket Sales Before Infrastructure Existed","slug":"celebrity-endorsements-fueled-fyre-festival-ticket-sales-before-infrastructure-existed","url":"/categories/embarrassing-historical-moments/fyre-festival/celebrity-endorsements-fueled-fyre-festival-ticket-sales-before-infrastructure-existed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Supermodels promoted a paradise that had no completed stages."},{"title":"Class-Action Lawsuits Sought Over $100 Million in Damages From Fyre Festival","slug":"class-action-lawsuits-sought-over-100-million-in-damages-from-fyre-festival","url":"/categories/embarrassing-historical-moments/fyre-festival/class-action-lawsuits-sought-over-100-million-in-damages-from-fyre-festival.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A beach party spiraled into nine-figure legal demands."},{"title":"Disaster Relief Tents at Fyre Festival Were Rated for Storm Survival, Not Luxury Living","slug":"disaster-relief-tents-at-fyre-festival-were-rated-for-storm-survival-not-luxury-living","url":"/categories/embarrassing-historical-moments/fyre-festival/disaster-relief-tents-at-fyre-festival-were-rated-for-storm-survival-not-luxury-living.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Tents designed for hurricanes became VIP suites for millionaires."},{"title":"Documentary Footage Revealed Internal Doubts Before Fyre Festival Opened","slug":"documentary-footage-revealed-internal-doubts-before-fyre-festival-opened","url":"/categories/embarrassing-historical-moments/fyre-festival/documentary-footage-revealed-internal-doubts-before-fyre-festival-opened.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Cameras captured warnings days before guests arrived."},{"title":"Emergency Flights Departed as Fyre Festival Guests Were Told to Shelter in Place","slug":"emergency-flights-departed-as-fyre-festival-guests-were-told-to-shelter-in-place","url":"/categories/embarrassing-historical-moments/fyre-festival/emergency-flights-departed-as-fyre-festival-guests-were-told-to-shelter-in-place.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Evacuation instructions replaced concert schedules within hours."},{"title":"Emergency Medical Planning at Fyre Festival Faced Strain Under Unexpected Conditions","slug":"emergency-medical-planning-at-fyre-festival-faced-strain-under-unexpected-conditions","url":"/categories/embarrassing-historical-moments/fyre-festival/emergency-medical-planning-at-fyre-festival-faced-strain-under-unexpected-conditions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A luxury event relied on limited on-site medical infrastructure."},{"title":"Forensic Accounting Revealed Fyre Festival’s Cash Burn Far Exceeded Revenue","slug":"forensic-accounting-revealed-fyre-festival-s-cash-burn-far-exceeded-revenue","url":"/categories/embarrassing-historical-moments/fyre-festival/forensic-accounting-revealed-fyre-festival-s-cash-burn-far-exceeded-revenue.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spending spiraled while ticket income lagged millions behind."},{"title":"Fyre Festival Attendees Were Stranded Overnight Without Basic Utilities","slug":"fyre-festival-attendees-were-stranded-overnight-without-basic-utilities","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-attendees-were-stranded-overnight-without-basic-utilities.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Luxury ticket holders searched for water and power in darkness."},{"title":"Fyre Festival Generated Over 300 Lawsuits Within Months","slug":"fyre-festival-generated-over-300-lawsuits-within-months","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-generated-over-300-lawsuits-within-months.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A weekend party triggered hundreds of court filings worldwide."},{"title":"Fyre Festival Investors Were Shown Inflated Financial Projections","slug":"fyre-festival-investors-were-shown-inflated-financial-projections","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-investors-were-shown-inflated-financial-projections.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Millions were raised using financial statements that overstated revenue."},{"title":"Fyre Festival Promised Major Headliners That Were Never Booked","slug":"fyre-festival-promised-major-headliners-that-were-never-booked","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-promised-major-headliners-that-were-never-booked.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A global music lineup was advertised before artists were secured."},{"title":"Fyre Festival Was Documented in Competing Streaming Documentaries Within Two Years","slug":"fyre-festival-was-documented-in-competing-streaming-documentaries-within-two-years","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-was-documented-in-competing-streaming-documentaries-within-two-years.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A failed weekend party became dueling global documentaries."},{"title":"Fyre Festival’s App Launched Without Core Event Infrastructure","slug":"fyre-festival-s-app-launched-without-core-event-infrastructure","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-s-app-launched-without-core-event-infrastructure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A sleek festival app went live before stages existed."},{"title":"Fyre Festival’s Gourmet Catering Collapsed Into Packaged Cheese Sandwiches","slug":"fyre-festival-s-gourmet-catering-collapsed-into-packaged-cheese-sandwiches","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-s-gourmet-catering-collapsed-into-packaged-cheese-sandwiches.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Luxury dining promises ended with cold bread and plastic cheese."},{"title":"Fyre Festival’s Island Was Promoted as Pablo Escobar’s Former Private Paradise","slug":"fyre-festival-s-island-was-promoted-as-pablo-escobar-s-former-private-paradise","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-s-island-was-promoted-as-pablo-escobar-s-former-private-paradise.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The island’s most infamous selling point was legally forbidden to mention."},{"title":"Fyre Festival’s Luxury Villas Were FEMA Tents From Hurricane Relief","slug":"fyre-festival-s-luxury-villas-were-fema-tents-from-hurricane-relief","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-s-luxury-villas-were-fema-tents-from-hurricane-relief.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Guests who paid $250,000 for luxury villas slept in disaster tents."},{"title":"Fyre Festival’s Viral Orange Tile Became a Symbol of Collapse","slug":"fyre-festival-s-viral-orange-tile-became-a-symbol-of-collapse","url":"/categories/embarrassing-historical-moments/fyre-festival/fyre-festival-s-viral-orange-tile-became-a-symbol-of-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single orange square launched a multimillion-dollar disaster."},{"title":"Global Media Coverage Turned Fyre Festival Into a Cultural Punchline Within 48 Hours","slug":"global-media-coverage-turned-fyre-festival-into-a-cultural-punchline-within-48-hours","url":"/categories/embarrassing-historical-moments/fyre-festival/global-media-coverage-turned-fyre-festival-into-a-cultural-punchline-within-48-hours.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A luxury launch became worldwide satire in two days."},{"title":"Hurricane Season Logistics Warnings Preceded Fyre Festival’s Infrastructure Crunch","slug":"hurricane-season-logistics-warnings-preceded-fyre-festival-s-infrastructure-crunch","url":"/categories/embarrassing-historical-moments/fyre-festival/hurricane-season-logistics-warnings-preceded-fyre-festival-s-infrastructure-crunch.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Weather risk was known before thousands boarded flights."},{"title":"Influencer Marketing at Fyre Festival Sparked FTC Disclosure Scrutiny","slug":"influencer-marketing-at-fyre-festival-sparked-ftc-disclosure-scrutiny","url":"/categories/embarrassing-historical-moments/fyre-festival/influencer-marketing-at-fyre-festival-sparked-ftc-disclosure-scrutiny.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Glamour posts triggered federal advertising oversight."},{"title":"Insurance Claims From Fyre Festival Highlighted Massive Event Liability Gaps","slug":"insurance-claims-from-fyre-festival-highlighted-massive-event-liability-gaps","url":"/categories/embarrassing-historical-moments/fyre-festival/insurance-claims-from-fyre-festival-highlighted-massive-event-liability-gaps.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Luxury branding masked liability risks worth millions."},{"title":"Journalists Arrived Expecting a Luxury Festival and Documented a Breakdown Instead","slug":"journalists-arrived-expecting-a-luxury-festival-and-documented-a-breakdown-instead","url":"/categories/embarrassing-historical-moments/fyre-festival/journalists-arrived-expecting-a-luxury-festival-and-documented-a-breakdown-instead.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Media crews packed for glamour and filmed evacuation scenes."},{"title":"Kendall Jenner’s Fyre Festival Promotion Led to a $90,000 Settlement","slug":"kendall-jenner-s-fyre-festival-promotion-led-to-a-90-000-settlement","url":"/categories/embarrassing-historical-moments/fyre-festival/kendall-jenner-s-fyre-festival-promotion-led-to-a-90-000-settlement.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One Instagram post cost nearly six figures in restitution."},{"title":"Logistical Emails Revealed Coordination Breakdowns Days Before Launch","slug":"logistical-emails-revealed-coordination-breakdowns-days-before-launch","url":"/categories/embarrassing-historical-moments/fyre-festival/logistical-emails-revealed-coordination-breakdowns-days-before-launch.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Internal messages showed systems unraveling before gates opened."},{"title":"Luxury Yacht Packages at Fyre Festival Never Materialized","slug":"luxury-yacht-packages-at-fyre-festival-never-materialized","url":"/categories/embarrassing-historical-moments/fyre-festival/luxury-yacht-packages-at-fyre-festival-never-materialized.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Guests paid for private yachts that did not exist."},{"title":"Massive Construction Deadlines Forced Fyre Festival Crews to Work Around the Clock","slug":"massive-construction-deadlines-forced-fyre-festival-crews-to-work-around-the-clock","url":"/categories/embarrassing-historical-moments/fyre-festival/massive-construction-deadlines-forced-fyre-festival-crews-to-work-around-the-clock.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A luxury island build was attempted in mere weeks."},{"title":"Netflix and Hulu Paid for Competing Fyre Festival Documentaries Simultaneously","slug":"netflix-and-hulu-paid-for-competing-fyre-festival-documentaries-simultaneously","url":"/categories/embarrassing-historical-moments/fyre-festival/netflix-and-hulu-paid-for-competing-fyre-festival-documentaries-simultaneously.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Two streaming giants raced to tell the same disaster story."},{"title":"Organizers Marketed Fyre Festival as the ‘Cultural Experience of the Decade’","slug":"organizers-marketed-fyre-festival-as-the-cultural-experience-of-the-decade","url":"/categories/embarrassing-historical-moments/fyre-festival/organizers-marketed-fyre-festival-as-the-cultural-experience-of-the-decade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The decade’s defining party ended before the first headliner played."},{"title":"Over $27 Million Was Raised From Investors for the Fyre Festival Venture","slug":"over-27-million-was-raised-from-investors-for-the-fyre-festival-venture","url":"/categories/embarrassing-historical-moments/fyre-festival/over-27-million-was-raised-from-investors-for-the-fyre-festival-venture.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Tens of millions flowed in before the first stage was tested."},{"title":"Prison Release Did Not End Public Scrutiny of Fyre Festival’s Organizer","slug":"prison-release-did-not-end-public-scrutiny-of-fyre-festival-s-organizer","url":"/categories/embarrassing-historical-moments/fyre-festival/prison-release-did-not-end-public-scrutiny-of-fyre-festival-s-organizer.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even after incarceration, the scandal followed him."},{"title":"Private Jet Imagery Fueled Fyre Festival’s Luxury Narrative","slug":"private-jet-imagery-fueled-fyre-festival-s-luxury-narrative","url":"/categories/embarrassing-historical-moments/fyre-festival/private-jet-imagery-fueled-fyre-festival-s-luxury-narrative.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Jets appeared in promos long before basic plumbing was secured."},{"title":"Quantities of Luggage Piled Chaotically at Night Became a Viral Symbol","slug":"quantities-of-luggage-piled-chaotically-at-night-became-a-viral-symbol","url":"/categories/embarrassing-historical-moments/fyre-festival/quantities-of-luggage-piled-chaotically-at-night-became-a-viral-symbol.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Designer suitcases formed mountains under airport floodlights."},{"title":"Refund Promises After Fyre Festival Collapsed Faced Bankruptcy Barriers","slug":"refund-promises-after-fyre-festival-collapsed-faced-bankruptcy-barriers","url":"/categories/embarrassing-historical-moments/fyre-festival/refund-promises-after-fyre-festival-collapsed-faced-bankruptcy-barriers.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Full refunds were promised while insolvency loomed."},{"title":"Security Infrastructure at Fyre Festival Was Overwhelmed Within Hours","slug":"security-infrastructure-at-fyre-festival-was-overwhelmed-within-hours","url":"/categories/embarrassing-historical-moments/fyre-festival/security-infrastructure-at-fyre-festival-was-overwhelmed-within-hours.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A VIP paradise had crowd control thinner than a beach party."},{"title":"Social Media Live Streams Exposed Fyre Festival’s Collapse in Real Time","slug":"social-media-live-streams-exposed-fyre-festival-s-collapse-in-real-time","url":"/categories/embarrassing-historical-moments/fyre-festival/social-media-live-streams-exposed-fyre-festival-s-collapse-in-real-time.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Guests broadcast chaos to millions before organizers issued statements."},{"title":"Ticket Sales for Fyre Festival Reached Thousands Before Final Permits Were Secured","slug":"ticket-sales-for-fyre-festival-reached-thousands-before-final-permits-were-secured","url":"/categories/embarrassing-historical-moments/fyre-festival/ticket-sales-for-fyre-festival-reached-thousands-before-final-permits-were-secured.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands bought flights before the island was fully cleared for the event."},{"title":"Travel Packages Bundled Flights and Lodging Before Site Readiness Was Verified","slug":"travel-packages-bundled-flights-and-lodging-before-site-readiness-was-verified","url":"/categories/embarrassing-historical-moments/fyre-festival/travel-packages-bundled-flights-and-lodging-before-site-readiness-was-verified.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"International travel was sold while construction remained unfinished."},{"title":"Unfinished Stage Structures Stood Idle Where Headliners Were Promised","slug":"unfinished-stage-structures-stood-idle-where-headliners-were-promised","url":"/categories/embarrassing-historical-moments/fyre-festival/unfinished-stage-structures-stood-idle-where-headliners-were-promised.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Massive stages rose from sand with no performers to occupy them."},{"title":"Vendor Contracts at Fyre Festival Collapsed Under Rapid Expansion Pressure","slug":"vendor-contracts-at-fyre-festival-collapsed-under-rapid-expansion-pressure","url":"/categories/embarrassing-historical-moments/fyre-festival/vendor-contracts-at-fyre-festival-collapsed-under-rapid-expansion-pressure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Island suppliers signed agreements that unraveled in days."},{"title":"Water Supply Limitations Became Immediate at Fyre Festival","slug":"water-supply-limitations-became-immediate-at-fyre-festival","url":"/categories/embarrassing-historical-moments/fyre-festival/water-supply-limitations-became-immediate-at-fyre-festival.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A tropical island event struggled to provide basic drinking water."},{"title":"Xeroxed Wristbands Replaced Promised RFID Luxury Access Systems","slug":"xeroxed-wristbands-replaced-promised-rfid-luxury-access-systems","url":"/categories/embarrassing-historical-moments/fyre-festival/xeroxed-wristbands-replaced-promised-rfid-luxury-access-systems.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"High-tech access control was reduced to basic paper credentials."},{"title":"Yacht Imagery in Fyre Festival Ads Outnumbered Actual Boats at the Event","slug":"yacht-imagery-in-fyre-festival-ads-outnumbered-actual-boats-at-the-event","url":"/categories/embarrassing-historical-moments/fyre-festival/yacht-imagery-in-fyre-festival-ads-outnumbered-actual-boats-at-the-event.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Promotional fleets vanished when guests reached the shoreline."},{"title":"Zero Headlining Performances Took Place at Fyre Festival","slug":"zero-headlining-performances-took-place-at-fyre-festival","url":"/categories/embarrassing-historical-moments/fyre-festival/zero-headlining-performances-took-place-at-fyre-festival.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The music festival ended without a single major concert."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

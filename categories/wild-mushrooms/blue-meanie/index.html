@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blue Meanie</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Blue Meanie</h1>
+  <p>Explore all facts in "Blue Meanie".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Blue Meanie</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Karyogamy in Basidiomycete Life Cycles Allows Genetic Recombination in Blue Meanie","slug":"karyogamy-in-basidiomycete-life-cycles-allows-genetic-recombination-in-blue-meanie","url":"/categories/wild-mushrooms/blue-meanie/karyogamy-in-basidiomycete-life-cycles-allows-genetic-recombination-in-blue-meanie.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two microscopic nuclei fuse before this mushroom ever appears."},{"title":"Karyotype Analysis Confirms Blue Meanie Contains Paired Haploid Nuclei in Dikaryotic Cells","slug":"karyotype-analysis-confirms-blue-meanie-contains-paired-haploid-nuclei-in-dikaryotic-cells","url":"/categories/wild-mushrooms/blue-meanie/karyotype-analysis-confirms-blue-meanie-contains-paired-haploid-nuclei-in-dikaryotic-cells.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each cell can carry two separate genetic identities at once."},{"title":"Ketamine and Psilocybin Share Distinct Mechanisms Despite Overlapping Antidepressant Research","slug":"ketamine-and-psilocybin-share-distinct-mechanisms-despite-overlapping-antidepressant-research","url":"/categories/wild-mushrooms/blue-meanie/ketamine-and-psilocybin-share-distinct-mechanisms-despite-overlapping-antidepressant-research.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two radically different molecules now compete in depression trials."},{"title":"Ketone Pathways Do Not Metabolize Psilocin Despite Structural Similarities","slug":"ketone-pathways-do-not-metabolize-psilocin-despite-structural-similarities","url":"/categories/wild-mushrooms/blue-meanie/ketone-pathways-do-not-metabolize-psilocin-despite-structural-similarities.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your body processes this hallucinogen differently than most small organic acids."},{"title":"Kilo-Scale Indoor Grow Operations Replicate Tropical Humidity at 90 Percent or Higher","slug":"kilo-scale-indoor-grow-operations-replicate-tropical-humidity-at-90-percent-or-higher","url":"/categories/wild-mushrooms/blue-meanie/kilo-scale-indoor-grow-operations-replicate-tropical-humidity-at-90-percent-or-higher.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Illegal rooms can simulate rainforest moisture levels year-round."},{"title":"Kilogram of Fresh Blue Meanie Mushrooms Shrinks to Roughly 100 Grams When Dried","slug":"kilogram-of-fresh-blue-meanie-mushrooms-shrinks-to-roughly-100-grams-when-dried","url":"/categories/wild-mushrooms/blue-meanie/kilogram-of-fresh-blue-meanie-mushrooms-shrinks-to-roughly-100-grams-when-dried.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A full kilogram can collapse to a tenth of its weight overnight."},{"title":"Kilogram-Scale Psilocybin Seizures Show Blue Meanie Trafficking Reaches Industrial Levels","slug":"kilogram-scale-psilocybin-seizures-show-blue-meanie-trafficking-reaches-industrial-levels","url":"/categories/wild-mushrooms/blue-meanie/kilogram-scale-psilocybin-seizures-show-blue-meanie-trafficking-reaches-industrial-levels.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Police have seized psychedelic mushrooms by the kilogram, not the gram."},{"title":"Kilohertz EEG Changes Recorded During Controlled Psilocybin Sessions","slug":"kilohertz-eeg-changes-recorded-during-controlled-psilocybin-sessions","url":"/categories/wild-mushrooms/blue-meanie/kilohertz-eeg-changes-recorded-during-controlled-psilocybin-sessions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brainwave patterns shift measurably within minutes of ingestion."},{"title":"Kinetic Onset of Psilocybin Effects Typically Begins Within 30 to 60 Minutes","slug":"kinetic-onset-of-psilocybin-effects-typically-begins-within-30-to-60-minutes","url":"/categories/wild-mushrooms/blue-meanie/kinetic-onset-of-psilocybin-effects-typically-begins-within-30-to-60-minutes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Half an hour after ingestion, perception can start to bend."},{"title":"Kinetic Tolerance Develops Rapidly with Consecutive Psilocybin Exposure","slug":"kinetic-tolerance-develops-rapidly-with-consecutive-psilocybin-exposure","url":"/categories/wild-mushrooms/blue-meanie/kinetic-tolerance-develops-rapidly-with-consecutive-psilocybin-exposure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two consecutive days can produce noticeably weaker effects."},{"title":"Kingdom Fungi Classification Separates Blue Meanie from Plants and Animals","slug":"kingdom-fungi-classification-separates-blue-meanie-from-plants-and-animals","url":"/categories/wild-mushrooms/blue-meanie/kingdom-fungi-classification-separates-blue-meanie-from-plants-and-animals.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This organism belongs to a biological kingdom distinct from both trees and mammals."},{"title":"Neuroplasticity Markers Increased After Single Psilocybin Session in 2018 Animal Study","slug":"neuroplasticity-markers-increased-after-single-psilocybin-session-in-2018-animal-study","url":"/categories/wild-mushrooms/blue-meanie/neuroplasticity-markers-increased-after-single-psilocybin-session-in-2018-animal-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One dose triggered measurable brain cell growth markers."},{"title":"Overdose Deaths from Psilocybin Alone Remain Extremely Rare in Toxicology Records","slug":"overdose-deaths-from-psilocybin-alone-remain-extremely-rare-in-toxicology-records","url":"/categories/wild-mushrooms/blue-meanie/overdose-deaths-from-psilocybin-alone-remain-extremely-rare-in-toxicology-records.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Despite powerful hallucinations, lethal overdose cases are exceptionally uncommon."},{"title":"Pre-Columbian Mesoamerican Cultures Depicted Psilocybin Mushrooms in Stone Carvings","slug":"pre-columbian-mesoamerican-cultures-depicted-psilocybin-mushrooms-in-stone-carvings","url":"/categories/wild-mushrooms/blue-meanie/pre-columbian-mesoamerican-cultures-depicted-psilocybin-mushrooms-in-stone-carvings.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Stone monuments from over 1,000 years ago resemble psychedelic caps."},{"title":"Quantified Blue Meanie Spores Measure Under 15 Micrometers Yet Survive Global Transport","slug":"quantified-blue-meanie-spores-measure-under-15-micrometers-yet-survive-global-transport","url":"/categories/wild-mushrooms/blue-meanie/quantified-blue-meanie-spores-measure-under-15-micrometers-yet-survive-global-transport.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A particle smaller than a red blood cell can cross continents."},{"title":"Quantitative MRI Studies Show Default Mode Network Suppression Under Psilocybin","slug":"quantitative-mri-studies-show-default-mode-network-suppression-under-psilocybin","url":"/categories/wild-mushrooms/blue-meanie/quantitative-mri-studies-show-default-mode-network-suppression-under-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain regions tied to self-identity temporarily reduce synchronized activity."},{"title":"Quasi-Mystical Experiences Reported by 60 Percent of Participants in Controlled Psilocybin Studies","slug":"quasi-mystical-experiences-reported-by-60-percent-of-participants-in-controlled-psilocybin-studies","url":"/categories/wild-mushrooms/blue-meanie/quasi-mystical-experiences-reported-by-60-percent-of-participants-in-controlled-psilocybin-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Most volunteers rated the session among the most meaningful events of their lives."},{"title":"UK Forensic Laboratories Use Mass Spectrometry to Confirm Psilocybin in Seized Mushrooms","slug":"uk-forensic-laboratories-use-mass-spectrometry-to-confirm-psilocybin-in-seized-mushrooms","url":"/categories/wild-mushrooms/blue-meanie/uk-forensic-laboratories-use-mass-spectrometry-to-confirm-psilocybin-in-seized-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A pasture mushroom ends up inside high-precision crime lab instruments."},{"title":"University College London 2021 Trial Compared Psilocybin to Escitalopram","slug":"university-college-london-2021-trial-compared-psilocybin-to-escitalopram","url":"/categories/wild-mushrooms/blue-meanie/university-college-london-2021-trial-compared-psilocybin-to-escitalopram.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A pasture-derived compound was tested against a mainstream antidepressant."},{"title":"Xenobiotic Classification Places Psilocybin Among Externally Introduced Neuroactive Compounds","slug":"xenobiotic-classification-places-psilocybin-among-externally-introduced-neuroactive-compounds","url":"/categories/wild-mushrooms/blue-meanie/xenobiotic-classification-places-psilocybin-among-externally-introduced-neuroactive-compounds.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your brain treats this forest molecule as a foreign intruder."},{"title":"Xenograft Research Uses Psilocybin Data to Model Human Receptor Binding","slug":"xenograft-research-uses-psilocybin-data-to-model-human-receptor-binding","url":"/categories/wild-mushrooms/blue-meanie/xenograft-research-uses-psilocybin-data-to-model-human-receptor-binding.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A pasture molecule now informs laboratory receptor modeling algorithms."},{"title":"Xerophilic Survival Limits Blue Meanie Fruiting to High-Humidity Windows","slug":"xerophilic-survival-limits-blue-meanie-fruiting-to-high-humidity-windows","url":"/categories/wild-mushrooms/blue-meanie/xerophilic-survival-limits-blue-meanie-fruiting-to-high-humidity-windows.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Without humidity spikes, this mushroom simply refuses to exist."},{"title":"Yellow-Brown Cap Morphology Makes Blue Meanie Identification Difficult for Foragers","slug":"yellow-brown-cap-morphology-makes-blue-meanie-identification-difficult-for-foragers","url":"/categories/wild-mushrooms/blue-meanie/yellow-brown-cap-morphology-makes-blue-meanie-identification-difficult-for-foragers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its harmless look hides chemistry that rivals synthetic hallucinogens."},{"title":"Yellowish Bruising Intensifies as Psilocin Oxidizes in Exposed Tissue","slug":"yellowish-bruising-intensifies-as-psilocin-oxidizes-in-exposed-tissue","url":"/categories/wild-mushrooms/blue-meanie/yellowish-bruising-intensifies-as-psilocin-oxidizes-in-exposed-tissue.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cut tissue darkens as active molecules react with air."},{"title":"Yield Variability in Blue Meanie Cultivation Can Exceed 300 Percent Between Flushes","slug":"yield-variability-in-blue-meanie-cultivation-can-exceed-300-percent-between-flushes","url":"/categories/wild-mushrooms/blue-meanie/yield-variability-in-blue-meanie-cultivation-can-exceed-300-percent-between-flushes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom culture can triple its output overnight."},{"title":"Z-Score Reductions in Depression Scales Observed Weeks After Psilocybin Sessions","slug":"z-score-reductions-in-depression-scales-observed-weeks-after-psilocybin-sessions","url":"/categories/wild-mushrooms/blue-meanie/z-score-reductions-in-depression-scales-observed-weeks-after-psilocybin-sessions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Depression scores dropped significantly weeks after a single supervised dose."},{"title":"Zero Fresh Preparation Loophole Ended UK Retail Psilocybin Sales in 2005","slug":"zero-fresh-preparation-loophole-ended-uk-retail-psilocybin-sales-in-2005","url":"/categories/wild-mushrooms/blue-meanie/zero-fresh-preparation-loophole-ended-uk-retail-psilocybin-sales-in-2005.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"In 2004 you could buy these mushrooms legally in British shops."},{"title":"Zero Recorded Physical Dependence Cases Linked to Psilocybin in Clinical Literature","slug":"zero-recorded-physical-dependence-cases-linked-to-psilocybin-in-clinical-literature","url":"/categories/wild-mushrooms/blue-meanie/zero-recorded-physical-dependence-cases-linked-to-psilocybin-in-clinical-literature.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Repeated exposure rarely produces classical withdrawal symptoms."},{"title":"Zoological Pasture Density Directly Influences Blue Meanie Habitat Frequency","slug":"zoological-pasture-density-directly-influences-blue-meanie-habitat-frequency","url":"/categories/wild-mushrooms/blue-meanie/zoological-pasture-density-directly-influences-blue-meanie-habitat-frequency.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"More cattle often means more psychedelic mushrooms."},{"title":"Zoonotic Pasture Ecosystems Link Blue Meanie Growth to Cattle Expansion Since the 1800s","slug":"zoonotic-pasture-ecosystems-link-blue-meanie-growth-to-cattle-expansion-since-the-1800s","url":"/categories/wild-mushrooms/blue-meanie/zoonotic-pasture-ecosystems-link-blue-meanie-growth-to-cattle-expansion-since-the-1800s.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Colonial cattle routes quietly expanded a psychoactive species."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

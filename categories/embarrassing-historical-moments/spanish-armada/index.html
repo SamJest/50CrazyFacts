@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spanish Armada</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Spanish Armada</h1>
+  <p>Explore all facts in "Spanish Armada".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Spanish Armada</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Adverse Tides Repeatedly Broke Spanish Armada Formations","slug":"adverse-tides-repeatedly-broke-spanish-armada-formations","url":"/categories/embarrassing-historical-moments/spanish-armada/adverse-tides-repeatedly-broke-spanish-armada-formations.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Invisible currents tore apart Europe’s grandest fleet."},{"title":"Armada Command Structure Centralized Decisions Too Rigidly","slug":"armada-command-structure-centralized-decisions-too-rigidly","url":"/categories/embarrassing-historical-moments/spanish-armada/armada-command-structure-centralized-decisions-too-rigidly.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Captains waited for orders while opportunities drifted away."},{"title":"Boarding Tactics Were Rendered Obsolete in the Channel Battles","slug":"boarding-tactics-were-rendered-obsolete-in-the-channel-battles","url":"/categories/embarrassing-historical-moments/spanish-armada/boarding-tactics-were-rendered-obsolete-in-the-channel-battles.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain trained for sword fights but faced distant cannon fire."},{"title":"Burning Beacons Warned England Before the Spanish Armada Arrived","slug":"burning-beacons-warned-england-before-the-spanish-armada-arrived","url":"/categories/embarrassing-historical-moments/spanish-armada/burning-beacons-warned-england-before-the-spanish-armada-arrived.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"England lit a chain of mountaintop fires that outran the Spanish fleet."},{"title":"Calais Anchorage Turned the Spanish Armada Into a Trapped Crescent","slug":"calais-anchorage-turned-the-spanish-armada-into-a-trapped-crescent","url":"/categories/embarrassing-historical-moments/spanish-armada/calais-anchorage-turned-the-spanish-armada-into-a-trapped-crescent.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The Armada anchored in a narrow roadstead and boxed itself in."},{"title":"Casualty Numbers Continued Rising Long After the Armada Returned","slug":"casualty-numbers-continued-rising-long-after-the-armada-returned","url":"/categories/embarrassing-historical-moments/spanish-armada/casualty-numbers-continued-rising-long-after-the-armada-returned.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Men survived storms only to die in Spanish harbors."},{"title":"Delayed Departure Weakened the Spanish Armada Before It Sailed","slug":"delayed-departure-weakened-the-spanish-armada-before-it-sailed","url":"/categories/embarrassing-historical-moments/spanish-armada/delayed-departure-weakened-the-spanish-armada-before-it-sailed.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The fleet waited so long that supplies spoiled in port."},{"title":"Disease Killed More Spanish Armada Sailors Than English Cannons","slug":"disease-killed-more-spanish-armada-sailors-than-english-cannons","url":"/categories/embarrassing-historical-moments/spanish-armada/disease-killed-more-spanish-armada-sailors-than-english-cannons.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Illness proved deadlier than enemy fire in 1588."},{"title":"English Fireships Forced the Spanish Armada Into Open Sea Chaos","slug":"english-fireships-forced-the-spanish-armada-into-open-sea-chaos","url":"/categories/embarrassing-historical-moments/spanish-armada/english-fireships-forced-the-spanish-armada-into-open-sea-chaos.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Eight burning ships scattered the largest fleet in Europe."},{"title":"English Privateers Profited While the Spanish Armada Lost Millions","slug":"english-privateers-profited-while-the-spanish-armada-lost-millions","url":"/categories/embarrassing-historical-moments/spanish-armada/english-privateers-profited-while-the-spanish-armada-lost-millions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain spent fortunes; English captains earned rewards."},{"title":"Gravelines Battle Exposed Spanish Reloading Disadvantage","slug":"gravelines-battle-exposed-spanish-reloading-disadvantage","url":"/categories/embarrassing-historical-moments/spanish-armada/gravelines-battle-exposed-spanish-reloading-disadvantage.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"English cannons fired three times before Spanish crews reloaded once."},{"title":"Hurricane-Force Storms Destroyed Spanish Armada Survivors","slug":"hurricane-force-storms-destroyed-spanish-armada-survivors","url":"/categories/embarrassing-historical-moments/spanish-armada/hurricane-force-storms-destroyed-spanish-armada-survivors.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"After surviving battle, ships were smashed against Irish cliffs."},{"title":"Inferior Gunpowder Quality Undermined Spanish Armada Firepower","slug":"inferior-gunpowder-quality-undermined-spanish-armada-firepower","url":"/categories/embarrassing-historical-moments/spanish-armada/inferior-gunpowder-quality-undermined-spanish-armada-firepower.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spanish cannons carried powder that degraded before battle."},{"title":"Joint Invasion Plan Collapsed When Parma Could Not Sail","slug":"joint-invasion-plan-collapsed-when-parma-could-not-sail","url":"/categories/embarrassing-historical-moments/spanish-armada/joint-invasion-plan-collapsed-when-parma-could-not-sail.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The Armada arrived, but the invasion army had no ships."},{"title":"Leadership Changes Plagued the Spanish Armada Before Departure","slug":"leadership-changes-plagued-the-spanish-armada-before-departure","url":"/categories/embarrassing-historical-moments/spanish-armada/leadership-changes-plagued-the-spanish-armada-before-departure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain replaced its admiral weeks before launching Europe’s largest fleet."},{"title":"Massive Fleet Size Slowed Spanish Maneuverability","slug":"massive-fleet-size-slowed-spanish-maneuverability","url":"/categories/embarrassing-historical-moments/spanish-armada/massive-fleet-size-slowed-spanish-maneuverability.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"More ships meant less control in narrow waters."},{"title":"Morale Collapsed as Spanish Armada Returned Half-Starved","slug":"morale-collapsed-as-spanish-armada-returned-half-starved","url":"/categories/embarrassing-historical-moments/spanish-armada/morale-collapsed-as-spanish-armada-returned-half-starved.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Victorious empire greeted ships filled with skeletal survivors."},{"title":"Morale Plummeted as Retreat Became Inevitable","slug":"morale-plummeted-as-retreat-became-inevitable","url":"/categories/embarrassing-historical-moments/spanish-armada/morale-plummeted-as-retreat-became-inevitable.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The conquest mission turned into a survival march at sea."},{"title":"Navigation Errors Forced the Spanish Armada Into the North Sea","slug":"navigation-errors-forced-the-spanish-armada-into-the-north-sea","url":"/categories/embarrassing-historical-moments/spanish-armada/navigation-errors-forced-the-spanish-armada-into-the-north-sea.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The invasion fleet overshot England and could not turn back."},{"title":"Overconfidence in Divine Favor Shaped the Spanish Armada Strategy","slug":"overconfidence-in-divine-favor-shaped-the-spanish-armada-strategy","url":"/categories/embarrassing-historical-moments/spanish-armada/overconfidence-in-divine-favor-shaped-the-spanish-armada-strategy.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain launched its largest fleet believing God guaranteed victory."},{"title":"Parma’s Barges Could Not Survive Open Channel Conditions","slug":"parma-s-barges-could-not-survive-open-channel-conditions","url":"/categories/embarrassing-historical-moments/spanish-armada/parma-s-barges-could-not-survive-open-channel-conditions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The invasion army waited in flat-bottomed boats unfit for the sea."},{"title":"Quick English Ship Repairs Outpaced Spanish Recovery Efforts","slug":"quick-english-ship-repairs-outpaced-spanish-recovery-efforts","url":"/categories/embarrassing-historical-moments/spanish-armada/quick-english-ship-repairs-outpaced-spanish-recovery-efforts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Damaged English ships returned to battle while Spanish vessels drifted crippled."},{"title":"Rigid Formation Tactics Limited Spanish Tactical Flexibility","slug":"rigid-formation-tactics-limited-spanish-tactical-flexibility","url":"/categories/embarrassing-historical-moments/spanish-armada/rigid-formation-tactics-limited-spanish-tactical-flexibility.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The Armada clung to formation while England fought fluidly."},{"title":"Rough Atlantic Swells Crippled Mediterranean-Designed Galleasses","slug":"rough-atlantic-swells-crippled-mediterranean-designed-galleasses","url":"/categories/embarrassing-historical-moments/spanish-armada/rough-atlantic-swells-crippled-mediterranean-designed-galleasses.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Massive hybrid warships struggled in waters they were never built for."},{"title":"Royal Finances Were Strained by the Spanish Armada’s Failure","slug":"royal-finances-were-strained-by-the-spanish-armada-s-failure","url":"/categories/embarrassing-historical-moments/spanish-armada/royal-finances-were-strained-by-the-spanish-armada-s-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A failed invasion drained treasure from a global empire."},{"title":"Spanish Armada Cannonballs Were Calibrated for Boarding, Not Range","slug":"spanish-armada-cannonballs-were-calibrated-for-boarding-not-range","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-cannonballs-were-calibrated-for-boarding-not-range.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain launched 130 warships armed for boarding in an age of long-range guns."},{"title":"Spanish Armada Carried Siege Equipment That Never Reached Land","slug":"spanish-armada-carried-siege-equipment-that-never-reached-land","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-carried-siege-equipment-that-never-reached-land.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Cannons meant for English castles never left the decks."},{"title":"Spanish Armada Coordination Failed Due to Slow Communication","slug":"spanish-armada-coordination-failed-due-to-slow-communication","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-coordination-failed-due-to-slow-communication.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A fleet of 130 ships tried to invade without real-time communication."},{"title":"Spanish Armada Failed to Secure Control of the English Channel","slug":"spanish-armada-failed-to-secure-control-of-the-english-channel","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-failed-to-secure-control-of-the-english-channel.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An invasion fleet never controlled the water it needed to cross."},{"title":"Spanish Armada Intelligence Failed to Predict English Naval Tactics","slug":"spanish-armada-intelligence-failed-to-predict-english-naval-tactics","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-intelligence-failed-to-predict-english-naval-tactics.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain prepared for boarding battles and faced artillery duels instead."},{"title":"Spanish Armada Losses Included Elite Nobles and Commanders","slug":"spanish-armada-losses-included-elite-nobles-and-commanders","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-losses-included-elite-nobles-and-commanders.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An imperial superpower lost high-ranking nobles to wind and waves."},{"title":"Spanish Armada Maps Contained Critical Navigational Errors","slug":"spanish-armada-maps-contained-critical-navigational-errors","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-maps-contained-critical-navigational-errors.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An empire that mapped the Americas sailed into British waters with flawed charts."},{"title":"Spanish Armada Ships Carried More Priests Than Surgeons in 1588","slug":"spanish-armada-ships-carried-more-priests-than-surgeons-in-1588","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-ships-carried-more-priests-than-surgeons-in-1588.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An invasion fleet built to conquer England carried more priests than trained surgeons."},{"title":"Spanish Armada Soldiers Suffered Massive Attrition Before Major Combat","slug":"spanish-armada-soldiers-suffered-massive-attrition-before-major-combat","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-soldiers-suffered-massive-attrition-before-major-combat.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands died before the decisive battle even happened."},{"title":"Spanish Armada Supplies Rotting Before Reaching England","slug":"spanish-armada-supplies-rotting-before-reaching-england","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-supplies-rotting-before-reaching-england.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Thousands of soldiers sailed to conquer England with food already decaying."},{"title":"Spanish Armada Survivors Faced Hostile Shores in Ireland","slug":"spanish-armada-survivors-faced-hostile-shores-in-ireland","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-survivors-faced-hostile-shores-in-ireland.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Shipwrecked sailors were killed before reaching safety."},{"title":"Spanish Armada Was Outgunned in Ammunition Resupply Capacity","slug":"spanish-armada-was-outgunned-in-ammunition-resupply-capacity","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-was-outgunned-in-ammunition-resupply-capacity.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain’s massive fleet could not reload as long as England could fire."},{"title":"Spanish Armada’s Crescent Formation Collapsed in Hours","slug":"spanish-armada-s-crescent-formation-collapsed-in-hours","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-s-crescent-formation-collapsed-in-hours.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A perfectly curved defensive fleet shattered overnight in panic."},{"title":"Spanish Armada’s Heavy Ships Struggled in Shallow Coastal Waters","slug":"spanish-armada-s-heavy-ships-struggled-in-shallow-coastal-waters","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-s-heavy-ships-struggled-in-shallow-coastal-waters.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Deep-draft warships risked grounding near the English coast."},{"title":"Spanish Armada’s Mission Relied on Perfect Weather Synchronization","slug":"spanish-armada-s-mission-relied-on-perfect-weather-synchronization","url":"/categories/embarrassing-historical-moments/spanish-armada/spanish-armada-s-mission-relied-on-perfect-weather-synchronization.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One storm derailed a plan built on flawless timing."},{"title":"Storm Damage After Gravelines Was Irreversible at Sea","slug":"storm-damage-after-gravelines-was-irreversible-at-sea","url":"/categories/embarrassing-historical-moments/spanish-armada/storm-damage-after-gravelines-was-irreversible-at-sea.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Broken masts and torn sails sealed ships’ fate before Ireland."},{"title":"Symbol of Invincibility Cracked Across Europe After 1588","slug":"symbol-of-invincibility-cracked-across-europe-after-1588","url":"/categories/embarrassing-historical-moments/spanish-armada/symbol-of-invincibility-cracked-across-europe-after-1588.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The empire that ruled oceans was visibly beaten back."},{"title":"The Spanish Armada Ran Out of Anchors During the Retreat","slug":"the-spanish-armada-ran-out-of-anchors-during-the-retreat","url":"/categories/embarrassing-historical-moments/spanish-armada/the-spanish-armada-ran-out-of-anchors-during-the-retreat.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The world’s most powerful fleet fled north with ships that could not anchor."},{"title":"Unfavorable Winds Trapped the Spanish Armada in the Channel","slug":"unfavorable-winds-trapped-the-spanish-armada-in-the-channel","url":"/categories/embarrassing-historical-moments/spanish-armada/unfavorable-winds-trapped-the-spanish-armada-in-the-channel.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The fleet waited for wind that never arrived."},{"title":"Veteran Spanish Infantry Never Fought on English Soil","slug":"veteran-spanish-infantry-never-fought-on-english-soil","url":"/categories/embarrassing-historical-moments/spanish-armada/veteran-spanish-infantry-never-fought-on-english-soil.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Europe’s elite soldiers trained for invasion never disembarked."},{"title":"Weak Resupply Options Left the Spanish Armada Starving at Sea","slug":"weak-resupply-options-left-the-spanish-armada-starving-at-sea","url":"/categories/embarrassing-historical-moments/spanish-armada/weak-resupply-options-left-the-spanish-armada-starving-at-sea.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An empire controlling global trade could not feed its own fleet."},{"title":"Xebec-Class Ships Were Absent From the Spanish Armada","slug":"xebec-class-ships-were-absent-from-the-spanish-armada","url":"/categories/embarrassing-historical-moments/spanish-armada/xebec-class-ships-were-absent-from-the-spanish-armada.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Spain’s fastest Mediterranean raiders never joined its greatest fleet."},{"title":"Years of Planning Collapsed in Less Than Three Weeks","slug":"years-of-planning-collapsed-in-less-than-three-weeks","url":"/categories/embarrassing-historical-moments/spanish-armada/years-of-planning-collapsed-in-less-than-three-weeks.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An empire prepared for years and unraveled in days."},{"title":"Zero English Ports Were Captured by the Spanish Armada","slug":"zero-english-ports-were-captured-by-the-spanish-armada","url":"/categories/embarrassing-historical-moments/spanish-armada/zero-english-ports-were-captured-by-the-spanish-armada.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The largest invasion fleet in Europe seized nothing."},{"title":"Zigzag English Tactics Prevented Close Engagement by the Armada","slug":"zigzag-english-tactics-prevented-close-engagement-by-the-armada","url":"/categories/embarrassing-historical-moments/spanish-armada/zigzag-english-tactics-prevented-close-engagement-by-the-armada.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"English ships weaved through cannon smoke and refused to be boarded."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

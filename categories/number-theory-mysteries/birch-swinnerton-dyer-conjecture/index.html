@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birch Swinnerton Dyer Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Birch Swinnerton Dyer Conjecture</h1>
+  <p>Explore all facts in "Birch Swinnerton Dyer Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Birch Swinnerton Dyer Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Analytic Rank Determines Arithmetic Dimension in the Birch and Swinnerton-Dyer Conjecture","slug":"analytic-rank-determines-arithmetic-dimension-in-the-birch-and-swinnerton-dyer-conjecture","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/analytic-rank-determines-arithmetic-dimension-in-the-birch-and-swinnerton-dyer-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A curve’s dimension can be read from a single analytic whisper."},{"title":"Arithmetic Rank Remains Computationally Elusive Despite Analytic Clues","slug":"arithmetic-rank-remains-computationally-elusive-despite-analytic-clues","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/arithmetic-rank-remains-computationally-elusive-despite-analytic-clues.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"You can compute thousands of primes yet still not know the rank."},{"title":"Arithmetic Rank Remains Computationally Elusive Despite Analytic Clues","slug":"arithmetic-rank-remains-computationally-elusive-despite-analytic-clues","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/arithmetic-rank-remains-computationally-elusive-despite-analytic-clues.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"You can compute thousands of primes yet still not know the rank."},{"title":"Billions of Prime Reductions Exposed a Hidden Pattern in Elliptic Curves","slug":"billions-of-prime-reductions-exposed-a-hidden-pattern-in-elliptic-curves","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/billions-of-prime-reductions-exposed-a-hidden-pattern-in-elliptic-curves.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 1960s computer experiment hinted at infinity hiding in primes."},{"title":"Birch and Swinnerton-Dyer Conjecture Predicts Infinite Rational Points From a Single Zero","slug":"birch-and-swinnerton-dyer-conjecture-predicts-infinite-rational-points-from-a-single-zero","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/birch-and-swinnerton-dyer-conjecture-predicts-infinite-rational-points-from-a-single-zero.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One invisible zero can unlock infinitely many solutions."},{"title":"Clay Millennium Prize Problem Ties One Million Dollars to a Single Function Value","slug":"clay-millennium-prize-problem-ties-one-million-dollars-to-a-single-function-value","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/clay-millennium-prize-problem-ties-one-million-dollars-to-a-single-function-value.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single point on a complex graph is worth one million dollars."},{"title":"Cohomological Obstructions Enter the Exact BSD Leading Coefficient Formula","slug":"cohomological-obstructions-enter-the-exact-bsd-leading-coefficient-formula","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/cohomological-obstructions-enter-the-exact-bsd-leading-coefficient-formula.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible cohomology groups alter a concrete analytic number."},{"title":"Cohomological Obstructions Enter the Exact BSD Leading Coefficient Formula","slug":"cohomological-obstructions-enter-the-exact-bsd-leading-coefficient-formula","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/cohomological-obstructions-enter-the-exact-bsd-leading-coefficient-formula.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible cohomology groups alter a concrete analytic number."},{"title":"Divergent Infinite Products Converge Into the L-Function Behind Rational Infinity","slug":"divergent-infinite-products-converge-into-the-l-function-behind-rational-infinity","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/divergent-infinite-products-converge-into-the-l-function-behind-rational-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinitely many primes multiply into a single finite value."},{"title":"Elliptic Curve L-Functions Satisfy Functional Equations Symmetric Around s Equals 1","slug":"elliptic-curve-l-functions-satisfy-functional-equations-symmetric-around-s-equals-1","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/elliptic-curve-l-functions-satisfy-functional-equations-symmetric-around-s-equals-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A hidden symmetry centers the infinite analytic structure."},{"title":"Elliptic Curve L-Functions Satisfy Functional Equations Symmetric Around s Equals 1","slug":"elliptic-curve-l-functions-satisfy-functional-equations-symmetric-around-s-equals-1","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/elliptic-curve-l-functions-satisfy-functional-equations-symmetric-around-s-equals-1.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A hidden symmetry centers the infinite analytic structure."},{"title":"Elliptic Curves Can Hide Infinite Rational Points Inside a Simple Cubic Equation","slug":"elliptic-curves-can-hide-infinite-rational-points-inside-a-simple-cubic-equation","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/elliptic-curves-can-hide-infinite-rational-points-inside-a-simple-cubic-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple cubic equation can contain infinitely many exact fractions."},{"title":"Every Prime Number Contributes to the L-Function Governing Rational Infinity","slug":"every-prime-number-contributes-to-the-l-function-governing-rational-infinity","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/every-prime-number-contributes-to-the-l-function-governing-rational-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every prime leaves a fingerprint on infinite rational structure."},{"title":"Finite Torsion Subgroups Contrast With Infinite Free Rank in BSD","slug":"finite-torsion-subgroups-contrast-with-infinite-free-rank-in-bsd","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/finite-torsion-subgroups-contrast-with-infinite-free-rank-in-bsd.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Rational points are partly finite and partly infinite at once."},{"title":"Finite Torsion Subgroups Contrast With Infinite Free Rank in BSD","slug":"finite-torsion-subgroups-contrast-with-infinite-free-rank-in-bsd","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/finite-torsion-subgroups-contrast-with-infinite-free-rank-in-bsd.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Rational points are partly finite and partly infinite at once."},{"title":"Finiteness and Infinity on Elliptic Curves Depend on a Single Analytic Order","slug":"finiteness-and-infinity-on-elliptic-curves-depend-on-a-single-analytic-order","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/finiteness-and-infinity-on-elliptic-curves-depend-on-a-single-analytic-order.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinity hinges on how gently a function touches zero."},{"title":"Finiteness of the Tate-Shafarevich Group Is Embedded in the BSD Prediction","slug":"finiteness-of-the-tate-shafarevich-group-is-embedded-in-the-bsd-prediction","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/finiteness-of-the-tate-shafarevich-group-is-embedded-in-the-bsd-prediction.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An invisible arithmetic group may control infinite rational growth."},{"title":"Galois Representations Tie Elliptic Curves to Deep Symmetry Structures","slug":"galois-representations-tie-elliptic-curves-to-deep-symmetry-structures","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/galois-representations-tie-elliptic-curves-to-deep-symmetry-structures.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A cubic equation secretly encodes a hidden symmetry universe."},{"title":"Group Law on Elliptic Curves Generates Endless Rational Points From One","slug":"group-law-on-elliptic-curves-generates-endless-rational-points-from-one","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/group-law-on-elliptic-curves-generates-endless-rational-points-from-one.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Add one rational point repeatedly and infinity appears."},{"title":"Hasse-Weil L-Functions Extend Finite Prime Data Into the Complex Plane","slug":"hasse-weil-l-functions-extend-finite-prime-data-into-the-complex-plane","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/hasse-weil-l-functions-extend-finite-prime-data-into-the-complex-plane.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Finite prime counts expand into a complex infinite landscape."},{"title":"Heegner Points Generated Infinite Rational Solutions in Rank One Cases","slug":"heegner-points-generated-infinite-rational-solutions-in-rank-one-cases","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/heegner-points-generated-infinite-rational-solutions-in-rank-one-cases.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single constructed point unlocked infinite rational growth."},{"title":"Height Pairings Transform Rational Fractions Into Geometric Coordinates","slug":"height-pairings-transform-rational-fractions-into-geometric-coordinates","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/height-pairings-transform-rational-fractions-into-geometric-coordinates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Simple fractions become vectors in infinite-dimensional space."},{"title":"Height Pairings Transform Rational Fractions Into Geometric Coordinates","slug":"height-pairings-transform-rational-fractions-into-geometric-coordinates","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/height-pairings-transform-rational-fractions-into-geometric-coordinates.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Simple fractions become vectors in infinite-dimensional space."},{"title":"Inequalities From Selmer Groups Bound Rank Yet Stop Short of BSD Equality","slug":"inequalities-from-selmer-groups-bound-rank-yet-stop-short-of-bsd-equality","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/inequalities-from-selmer-groups-bound-rank-yet-stop-short-of-bsd-equality.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Algebra can cage infinity but not count it exactly."},{"title":"Inequalities From Selmer Groups Bound Rank Yet Stop Short of BSD Equality","slug":"inequalities-from-selmer-groups-bound-rank-yet-stop-short-of-bsd-equality","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/inequalities-from-selmer-groups-bound-rank-yet-stop-short-of-bsd-equality.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Algebra can cage infinity but not count it exactly."},{"title":"Infinite Rational Families Emerge When the L-Function Vanishes Twice","slug":"infinite-rational-families-emerge-when-the-l-function-vanishes-twice","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/infinite-rational-families-emerge-when-the-l-function-vanishes-twice.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two analytic zeros unleash two independent infinities."},{"title":"Iwasawa Theory Provides Clues Toward the Birch and Swinnerton-Dyer Conjecture","slug":"iwasawa-theory-provides-clues-toward-the-birch-and-swinnerton-dyer-conjecture","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/iwasawa-theory-provides-clues-toward-the-birch-and-swinnerton-dyer-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An infinite tower of number fields hints at solving BSD."},{"title":"Jacobian Varieties Generalize BSD Beyond Single Elliptic Curves","slug":"jacobian-varieties-generalize-bsd-beyond-single-elliptic-curves","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/jacobian-varieties-generalize-bsd-beyond-single-elliptic-curves.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Higher-dimensional shapes inherit the same infinite mystery."},{"title":"Kolyvagin’s Euler Systems Proved Cases of BSD Through Structured Primes","slug":"kolyvagin-s-euler-systems-proved-cases-of-bsd-through-structured-primes","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/kolyvagin-s-euler-systems-proved-cases-of-bsd-through-structured-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Carefully chosen primes forced infinite arithmetic structure."},{"title":"Langlands Program Places BSD Within a Grand Unified Arithmetic Vision","slug":"langlands-program-places-bsd-within-a-grand-unified-arithmetic-vision","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/langlands-program-places-bsd-within-a-grand-unified-arithmetic-vision.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single conjecture echoes across the largest unification in mathematics."},{"title":"Langlands Program Places BSD Within a Grand Unified Arithmetic Vision","slug":"langlands-program-places-bsd-within-a-grand-unified-arithmetic-vision","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/langlands-program-places-bsd-within-a-grand-unified-arithmetic-vision.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single conjecture echoes across the largest unification in mathematics."},{"title":"Local-Global Arithmetic Tension Surfaces Inside the BSD Formula","slug":"local-global-arithmetic-tension-surfaces-inside-the-bsd-formula","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/local-global-arithmetic-tension-surfaces-inside-the-bsd-formula.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A curve can look solvable everywhere and fail globally."},{"title":"Modularity Secured Analytic Continuation but Left BSD’s Core Equality Open","slug":"modularity-secured-analytic-continuation-but-left-bsd-s-core-equality-open","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/modularity-secured-analytic-continuation-but-left-bsd-s-core-equality-open.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A historic proof solved one mystery and exposed another."},{"title":"Modularity Secured Analytic Continuation but Left BSD’s Core Equality Open","slug":"modularity-secured-analytic-continuation-but-left-bsd-s-core-equality-open","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/modularity-secured-analytic-continuation-but-left-bsd-s-core-equality-open.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A historic proof solved one mystery and exposed another."},{"title":"Modularity Theorem Linked Elliptic Curves to Modular Forms Before BSD Was Solved","slug":"modularity-theorem-linked-elliptic-curves-to-modular-forms-before-bsd-was-solved","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/modularity-theorem-linked-elliptic-curves-to-modular-forms-before-bsd-was-solved.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Elliptic curves secretly mirror symmetric analytic waves."},{"title":"Non-Vanishing of L-Functions Forces Arithmetic Scarcity","slug":"non-vanishing-of-l-functions-forces-arithmetic-scarcity","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/non-vanishing-of-l-functions-forces-arithmetic-scarcity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"When the function refuses zero, infinity disappears."},{"title":"One Million Dollar Prize Still Awaits a Complete BSD Proof","slug":"one-million-dollar-prize-still-awaits-a-complete-bsd-proof","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/one-million-dollar-prize-still-awaits-a-complete-bsd-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single unresolved equality is worth one million dollars."},{"title":"Order of Vanishing at s Equals 1 Governs Infinite Rational Structure","slug":"order-of-vanishing-at-s-equals-1-governs-infinite-rational-structure","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/order-of-vanishing-at-s-equals-1-governs-infinite-rational-structure.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One precise analytic order decides arithmetic infinity."},{"title":"Partial Proofs of BSD Exist Only in the Lowest Infinite Cases","slug":"partial-proofs-of-bsd-exist-only-in-the-lowest-infinite-cases","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/partial-proofs-of-bsd-exist-only-in-the-lowest-infinite-cases.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinity is partially proven only when it barely exists."},{"title":"Prime-by-Prime Data Accumulates Into a Global Arithmetic Verdict","slug":"prime-by-prime-data-accumulates-into-a-global-arithmetic-verdict","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/prime-by-prime-data-accumulates-into-a-global-arithmetic-verdict.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every prime casts a vote on rational infinity."},{"title":"Quadratic Twists Can Radically Change the Rank of an Elliptic Curve","slug":"quadratic-twists-can-radically-change-the-rank-of-an-elliptic-curve","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/quadratic-twists-can-radically-change-the-rank-of-an-elliptic-curve.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A subtle equation twist can create or erase infinity."},{"title":"Rank Zero Elliptic Curves Can Have No Infinite Rational Growth At All","slug":"rank-zero-elliptic-curves-can-have-no-infinite-rational-growth-at-all","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/rank-zero-elliptic-curves-can-have-no-infinite-rational-growth-at-all.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some elegant curves allow only finitely many exact fractions."},{"title":"Rational Points Form Lattices Whose Dimension BSD Claims to Predict Exactly","slug":"rational-points-form-lattices-whose-dimension-bsd-claims-to-predict-exactly","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/rational-points-form-lattices-whose-dimension-bsd-claims-to-predict-exactly.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite rational fractions align into geometric grids."},{"title":"Regulator Growth Reflects Geometric Spread of Infinite Rational Lattices","slug":"regulator-growth-reflects-geometric-spread-of-infinite-rational-lattices","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/regulator-growth-reflects-geometric-spread-of-infinite-rational-lattices.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite rational points stretch into measurable geometric space."},{"title":"Regulator Terms in BSD Measure the Volume of Rational Infinity","slug":"regulator-terms-in-bsd-measure-the-volume-of-rational-infinity","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/regulator-terms-in-bsd-measure-the-volume-of-rational-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinity has a measurable volume hidden inside a determinant."},{"title":"Selmer Groups Bridge L-Function Behavior and Rational Rank","slug":"selmer-groups-bridge-l-function-behavior-and-rational-rank","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/selmer-groups-bridge-l-function-behavior-and-rational-rank.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hidden cohomology groups forecast infinite rational growth."},{"title":"Special Derivatives of L-Functions Measure Arithmetic Heights Precisely","slug":"special-derivatives-of-l-functions-measure-arithmetic-heights-precisely","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/special-derivatives-of-l-functions-measure-arithmetic-heights-precisely.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The slope of infinity encodes rational magnitude."},{"title":"Special Value Formulas in BSD Connect Infinite Series to Finite Arithmetic Data","slug":"special-value-formulas-in-bsd-connect-infinite-series-to-finite-arithmetic-data","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/special-value-formulas-in-bsd-connect-infinite-series-to-finite-arithmetic-data.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An infinite series predicts exact finite arithmetic invariants."},{"title":"Tamagawa Numbers in BSD Encode Local Prime Irregularities","slug":"tamagawa-numbers-in-bsd-encode-local-prime-irregularities","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/tamagawa-numbers-in-bsd-encode-local-prime-irregularities.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny prime irregularities shape global infinite behavior."},{"title":"Taylor Expansion at s Equals 1 Encodes Complete Arithmetic Anatomy","slug":"taylor-expansion-at-s-equals-1-encodes-complete-arithmetic-anatomy","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/taylor-expansion-at-s-equals-1-encodes-complete-arithmetic-anatomy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An infinite power series hides a curve’s entire arithmetic skeleton."},{"title":"Taylor Expansion at s Equals 1 Encodes Complete Arithmetic Anatomy","slug":"taylor-expansion-at-s-equals-1-encodes-complete-arithmetic-anatomy","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/taylor-expansion-at-s-equals-1-encodes-complete-arithmetic-anatomy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An infinite power series hides a curve’s entire arithmetic skeleton."},{"title":"Translating Between Analysis and Algebra Defines the Heart of BSD","slug":"translating-between-analysis-and-algebra-defines-the-heart-of-bsd","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/translating-between-analysis-and-algebra-defines-the-heart-of-bsd.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two incompatible languages claim to describe the same infinity."},{"title":"Translating Between Analysis and Algebra Defines the Heart of BSD","slug":"translating-between-analysis-and-algebra-defines-the-heart-of-bsd","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/translating-between-analysis-and-algebra-defines-the-heart-of-bsd.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two incompatible languages claim to describe the same infinity."},{"title":"Unique Factorization of Primes Powers the Infinite Euler Product in BSD","slug":"unique-factorization-of-primes-powers-the-infinite-euler-product-in-bsd","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/unique-factorization-of-primes-powers-the-infinite-euler-product-in-bsd.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime uniqueness fuels an infinite analytic machine."},{"title":"Universal BSD Philosophy Predicts Special Values Encode Arithmetic Reality","slug":"universal-bsd-philosophy-predicts-special-values-encode-arithmetic-reality","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/universal-bsd-philosophy-predicts-special-values-encode-arithmetic-reality.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single special value predicts an entire rational universe."},{"title":"Vanishing Order at s Equals 1 Encodes the Exact Number of Infinite Generators","slug":"vanishing-order-at-s-equals-1-encodes-the-exact-number-of-infinite-generators","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/vanishing-order-at-s-equals-1-encodes-the-exact-number-of-infinite-generators.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Count the zeros and you count the infinities."},{"title":"Weak Mordell-Weil Theorem Underpins the Rank Concept in BSD","slug":"weak-mordell-weil-theorem-underpins-the-rank-concept-in-bsd","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/weak-mordell-weil-theorem-underpins-the-rank-concept-in-bsd.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite rational growth still obeys finite generation."},{"title":"Y-Coordinate Reflections Power the Infinite Group Law on Elliptic Curves","slug":"y-coordinate-reflections-power-the-infinite-group-law-on-elliptic-curves","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/y-coordinate-reflections-power-the-infinite-group-law-on-elliptic-curves.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple geometric reflection generates endless fractions."},{"title":"Zero Derivatives of L-Functions Control the Height of Constructed Points","slug":"zero-derivatives-of-l-functions-control-the-height-of-constructed-points","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/zero-derivatives-of-l-functions-control-the-height-of-constructed-points.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The slope of a complex function measures rational height."},{"title":"Zeros of L-Functions Predict Whether Rational Points Are Rare or Endless","slug":"zeros-of-l-functions-predict-whether-rational-points-are-rare-or-endless","url":"/categories/number-theory-mysteries/birch-swinnerton-dyer-conjecture/zeros-of-l-functions-predict-whether-rational-points-are-rare-or-endless.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Touch zero once and infinity begins."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

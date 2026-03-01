@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalan Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Catalan Conjecture</h1>
+  <p>Explore all facts in "Catalan Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Catalan Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"2-Solution Paradox of Catalan’s Conjecture Proven in 2002","slug":"2-solution-paradox-of-catalan-s-conjecture-proven-in-2002","url":"/categories/number-theory-mysteries/catalan-conjecture/2-solution-paradox-of-catalan-s-conjecture-proven-in-2002.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An equation that looks harmless locked mathematicians out for 158 years."},{"title":"8 and 9 Consecutive Powers Survived 158 Years of Scrutiny","slug":"8-and-9-consecutive-powers-survived-158-years-of-scrutiny","url":"/categories/number-theory-mysteries/catalan-conjecture/8-and-9-consecutive-powers-survived-158-years-of-scrutiny.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two small integers resisted global mathematical assault."},{"title":"8–9 Power Adjacency Classified After 158-Year Investigation","slug":"8-9-power-adjacency-classified-after-158-year-investigation","url":"/categories/number-theory-mysteries/catalan-conjecture/8-9-power-adjacency-classified-after-158-year-investigation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two single-digit numbers triggered a century-long pursuit."},{"title":"Algebraic Number Fields Underpin Catalan’s 158-Year Mystery","slug":"algebraic-number-fields-underpin-catalan-s-158-year-mystery","url":"/categories/number-theory-mysteries/catalan-conjecture/algebraic-number-fields-underpin-catalan-s-158-year-mystery.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A childlike equation required graduate-level abstract fields."},{"title":"Algebraic Rigidity Principle Exposed by Catalan’s Equation","slug":"algebraic-rigidity-principle-exposed-by-catalan-s-equation","url":"/categories/number-theory-mysteries/catalan-conjecture/algebraic-rigidity-principle-exposed-by-catalan-s-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite flexibility collapsed under hidden rigidity."},{"title":"Algebraic Unit Theory Sealed Catalan’s Power Equation","slug":"algebraic-unit-theory-sealed-catalan-s-power-equation","url":"/categories/number-theory-mysteries/catalan-conjecture/algebraic-unit-theory-sealed-catalan-s-power-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A difference of one depended on invisible unit elements."},{"title":"Bounded Difference Principle Emerged from Catalan’s Equation","slug":"bounded-difference-principle-emerged-from-catalan-s-equation","url":"/categories/number-theory-mysteries/catalan-conjecture/bounded-difference-principle-emerged-from-catalan-s-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Unlimited exponents never shrink their gap twice."},{"title":"Exponential Diophantine Barrier Revealed by Catalan’s Equation","slug":"exponential-diophantine-barrier-revealed-by-catalan-s-equation","url":"/categories/number-theory-mysteries/catalan-conjecture/exponential-diophantine-barrier-revealed-by-catalan-s-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite exponents cannot manufacture a second difference of one."},{"title":"Exponential Growth Illusion Dispelled by Catalan’s Theorem","slug":"exponential-growth-illusion-dispelled-by-catalan-s-theorem","url":"/categories/number-theory-mysteries/catalan-conjecture/exponential-growth-illusion-dispelled-by-catalan-s-theorem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Bigger numbers never recreate the smallest coincidence."},{"title":"Galois Module Constraints Eliminated Every Catalan Counterexample","slug":"galois-module-constraints-eliminated-every-catalan-counterexample","url":"/categories/number-theory-mysteries/catalan-conjecture/galois-module-constraints-eliminated-every-catalan-counterexample.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible algebraic symmetries blocked infinite possibilities."},{"title":"Infinite Perfect Powers Produced Exactly One Unit Gap","slug":"infinite-perfect-powers-produced-exactly-one-unit-gap","url":"/categories/number-theory-mysteries/catalan-conjecture/infinite-perfect-powers-produced-exactly-one-unit-gap.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Count forever and you still find a single difference of one."},{"title":"Isolated Power Gap of One Survives Infinite Search Space","slug":"isolated-power-gap-of-one-survives-infinite-search-space","url":"/categories/number-theory-mysteries/catalan-conjecture/isolated-power-gap-of-one-survives-infinite-search-space.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Search forever and you still find only 8 and 9."},{"title":"K-Unit Symmetry Collapse Prevented Second Catalan Solution","slug":"k-unit-symmetry-collapse-prevented-second-catalan-solution","url":"/categories/number-theory-mysteries/catalan-conjecture/k-unit-symmetry-collapse-prevented-second-catalan-solution.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One hidden symmetry failure erased infinite possibilities."},{"title":"Kernel Conditions in Galois Modules Secured Catalan’s Uniqueness","slug":"kernel-conditions-in-galois-modules-secured-catalan-s-uniqueness","url":"/categories/number-theory-mysteries/catalan-conjecture/kernel-conditions-in-galois-modules-secured-catalan-s-uniqueness.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Abstract kernel properties erased infinite counterexamples."},{"title":"Kummer Theory Links Catalan’s Conjecture to Fermat’s Legacy","slug":"kummer-theory-links-catalan-s-conjecture-to-fermat-s-legacy","url":"/categories/number-theory-mysteries/catalan-conjecture/kummer-theory-links-catalan-s-conjecture-to-fermat-s-legacy.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A subtraction of one dragged in 19th century cyclotomic fields."},{"title":"Quasi-Cyclotomic Constraints Defined Catalan’s Final Barrier","slug":"quasi-cyclotomic-constraints-defined-catalan-s-final-barrier","url":"/categories/number-theory-mysteries/catalan-conjecture/quasi-cyclotomic-constraints-defined-catalan-s-final-barrier.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Roots of unity determined the fate of two integers."},{"title":"Quotient Boundaries Hidden Inside Catalan’s 1844 Power Equation","slug":"quotient-boundaries-hidden-inside-catalan-s-1844-power-equation","url":"/categories/number-theory-mysteries/catalan-conjecture/quotient-boundaries-hidden-inside-catalan-s-1844-power-equation.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Divide two exploding powers and infinity still yields one gap."},{"title":"Rare Consecutive Perfect Powers Documented Since 1844","slug":"rare-consecutive-perfect-powers-documented-since-1844","url":"/categories/number-theory-mysteries/catalan-conjecture/rare-consecutive-perfect-powers-documented-since-1844.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two adjacent powers broke a pattern that never repeats."},{"title":"Ubiquity Illusion of Perfect Powers Broken by Catalan’s Theorem","slug":"ubiquity-illusion-of-perfect-powers-broken-by-catalan-s-theorem","url":"/categories/number-theory-mysteries/catalan-conjecture/ubiquity-illusion-of-perfect-powers-broken-by-catalan-s-theorem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite perfect powers exist, yet adjacency happens once."},{"title":"Ubiquity Illusion of Perfect Powers Broken by Catalan’s Theorem","slug":"ubiquity-illusion-of-perfect-powers-broken-by-catalan-s-theorem","url":"/categories/number-theory-mysteries/catalan-conjecture/ubiquity-illusion-of-perfect-powers-broken-by-catalan-s-theorem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinite perfect powers exist, yet adjacency happens once."},{"title":"Unbounded Exponents Cannot Produce a Second 8 and 9","slug":"unbounded-exponents-cannot-produce-a-second-8-and-9","url":"/categories/number-theory-mysteries/catalan-conjecture/unbounded-exponents-cannot-produce-a-second-8-and-9.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Raise numbers forever and the gap never returns."},{"title":"Unique Difference-of-One Event Across Infinite Exponents","slug":"unique-difference-of-one-event-across-infinite-exponents","url":"/categories/number-theory-mysteries/catalan-conjecture/unique-difference-of-one-event-across-infinite-exponents.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Unlimited exponents generated a single minimal gap."},{"title":"Unique Difference-of-One Event Across Infinite Exponents","slug":"unique-difference-of-one-event-across-infinite-exponents","url":"/categories/number-theory-mysteries/catalan-conjecture/unique-difference-of-one-event-across-infinite-exponents.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Unlimited exponents generated a single minimal gap."},{"title":"Unique Integer Pair 8 and 9 Isolated by Mihăilescu’s Theorem","slug":"unique-integer-pair-8-and-9-isolated-by-mih-ilescu-s-theorem","url":"/categories/number-theory-mysteries/catalan-conjecture/unique-integer-pair-8-and-9-isolated-by-mih-ilescu-s-theorem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Only one consecutive pair survives infinite exponential growth."},{"title":"Uniqueness Theorem of 2002 Closed Catalan’s 1844 Conjecture","slug":"uniqueness-theorem-of-2002-closed-catalan-s-1844-conjecture","url":"/categories/number-theory-mysteries/catalan-conjecture/uniqueness-theorem-of-2002-closed-catalan-s-1844-conjecture.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 19th century claim survived into the digital age."},{"title":"Unrepeatable Power Adjacency Encoded in Cyclotomic Units","slug":"unrepeatable-power-adjacency-encoded-in-cyclotomic-units","url":"/categories/number-theory-mysteries/catalan-conjecture/unrepeatable-power-adjacency-encoded-in-cyclotomic-units.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible unit elements outlawed every future coincidence."},{"title":"Unrepeatable Power Adjacency Encoded in Cyclotomic Units","slug":"unrepeatable-power-adjacency-encoded-in-cyclotomic-units","url":"/categories/number-theory-mysteries/catalan-conjecture/unrepeatable-power-adjacency-encoded-in-cyclotomic-units.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible unit elements outlawed every future coincidence."},{"title":"X–Power Escalation Failed to Breach Catalan’s Structural Limit","slug":"x-power-escalation-failed-to-breach-catalan-s-structural-limit","url":"/categories/number-theory-mysteries/catalan-conjecture/x-power-escalation-failed-to-breach-catalan-s-structural-limit.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Raise bases endlessly and the barrier still holds."},{"title":"X–Y Exponential Divergence Locked Perfect Powers Apart","slug":"x-y-exponential-divergence-locked-perfect-powers-apart","url":"/categories/number-theory-mysteries/catalan-conjecture/x-y-exponential-divergence-locked-perfect-powers-apart.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Exploding growth rates guaranteed permanent separation."},{"title":"X–Y Exponential Divergence Locked Perfect Powers Apart","slug":"x-y-exponential-divergence-locked-perfect-powers-apart","url":"/categories/number-theory-mysteries/catalan-conjecture/x-y-exponential-divergence-locked-perfect-powers-apart.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Exploding growth rates guaranteed permanent separation."},{"title":"X–Y Power Collision Limited to 8 and 9 Across Infinity","slug":"x-y-power-collision-limited-to-8-and-9-across-infinity","url":"/categories/number-theory-mysteries/catalan-conjecture/x-y-power-collision-limited-to-8-and-9-across-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two massive powers collide once and never again."},{"title":"X^a − Y^b = 1 Equation That Defied 19th Century Algebra","slug":"x-a-y-b-1-equation-that-defied-19th-century-algebra","url":"/categories/number-theory-mysteries/catalan-conjecture/x-a-y-b-1-equation-that-defied-19th-century-algebra.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Subtract two perfect powers and you almost never get one."},{"title":"Xenial Symmetry Between 2³ and 3² Never Repeats","slug":"xenial-symmetry-between-2-and-3-never-repeats","url":"/categories/number-theory-mysteries/catalan-conjecture/xenial-symmetry-between-2-and-3-never-repeats.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two friendly exponents align once and never again."},{"title":"Xenial Symmetry Between 2³ and 3² Never Repeats","slug":"xenial-symmetry-between-2-and-3-never-repeats","url":"/categories/number-theory-mysteries/catalan-conjecture/xenial-symmetry-between-2-and-3-never-repeats.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two friendly exponents align once and never again."},{"title":"Xenodochial Gap Between Consecutive Powers Closed Permanently","slug":"xenodochial-gap-between-consecutive-powers-closed-permanently","url":"/categories/number-theory-mysteries/catalan-conjecture/xenodochial-gap-between-consecutive-powers-closed-permanently.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One hospitable gap welcomed exactly two numbers."},{"title":"Xenodochial Gap Between Consecutive Powers Closed Permanently","slug":"xenodochial-gap-between-consecutive-powers-closed-permanently","url":"/categories/number-theory-mysteries/catalan-conjecture/xenodochial-gap-between-consecutive-powers-closed-permanently.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One hospitable gap welcomed exactly two numbers."},{"title":"Y-Exponent Imbalance That Locked Catalan’s Equation for 158 Years","slug":"y-exponent-imbalance-that-locked-catalan-s-equation-for-158-years","url":"/categories/number-theory-mysteries/catalan-conjecture/y-exponent-imbalance-that-locked-catalan-s-equation-for-158-years.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One exponent grows faster, yet never closes the gap."},{"title":"Y-Scale Explosion Never Recreated Catalan’s Unit Difference","slug":"y-scale-explosion-never-recreated-catalan-s-unit-difference","url":"/categories/number-theory-mysteries/catalan-conjecture/y-scale-explosion-never-recreated-catalan-s-unit-difference.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even trillion-digit powers never matched 8 and 9."},{"title":"Y^b and X^a Consecutive Powers Mystery Solved in 2002","slug":"y-b-and-x-a-consecutive-powers-mystery-solved-in-2002","url":"/categories/number-theory-mysteries/catalan-conjecture/y-b-and-x-a-consecutive-powers-mystery-solved-in-2002.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Two numbers differ by one, yet the proof spans centuries."},{"title":"Year 1844 Conjecture Survived Until 2002 Algebraic Breakthrough","slug":"year-1844-conjecture-survived-until-2002-algebraic-breakthrough","url":"/categories/number-theory-mysteries/catalan-conjecture/year-1844-conjecture-survived-until-2002-algebraic-breakthrough.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A Victorian-era claim resisted proof for 158 years."},{"title":"Year 1844 Conjecture Survived Until 2002 Algebraic Breakthrough","slug":"year-1844-conjecture-survived-until-2002-algebraic-breakthrough","url":"/categories/number-theory-mysteries/catalan-conjecture/year-1844-conjecture-survived-until-2002-algebraic-breakthrough.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A Victorian-era claim resisted proof for 158 years."},{"title":"Year-Spanning Algebra Confirmed Single Catalan Solution","slug":"year-spanning-algebra-confirmed-single-catalan-solution","url":"/categories/number-theory-mysteries/catalan-conjecture/year-spanning-algebra-confirmed-single-catalan-solution.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Generations passed before two integers were vindicated."},{"title":"Year-Spanning Algebra Confirmed Single Catalan Solution","slug":"year-spanning-algebra-confirmed-single-catalan-solution","url":"/categories/number-theory-mysteries/catalan-conjecture/year-spanning-algebra-confirmed-single-catalan-solution.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Generations passed before two integers were vindicated."},{"title":"Z-Prime Divisor Barriers Restricted Catalan Counterexamples","slug":"z-prime-divisor-barriers-restricted-catalan-counterexamples","url":"/categories/number-theory-mysteries/catalan-conjecture/z-prime-divisor-barriers-restricted-catalan-counterexamples.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime divisors quietly blocked every new power collision."},{"title":"Zero-Recurrence Law for Consecutive Perfect Powers","slug":"zero-recurrence-law-for-consecutive-perfect-powers","url":"/categories/number-theory-mysteries/catalan-conjecture/zero-recurrence-law-for-consecutive-perfect-powers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After 8 and 9, the pattern vanishes forever."},{"title":"Zero-Recurrence Law for Consecutive Perfect Powers","slug":"zero-recurrence-law-for-consecutive-perfect-powers","url":"/categories/number-theory-mysteries/catalan-conjecture/zero-recurrence-law-for-consecutive-perfect-powers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After 8 and 9, the pattern vanishes forever."},{"title":"Zero-Repeat Phenomenon in Consecutive Perfect Powers","slug":"zero-repeat-phenomenon-in-consecutive-perfect-powers","url":"/categories/number-theory-mysteries/catalan-conjecture/zero-repeat-phenomenon-in-consecutive-perfect-powers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Across infinite integers, the gap of one happens once."},{"title":"Zonal Separation of Perfect Powers Confirmed by 2002 Theorem","slug":"zonal-separation-of-perfect-powers-confirmed-by-2002-theorem","url":"/categories/number-theory-mysteries/catalan-conjecture/zonal-separation-of-perfect-powers-confirmed-by-2002-theorem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Perfect powers occupy zones that never touch twice."},{"title":"Zsigmondy Theorem Connections Narrowed Catalan’s Possibilities","slug":"zsigmondy-theorem-connections-narrowed-catalan-s-possibilities","url":"/categories/number-theory-mysteries/catalan-conjecture/zsigmondy-theorem-connections-narrowed-catalan-s-possibilities.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Ancient prime divisors quietly blocked new solutions."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golden Teacher</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Golden Teacher</h1>
+  <p>Explore all facts in "Golden Teacher".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Golden Teacher</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Golden Teacher Psilocybin 2022 Johns Hopkins Depression Trial Results","slug":"golden-teacher-psilocybin-2022-johns-hopkins-depression-trial-results","url":"/categories/wild-mushrooms/golden-teacher/golden-teacher-psilocybin-2022-johns-hopkins-depression-trial-results.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A mushroom once sold in plastic bags is now reversing severe depression in weeks."},{"title":"Karyogamy Stage in Psilocybe Life Cycle Fuses Two Separate Nuclei","slug":"karyogamy-stage-in-psilocybe-life-cycle-fuses-two-separate-nuclei","url":"/categories/wild-mushrooms/golden-teacher/karyogamy-stage-in-psilocybe-life-cycle-fuses-two-separate-nuclei.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Each mushroom cell can temporarily contain two distinct genetic nuclei."},{"title":"Ketamine Versus Psilocybin 2021 Comparative Depression Trial Outcomes","slug":"ketamine-versus-psilocybin-2021-comparative-depression-trial-outcomes","url":"/categories/wild-mushrooms/golden-teacher/ketamine-versus-psilocybin-2021-comparative-depression-trial-outcomes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Two radically different drugs now compete to reset severe depression in days."},{"title":"Kew Gardens Fungal Surveys Estimate 2.5 Million Species Worldwide","slug":"kew-gardens-fungal-surveys-estimate-2-5-million-species-worldwide","url":"/categories/wild-mushrooms/golden-teacher/kew-gardens-fungal-surveys-estimate-2-5-million-species-worldwide.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Scientists estimate millions of fungi exist, and most remain unnamed."},{"title":"Kinetic Dephosphorylation Converts Psilocybin to Active Psilocin in Liver Tissue","slug":"kinetic-dephosphorylation-converts-psilocybin-to-active-psilocin-in-liver-tissue","url":"/categories/wild-mushrooms/golden-teacher/kinetic-dephosphorylation-converts-psilocybin-to-active-psilocin-in-liver-tissue.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The mushroom’s molecule is chemically altered before it can affect perception."},{"title":"Kinetic Growth Rates Show Psilocybe Mycelium Can Colonize Substrate in Days","slug":"kinetic-growth-rates-show-psilocybe-mycelium-can-colonize-substrate-in-days","url":"/categories/wild-mushrooms/golden-teacher/kinetic-growth-rates-show-psilocybe-mycelium-can-colonize-substrate-in-days.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A microscopic network can overtake a nutrient source faster than mold spreads on bread."},{"title":"Kinetic Receptor Occupancy Models Predict Psilocin Binding Duration","slug":"kinetic-receptor-occupancy-models-predict-psilocin-binding-duration","url":"/categories/wild-mushrooms/golden-teacher/kinetic-receptor-occupancy-models-predict-psilocin-binding-duration.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Mathematical models estimate how long a mushroom molecule grips brain receptors."},{"title":"Kinetic Solubility Data Show Psilocybin Is Highly Water Soluble","slug":"kinetic-solubility-data-show-psilocybin-is-highly-water-soluble","url":"/categories/wild-mushrooms/golden-teacher/kinetic-solubility-data-show-psilocybin-is-highly-water-soluble.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The psychoactive compound dissolves readily in plain water."},{"title":"Mycelial Enzyme Systems Break Down Lignin Once Thought Indestructible","slug":"mycelial-enzyme-systems-break-down-lignin-once-thought-indestructible","url":"/categories/wild-mushrooms/golden-teacher/mycelial-enzyme-systems-break-down-lignin-once-thought-indestructible.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Fungi digest lignin, a polymer once considered nearly indestructible."},{"title":"Neuroplasticity Changes After Psilocybin Exposure Documented in 2021 Nature Study","slug":"neuroplasticity-changes-after-psilocybin-exposure-documented-in-2021-nature-study","url":"/categories/wild-mushrooms/golden-teacher/neuroplasticity-changes-after-psilocybin-exposure-documented-in-2021-nature-study.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single psychedelic dose can physically reshape brain connectivity within hours."},{"title":"Quantum-Level Serotonin 2A Receptor Binding Explains Psilocybin Effects","slug":"quantum-level-serotonin-2a-receptor-binding-explains-psilocybin-effects","url":"/categories/wild-mushrooms/golden-teacher/quantum-level-serotonin-2a-receptor-binding-explains-psilocybin-effects.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A microscopic receptor shift can dismantle a person’s sense of self."},{"title":"Quasi-Legal Status Shifts in 2020 Denver Decriminalization Referendum","slug":"quasi-legal-status-shifts-in-2020-denver-decriminalization-referendum","url":"/categories/wild-mushrooms/golden-teacher/quasi-legal-status-shifts-in-2020-denver-decriminalization-referendum.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A city voted to deprioritize arrests for psychedelic mushrooms."},{"title":"Quinine-Derived Analytical Methods Detect Psilocybin at Microgram Levels","slug":"quinine-derived-analytical-methods-detect-psilocybin-at-microgram-levels","url":"/categories/wild-mushrooms/golden-teacher/quinine-derived-analytical-methods-detect-psilocybin-at-microgram-levels.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Laboratories can detect mushroom compounds in quantities invisible to the eye."},{"title":"Quorum Sensing Signals Detected in Fungal Networks Challenge Plant-Like Assumptions","slug":"quorum-sensing-signals-detected-in-fungal-networks-challenge-plant-like-assumptions","url":"/categories/wild-mushrooms/golden-teacher/quorum-sensing-signals-detected-in-fungal-networks-challenge-plant-like-assumptions.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Golden Teacher mycelium communicates chemically without a brain or nerves."},{"title":"RNA Polymerase Gene Clusters Enable Psilocybin Biosynthesis in Psilocybe","slug":"rna-polymerase-gene-clusters-enable-psilocybin-biosynthesis-in-psilocybe","url":"/categories/wild-mushrooms/golden-teacher/rna-polymerase-gene-clusters-enable-psilocybin-biosynthesis-in-psilocybe.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compact gene cluster allows a mushroom to manufacture a mind-altering molecule."},{"title":"U.S. Controlled Substances Act 1970 Classified Psilocybin as Schedule I","slug":"u-s-controlled-substances-act-1970-classified-psilocybin-as-schedule-i","url":"/categories/wild-mushrooms/golden-teacher/u-s-controlled-substances-act-1970-classified-psilocybin-as-schedule-i.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A 1970 law froze psychedelic mushrooms into the highest restriction category."},{"title":"U.S. FDA Granted Breakthrough Therapy Designation to Psilocybin in 2018","slug":"u-s-fda-granted-breakthrough-therapy-designation-to-psilocybin-in-2018","url":"/categories/wild-mushrooms/golden-teacher/u-s-fda-granted-breakthrough-therapy-designation-to-psilocybin-in-2018.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A compound from wild mushrooms received expedited federal drug review status."},{"title":"Ulcerative Colitis Case Reports Explore Psilocybin’s Immune Modulation Potential","slug":"ulcerative-colitis-case-reports-explore-psilocybin-s-immune-modulation-potential","url":"/categories/wild-mushrooms/golden-teacher/ulcerative-colitis-case-reports-explore-psilocybin-s-immune-modulation-potential.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Researchers are examining whether a mushroom compound influences immune signaling."},{"title":"Ultrastructural Studies Show Psilocybe Spores Resist Environmental Stress","slug":"ultrastructural-studies-show-psilocybe-spores-resist-environmental-stress","url":"/categories/wild-mushrooms/golden-teacher/ultrastructural-studies-show-psilocybe-spores-resist-environmental-stress.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Microscopic spores survive conditions that destroy the visible mushroom."},{"title":"Ultraviolet Light Degradation Reduces Psilocybin Stability Over Time","slug":"ultraviolet-light-degradation-reduces-psilocybin-stability-over-time","url":"/categories/wild-mushrooms/golden-teacher/ultraviolet-light-degradation-reduces-psilocybin-stability-over-time.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Sunlight can quietly dismantle the psychoactive compound inside dried mushrooms."},{"title":"Underground Mycelial Networks Beneath Golden Teacher Colonies Span Meters","slug":"underground-mycelial-networks-beneath-golden-teacher-colonies-span-meters","url":"/categories/wild-mushrooms/golden-teacher/underground-mycelial-networks-beneath-golden-teacher-colonies-span-meters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible mushroom is a temporary fruit on a network that can outlive forests."},{"title":"Uptake Pathways Convert Psilocybin to Psilocin Within Minutes of Ingestion","slug":"uptake-pathways-convert-psilocybin-to-psilocin-within-minutes-of-ingestion","url":"/categories/wild-mushrooms/golden-teacher/uptake-pathways-convert-psilocybin-to-psilocin-within-minutes-of-ingestion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The mushroom’s compound transforms in the body before reaching the brain."},{"title":"X-Linked Genetic Screening Excludes Certain Psychiatric Histories in Trials","slug":"x-linked-genetic-screening-excludes-certain-psychiatric-histories-in-trials","url":"/categories/wild-mushrooms/golden-teacher/x-linked-genetic-screening-excludes-certain-psychiatric-histories-in-trials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Family psychiatric history can determine eligibility for mushroom therapy."},{"title":"X-Pattern Cortical Connectivity Emerges During Psilocybin-Induced States","slug":"x-pattern-cortical-connectivity-emerges-during-psilocybin-induced-states","url":"/categories/wild-mushrooms/golden-teacher/x-pattern-cortical-connectivity-emerges-during-psilocybin-induced-states.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain imaging reveals cross-network patterns rarely seen in ordinary consciousness."},{"title":"X-Ray Crystallography Confirmed Psilocybin Molecular Structure in 1960","slug":"x-ray-crystallography-confirmed-psilocybin-molecular-structure-in-1960","url":"/categories/wild-mushrooms/golden-teacher/x-ray-crystallography-confirmed-psilocybin-molecular-structure-in-1960.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A laboratory instrument in 1960 decoded a mushroom’s psychoactive secret."},{"title":"Xenobiotic Compound Breakdown by Fungal Enzymes Includes Industrial Pollutants","slug":"xenobiotic-compound-breakdown-by-fungal-enzymes-includes-industrial-pollutants","url":"/categories/wild-mushrooms/golden-teacher/xenobiotic-compound-breakdown-by-fungal-enzymes-includes-industrial-pollutants.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Mushroom enzymes can dismantle industrial chemicals humans struggle to destroy."},{"title":"Xenobiotic Stress Responses Activate Antioxidant Pathways in Psilocybe Cells","slug":"xenobiotic-stress-responses-activate-antioxidant-pathways-in-psilocybe-cells","url":"/categories/wild-mushrooms/golden-teacher/xenobiotic-stress-responses-activate-antioxidant-pathways-in-psilocybe-cells.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Golden Teacher cells switch on internal defense systems under chemical stress."},{"title":"Xenon-Comparable Default Mode Network Suppression Observed Under Psilocybin","slug":"xenon-comparable-default-mode-network-suppression-observed-under-psilocybin","url":"/categories/wild-mushrooms/golden-teacher/xenon-comparable-default-mode-network-suppression-observed-under-psilocybin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain network quieting rivals effects seen under certain anesthetics."},{"title":"Xeroderma Risk Mitigation Protocols Developed for Psilocybin Clinical Trials","slug":"xeroderma-risk-mitigation-protocols-developed-for-psilocybin-clinical-trials","url":"/categories/wild-mushrooms/golden-teacher/xeroderma-risk-mitigation-protocols-developed-for-psilocybin-clinical-trials.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Patients in psychedelic trials are screened for rare skin disorders."},{"title":"Xerophilic Fungal Survival Mechanisms Observed in Psilocybe Species","slug":"xerophilic-fungal-survival-mechanisms-observed-in-psilocybe-species","url":"/categories/wild-mushrooms/golden-teacher/xerophilic-fungal-survival-mechanisms-observed-in-psilocybe-species.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"These mushrooms can survive dehydration that would kill most plants."},{"title":"Xylulose Pathway Enzymes Support Fungal Energy Production During Rapid Growth","slug":"xylulose-pathway-enzymes-support-fungal-energy-production-during-rapid-growth","url":"/categories/wild-mushrooms/golden-teacher/xylulose-pathway-enzymes-support-fungal-energy-production-during-rapid-growth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A sugar metabolism pathway powers explosive mycelial expansion."},{"title":"Yale 2020 Study Linked Psilocybin to Increased Emotional Processing Connectivity","slug":"yale-2020-study-linked-psilocybin-to-increased-emotional-processing-connectivity","url":"/categories/wild-mushrooms/golden-teacher/yale-2020-study-linked-psilocybin-to-increased-emotional-processing-connectivity.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain scans show emotional circuits synchronize more intensely after psilocybin."},{"title":"Yeast and Psilocybe Shared Ancestry Reveals 1 Billion Year Fungal Lineage","slug":"yeast-and-psilocybe-shared-ancestry-reveals-1-billion-year-fungal-lineage","url":"/categories/wild-mushrooms/golden-teacher/yeast-and-psilocybe-shared-ancestry-reveals-1-billion-year-fungal-lineage.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Your bread yeast and psychedelic mushrooms share a billion-year family tree."},{"title":"Yellow-Brown Psilocybe Caps Exhibit Hygrophanous Color Shifts After Rain","slug":"yellow-brown-psilocybe-caps-exhibit-hygrophanous-color-shifts-after-rain","url":"/categories/wild-mushrooms/golden-teacher/yellow-brown-psilocybe-caps-exhibit-hygrophanous-color-shifts-after-rain.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same mushroom can change color within hours of drying."},{"title":"Yield Variability in Psilocybe Cultivation Depends on Precise Temperature Ranges","slug":"yield-variability-in-psilocybe-cultivation-depends-on-precise-temperature-ranges","url":"/categories/wild-mushrooms/golden-teacher/yield-variability-in-psilocybe-cultivation-depends-on-precise-temperature-ranges.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A difference of a few degrees can alter mushroom yield dramatically."},{"title":"Zinc-Dependent Enzymes Drive Final Step of Psilocybin Biosynthesis","slug":"zinc-dependent-enzymes-drive-final-step-of-psilocybin-biosynthesis","url":"/categories/wild-mushrooms/golden-teacher/zinc-dependent-enzymes-drive-final-step-of-psilocybin-biosynthesis.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A trace metal atom helps a mushroom manufacture a consciousness-altering molecule."},{"title":"Zonal Cortical Desynchronization Observed During Psilocybin fMRI Studies","slug":"zonal-cortical-desynchronization-observed-during-psilocybin-fmri-studies","url":"/categories/wild-mushrooms/golden-teacher/zonal-cortical-desynchronization-observed-during-psilocybin-fmri-studies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Brain regions that usually fire together temporarily fall out of sync."},{"title":"Zoological Toxicology Reports Show Psilocybin Has High LD50 Safety Margin","slug":"zoological-toxicology-reports-show-psilocybin-has-high-ld50-safety-margin","url":"/categories/wild-mushrooms/golden-teacher/zoological-toxicology-reports-show-psilocybin-has-high-ld50-safety-margin.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The dose required to cause lethal toxicity in animals is extraordinarily high."},{"title":"Zoonotic Risk Assessments Confirm Psilocybe Species Are Non-Toxic to Organs","slug":"zoonotic-risk-assessments-confirm-psilocybe-species-are-non-toxic-to-organs","url":"/categories/wild-mushrooms/golden-teacher/zoonotic-risk-assessments-confirm-psilocybe-species-are-non-toxic-to-organs.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hallucinogenic mushroom does not poison the liver like many deadly fungi."},{"title":"Zuckerman 2018 Study Found Psilocybin Ranked Among Lowest Physiological Harm Drugs","slug":"zuckerman-2018-study-found-psilocybin-ranked-among-lowest-physiological-harm-drugs","url":"/categories/wild-mushrooms/golden-teacher/zuckerman-2018-study-found-psilocybin-ranked-among-lowest-physiological-harm-drugs.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hallucinogenic mushroom ranked lower in physical harm than alcohol in global analysis."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

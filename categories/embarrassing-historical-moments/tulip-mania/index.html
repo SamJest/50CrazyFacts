@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tulip Mania</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Tulip Mania</h1>
+  <p>Explore all facts in "Tulip Mania".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Tulip Mania</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Flower Virus Helped Trigger Europe’s First Recorded Asset Bubble","slug":"a-flower-virus-helped-trigger-europe-s-first-recorded-asset-bubble","url":"/categories/embarrassing-historical-moments/tulip-mania/a-flower-virus-helped-trigger-europe-s-first-recorded-asset-bubble.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A plant virus helped inflate a national financial frenzy."},{"title":"Amsterdam Canal Houses Were Traded for a Single Tulip Bulb in 1637","slug":"amsterdam-canal-houses-were-traded-for-a-single-tulip-bulb-in-1637","url":"/categories/embarrassing-historical-moments/tulip-mania/amsterdam-canal-houses-were-traded-for-a-single-tulip-bulb-in-1637.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"In 1637, one flower bulb briefly cost more than a canal house."},{"title":"Amsterdam Price Ratios Show Tulips Briefly Rivaled Skilled Annual Salaries","slug":"amsterdam-price-ratios-show-tulips-briefly-rivaled-skilled-annual-salaries","url":"/categories/embarrassing-historical-moments/tulip-mania/amsterdam-price-ratios-show-tulips-briefly-rivaled-skilled-annual-salaries.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One bulb equaled years of trained labor in a single trade."},{"title":"Amsterdam’s Merchant Elite Debated Morality After the Tulip Collapse","slug":"amsterdam-s-merchant-elite-debated-morality-after-the-tulip-collapse","url":"/categories/embarrassing-historical-moments/tulip-mania/amsterdam-s-merchant-elite-debated-morality-after-the-tulip-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flower speculation triggered public soul-searching among trade leaders."},{"title":"Bankruptcies Spiked in Haarlem Weeks After Tulip Prices Imploded","slug":"bankruptcies-spiked-in-haarlem-weeks-after-tulip-prices-imploded","url":"/categories/embarrassing-historical-moments/tulip-mania/bankruptcies-spiked-in-haarlem-weeks-after-tulip-prices-imploded.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Within weeks of the crash, merchants faced cascading insolvencies over flowers."},{"title":"Bulb Scarcity Was Exaggerated by Speculative Hoarding During Tulip Mania","slug":"bulb-scarcity-was-exaggerated-by-speculative-hoarding-during-tulip-mania","url":"/categories/embarrassing-historical-moments/tulip-mania/bulb-scarcity-was-exaggerated-by-speculative-hoarding-during-tulip-mania.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Traders stockpiled flowers to manufacture artificial rarity."},{"title":"Collectors Insured Tulip Bulbs Like Maritime Cargo During the Mania","slug":"collectors-insured-tulip-bulbs-like-maritime-cargo-during-the-mania","url":"/categories/embarrassing-historical-moments/tulip-mania/collectors-insured-tulip-bulbs-like-maritime-cargo-during-the-mania.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flower bulbs were insured as if they were ocean-going treasure."},{"title":"Contract Cancellations Spread Faster Than Tulip Prices Had Risen","slug":"contract-cancellations-spread-faster-than-tulip-prices-had-risen","url":"/categories/embarrassing-historical-moments/tulip-mania/contract-cancellations-spread-faster-than-tulip-prices-had-risen.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Defaults cascaded in days after months of steady escalation."},{"title":"Dutch Courts Declared Tulip Contracts Essentially Gambling Debts","slug":"dutch-courts-declared-tulip-contracts-essentially-gambling-debts","url":"/categories/embarrassing-historical-moments/tulip-mania/dutch-courts-declared-tulip-contracts-essentially-gambling-debts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A booming market was legally downgraded to a bet."},{"title":"Dutch Pamphlets Mocked Tulip Investors as Fools After the Crash","slug":"dutch-pamphlets-mocked-tulip-investors-as-fools-after-the-crash","url":"/categories/embarrassing-historical-moments/tulip-mania/dutch-pamphlets-mocked-tulip-investors-as-fools-after-the-crash.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors went from elites to punchlines in a single season."},{"title":"Dutch Satirists Portrayed Tulip Traders as Monkeys in Fine Clothing","slug":"dutch-satirists-portrayed-tulip-traders-as-monkeys-in-fine-clothing","url":"/categories/embarrassing-historical-moments/tulip-mania/dutch-satirists-portrayed-tulip-traders-as-monkeys-in-fine-clothing.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Elegant investors were caricatured as animals chasing petals."},{"title":"European Writers Used Tulip Mania as a Moral Warning for Centuries","slug":"european-writers-used-tulip-mania-as-a-moral-warning-for-centuries","url":"/categories/embarrassing-historical-moments/tulip-mania/european-writers-used-tulip-mania-as-a-moral-warning-for-centuries.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A flower bubble became shorthand for human folly."},{"title":"Futures Contracts for Flowers Collapsed Overnight in 1637 Holland","slug":"futures-contracts-for-flowers-collapsed-overnight-in-1637-holland","url":"/categories/embarrassing-historical-moments/tulip-mania/futures-contracts-for-flowers-collapsed-overnight-in-1637-holland.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A national market imploded because buyers refused to buy flowers."},{"title":"Futures Trading in Tulips Prefigured Modern Derivatives Markets","slug":"futures-trading-in-tulips-prefigured-modern-derivatives-markets","url":"/categories/embarrassing-historical-moments/tulip-mania/futures-trading-in-tulips-prefigured-modern-derivatives-markets.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Seventeenth-century flower contracts mimicked today’s complex derivatives."},{"title":"Guild Records Show Craftsmen Speculating on Tulips Instead of Trade","slug":"guild-records-show-craftsmen-speculating-on-tulips-instead-of-trade","url":"/categories/embarrassing-historical-moments/tulip-mania/guild-records-show-craftsmen-speculating-on-tulips-instead-of-trade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Skilled craftsmen paused their trades to chase flower profits."},{"title":"Harsh Winter Conditions Delayed Tulip Blooming Amid Soaring Prices","slug":"harsh-winter-conditions-delayed-tulip-blooming-amid-soaring-prices","url":"/categories/embarrassing-historical-moments/tulip-mania/harsh-winter-conditions-delayed-tulip-blooming-amid-soaring-prices.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Frozen soil couldn’t cool a market blazing with speculation."},{"title":"High-End Tulip Bulbs Were Weighed and Cataloged Like Precious Metals","slug":"high-end-tulip-bulbs-were-weighed-and-cataloged-like-precious-metals","url":"/categories/embarrassing-historical-moments/tulip-mania/high-end-tulip-bulbs-were-weighed-and-cataloged-like-precious-metals.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flower bulbs were measured with the precision of bullion."},{"title":"Insurance-Like Clauses Appeared in Some High-Value Tulip Contracts","slug":"insurance-like-clauses-appeared-in-some-high-value-tulip-contracts","url":"/categories/embarrassing-historical-moments/tulip-mania/insurance-like-clauses-appeared-in-some-high-value-tulip-contracts.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flower deals included protections resembling modern risk hedges."},{"title":"International Merchants Watched the Dutch Tulip Crash With Alarm","slug":"international-merchants-watched-the-dutch-tulip-crash-with-alarm","url":"/categories/embarrassing-historical-moments/tulip-mania/international-merchants-watched-the-dutch-tulip-crash-with-alarm.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Europe’s trading partners saw a flower market threaten financial credibility."},{"title":"Joint Ownership Agreements Divided Single Tulip Bulbs Into Shares","slug":"joint-ownership-agreements-divided-single-tulip-bulbs-into-shares","url":"/categories/embarrassing-historical-moments/tulip-mania/joint-ownership-agreements-divided-single-tulip-bulbs-into-shares.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One bulb was split into financial fractions like a corporation."},{"title":"Klaas Pieterszoon Reportedly Traded a Brewery for Tulip Bulbs","slug":"klaas-pieterszoon-reportedly-traded-a-brewery-for-tulip-bulbs","url":"/categories/embarrassing-historical-moments/tulip-mania/klaas-pieterszoon-reportedly-traded-a-brewery-for-tulip-bulbs.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A working brewery was exchanged for flowers at the peak."},{"title":"Legal Ambiguity Over Enforceability Deepened the Tulip Collapse","slug":"legal-ambiguity-over-enforceability-deepened-the-tulip-collapse","url":"/categories/embarrassing-historical-moments/tulip-mania/legal-ambiguity-over-enforceability-deepened-the-tulip-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Uncertain contract law accelerated the implosion of flower fortunes."},{"title":"Luxury Tulip Varieties Were Named Like Aristocrats During the Bubble","slug":"luxury-tulip-varieties-were-named-like-aristocrats-during-the-bubble","url":"/categories/embarrassing-historical-moments/tulip-mania/luxury-tulip-varieties-were-named-like-aristocrats-during-the-bubble.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flowers carried titles rivaling nobility while prices soared."},{"title":"Market Panic Began at a Routine Haarlem Auction in 1637","slug":"market-panic-began-at-a-routine-haarlem-auction-in-1637","url":"/categories/embarrassing-historical-moments/tulip-mania/market-panic-began-at-a-routine-haarlem-auction-in-1637.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single failed auction triggered a national price collapse."},{"title":"Merchants Compared Tulip Varieties Using Detailed Classification Systems","slug":"merchants-compared-tulip-varieties-using-detailed-classification-systems","url":"/categories/embarrassing-historical-moments/tulip-mania/merchants-compared-tulip-varieties-using-detailed-classification-systems.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flowers were ranked with near-scientific precision before prices imploded."},{"title":"Multi-City Trading Networks Accelerated Tulip Price Synchronization","slug":"multi-city-trading-networks-accelerated-tulip-price-synchronization","url":"/categories/embarrassing-historical-moments/tulip-mania/multi-city-trading-networks-accelerated-tulip-price-synchronization.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Prices surged in parallel across towns without central exchange."},{"title":"Not All Dutch Citizens Participated Despite Widespread Attention","slug":"not-all-dutch-citizens-participated-despite-widespread-attention","url":"/categories/embarrassing-historical-moments/tulip-mania/not-all-dutch-citizens-participated-despite-widespread-attention.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Even at peak frenzy, many Dutch avoided the flower gamble."},{"title":"Notarial Archives Preserve Contracts for Tulips Worth Years of Income","slug":"notarial-archives-preserve-contracts-for-tulips-worth-years-of-income","url":"/categories/embarrassing-historical-moments/tulip-mania/notarial-archives-preserve-contracts-for-tulips-worth-years-of-income.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Archived papers show flowers priced above lifetime earnings."},{"title":"Ordinary Households Speculated on Tulips Using Deferred Payment Deals","slug":"ordinary-households-speculated-on-tulips-using-deferred-payment-deals","url":"/categories/embarrassing-historical-moments/tulip-mania/ordinary-households-speculated-on-tulips-using-deferred-payment-deals.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Families committed future income to flowers not yet grown."},{"title":"Price Lists for Rare Tulips Circulated Like Luxury Catalogs","slug":"price-lists-for-rare-tulips-circulated-like-luxury-catalogs","url":"/categories/embarrassing-historical-moments/tulip-mania/price-lists-for-rare-tulips-circulated-like-luxury-catalogs.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flower price sheets spread with the urgency of stock tickers."},{"title":"Quarterly Tulip Auctions Attracted Crowds Rivaling Major Trade Fairs","slug":"quarterly-tulip-auctions-attracted-crowds-rivaling-major-trade-fairs","url":"/categories/embarrassing-historical-moments/tulip-mania/quarterly-tulip-auctions-attracted-crowds-rivaling-major-trade-fairs.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Flower sales drew crowds like international commerce events."},{"title":"Rapid Price Increases Outpaced Annual Wage Growth by Extreme Margins","slug":"rapid-price-increases-outpaced-annual-wage-growth-by-extreme-margins","url":"/categories/embarrassing-historical-moments/tulip-mania/rapid-price-increases-outpaced-annual-wage-growth-by-extreme-margins.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Tulip prices rose faster than workers could earn in years."},{"title":"Resale Chains Meant a Single Bulb Could Change Hands Dozens of Times","slug":"resale-chains-meant-a-single-bulb-could-change-hands-dozens-of-times","url":"/categories/embarrassing-historical-moments/tulip-mania/resale-chains-meant-a-single-bulb-could-change-hands-dozens-of-times.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One underground bulb spawned a cascade of paper fortunes."},{"title":"Speculative Conversations Dominated Taverns Across Dutch Cities","slug":"speculative-conversations-dominated-taverns-across-dutch-cities","url":"/categories/embarrassing-historical-moments/tulip-mania/speculative-conversations-dominated-taverns-across-dutch-cities.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Alehouses echoed with flower prices instead of shipping news."},{"title":"Speculative Fever Peaked During the Dutch Republic’s Golden Age","slug":"speculative-fever-peaked-during-the-dutch-republic-s-golden-age","url":"/categories/embarrassing-historical-moments/tulip-mania/speculative-fever-peaked-during-the-dutch-republic-s-golden-age.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"At the height of global trade dominance, a flower frenzy stole attention."},{"title":"The Semper Augustus Tulip Became More Valuable Than Gold by Weight","slug":"the-semper-augustus-tulip-became-more-valuable-than-gold-by-weight","url":"/categories/embarrassing-historical-moments/tulip-mania/the-semper-augustus-tulip-became-more-valuable-than-gold-by-weight.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A striped tulip once outweighed gold in price."},{"title":"The Tulip Crash Unfolded Faster Than the Flowers Could Bloom","slug":"the-tulip-crash-unfolded-faster-than-the-flowers-could-bloom","url":"/categories/embarrassing-historical-moments/tulip-mania/the-tulip-crash-unfolded-faster-than-the-flowers-could-bloom.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Prices collapsed before the bulbs even surfaced."},{"title":"Tulip Contracts Were Traded in Taverns Like Lottery Tickets","slug":"tulip-contracts-were-traded-in-taverns-like-lottery-tickets","url":"/categories/embarrassing-historical-moments/tulip-mania/tulip-contracts-were-traded-in-taverns-like-lottery-tickets.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fortunes were wagered on flowers over beer mugs."},{"title":"Tulip Mania Became a Benchmark in Modern Financial Education","slug":"tulip-mania-became-a-benchmark-in-modern-financial-education","url":"/categories/embarrassing-historical-moments/tulip-mania/tulip-mania-became-a-benchmark-in-modern-financial-education.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A 17th-century flower frenzy still anchors today’s bubble warnings."},{"title":"Tulip Mania Peaked Before the Flowers Even Bloomed in Spring 1637","slug":"tulip-mania-peaked-before-the-flowers-even-bloomed-in-spring-1637","url":"/categories/embarrassing-historical-moments/tulip-mania/tulip-mania-peaked-before-the-flowers-even-bloomed-in-spring-1637.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Prices imploded before most bulbs showed a single petal."},{"title":"Tulip Mania Spread Across Social Classes in the Dutch Golden Age","slug":"tulip-mania-spread-across-social-classes-in-the-dutch-golden-age","url":"/categories/embarrassing-historical-moments/tulip-mania/tulip-mania-spread-across-social-classes-in-the-dutch-golden-age.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Artisans and elites alike gambled fortunes on garden bulbs."},{"title":"Tulip Prices Fell by Up to 90 Percent in the Aftermath of 1637","slug":"tulip-prices-fell-by-up-to-90-percent-in-the-aftermath-of-1637","url":"/categories/embarrassing-historical-moments/tulip-mania/tulip-prices-fell-by-up-to-90-percent-in-the-aftermath-of-1637.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Fortunes evaporated as flower values plunged almost completely."},{"title":"Urban Property Values Were Benchmarked Against Premium Tulip Varieties","slug":"urban-property-values-were-benchmarked-against-premium-tulip-varieties","url":"/categories/embarrassing-historical-moments/tulip-mania/urban-property-values-were-benchmarked-against-premium-tulip-varieties.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"City real estate was compared directly to flower bulbs."},{"title":"Voluntary Settlements Reduced Tulip Contract Obligations to Fractions","slug":"voluntary-settlements-reduced-tulip-contract-obligations-to-fractions","url":"/categories/embarrassing-historical-moments/tulip-mania/voluntary-settlements-reduced-tulip-contract-obligations-to-fractions.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Mass defaults forced contracts to be settled at tiny percentages."},{"title":"Wealthy Merchants Publicly Defended Tulip Prices Before the Collapse","slug":"wealthy-merchants-publicly-defended-tulip-prices-before-the-collapse","url":"/categories/embarrassing-historical-moments/tulip-mania/wealthy-merchants-publicly-defended-tulip-prices-before-the-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Prominent traders insisted the flower market was sound days before implosion."},{"title":"Xenodochial Investors From Other Cities Poured Money Into Dutch Tulips","slug":"xenodochial-investors-from-other-cities-poured-money-into-dutch-tulips","url":"/categories/embarrassing-historical-moments/tulip-mania/xenodochial-investors-from-other-cities-poured-money-into-dutch-tulips.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Outsiders flooded Dutch markets to gamble on flowers."},{"title":"Yield Expectations for Tulip Bulbs Defied Agricultural Reality","slug":"yield-expectations-for-tulip-bulbs-defied-agricultural-reality","url":"/categories/embarrassing-historical-moments/tulip-mania/yield-expectations-for-tulip-bulbs-defied-agricultural-reality.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Investors priced flowers as if harvests were limitless."},{"title":"Yields From Rare Tulips Could Not Justify Their Market Capitalization","slug":"yields-from-rare-tulips-could-not-justify-their-market-capitalization","url":"/categories/embarrassing-historical-moments/tulip-mania/yields-from-rare-tulips-could-not-justify-their-market-capitalization.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Production math never matched the astronomical valuations."},{"title":"Zealous Speculation Turned a Decorative Flower Into a National Symbol of Folly","slug":"zealous-speculation-turned-a-decorative-flower-into-a-national-symbol-of-folly","url":"/categories/embarrassing-historical-moments/tulip-mania/zealous-speculation-turned-a-decorative-flower-into-a-national-symbol-of-folly.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A garden bloom became Europe’s benchmark for financial embarrassment."},{"title":"Zeeland and Other Provinces Felt the Shock of the Tulip Collapse","slug":"zeeland-and-other-provinces-felt-the-shock-of-the-tulip-collapse","url":"/categories/embarrassing-historical-moments/tulip-mania/zeeland-and-other-provinces-felt-the-shock-of-the-tulip-collapse.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The crash rippled beyond Holland into multiple provinces."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

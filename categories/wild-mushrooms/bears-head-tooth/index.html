@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bears Head Tooth</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Bears Head Tooth</h1>
+  <p>Explore all facts in "Bears Head Tooth".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Bears Head Tooth</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Ancient Hardwood Wounds Create Entry Points for Bear’s Head Tooth Infections","slug":"ancient-hardwood-wounds-create-entry-points-for-bear-s-head-tooth-infections","url":"/categories/wild-mushrooms/bears-head-tooth/ancient-hardwood-wounds-create-entry-points-for-bear-s-head-tooth-infections.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single scar on a tree can invite years of hidden decay."},{"title":"Bear’s Head Tooth Appears Primarily in Eastern North American Forests","slug":"bear-s-head-tooth-appears-primarily-in-eastern-north-american-forests","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-appears-primarily-in-eastern-north-american-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This icicle fungus favors specific continental forests."},{"title":"Bear’s Head Tooth Belongs to an Ancient Lineage of Tooth Fungi","slug":"bear-s-head-tooth-belongs-to-an-ancient-lineage-of-tooth-fungi","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-belongs-to-an-ancient-lineage-of-tooth-fungi.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its bizarre teeth trace back millions of years of fungal evolution."},{"title":"Bear’s Head Tooth Can Fruiting Bodies Grow More Than 30 Centimeters Across","slug":"bear-s-head-tooth-can-fruiting-bodies-grow-more-than-30-centimeters-across","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-can-fruiting-bodies-grow-more-than-30-centimeters-across.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This icicle fungus can expand wider than a dinner plate."},{"title":"Bear’s Head Tooth Can Parasitize Living Hardwood Trees Before Finishing Them Off","slug":"bear-s-head-tooth-can-parasitize-living-hardwood-trees-before-finishing-them-off","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-can-parasitize-living-hardwood-trees-before-finishing-them-off.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fluffy white fungus quietly kills the tree it decorates."},{"title":"Bear’s Head Tooth Can Reappear on the Same Tree for Years","slug":"bear-s-head-tooth-can-reappear-on-the-same-tree-for-years","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-can-reappear-on-the-same-tree-for-years.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The same tree can sprout this white cascade year after year."},{"title":"Bear’s Head Tooth Can Signal Advanced Internal Tree Decay","slug":"bear-s-head-tooth-can-signal-advanced-internal-tree-decay","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-can-signal-advanced-internal-tree-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"When it appears, the tree may already be structurally compromised."},{"title":"Bear’s Head Tooth Can Weigh Several Kilograms on a Single Tree Trunk","slug":"bear-s-head-tooth-can-weigh-several-kilograms-on-a-single-tree-trunk","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-can-weigh-several-kilograms-on-a-single-tree-trunk.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus the size of a small dog can hang from one tree."},{"title":"Bear’s Head Tooth Contains Bioactive Compounds Studied for Nerve Growth","slug":"bear-s-head-tooth-contains-bioactive-compounds-studied-for-nerve-growth","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-contains-bioactive-compounds-studied-for-nerve-growth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest fungus produces molecules that stimulate nerve cells in labs."},{"title":"Bear’s Head Tooth Creates Wildlife Cavities Through Advanced Wood Decay","slug":"bear-s-head-tooth-creates-wildlife-cavities-through-advanced-wood-decay","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-creates-wildlife-cavities-through-advanced-wood-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus turns solid hardwood into hollow habitat."},{"title":"Bear’s Head Tooth Fruits After Cool Late-Summer Rains in Temperate Forests","slug":"bear-s-head-tooth-fruits-after-cool-late-summer-rains-in-temperate-forests","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-fruits-after-cool-late-summer-rains-in-temperate-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Weeks of silence end with a sudden white eruption on trees."},{"title":"Bear’s Head Tooth Fungus Forms Cascading Icicle Spines Longer Than 5 Centimeters","slug":"bear-s-head-tooth-fungus-forms-cascading-icicle-spines-longer-than-5-centimeters","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-fungus-forms-cascading-icicle-spines-longer-than-5-centimeters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This mushroom grows a frozen waterfall of teeth from living trees."},{"title":"Bear’s Head Tooth Is Edible and Considered a Choice Wild Mushroom","slug":"bear-s-head-tooth-is-edible-and-considered-a-choice-wild-mushroom","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-is-edible-and-considered-a-choice-wild-mushroom.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The icicle-covered tree fungus is not only edible but prized."},{"title":"Bear’s Head Tooth Lacks Gills, Pores, and Caps Entirely","slug":"bear-s-head-tooth-lacks-gills-pores-and-caps-entirely","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-lacks-gills-pores-and-caps-entirely.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It rewrote the mushroom blueprint and removed the cap."},{"title":"Bear’s Head Tooth Mycelium Remains Hidden Long After Fruiting Ends","slug":"bear-s-head-tooth-mycelium-remains-hidden-long-after-fruiting-ends","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-mycelium-remains-hidden-long-after-fruiting-ends.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"When the white cascade vanishes, the fungus is still there."},{"title":"Bear’s Head Tooth Performs White Rot by Dismantling One of Nature’s Toughest Polymers","slug":"bear-s-head-tooth-performs-white-rot-by-dismantling-one-of-nature-s-toughest-polymers","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-performs-white-rot-by-dismantling-one-of-nature-s-toughest-polymers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It dissolves lignin, the compound that makes wood rigid."},{"title":"Bear’s Head Tooth Produces Thousands of Spore-Bearing Teeth Instead of a Cap","slug":"bear-s-head-tooth-produces-thousands-of-spore-bearing-teeth-instead-of-a-cap","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-produces-thousands-of-spore-bearing-teeth-instead-of-a-cap.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It abandoned the mushroom cap and built a forest of teeth instead."},{"title":"Bear’s Head Tooth Rarely Grows on Conifers Despite Abundant Softwood","slug":"bear-s-head-tooth-rarely-grows-on-conifers-despite-abundant-softwood","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-rarely-grows-on-conifers-despite-abundant-softwood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Surrounded by pine, it still refuses the softwood buffet."},{"title":"Bear’s Head Tooth Requires Hardwood Hosts Like Beech and Maple","slug":"bear-s-head-tooth-requires-hardwood-hosts-like-beech-and-maple","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-requires-hardwood-hosts-like-beech-and-maple.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It refuses softwood and targets specific towering hardwood giants."},{"title":"Bear’s Head Tooth Spores Are Microscopic Yet Travel Through Entire Forests","slug":"bear-s-head-tooth-spores-are-microscopic-yet-travel-through-entire-forests","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-spores-are-microscopic-yet-travel-through-entire-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Invisible particles from this fungus drift across kilometers of forest."},{"title":"Bear’s Head Tooth Teeth Release Spores From Their Entire Surface","slug":"bear-s-head-tooth-teeth-release-spores-from-their-entire-surface","url":"/categories/wild-mushrooms/bears-head-tooth/bear-s-head-tooth-teeth-release-spores-from-their-entire-surface.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Every dangling spine is a microscopic launchpad."},{"title":"Beneath the Bark, Bear’s Head Tooth Forms Vast Mycelial Networks","slug":"beneath-the-bark-bear-s-head-tooth-forms-vast-mycelial-networks","url":"/categories/wild-mushrooms/bears-head-tooth/beneath-the-bark-bear-s-head-tooth-forms-vast-mycelial-networks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"What you see is a fraction of the fungus inside."},{"title":"Carbon Locked for Decades in Hardwood Can Be Released by Bear’s Head Tooth","slug":"carbon-locked-for-decades-in-hardwood-can-be-released-by-bear-s-head-tooth","url":"/categories/wild-mushrooms/bears-head-tooth/carbon-locked-for-decades-in-hardwood-can-be-released-by-bear-s-head-tooth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It unlocks carbon stored inside trees for generations."},{"title":"Cold Temperatures Trigger Bear’s Head Tooth to Erupt From Hidden Wood","slug":"cold-temperatures-trigger-bear-s-head-tooth-to-erupt-from-hidden-wood","url":"/categories/wild-mushrooms/bears-head-tooth/cold-temperatures-trigger-bear-s-head-tooth-to-erupt-from-hidden-wood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A sudden cold snap can activate this tree-bound eruption."},{"title":"Deep Inside Trees, Bear’s Head Tooth Spreads Through Heartwood Fibers","slug":"deep-inside-trees-bear-s-head-tooth-spreads-through-heartwood-fibers","url":"/categories/wild-mushrooms/bears-head-tooth/deep-inside-trees-bear-s-head-tooth-spreads-through-heartwood-fibers.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It tunnels through a tree’s core without touching the bark."},{"title":"Dense Canopies Help Maintain the Humidity Bear’s Head Tooth Requires","slug":"dense-canopies-help-maintain-the-humidity-bear-s-head-tooth-requires","url":"/categories/wild-mushrooms/bears-head-tooth/dense-canopies-help-maintain-the-humidity-bear-s-head-tooth-requires.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Thick forest cover creates the moisture this fungus depends on."},{"title":"Enormous Surface Area of Bear’s Head Tooth Teeth Maximizes Spore Output","slug":"enormous-surface-area-of-bear-s-head-tooth-teeth-maximizes-spore-output","url":"/categories/wild-mushrooms/bears-head-tooth/enormous-surface-area-of-bear-s-head-tooth-teeth-maximizes-spore-output.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Thousands of spines multiply its reproductive surface dramatically."},{"title":"Enzymes From Bear’s Head Tooth Can Break Complex Aromatic Compounds","slug":"enzymes-from-bear-s-head-tooth-can-break-complex-aromatic-compounds","url":"/categories/wild-mushrooms/bears-head-tooth/enzymes-from-bear-s-head-tooth-can-break-complex-aromatic-compounds.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It dismantles molecular structures most organisms cannot touch."},{"title":"Fallen Hardwood Logs Can Also Host Bear’s Head Tooth Fruiting","slug":"fallen-hardwood-logs-can-also-host-bear-s-head-tooth-fruiting","url":"/categories/wild-mushrooms/bears-head-tooth/fallen-hardwood-logs-can-also-host-bear-s-head-tooth-fruiting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even a downed trunk can sprout cascading white teeth."},{"title":"Gravity Helps Bear’s Head Tooth Launch Spores From Hanging Teeth","slug":"gravity-helps-bear-s-head-tooth-launch-spores-from-hanging-teeth","url":"/categories/wild-mushrooms/bears-head-tooth/gravity-helps-bear-s-head-tooth-launch-spores-from-hanging-teeth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It turns gravity into a spore-release advantage."},{"title":"High Humidity Is Essential for Bear’s Head Tooth to Maintain Its Structure","slug":"high-humidity-is-essential-for-bear-s-head-tooth-to-maintain-its-structure","url":"/categories/wild-mushrooms/bears-head-tooth/high-humidity-is-essential-for-bear-s-head-tooth-to-maintain-its-structure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Without moisture, its cascading teeth collapse."},{"title":"Invisible Hyphae of Bear’s Head Tooth Secrete Enzymes Into Solid Wood","slug":"invisible-hyphae-of-bear-s-head-tooth-secrete-enzymes-into-solid-wood","url":"/categories/wild-mushrooms/bears-head-tooth/invisible-hyphae-of-bear-s-head-tooth-secrete-enzymes-into-solid-wood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It digests a tree without chewing a single bite."},{"title":"Late-Successional Forests Are More Likely to Support Bear’s Head Tooth","slug":"late-successional-forests-are-more-likely-to-support-bear-s-head-tooth","url":"/categories/wild-mushrooms/bears-head-tooth/late-successional-forests-are-more-likely-to-support-bear-s-head-tooth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Old forests give this fungus its strongest foothold."},{"title":"Massive Hardwood Collapse Can Follow Years of Bear’s Head Tooth Decay","slug":"massive-hardwood-collapse-can-follow-years-of-bear-s-head-tooth-decay","url":"/categories/wild-mushrooms/bears-head-tooth/massive-hardwood-collapse-can-follow-years-of-bear-s-head-tooth-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A soft white fungus can precede the fall of a giant tree."},{"title":"Mature Bear’s Head Tooth Clusters Can Host Insects Within Their Teeth","slug":"mature-bear-s-head-tooth-clusters-can-host-insects-within-their-teeth","url":"/categories/wild-mushrooms/bears-head-tooth/mature-bear-s-head-tooth-clusters-can-host-insects-within-their-teeth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Tiny insects crawl through its icicle forest."},{"title":"No Traditional Stem Supports Bear’s Head Tooth Fruiting Bodies","slug":"no-traditional-stem-supports-bear-s-head-tooth-fruiting-bodies","url":"/categories/wild-mushrooms/bears-head-tooth/no-traditional-stem-supports-bear-s-head-tooth-fruiting-bodies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It hangs directly from wood without a central stalk."},{"title":"Optimal Fruiting Years Can Produce Multiple Clusters on One Tree","slug":"optimal-fruiting-years-can-produce-multiple-clusters-on-one-tree","url":"/categories/wild-mushrooms/bears-head-tooth/optimal-fruiting-years-can-produce-multiple-clusters-on-one-tree.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"In the right year, a single trunk can host several white cascades."},{"title":"Persistent Decay by Bear’s Head Tooth Weakens Massive Hardwood Trunks","slug":"persistent-decay-by-bear-s-head-tooth-weakens-massive-hardwood-trunks","url":"/categories/wild-mushrooms/bears-head-tooth/persistent-decay-by-bear-s-head-tooth-weakens-massive-hardwood-trunks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It can hollow trees weighing several tons."},{"title":"Prolonged Moisture After Rain Accelerates Bear’s Head Tooth Expansion","slug":"prolonged-moisture-after-rain-accelerates-bear-s-head-tooth-expansion","url":"/categories/wild-mushrooms/bears-head-tooth/prolonged-moisture-after-rain-accelerates-bear-s-head-tooth-expansion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Days of rain can trigger rapid fungal growth on trunks."},{"title":"Quiescent Phases Allow Bear’s Head Tooth to Survive Unfavorable Seasons","slug":"quiescent-phases-allow-bear-s-head-tooth-to-survive-unfavorable-seasons","url":"/categories/wild-mushrooms/bears-head-tooth/quiescent-phases-allow-bear-s-head-tooth-to-survive-unfavorable-seasons.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It pauses reproduction without abandoning the tree."},{"title":"Regional Hardwood Diversity Influences Bear’s Head Tooth Abundance","slug":"regional-hardwood-diversity-influences-bear-s-head-tooth-abundance","url":"/categories/wild-mushrooms/bears-head-tooth/regional-hardwood-diversity-influences-bear-s-head-tooth-abundance.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Where hardwood giants thrive, this fungus multiplies."},{"title":"Slow Internal Growth Allows Bear’s Head Tooth to Store Energy Before Fruiting","slug":"slow-internal-growth-allows-bear-s-head-tooth-to-store-energy-before-fruiting","url":"/categories/wild-mushrooms/bears-head-tooth/slow-internal-growth-allows-bear-s-head-tooth-to-store-energy-before-fruiting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It stockpiles resources inside wood before unveiling itself."},{"title":"Structural Complexity Helps Bear’s Head Tooth Resist Minor Physical Damage","slug":"structural-complexity-helps-bear-s-head-tooth-resist-minor-physical-damage","url":"/categories/wild-mushrooms/bears-head-tooth/structural-complexity-helps-bear-s-head-tooth-resist-minor-physical-damage.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Even broken spines do not stop its spore release."},{"title":"Temperature Fluctuations Influence the Size of Bear’s Head Tooth Clusters","slug":"temperature-fluctuations-influence-the-size-of-bear-s-head-tooth-clusters","url":"/categories/wild-mushrooms/bears-head-tooth/temperature-fluctuations-influence-the-size-of-bear-s-head-tooth-clusters.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cooler autumn air can determine how large it grows."},{"title":"Unique Coral-Like Branching Distinguishes Bear’s Head Tooth From Relatives","slug":"unique-coral-like-branching-distinguishes-bear-s-head-tooth-from-relatives","url":"/categories/wild-mushrooms/bears-head-tooth/unique-coral-like-branching-distinguishes-bear-s-head-tooth-from-relatives.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its branching form sets it apart from other tooth fungi."},{"title":"Vast Quantities of Carbon Pass Through Bear’s Head Tooth During Decay","slug":"vast-quantities-of-carbon-pass-through-bear-s-head-tooth-during-decay","url":"/categories/wild-mushrooms/bears-head-tooth/vast-quantities-of-carbon-pass-through-bear-s-head-tooth-during-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It helps return locked carbon from hardwood back to the ecosystem."},{"title":"White Rot by Bear’s Head Tooth Leaves Wood Pale and Fibrous","slug":"white-rot-by-bear-s-head-tooth-leaves-wood-pale-and-fibrous","url":"/categories/wild-mushrooms/bears-head-tooth/white-rot-by-bear-s-head-tooth-leaves-wood-pale-and-fibrous.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It turns dense hardwood into light-colored, stringy residue."},{"title":"Young Bear’s Head Tooth Teeth Start as Rounded Nubs Before Elongating","slug":"young-bear-s-head-tooth-teeth-start-as-rounded-nubs-before-elongating","url":"/categories/wild-mushrooms/bears-head-tooth/young-bear-s-head-tooth-teeth-start-as-rounded-nubs-before-elongating.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its icicles begin as tiny white bumps on bark."},{"title":"Young Hardwood Trees Rarely Support Bear’s Head Tooth Fruiting","slug":"young-hardwood-trees-rarely-support-bear-s-head-tooth-fruiting","url":"/categories/wild-mushrooms/bears-head-tooth/young-hardwood-trees-rarely-support-bear-s-head-tooth-fruiting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Small trunks usually escape this cascading invasion."},{"title":"Zonal Growth Rings Inside Wood Can Guide Bear’s Head Tooth Expansion","slug":"zonal-growth-rings-inside-wood-can-guide-bear-s-head-tooth-expansion","url":"/categories/wild-mushrooms/bears-head-tooth/zonal-growth-rings-inside-wood-can-guide-bear-s-head-tooth-expansion.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It follows a tree’s growth history to spread internally."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

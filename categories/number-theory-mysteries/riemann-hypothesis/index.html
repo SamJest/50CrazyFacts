@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riemann Hypothesis</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Riemann Hypothesis</h1>
+  <p>Explore all facts in "Riemann Hypothesis".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Riemann Hypothesis</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Counterexample to Riemann Would Reshape Prime Distribution Overnight","slug":"a-counterexample-to-riemann-would-reshape-prime-distribution-overnight","url":"/categories/number-theory-mysteries/riemann-hypothesis/a-counterexample-to-riemann-would-reshape-prime-distribution-overnight.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One rogue zero could detonate a century of prime predictions."},{"title":"Billion-Height Zeros and the Statistical Laws They Obey","slug":"billion-height-zeros-and-the-statistical-laws-they-obey","url":"/categories/number-theory-mysteries/riemann-hypothesis/billion-height-zeros-and-the-statistical-laws-they-obey.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Zeros trillions of units high behave like atomic energy levels."},{"title":"Computing Zeta Zeros Beyond 10^13: The Odlyzko–Schönhage Algorithm","slug":"computing-zeta-zeros-beyond-10-13-the-odlyzko-sch-nhage-algorithm","url":"/categories/number-theory-mysteries/riemann-hypothesis/computing-zeta-zeros-beyond-10-13-the-odlyzko-sch-nhage-algorithm.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Billions of invisible zeros were mapped faster than expected."},{"title":"Dirichlet L-Functions Extend the Riemann Hypothesis Beyond Primes","slug":"dirichlet-l-functions-extend-the-riemann-hypothesis-beyond-primes","url":"/categories/number-theory-mysteries/riemann-hypothesis/dirichlet-l-functions-extend-the-riemann-hypothesis-beyond-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The prime mystery multiplies into infinitely many parallel universes."},{"title":"Extreme Prime Error Bounds Under the Riemann Hypothesis","slug":"extreme-prime-error-bounds-under-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/extreme-prime-error-bounds-under-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime counting errors shrink to the square root frontier."},{"title":"Faster-Than-Brute-Force: How the Riemann–Siegel Formula Reaches Extreme Zeros","slug":"faster-than-brute-force-how-the-riemann-siegel-formula-reaches-extreme-zeros","url":"/categories/number-theory-mysteries/riemann-hypothesis/faster-than-brute-force-how-the-riemann-siegel-formula-reaches-extreme-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Trillions of invisible coordinates emerge from a shortcut formula."},{"title":"Gram Points and the Near-Perfect Alignment of Zeta Zeros","slug":"gram-points-and-the-near-perfect-alignment-of-zeta-zeros","url":"/categories/number-theory-mysteries/riemann-hypothesis/gram-points-and-the-near-perfect-alignment-of-zeta-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Invisible checkpoints predict zeros with eerie near-accuracy."},{"title":"How the Riemann Hypothesis Controls Prime Gaps at Astronomical Scales","slug":"how-the-riemann-hypothesis-controls-prime-gaps-at-astronomical-scales","url":"/categories/number-theory-mysteries/riemann-hypothesis/how-the-riemann-hypothesis-controls-prime-gaps-at-astronomical-scales.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers obey a hidden rhythm no telescope can see."},{"title":"Infinite Conditional Theorems That Collapse Without the Riemann Hypothesis","slug":"infinite-conditional-theorems-that-collapse-without-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/infinite-conditional-theorems-that-collapse-without-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Hundreds of proven results hang on one unproven line."},{"title":"Jean-Pierre Serre's Perspective on the Global Reach of the Riemann Hypothesis","slug":"jean-pierre-serre-s-perspective-on-the-global-reach-of-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/jean-pierre-serre-s-perspective-on-the-global-reach-of-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One conjecture threads through the entire arithmetic universe."},{"title":"Known Zero-Free Regions and the Narrow Corridor Toward One Half","slug":"known-zero-free-regions-and-the-narrow-corridor-toward-one-half","url":"/categories/number-theory-mysteries/riemann-hypothesis/known-zero-free-regions-and-the-narrow-corridor-toward-one-half.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Zeros are forbidden from vast regions of the complex plane."},{"title":"Li's Criterion Turns the Riemann Hypothesis into Infinite Positivity Tests","slug":"li-s-criterion-turns-the-riemann-hypothesis-into-infinite-positivity-tests","url":"/categories/number-theory-mysteries/riemann-hypothesis/li-s-criterion-turns-the-riemann-hypothesis-into-infinite-positivity-tests.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An ocean of numbers must all stay positive forever."},{"title":"Montgomery's Pair Correlation Conjecture and Zeta Zero Repulsion","slug":"montgomery-s-pair-correlation-conjecture-and-zeta-zero-repulsion","url":"/categories/number-theory-mysteries/riemann-hypothesis/montgomery-s-pair-correlation-conjecture-and-zeta-zero-repulsion.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Zeta zeros avoid each other like charged particles."},{"title":"Nevanlinna Theory and the Growth Constraints Behind the Riemann Hypothesis","slug":"nevanlinna-theory-and-the-growth-constraints-behind-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/nevanlinna-theory-and-the-growth-constraints-behind-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The zeta function grows like a controlled explosion in infinity."},{"title":"Numerical Evidence Beyond 10^14 and the Illusion of Certainty","slug":"numerical-evidence-beyond-10-14-and-the-illusion-of-certainty","url":"/categories/number-theory-mysteries/riemann-hypothesis/numerical-evidence-beyond-10-14-and-the-illusion-of-certainty.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Fourteen-digit heights still cannot conquer infinity."},{"title":"Odlyzko's Data Suggests Zeta Zeros Grow More Predictable with Height","slug":"odlyzko-s-data-suggests-zeta-zeros-grow-more-predictable-with-height","url":"/categories/number-theory-mysteries/riemann-hypothesis/odlyzko-s-data-suggests-zeta-zeros-grow-more-predictable-with-height.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The higher you climb in infinity, the clearer the pattern."},{"title":"Omega Results and the Inevitable Fluctuations in Prime Counting","slug":"omega-results-and-the-inevitable-fluctuations-in-prime-counting","url":"/categories/number-theory-mysteries/riemann-hypothesis/omega-results-and-the-inevitable-fluctuations-in-prime-counting.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime errors must surge, even under perfect alignment."},{"title":"Operator Spectra and the Missing Self-Adjoint Proof of the Riemann Hypothesis","slug":"operator-spectra-and-the-missing-self-adjoint-proof-of-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/operator-spectra-and-the-missing-self-adjoint-proof-of-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Find the right operator, and the prime mystery collapses instantly."},{"title":"Partial Results on the Critical Line and the Percentage of Zeros Proven There","slug":"partial-results-on-the-critical-line-and-the-percentage-of-zeros-proven-there","url":"/categories/number-theory-mysteries/riemann-hypothesis/partial-results-on-the-critical-line-and-the-percentage-of-zeros-proven-there.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A majority of zeros are already proven to obey the line."},{"title":"Prime Counting at Astronomical Heights and the Final Barrier to Proof","slug":"prime-counting-at-astronomical-heights-and-the-final-barrier-to-proof","url":"/categories/number-theory-mysteries/riemann-hypothesis/prime-counting-at-astronomical-heights-and-the-final-barrier-to-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even numbers beyond atoms still obey an unproven law."},{"title":"Prime Distribution in Short Intervals and Spectral Constraints","slug":"prime-distribution-in-short-intervals-and-spectral-constraints","url":"/categories/number-theory-mysteries/riemann-hypothesis/prime-distribution-in-short-intervals-and-spectral-constraints.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny intervals hide enormous spectral sensitivity."},{"title":"Prime Gaps, Cramér's Model, and the Shadow of the Riemann Hypothesis","slug":"prime-gaps-cram-r-s-model-and-the-shadow-of-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/prime-gaps-cram-r-s-model-and-the-shadow-of-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The size of prime gaps may hinge on an unseen line."},{"title":"Prime Number Races and the Subtle Bias Tied to Zeta Zeros","slug":"prime-number-races-and-the-subtle-bias-tied-to-zeta-zeros","url":"/categories/number-theory-mysteries/riemann-hypothesis/prime-number-races-and-the-subtle-bias-tied-to-zeta-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes secretly favor certain residues in a cosmic race."},{"title":"Quadratic Fields and the Generalized Riemann Hypothesis","slug":"quadratic-fields-and-the-generalized-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/quadratic-fields-and-the-generalized-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Entire number systems hinge on zeros lining up perfectly."},{"title":"Quantum Chaos Experiments That Mirror the Riemann Zeta Zeros","slug":"quantum-chaos-experiments-that-mirror-the-riemann-zeta-zeros","url":"/categories/number-theory-mysteries/riemann-hypothesis/quantum-chaos-experiments-that-mirror-the-riemann-zeta-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Laboratory physics replicates patterns hidden in prime numbers."},{"title":"Quantum Unique Ergodicity Connections and Arithmetic Chaos","slug":"quantum-unique-ergodicity-connections-and-arithmetic-chaos","url":"/categories/number-theory-mysteries/riemann-hypothesis/quantum-unique-ergodicity-connections-and-arithmetic-chaos.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Chaotic quantum motion mirrors prime spectral order."},{"title":"Quasi-Randomness in the Möbius Function and Spectral Discipline","slug":"quasi-randomness-in-the-m-bius-function-and-spectral-discipline","url":"/categories/number-theory-mysteries/riemann-hypothesis/quasi-randomness-in-the-m-bius-function-and-spectral-discipline.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A three-valued function imitates perfect randomness under constraint."},{"title":"Quotients of Zeta Functions and Stability Under Spectral Assumptions","slug":"quotients-of-zeta-functions-and-stability-under-spectral-assumptions","url":"/categories/number-theory-mysteries/riemann-hypothesis/quotients-of-zeta-functions-and-stability-under-spectral-assumptions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Divide spectral objects, and prime stability trembles."},{"title":"Random Matrix Theory and the Universality of Zeta Zero Statistics","slug":"random-matrix-theory-and-the-universality-of-zeta-zero-statistics","url":"/categories/number-theory-mysteries/riemann-hypothesis/random-matrix-theory-and-the-universality-of-zeta-zero-statistics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A statistical law from physics predicts prime behavior exactly."},{"title":"Riemann Hypothesis and the 10 Trillionth Zero on the Critical Line","slug":"riemann-hypothesis-and-the-10-trillionth-zero-on-the-critical-line","url":"/categories/number-theory-mysteries/riemann-hypothesis/riemann-hypothesis-and-the-10-trillionth-zero-on-the-critical-line.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single equation predicts patterns verified 10 trillion times without proof."},{"title":"Riemann Hypothesis and the 1859 Paper That Redefined Infinity","slug":"riemann-hypothesis-and-the-1859-paper-that-redefined-infinity","url":"/categories/number-theory-mysteries/riemann-hypothesis/riemann-hypothesis-and-the-1859-paper-that-redefined-infinity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An eight-page paper reshaped how humanity understands infinity."},{"title":"Selberg's Trace Formula and the Spectral Echo of the Riemann Hypothesis","slug":"selberg-s-trace-formula-and-the-spectral-echo-of-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/selberg-s-trace-formula-and-the-spectral-echo-of-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers resonate like vibrations on curved surfaces."},{"title":"The Connection Between the Riemann Hypothesis and Möbius Randomness","slug":"the-connection-between-the-riemann-hypothesis-and-m-bius-randomness","url":"/categories/number-theory-mysteries/riemann-hypothesis/the-connection-between-the-riemann-hypothesis-and-m-bius-randomness.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A tiny arithmetic function behaves like cosmic white noise."},{"title":"The Critical Line: Why One Half Is the Most Important Number in Prime Theory","slug":"the-critical-line-why-one-half-is-the-most-important-number-in-prime-theory","url":"/categories/number-theory-mysteries/riemann-hypothesis/the-critical-line-why-one-half-is-the-most-important-number-in-prime-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single fraction splits infinity into order and chaos."},{"title":"The Explicit Formula Connecting Prime Numbers to Zeta Zeros","slug":"the-explicit-formula-connecting-prime-numbers-to-zeta-zeros","url":"/categories/number-theory-mysteries/riemann-hypothesis/the-explicit-formula-connecting-prime-numbers-to-zeta-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers whisper through invisible complex coordinates."},{"title":"The Functional Equation Symmetry at the Heart of the Riemann Hypothesis","slug":"the-functional-equation-symmetry-at-the-heart-of-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/the-functional-equation-symmetry-at-the-heart-of-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An equation mirrors itself across a forbidden boundary."},{"title":"The Hilbert–Pólya Idea Linking the Riemann Hypothesis to Quantum Physics","slug":"the-hilbert-p-lya-idea-linking-the-riemann-hypothesis-to-quantum-physics","url":"/categories/number-theory-mysteries/riemann-hypothesis/the-hilbert-p-lya-idea-linking-the-riemann-hypothesis-to-quantum-physics.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"An unsolved math problem may hide inside a quantum energy spectrum."},{"title":"The Million Dollar Millennium Prize for the Riemann Hypothesis","slug":"the-million-dollar-millennium-prize-for-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/the-million-dollar-millennium-prize-for-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One equation carries a seven-figure bounty and global obsession."},{"title":"Upper Bounds on the Mertens Function and the Edge of Square-Root Growth","slug":"upper-bounds-on-the-mertens-function-and-the-edge-of-square-root-growth","url":"/categories/number-theory-mysteries/riemann-hypothesis/upper-bounds-on-the-mertens-function-and-the-edge-of-square-root-growth.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple plus-minus sequence tests the limits of infinity."},{"title":"Vanishing Error Terms in Chebyshev Functions Under the Riemann Hypothesis","slug":"vanishing-error-terms-in-chebyshev-functions-under-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/vanishing-error-terms-in-chebyshev-functions-under-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime-weighted sums nearly cancel across cosmic scales."},{"title":"Vaughan's Identity and the Delicate Decomposition of Prime Sums","slug":"vaughan-s-identity-and-the-delicate-decomposition-of-prime-sums","url":"/categories/number-theory-mysteries/riemann-hypothesis/vaughan-s-identity-and-the-delicate-decomposition-of-prime-sums.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers unravel into fragments that test spectral order."},{"title":"Weyl's Law Analogies and the Spectral Counting of Zeta Zeros","slug":"weyl-s-law-analogies-and-the-spectral-counting-of-zeta-zeros","url":"/categories/number-theory-mysteries/riemann-hypothesis/weyl-s-law-analogies-and-the-spectral-counting-of-zeta-zeros.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Counting invisible zeros mimics counting vibrating drum modes."},{"title":"When Zeros Approach One: The Threat to Prime Regularity","slug":"when-zeros-approach-one-the-threat-to-prime-regularity","url":"/categories/number-theory-mysteries/riemann-hypothesis/when-zeros-approach-one-the-threat-to-prime-regularity.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"If a zero nears one, prime order nearly collapses."},{"title":"X-Ray Crystallography Analogies in Prime Distribution Patterns","slug":"x-ray-crystallography-analogies-in-prime-distribution-patterns","url":"/categories/number-theory-mysteries/riemann-hypothesis/x-ray-crystallography-analogies-in-prime-distribution-patterns.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime numbers scatter like atoms under spectral radiation."},{"title":"Yitang Zhang's Breakthrough and Conditional Strength Under the Riemann Hypothesis","slug":"yitang-zhang-s-breakthrough-and-conditional-strength-under-the-riemann-hypothesis","url":"/categories/number-theory-mysteries/riemann-hypothesis/yitang-zhang-s-breakthrough-and-conditional-strength-under-the-riemann-hypothesis.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A prime gap revolution grows sharper under one unproven line."},{"title":"Zero Density Estimates and the Shrinking Space for Counterexamples","slug":"zero-density-estimates-and-the-shrinking-space-for-counterexamples","url":"/categories/number-theory-mysteries/riemann-hypothesis/zero-density-estimates-and-the-shrinking-space-for-counterexamples.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Only a vanishing fraction of zeros can misbehave."},{"title":"Zero Pair Correlation at Astronomical Scales","slug":"zero-pair-correlation-at-astronomical-scales","url":"/categories/number-theory-mysteries/riemann-hypothesis/zero-pair-correlation-at-astronomical-scales.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Trillions of spectral points obey a universal spacing law."},{"title":"Zero Spacing at Extreme Heights and the Limits of Numerical Precision","slug":"zero-spacing-at-extreme-heights-and-the-limits-of-numerical-precision","url":"/categories/number-theory-mysteries/riemann-hypothesis/zero-spacing-at-extreme-heights-and-the-limits-of-numerical-precision.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"At trillion-level heights, precision decides spectral fate."},{"title":"Zeros, Logarithmic Derivatives, and the Sensitivity of Prime Fluctuations","slug":"zeros-logarithmic-derivatives-and-the-sensitivity-of-prime-fluctuations","url":"/categories/number-theory-mysteries/riemann-hypothesis/zeros-logarithmic-derivatives-and-the-sensitivity-of-prime-fluctuations.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny shifts in complex zeros ripple across colossal integers."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

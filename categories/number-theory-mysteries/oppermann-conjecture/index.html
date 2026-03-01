@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oppermann Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Oppermann Conjecture</h1>
+  <p>Explore all facts in "Oppermann Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Oppermann Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Analytic Number Theory Limits Exposed by Oppermann Prime Interval Claim","slug":"analytic-number-theory-limits-exposed-by-oppermann-prime-interval-claim","url":"/categories/number-theory-mysteries/oppermann-conjecture/analytic-number-theory-limits-exposed-by-oppermann-prime-interval-claim.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Modern analysis can predict prime density, yet it cannot secure two primes beside every square."},{"title":"Asymptotic Error Terms Blocking Proof of Oppermann Double Prime Condition","slug":"asymptotic-error-terms-blocking-proof-of-oppermann-double-prime-condition","url":"/categories/number-theory-mysteries/oppermann-conjecture/asymptotic-error-terms-blocking-proof-of-oppermann-double-prime-condition.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny error terms decide whether two primes must flank every square."},{"title":"Bernhard Riemann 1859 Zeta Insight and Its Hidden Relevance to Oppermann","slug":"bernhard-riemann-1859-zeta-insight-and-its-hidden-relevance-to-oppermann","url":"/categories/number-theory-mysteries/oppermann-conjecture/bernhard-riemann-1859-zeta-insight-and-its-hidden-relevance-to-oppermann.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 19th century paper about complex zeros may decide primes near every square."},{"title":"Boundary Splitting at n Times n Plus 1 and Its Prime Distribution Implications","slug":"boundary-splitting-at-n-times-n-plus-1-and-its-prime-distribution-implications","url":"/categories/number-theory-mysteries/oppermann-conjecture/boundary-splitting-at-n-times-n-plus-1-and-its-prime-distribution-implications.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single multiplication point divides each square corridor into two prime tests."},{"title":"Consecutive Square Prime Distribution Versus Proven Bounded Gap Theorems","slug":"consecutive-square-prime-distribution-versus-proven-bounded-gap-theorems","url":"/categories/number-theory-mysteries/oppermann-conjecture/consecutive-square-prime-distribution-versus-proven-bounded-gap-theorems.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Infinitely many close primes exist, yet squares still lack universal protection."},{"title":"Dirichlet 1837 Arithmetic Progressions and the Unresolved Square Interval Constraint","slug":"dirichlet-1837-arithmetic-progressions-and-the-unresolved-square-interval-constraint","url":"/categories/number-theory-mysteries/oppermann-conjecture/dirichlet-1837-arithmetic-progressions-and-the-unresolved-square-interval-constraint.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes march infinitely in progressions, yet may still abandon a single square corridor."},{"title":"Discrete Logarithmic Thinning and Persistent Prime Presence Near Squares","slug":"discrete-logarithmic-thinning-and-persistent-prime-presence-near-squares","url":"/categories/number-theory-mysteries/oppermann-conjecture/discrete-logarithmic-thinning-and-persistent-prime-presence-near-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"As primes thin logarithmically, squares still demand their return."},{"title":"Finite Verification Barrier in Oppermann Conjecture Computational Testing","slug":"finite-verification-barrier-in-oppermann-conjecture-computational-testing","url":"/categories/number-theory-mysteries/oppermann-conjecture/finite-verification-barrier-in-oppermann-conjecture-computational-testing.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Billions of confirmed cases still prove nothing about infinity."},{"title":"Fourier Analysis Techniques and the Persistent Oppermann Square Mystery","slug":"fourier-analysis-techniques-and-the-persistent-oppermann-square-mystery","url":"/categories/number-theory-mysteries/oppermann-conjecture/fourier-analysis-techniques-and-the-persistent-oppermann-square-mystery.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Harmonic waves model primes globally, yet squares still lack guaranteed symmetry."},{"title":"Geometric Growth of Squares Versus Arithmetic Randomness of Primes","slug":"geometric-growth-of-squares-versus-arithmetic-randomness-of-primes","url":"/categories/number-theory-mysteries/oppermann-conjecture/geometric-growth-of-squares-versus-arithmetic-randomness-of-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Quadratic growth accelerates relentlessly, yet primes must keep pace."},{"title":"Green Tao 2004 Arithmetic Progression Breakthrough and the Square Interval Gap","slug":"green-tao-2004-arithmetic-progression-breakthrough-and-the-square-interval-gap","url":"/categories/number-theory-mysteries/oppermann-conjecture/green-tao-2004-arithmetic-progression-breakthrough-and-the-square-interval-gap.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes form arbitrarily long progressions, yet a single square interval remains unguarded."},{"title":"Hardy Littlewood Prime Pair Conjectures and the Square Interval Vulnerability","slug":"hardy-littlewood-prime-pair-conjectures-and-the-square-interval-vulnerability","url":"/categories/number-theory-mysteries/oppermann-conjecture/hardy-littlewood-prime-pair-conjectures-and-the-square-interval-vulnerability.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Predictive formulas estimate prime clusters, yet cannot shield every square."},{"title":"Helge von Koch Inequality Implications for Oppermann Square Intervals","slug":"helge-von-koch-inequality-implications-for-oppermann-square-intervals","url":"/categories/number-theory-mysteries/oppermann-conjecture/helge-von-koch-inequality-implications-for-oppermann-square-intervals.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single inequality about primes could silently settle Oppermann forever."},{"title":"Inequality Bounds on Short Prime Intervals and the Oppermann Challenge","slug":"inequality-bounds-on-short-prime-intervals-and-the-oppermann-challenge","url":"/categories/number-theory-mysteries/oppermann-conjecture/inequality-bounds-on-short-prime-intervals-and-the-oppermann-challenge.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Short interval guarantees exist, yet squares still evade full protection."},{"title":"Infinite Desert Problem in Prime Gaps Versus Oppermann Square Boundaries","slug":"infinite-desert-problem-in-prime-gaps-versus-oppermann-square-boundaries","url":"/categories/number-theory-mysteries/oppermann-conjecture/infinite-desert-problem-in-prime-gaps-versus-oppermann-square-boundaries.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime deserts stretch for millions of numbers, yet squares may forbid total drought."},{"title":"K-Interval Prime Density Paradox Around Consecutive Squares Since 1882","slug":"k-interval-prime-density-paradox-around-consecutive-squares-since-1882","url":"/categories/number-theory-mysteries/oppermann-conjecture/k-interval-prime-density-paradox-around-consecutive-squares-since-1882.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Stretch a square far enough and primes still refuse to disappear."},{"title":"Kronecker Delta Contrast Between Deterministic Squares and Unpredictable Primes","slug":"kronecker-delta-contrast-between-deterministic-squares-and-unpredictable-primes","url":"/categories/number-theory-mysteries/oppermann-conjecture/kronecker-delta-contrast-between-deterministic-squares-and-unpredictable-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Squares follow a formula; primes refuse one, yet both collide at every interval."},{"title":"Kummer Inspired Analytic Techniques and Their Failure at Square Boundaries","slug":"kummer-inspired-analytic-techniques-and-their-failure-at-square-boundaries","url":"/categories/number-theory-mysteries/oppermann-conjecture/kummer-inspired-analytic-techniques-and-their-failure-at-square-boundaries.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Centuries of analytic refinement still falter at simple squares."},{"title":"Littlewood Oscillation Results and the Square Interval Balance Problem","slug":"littlewood-oscillation-results-and-the-square-interval-balance-problem","url":"/categories/number-theory-mysteries/oppermann-conjecture/littlewood-oscillation-results-and-the-square-interval-balance-problem.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime counts oscillate unpredictably, threatening perfect square symmetry."},{"title":"Ludvig Oppermann 1882 Challenge to Prime Distribution Near Squares","slug":"ludvig-oppermann-1882-challenge-to-prime-distribution-near-squares","url":"/categories/number-theory-mysteries/oppermann-conjecture/ludvig-oppermann-1882-challenge-to-prime-distribution-near-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 19th century school inspector issued a challenge still undefeated in modern mathematics."},{"title":"Modular Arithmetic Constraints Potentially Shaping Square Interval Primes","slug":"modular-arithmetic-constraints-potentially-shaping-square-interval-primes","url":"/categories/number-theory-mysteries/oppermann-conjecture/modular-arithmetic-constraints-potentially-shaping-square-interval-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even modular cycles may influence whether squares trap primes twice."},{"title":"Multiplicative Midpoint n Times n Plus 1 and the Dual Prime Threshold","slug":"multiplicative-midpoint-n-times-n-plus-1-and-the-dual-prime-threshold","url":"/categories/number-theory-mysteries/oppermann-conjecture/multiplicative-midpoint-n-times-n-plus-1-and-the-dual-prime-threshold.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single multiplication point decides the fate of two infinite corridors."},{"title":"Nontrivial Zero Distribution Limits and Oppermann Double Interval Claim","slug":"nontrivial-zero-distribution-limits-and-oppermann-double-interval-claim","url":"/categories/number-theory-mysteries/oppermann-conjecture/nontrivial-zero-distribution-limits-and-oppermann-double-interval-claim.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Complex zeros govern primes globally, yet cannot force two near every square."},{"title":"Oppermann Conjecture 1882 Prime Gap Claim Between Consecutive Squares","slug":"oppermann-conjecture-1882-prime-gap-claim-between-consecutive-squares","url":"/categories/number-theory-mysteries/oppermann-conjecture/oppermann-conjecture-1882-prime-gap-claim-between-consecutive-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Between every pair of consecutive perfect squares, at least one prime must hide."},{"title":"Prime Gap Extremes Near Consecutive Squares and Oppermann 20th Century Tests","slug":"prime-gap-extremes-near-consecutive-squares-and-oppermann-20th-century-tests","url":"/categories/number-theory-mysteries/oppermann-conjecture/prime-gap-extremes-near-consecutive-squares-and-oppermann-20th-century-tests.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime gaps can stretch for hundreds of millions of numbers, yet squares may still trap them twice."},{"title":"Prime Number Theorem 1896 and Its Incomplete Protection of Square Corridors","slug":"prime-number-theorem-1896-and-its-incomplete-protection-of-square-corridors","url":"/categories/number-theory-mysteries/oppermann-conjecture/prime-number-theorem-1896-and-its-incomplete-protection-of-square-corridors.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A theorem describing all primes still cannot defend a single square interval."},{"title":"Quadratic Boundaries and Guaranteed Prime Presence in Oppermann Framework","slug":"quadratic-boundaries-and-guaranteed-prime-presence-in-oppermann-framework","url":"/categories/number-theory-mysteries/oppermann-conjecture/quadratic-boundaries-and-guaranteed-prime-presence-in-oppermann-framework.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Simple squaring may secretly regulate where primes must appear forever."},{"title":"Quadratic Landmarks as Structural Anchors in Oppermann Prime Theory","slug":"quadratic-landmarks-as-structural-anchors-in-oppermann-prime-theory","url":"/categories/number-theory-mysteries/oppermann-conjecture/quadratic-landmarks-as-structural-anchors-in-oppermann-prime-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Perfect squares may act as invisible anchors in a sea of randomness."},{"title":"Random Matrix Analogies and the Unfinished Square Interval Proof","slug":"random-matrix-analogies-and-the-unfinished-square-interval-proof","url":"/categories/number-theory-mysteries/oppermann-conjecture/random-matrix-analogies-and-the-unfinished-square-interval-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Physics inspired models predict prime behavior, yet squares remain legally unverified."},{"title":"Random Matrix Theory Comparisons and Unresolved Oppermann Square Guarantee","slug":"random-matrix-theory-comparisons-and-unresolved-oppermann-square-guarantee","url":"/categories/number-theory-mysteries/oppermann-conjecture/random-matrix-theory-comparisons-and-unresolved-oppermann-square-guarantee.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Statistical physics models predict prime behavior, yet squares still defy certainty."},{"title":"Short Interval Density Refinements and the Remaining Oppermann Threshold","slug":"short-interval-density-refinements-and-the-remaining-oppermann-threshold","url":"/categories/number-theory-mysteries/oppermann-conjecture/short-interval-density-refinements-and-the-remaining-oppermann-threshold.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Density refinements narrow uncertainty, yet one empty half would shatter everything."},{"title":"Sieve of Eratosthenes Scaling Limits in Testing Oppermann Square Windows","slug":"sieve-of-eratosthenes-scaling-limits-in-testing-oppermann-square-windows","url":"/categories/number-theory-mysteries/oppermann-conjecture/sieve-of-eratosthenes-scaling-limits-in-testing-oppermann-square-windows.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Ancient sieving methods now scan billions of numbers, yet squares still defy proof."},{"title":"Square Growth Beyond 10 Billion and the Unbroken Oppermann Condition","slug":"square-growth-beyond-10-billion-and-the-unbroken-oppermann-condition","url":"/categories/number-theory-mysteries/oppermann-conjecture/square-growth-beyond-10-billion-and-the-unbroken-oppermann-condition.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Past ten billion squared, primes still refuse documented retreat."},{"title":"Square Interval Symmetry and the Dual Prime Obligation of 1882","slug":"square-interval-symmetry-and-the-dual-prime-obligation-of-1882","url":"/categories/number-theory-mysteries/oppermann-conjecture/square-interval-symmetry-and-the-dual-prime-obligation-of-1882.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each square corridor must balance two primes across a single midpoint."},{"title":"Statistical Heuristics Versus Deterministic Proof in Oppermann Square Theory","slug":"statistical-heuristics-versus-deterministic-proof-in-oppermann-square-theory","url":"/categories/number-theory-mysteries/oppermann-conjecture/statistical-heuristics-versus-deterministic-proof-in-oppermann-square-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Probability suggests primes will appear, but certainty demands more."},{"title":"Tightened Logarithmic Integral Estimates and the Missing Square Guarantee","slug":"tightened-logarithmic-integral-estimates-and-the-missing-square-guarantee","url":"/categories/number-theory-mysteries/oppermann-conjecture/tightened-logarithmic-integral-estimates-and-the-missing-square-guarantee.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Refined prime estimates still leave square corridors mathematically exposed."},{"title":"Twin Square Intervals and the 2n Plus 1 Expansion Constraint in Oppermann 1882","slug":"twin-square-intervals-and-the-2n-plus-1-expansion-constraint-in-oppermann-1882","url":"/categories/number-theory-mysteries/oppermann-conjecture/twin-square-intervals-and-the-2n-plus-1-expansion-constraint-in-oppermann-1882.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every time a square grows, a widening corridor demands two primes."},{"title":"Unconditional Prime Gap Bounds and Their Failure to Secure Square Intervals","slug":"unconditional-prime-gap-bounds-and-their-failure-to-secure-square-intervals","url":"/categories/number-theory-mysteries/oppermann-conjecture/unconditional-prime-gap-bounds-and-their-failure-to-secure-square-intervals.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Proven gap limits exist, yet none guarantee primes beside every square."},{"title":"Uniform Distribution Questions Behind the Oppermann Double Prime Requirement","slug":"uniform-distribution-questions-behind-the-oppermann-double-prime-requirement","url":"/categories/number-theory-mysteries/oppermann-conjecture/uniform-distribution-questions-behind-the-oppermann-double-prime-requirement.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Uniformity in prime placement remains unproven where squares demand symmetry."},{"title":"Upper Bounds on Prime Gaps and the Unresolved Square Interval Constraint","slug":"upper-bounds-on-prime-gaps-and-the-unresolved-square-interval-constraint","url":"/categories/number-theory-mysteries/oppermann-conjecture/upper-bounds-on-prime-gaps-and-the-unresolved-square-interval-constraint.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Prime gaps are bounded in theory, yet squares may demand tighter limits than known."},{"title":"X-Axis Critical Line Geometry and the Square Interval Constraint of Oppermann","slug":"x-axis-critical-line-geometry-and-the-square-interval-constraint-of-oppermann","url":"/categories/number-theory-mysteries/oppermann-conjecture/x-axis-critical-line-geometry-and-the-square-interval-constraint-of-oppermann.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Shift a zero off the critical line and squares might lose their primes."},{"title":"Xerographic Era Supercomputers Testing Oppermann Conjecture to Massive Bounds","slug":"xerographic-era-supercomputers-testing-oppermann-conjecture-to-massive-bounds","url":"/categories/number-theory-mysteries/oppermann-conjecture/xerographic-era-supercomputers-testing-oppermann-conjecture-to-massive-bounds.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Modern supercomputers have scanned billions of integers, yet infinity still escapes verification."},{"title":"Yitang Zhang 2013 Prime Gap Breakthrough and Remaining Oppermann Barrier","slug":"yitang-zhang-2013-prime-gap-breakthrough-and-remaining-oppermann-barrier","url":"/categories/number-theory-mysteries/oppermann-conjecture/yitang-zhang-2013-prime-gap-breakthrough-and-remaining-oppermann-barrier.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 2013 breakthrough shrank prime gaps dramatically, yet squares remain unconquered."},{"title":"Yitang Zhang 70 Million Gap Result and Its Insufficiency for Square Guarantees","slug":"yitang-zhang-70-million-gap-result-and-its-insufficiency-for-square-guarantees","url":"/categories/number-theory-mysteries/oppermann-conjecture/yitang-zhang-70-million-gap-result-and-its-insufficiency-for-square-guarantees.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 70 million breakthrough still cannot protect every square interval."},{"title":"Zero Density Estimates and the Unproven Double Prime Guarantee of 1882","slug":"zero-density-estimates-and-the-unproven-double-prime-guarantee-of-1882","url":"/categories/number-theory-mysteries/oppermann-conjecture/zero-density-estimates-and-the-unproven-double-prime-guarantee-of-1882.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even advanced zero density theorems cannot force two primes beside every square."},{"title":"Zero Density Hypotheses and the Infinite Square Corridor Question","slug":"zero-density-hypotheses-and-the-infinite-square-corridor-question","url":"/categories/number-theory-mysteries/oppermann-conjecture/zero-density-hypotheses-and-the-infinite-square-corridor-question.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Thin zero distributions might decide whether square corridors ever empty."},{"title":"Zero-Free Region Estimates Since 1896 and Their Limits Near Consecutive Squares","slug":"zero-free-region-estimates-since-1896-and-their-limits-near-consecutive-squares","url":"/categories/number-theory-mysteries/oppermann-conjecture/zero-free-region-estimates-since-1896-and-their-limits-near-consecutive-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even regions proven free of zeros cannot secure two primes beside every square."},{"title":"Zeta Function Constraints and the Double Prime Promise Near Perfect Squares","slug":"zeta-function-constraints-and-the-double-prime-promise-near-perfect-squares","url":"/categories/number-theory-mysteries/oppermann-conjecture/zeta-function-constraints-and-the-double-prime-promise-near-perfect-squares.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Complex analysis predicts prime behavior, yet two primes near every square remain unproven."},{"title":"Zeta Function Error Compression and the Remaining Square Interval Risk","slug":"zeta-function-error-compression-and-the-remaining-square-interval-risk","url":"/categories/number-theory-mysteries/oppermann-conjecture/zeta-function-error-compression-and-the-remaining-square-interval-risk.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Compress the error term enough and squares might finally be safe."},{"title":"Zhang Polymath Project Reductions and the Persistent Square Interval Gap","slug":"zhang-polymath-project-reductions-and-the-persistent-square-interval-gap","url":"/categories/number-theory-mysteries/oppermann-conjecture/zhang-polymath-project-reductions-and-the-persistent-square-interval-gap.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Global collaboration shrank prime gaps, yet squares still lack immunity."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

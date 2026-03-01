@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goldbach Conjecture</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Goldbach Conjecture</h1>
+  <p>Explore all facts in "Goldbach Conjecture".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Goldbach Conjecture</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Additive Energy Arguments Suggest Goldbach Is Structurally Stable","slug":"additive-energy-arguments-suggest-goldbach-is-structurally-stable","url":"/categories/number-theory-mysteries/goldbach-conjecture/additive-energy-arguments-suggest-goldbach-is-structurally-stable.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Deep combinatorial math implies Goldbach is hard to break."},{"title":"Almost All Even Numbers Have Multiple Goldbach Prime Pairs","slug":"almost-all-even-numbers-have-multiple-goldbach-prime-pairs","url":"/categories/number-theory-mysteries/goldbach-conjecture/almost-all-even-numbers-have-multiple-goldbach-prime-pairs.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Some even numbers can be split into primes in thousands of different ways."},{"title":"Bernhard Riemann’s Zeta Function Controls Goldbach’s Fate","slug":"bernhard-riemann-s-zeta-function-controls-goldbach-s-fate","url":"/categories/number-theory-mysteries/goldbach-conjecture/bernhard-riemann-s-zeta-function-controls-goldbach-s-fate.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The zeros of a complex function could decide Goldbach forever."},{"title":"Binary Goldbach Is Equivalent to a Deep Statement About Prime Density","slug":"binary-goldbach-is-equivalent-to-a-deep-statement-about-prime-density","url":"/categories/number-theory-mysteries/goldbach-conjecture/binary-goldbach-is-equivalent-to-a-deep-statement-about-prime-density.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Proving Goldbach would instantly confirm hidden structure in the primes."},{"title":"Chen’s Theorem Guarantees Goldbach Within One Prime Factor","slug":"chen-s-theorem-guarantees-goldbach-within-one-prime-factor","url":"/categories/number-theory-mysteries/goldbach-conjecture/chen-s-theorem-guarantees-goldbach-within-one-prime-factor.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every large even number is already one prime away from perfection."},{"title":"Chen’s Theorem Nearly Proved Goldbach in 1973","slug":"chen-s-theorem-nearly-proved-goldbach-in-1973","url":"/categories/number-theory-mysteries/goldbach-conjecture/chen-s-theorem-nearly-proved-goldbach-in-1973.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One breakthrough reduced Goldbach to primes plus almost-primes."},{"title":"Computers Check Goldbach Faster for Larger Numbers","slug":"computers-check-goldbach-faster-for-larger-numbers","url":"/categories/number-theory-mysteries/goldbach-conjecture/computers-check-goldbach-faster-for-larger-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Bigger even numbers are often easier to verify than smaller ones."},{"title":"Dirichlet’s Theorem Quietly Supports Goldbach’s Survival","slug":"dirichlet-s-theorem-quietly-supports-goldbach-s-survival","url":"/categories/number-theory-mysteries/goldbach-conjecture/dirichlet-s-theorem-quietly-supports-goldbach-s-survival.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes are guaranteed to appear in endless arithmetic patterns — and Goldbach depends on it."},{"title":"Euler Immediately Recognized Goldbach’s Depth","slug":"euler-immediately-recognized-goldbach-s-depth","url":"/categories/number-theory-mysteries/goldbach-conjecture/euler-immediately-recognized-goldbach-s-depth.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One of history’s greatest mathematicians sensed danger instantly."},{"title":"Even the Smallest Even Numbers Obey Goldbach Instantly","slug":"even-the-smallest-even-numbers-obey-goldbach-instantly","url":"/categories/number-theory-mysteries/goldbach-conjecture/even-the-smallest-even-numbers-obey-goldbach-instantly.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every even number above 2 breaks apart into primes immediately."},{"title":"Fourier Analysis Became Essential Because of Goldbach","slug":"fourier-analysis-became-essential-because-of-goldbach","url":"/categories/number-theory-mysteries/goldbach-conjecture/fourier-analysis-became-essential-because-of-goldbach.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A problem about adding primes forced mathematics to use waves."},{"title":"Goldbach Conjecture Verified by Computers Beyond 4 × 10^18","slug":"goldbach-conjecture-verified-by-computers-beyond-4-10-18","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-conjecture-verified-by-computers-beyond-4-10-18.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every even number up to four quintillion has been tested — and none break Goldbach."},{"title":"Goldbach Has Been Checked Using Distributed Supercomputing Networks","slug":"goldbach-has-been-checked-using-distributed-supercomputing-networks","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-has-been-checked-using-distributed-supercomputing-networks.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Global computer networks have hunted a single missing even number."},{"title":"Goldbach Has Monetary Prize Offers for Its Proof","slug":"goldbach-has-monetary-prize-offers-for-its-proof","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-has-monetary-prize-offers-for-its-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple addition problem carries cash rewards for a solution."},{"title":"Goldbach Inspired Entire Branches of Additive Number Theory","slug":"goldbach-inspired-entire-branches-of-additive-number-theory","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-inspired-entire-branches-of-additive-number-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"One simple question reshaped centuries of mathematical research."},{"title":"Goldbach’s Conjecture Appears Statistically Inevitable","slug":"goldbach-s-conjecture-appears-statistically-inevitable","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-conjecture-appears-statistically-inevitable.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Probability suggests Goldbach must be true — yet proof refuses to appear."},{"title":"Goldbach’s Conjecture Connects Directly to the Distribution of Primes","slug":"goldbach-s-conjecture-connects-directly-to-the-distribution-of-primes","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-conjecture-connects-directly-to-the-distribution-of-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A simple addition rule hides the deepest secrets of primes."},{"title":"Goldbach’s Conjecture Influenced the Development of the Circle Method","slug":"goldbach-s-conjecture-influenced-the-development-of-the-circle-method","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-conjecture-influenced-the-development-of-the-circle-method.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A geometric idea about circles became a weapon against prime sums."},{"title":"Goldbach’s Conjecture Is Simpler to State Than Many Grade-School Problems","slug":"goldbach-s-conjecture-is-simpler-to-state-than-many-grade-school-problems","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-conjecture-is-simpler-to-state-than-many-grade-school-problems.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A sentence a child can understand has defeated mathematics since 1742."},{"title":"Goldbach’s Conjecture Is Still Open After 100,000+ Academic Papers on Primes","slug":"goldbach-s-conjecture-is-still-open-after-100-000-academic-papers-on-primes","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-conjecture-is-still-open-after-100-000-academic-papers-on-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A mountain of prime research has not settled one simple sentence."},{"title":"Goldbach’s Conjecture Survived the Development of Modern Sieve Theory","slug":"goldbach-s-conjecture-survived-the-development-of-modern-sieve-theory","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-conjecture-survived-the-development-of-modern-sieve-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even the most powerful prime filters cannot crack Goldbach."},{"title":"Goldbach’s Verification Range Exceeds the Number of Stars in the Milky Way","slug":"goldbach-s-verification-range-exceeds-the-number-of-stars-in-the-milky-way","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-verification-range-exceeds-the-number-of-stars-in-the-milky-way.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"More even numbers have been checked than there are stars in our galaxy."},{"title":"Goldbach’s Weak Conjecture Was Proven After 271 Years","slug":"goldbach-s-weak-conjecture-was-proven-after-271-years","url":"/categories/number-theory-mysteries/goldbach-conjecture/goldbach-s-weak-conjecture-was-proven-after-271-years.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A 271-year-old prime puzzle finally collapsed in 2013."},{"title":"Hardy Believed Goldbach Was True but Inaccessible","slug":"hardy-believed-goldbach-was-true-but-inaccessible","url":"/categories/number-theory-mysteries/goldbach-conjecture/hardy-believed-goldbach-was-true-but-inaccessible.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A leading analyst called Goldbach likely true yet unreachable."},{"title":"Heuristic Models Predict Zero Exceptions to Goldbach","slug":"heuristic-models-predict-zero-exceptions-to-goldbach","url":"/categories/number-theory-mysteries/goldbach-conjecture/heuristic-models-predict-zero-exceptions-to-goldbach.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematical probability models give Goldbach no room to fail."},{"title":"If Goldbach Fails, the Counterexample Must Be Astronomically Large","slug":"if-goldbach-fails-the-counterexample-must-be-astronomically-large","url":"/categories/number-theory-mysteries/goldbach-conjecture/if-goldbach-fails-the-counterexample-must-be-astronomically-large.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Any failure of Goldbach must hide beyond quintillions."},{"title":"Infinite Prime Supply Does Not Automatically Guarantee Goldbach","slug":"infinite-prime-supply-does-not-automatically-guarantee-goldbach","url":"/categories/number-theory-mysteries/goldbach-conjecture/infinite-prime-supply-does-not-automatically-guarantee-goldbach.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Even infinite primes do not make Goldbach trivial."},{"title":"Jean d'Alembert Questioned Goldbach Within Years of Its Proposal","slug":"jean-d-alembert-questioned-goldbach-within-years-of-its-proposal","url":"/categories/number-theory-mysteries/goldbach-conjecture/jean-d-alembert-questioned-goldbach-within-years-of-its-proposal.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Within a decade, leading mathematicians doubted Goldbach’s bold claim."},{"title":"Kummer’s Work on Cyclotomic Fields Indirectly Touched Goldbach","slug":"kummer-s-work-on-cyclotomic-fields-indirectly-touched-goldbach","url":"/categories/number-theory-mysteries/goldbach-conjecture/kummer-s-work-on-cyclotomic-fields-indirectly-touched-goldbach.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Exotic number fields developed for Fermat echo inside Goldbach."},{"title":"Large-Scale Data Suggest Goldbach Representations Grow Predictably","slug":"large-scale-data-suggest-goldbach-representations-grow-predictably","url":"/categories/number-theory-mysteries/goldbach-conjecture/large-scale-data-suggest-goldbach-representations-grow-predictably.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"The bigger the number, the more predictable Goldbach becomes."},{"title":"Logarithmic Error Terms Block the Final Step to Proof","slug":"logarithmic-error-terms-block-the-final-step-to-proof","url":"/categories/number-theory-mysteries/goldbach-conjecture/logarithmic-error-terms-block-the-final-step-to-proof.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Tiny logarithmic fluctuations prevent Goldbach’s completion."},{"title":"Many Partial Results Prove Goldbach for Almost All Even Numbers","slug":"many-partial-results-prove-goldbach-for-almost-all-even-numbers","url":"/categories/number-theory-mysteries/goldbach-conjecture/many-partial-results-prove-goldbach-for-almost-all-even-numbers.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Mathematics has nearly proven Goldbach for the overwhelming majority of cases."},{"title":"Modern Cryptography Relies on Primes While Goldbach Remains Unproven","slug":"modern-cryptography-relies-on-primes-while-goldbach-remains-unproven","url":"/categories/number-theory-mysteries/goldbach-conjecture/modern-cryptography-relies-on-primes-while-goldbach-remains-unproven.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Global encryption trusts primes we still do not fully understand."},{"title":"No One Knows If Goldbach Is Independent of Current Axioms","slug":"no-one-knows-if-goldbach-is-independent-of-current-axioms","url":"/categories/number-theory-mysteries/goldbach-conjecture/no-one-knows-if-goldbach-is-independent-of-current-axioms.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Goldbach could be true — and unprovable forever."},{"title":"One Even Number Would Collapse Centuries of Prime Theory","slug":"one-even-number-would-collapse-centuries-of-prime-theory","url":"/categories/number-theory-mysteries/goldbach-conjecture/one-even-number-would-collapse-centuries-of-prime-theory.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"A single rogue even number could rewrite number theory overnight."},{"title":"Prime Density Declines, Yet Goldbach Representations Increase","slug":"prime-density-declines-yet-goldbach-representations-increase","url":"/categories/number-theory-mysteries/goldbach-conjecture/prime-density-declines-yet-goldbach-representations-increase.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Primes thin out — but Goldbach solutions multiply."},{"title":"Prime Pair Symmetry Makes Goldbach Structurally Redundant","slug":"prime-pair-symmetry-makes-goldbach-structurally-redundant","url":"/categories/number-theory-mysteries/goldbach-conjecture/prime-pair-symmetry-makes-goldbach-structurally-redundant.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Each Goldbach solution mirrors another across the number line."},{"title":"Quadrillions of Goldbach Checks Require Advanced Prime Sieves","slug":"quadrillions-of-goldbach-checks-require-advanced-prime-sieves","url":"/categories/number-theory-mysteries/goldbach-conjecture/quadrillions-of-goldbach-checks-require-advanced-prime-sieves.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Testing Goldbach at cosmic scale demands industrial-strength mathematics."},{"title":"Recent Advances in Prime Gaps Strengthen Goldbach Confidence","slug":"recent-advances-in-prime-gaps-strengthen-goldbach-confidence","url":"/categories/number-theory-mysteries/goldbach-conjecture/recent-advances-in-prime-gaps-strengthen-goldbach-confidence.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Shrinking prime gaps reinforce the two-prime sum rule."},{"title":"Some Even Numbers Have Prime Pairs Separated by Millions","slug":"some-even-numbers-have-prime-pairs-separated-by-millions","url":"/categories/number-theory-mysteries/goldbach-conjecture/some-even-numbers-have-prime-pairs-separated-by-millions.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Goldbach pairs can span prime deserts millions wide."},{"title":"The Goldbach Conjecture Has Survived 280 Years Without a Single Counterexample","slug":"the-goldbach-conjecture-has-survived-280-years-without-a-single-counterexample","url":"/categories/number-theory-mysteries/goldbach-conjecture/the-goldbach-conjecture-has-survived-280-years-without-a-single-counterexample.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"For nearly three centuries, not one even number has defied Goldbach."},{"title":"Two-Primes Versus Three-Primes Marks Goldbach’s Critical Threshold","slug":"two-primes-versus-three-primes-marks-goldbach-s-critical-threshold","url":"/categories/number-theory-mysteries/goldbach-conjecture/two-primes-versus-three-primes-marks-goldbach-s-critical-threshold.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Remove one prime from the sum, and the proof collapses."},{"title":"Under Certain Assumptions, Goldbach Follows from Stronger Conjectures","slug":"under-certain-assumptions-goldbach-follows-from-stronger-conjectures","url":"/categories/number-theory-mysteries/goldbach-conjecture/under-certain-assumptions-goldbach-follows-from-stronger-conjectures.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Assume a deeper prime truth, and Goldbach falls into place."},{"title":"Vinogradov’s Three-Prime Theorem Nearly Solved Goldbach in 1937","slug":"vinogradov-s-three-prime-theorem-nearly-solved-goldbach-in-1937","url":"/categories/number-theory-mysteries/goldbach-conjecture/vinogradov-s-three-prime-theorem-nearly-solved-goldbach-in-1937.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Adding just one extra prime cracked an impossible barrier."},{"title":"Weak Goldbach Implies Every Even Number Is Four Primes","slug":"weak-goldbach-implies-every-even-number-is-four-primes","url":"/categories/number-theory-mysteries/goldbach-conjecture/weak-goldbach-implies-every-even-number-is-four-primes.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every even number already splits into four primes without controversy."},{"title":"Widespread Heuristic Agreement Supports Goldbach Across Models","slug":"widespread-heuristic-agreement-supports-goldbach-across-models","url":"/categories/number-theory-mysteries/goldbach-conjecture/widespread-heuristic-agreement-supports-goldbach-across-models.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Every major prime model predicts Goldbach should hold universally."},{"title":"Xavier Gourdon Extended Goldbach Verification to Astronomical Limits","slug":"xavier-gourdon-extended-goldbach-verification-to-astronomical-limits","url":"/categories/number-theory-mysteries/goldbach-conjecture/xavier-gourdon-extended-goldbach-verification-to-astronomical-limits.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Individual researchers pushed Goldbach testing beyond trillions."},{"title":"Yitang Zhang’s Prime Gap Breakthrough Echoes Inside Goldbach","slug":"yitang-zhang-s-prime-gap-breakthrough-echoes-inside-goldbach","url":"/categories/number-theory-mysteries/goldbach-conjecture/yitang-zhang-s-prime-gap-breakthrough-echoes-inside-goldbach.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"Shrinking prime gaps narrows the escape routes for Goldbach failure."},{"title":"Zero Density of Counterexamples Implies Near Certainty","slug":"zero-density-of-counterexamples-implies-near-certainty","url":"/categories/number-theory-mysteries/goldbach-conjecture/zero-density-of-counterexamples-implies-near-certainty.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"If exceptions exist, they must be statistically invisible."},{"title":"Zero Even Numbers Have Ever Violated Goldbach in Testing","slug":"zero-even-numbers-have-ever-violated-goldbach-in-testing","url":"/categories/number-theory-mysteries/goldbach-conjecture/zero-even-numbers-have-ever-violated-goldbach-in-testing.html","color":"#cf5e79","category":"number-theory-mysteries","factCount":1,"factPreview":"After quintillions of checks, the failure count remains zero."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

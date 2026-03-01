@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charge Of The Light Brigade</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Charge Of The Light Brigade</h1>
+  <p>Explore all facts in "Charge Of The Light Brigade".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Charge Of The Light Brigade</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"A Quarter of the Brigade Gone: The Statistical Shock of Balaclava","slug":"a-quarter-of-the-brigade-gone-the-statistical-shock-of-balaclava","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/a-quarter-of-the-brigade-gone-the-statistical-shock-of-balaclava.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Nearly one in four riders failed to return from a single advance."},{"title":"An Artillery Error at Balaclava That Exposed Britain’s Elite Cavalry to 360-Degree Fire","slug":"an-artillery-error-at-balaclava-that-exposed-britain-s-elite-cavalry-to-360-degree-fire","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/an-artillery-error-at-balaclava-that-exposed-britain-s-elite-cavalry-to-360-degree-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"They rode into artillery that could hit them from almost every visible direction."},{"title":"Balaclava 1854: When Speed Became a Liability for the British Light Brigade","slug":"balaclava-1854-when-speed-became-a-liability-for-the-british-light-brigade","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/balaclava-1854-when-speed-became-a-liability-for-the-british-light-brigade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The faster they rode, the faster they entered perfect artillery range."},{"title":"Charge of the Light Brigade: The 20-Minute Cavalry Assault That Rode Into Artillery Fire","slug":"charge-of-the-light-brigade-the-20-minute-cavalry-assault-that-rode-into-artillery-fire","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/charge-of-the-light-brigade-the-20-minute-cavalry-assault-that-rode-into-artillery-fire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Six hundred British cavalrymen rode directly into a wall of artillery fire because of a misunderstood order."},{"title":"Disputed Orders at Balaclava That Sent 600 Riders Toward the Wrong Guns","slug":"disputed-orders-at-balaclava-that-sent-600-riders-toward-the-wrong-guns","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/disputed-orders-at-balaclava-that-sent-600-riders-toward-the-wrong-guns.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"They charged the only guns they could see—and those were the wrong ones."},{"title":"Enfilade Fire at Balaclava: The Tactical Nightmare Facing the Light Brigade","slug":"enfilade-fire-at-balaclava-the-tactical-nightmare-facing-the-light-brigade","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/enfilade-fire-at-balaclava-the-tactical-nightmare-facing-the-light-brigade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Artillery shells struck them lengthwise down the entire cavalry line."},{"title":"Fewer Than 500 Returned: The Light Brigade’s Reduced Strength After 20 Minutes","slug":"fewer-than-500-returned-the-light-brigade-s-reduced-strength-after-20-minutes","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/fewer-than-500-returned-the-light-brigade-s-reduced-strength-after-20-minutes.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Nearly a third of the brigade was lost in less time than a modern commute."},{"title":"Gallantry Versus Geometry: Why Courage Could Not Save the Light Brigade","slug":"gallantry-versus-geometry-why-courage-could-not-save-the-light-brigade","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/gallantry-versus-geometry-why-courage-could-not-save-the-light-brigade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Unmatched bravery collided with unstoppable ballistics in a narrow valley."},{"title":"How a 19th-Century Battlefield Misstep Became a Global Metaphor for Failure","slug":"how-a-19th-century-battlefield-misstep-became-a-global-metaphor-for-failure","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/how-a-19th-century-battlefield-misstep-became-a-global-metaphor-for-failure.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A 20-minute cavalry charge became shorthand for doomed initiatives worldwide."},{"title":"How a Written Order Sparked One of Britain’s Most Infamous Military Blunders","slug":"how-a-written-order-sparked-one-of-britain-s-most-infamous-military-blunders","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/how-a-written-order-sparked-one-of-britain-s-most-infamous-military-blunders.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single handwritten order triggered a cavalry assault into concentrated cannon fire."},{"title":"How Victorian Newspapers Turned a Military Disaster Into National Poetry","slug":"how-victorian-newspapers-turned-a-military-disaster-into-national-poetry","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/how-victorian-newspapers-turned-a-military-disaster-into-national-poetry.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Within weeks of the massacre, Britain was celebrating it in verse."},{"title":"Incompetent Coordination at Balaclava That Sparked Public Outrage in Britain","slug":"incompetent-coordination-at-balaclava-that-sparked-public-outrage-in-britain","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/incompetent-coordination-at-balaclava-that-sparked-public-outrage-in-britain.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Victorian Britain learned about the disaster almost as it happened."},{"title":"Jarring Contrast at Balaclava: A 20-Minute Charge That Echoed for 170 Years","slug":"jarring-contrast-at-balaclava-a-20-minute-charge-that-echoed-for-170-years","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/jarring-contrast-at-balaclava-a-20-minute-charge-that-echoed-for-170-years.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Twenty minutes of action reshaped military reputation for nearly two centuries."},{"title":"Kinetic Momentum at Balaclava: Why Once the Charge Began It Could Not Stop","slug":"kinetic-momentum-at-balaclava-why-once-the-charge-began-it-could-not-stop","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/kinetic-momentum-at-balaclava-why-once-the-charge-began-it-could-not-stop.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Galloping cavalry created a momentum that outpaced reconsideration."},{"title":"Logistical Chaos in the Crimean War That Framed the Light Brigade Disaster","slug":"logistical-chaos-in-the-crimean-war-that-framed-the-light-brigade-disaster","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/logistical-chaos-in-the-crimean-war-that-framed-the-light-brigade-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The charge unfolded inside a war already plagued by supply collapse."},{"title":"Massed Russian Guns at Balaclava That Outranged Every Cavalry Sword","slug":"massed-russian-guns-at-balaclava-that-outranged-every-cavalry-sword","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/massed-russian-guns-at-balaclava-that-outranged-every-cavalry-sword.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Steel sabres met artillery that could kill from over a mile away."},{"title":"No Retreat Signal: Why the Light Brigade Could Not Easily Turn Back","slug":"no-retreat-signal-why-the-light-brigade-could-not-easily-turn-back","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/no-retreat-signal-why-the-light-brigade-could-not-easily-turn-back.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Once they committed, turning around meant riding back through the same gunfire."},{"title":"One Brigade, Five Regiments: The Coordinated Advance That Became a Catastrophe","slug":"one-brigade-five-regiments-the-coordinated-advance-that-became-a-catastrophe","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/one-brigade-five-regiments-the-coordinated-advance-that-became-a-catastrophe.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Five separate cavalry regiments rode together into converging cannon fire."},{"title":"Public Shock in 1854: How Britain Reacted to the Light Brigade Disaster","slug":"public-shock-in-1854-how-britain-reacted-to-the-light-brigade-disaster","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/public-shock-in-1854-how-britain-reacted-to-the-light-brigade-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"News of the charge stunned a nation that expected victory, not slaughter."},{"title":"Quantifiable Disaster: The Casualty Ratios That Shocked Victorian Britain","slug":"quantifiable-disaster-the-casualty-ratios-that-shocked-victorian-britain","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/quantifiable-disaster-the-casualty-ratios-that-shocked-victorian-britain.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Nearly 25 percent of the brigade became casualties in one advance."},{"title":"Range Versus Reality: Why Cavalry Could Not Outrun Crimean War Artillery","slug":"range-versus-reality-why-cavalry-could-not-outrun-crimean-war-artillery","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/range-versus-reality-why-cavalry-could-not-outrun-crimean-war-artillery.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Horses at full gallop still could not outrun calibrated cannon fire."},{"title":"Reputation at Risk: How the Charge Undermined Aristocratic Command Prestige","slug":"reputation-at-risk-how-the-charge-undermined-aristocratic-command-prestige","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/reputation-at-risk-how-the-charge-undermined-aristocratic-command-prestige.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"An elite cavalry disaster exposed cracks in Britain’s aristocratic officer system."},{"title":"Strategic Misinterpretation at Balaclava That Cost Over 100 Lives","slug":"strategic-misinterpretation-at-balaclava-that-cost-over-100-lives","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/strategic-misinterpretation-at-balaclava-that-cost-over-100-lives.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A single unclear phrase translated into more than a hundred deaths."},{"title":"Structural Miscommunication at Balaclava That Multiplied Battlefield Risk","slug":"structural-miscommunication-at-balaclava-that-multiplied-battlefield-risk","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/structural-miscommunication-at-balaclava-that-multiplied-battlefield-risk.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Two commanders saw different battlefields and acted on conflicting realities."},{"title":"Tactical Obsolescence Revealed at Balaclava in Under Half an Hour","slug":"tactical-obsolescence-revealed-at-balaclava-in-under-half-an-hour","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/tactical-obsolescence-revealed-at-balaclava-in-under-half-an-hour.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Centuries of cavalry doctrine unraveled against modern artillery in minutes."},{"title":"Telegraph-Era Warfare: How the Light Brigade’s Disaster Spread Across Britain","slug":"telegraph-era-warfare-how-the-light-brigade-s-disaster-spread-across-britain","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/telegraph-era-warfare-how-the-light-brigade-s-disaster-spread-across-britain.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The shock traveled almost as fast as the cavalry had ridden."},{"title":"The 1.25-Mile Ride That Redefined Military Miscommunication","slug":"the-1-25-mile-ride-that-redefined-military-miscommunication","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/the-1-25-mile-ride-that-redefined-military-miscommunication.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A mile-long advance under artillery fire became a permanent military warning."},{"title":"The 110 Men Who Died in Minutes During the Charge of the Light Brigade","slug":"the-110-men-who-died-in-minutes-during-the-charge-of-the-light-brigade","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/the-110-men-who-died-in-minutes-during-the-charge-of-the-light-brigade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"More than a hundred cavalrymen died in under twenty minutes of combat."},{"title":"The Aristocratic Rivalry That Fueled the Light Brigade Disaster","slug":"the-aristocratic-rivalry-that-fueled-the-light-brigade-disaster","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/the-aristocratic-rivalry-that-fueled-the-light-brigade-disaster.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Personal animosity between commanders shaped a deadly battlefield decision."},{"title":"The Charge That Advanced a Mile Under Crossfire in the Crimean War","slug":"the-charge-that-advanced-a-mile-under-crossfire-in-the-crimean-war","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/the-charge-that-advanced-a-mile-under-crossfire-in-the-crimean-war.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"They advanced more than a mile while artillery fired from three directions."},{"title":"The Open Valley at Balaclava That Offered No Natural Cover","slug":"the-open-valley-at-balaclava-that-offered-no-natural-cover","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/the-open-valley-at-balaclava-that-offered-no-natural-cover.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"They charged across terrain with nowhere to hide from exploding shells."},{"title":"The Valley That Turned Into a Crossfire Corridor at Balaclava","slug":"the-valley-that-turned-into-a-crossfire-corridor-at-balaclava","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/the-valley-that-turned-into-a-crossfire-corridor-at-balaclava.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The terrain itself created a three-sided artillery trap for charging cavalry."},{"title":"Unintended Target: How the Light Brigade Charged the Wrong Guns","slug":"unintended-target-how-the-light-brigade-charged-the-wrong-guns","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/unintended-target-how-the-light-brigade-charged-the-wrong-guns.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"They attacked the most heavily defended battery because it was the only one visible."},{"title":"Unquestioned Obedience at Balaclava That Became a Lesson in Military Reform","slug":"unquestioned-obedience-at-balaclava-that-became-a-lesson-in-military-reform","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/unquestioned-obedience-at-balaclava-that-became-a-lesson-in-military-reform.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"They knew the valley was deadly, yet they advanced without protest."},{"title":"Valley of Death: The Biblical Phrase That Defined a 19th-Century Military Blunder","slug":"valley-of-death-the-biblical-phrase-that-defined-a-19th-century-military-blunder","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/valley-of-death-the-biblical-phrase-that-defined-a-19th-century-military-blunder.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"A real battlefield earned a name that sounds like apocalyptic prophecy."},{"title":"Visible Futility: Observers Watched the Light Brigade Ride Into Crossfire","slug":"visible-futility-observers-watched-the-light-brigade-ride-into-crossfire","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/visible-futility-observers-watched-the-light-brigade-ride-into-crossfire.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Allied troops could see the artillery trap as the cavalry advanced."},{"title":"Vulnerability of Light Cavalry in the Age of Explosive Shells","slug":"vulnerability-of-light-cavalry-in-the-age-of-explosive-shells","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/vulnerability-of-light-cavalry-in-the-age-of-explosive-shells.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Exploding artillery shells shattered a tactic perfected for centuries."},{"title":"When Heroism Masked Error: The Cultural Paradox of the Light Brigade","slug":"when-heroism-masked-error-the-cultural-paradox-of-the-light-brigade","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/when-heroism-masked-error-the-cultural-paradox-of-the-light-brigade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"The more heroic the story became, the clearer the mistake appeared."},{"title":"Why the Charge of the Light Brigade Still Defines Military Folly 170 Years Later","slug":"why-the-charge-of-the-light-brigade-still-defines-military-folly-170-years-later","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/why-the-charge-of-the-light-brigade-still-defines-military-folly-170-years-later.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One misinterpreted order still defines military embarrassment nearly two centuries later."},{"title":"Why the Light Brigade Was the Wrong Unit for a Frontal Assault","slug":"why-the-light-brigade-was-the-wrong-unit-for-a-frontal-assault","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/why-the-light-brigade-was-the-wrong-unit-for-a-frontal-assault.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Britain sent its fastest, lightest cavalry straight into fortified cannons."},{"title":"William Howard Russell: The Reporter Who Turned a Cavalry Disaster Into National Debate","slug":"william-howard-russell-the-reporter-who-turned-a-cavalry-disaster-into-national-debate","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/william-howard-russell-the-reporter-who-turned-a-cavalry-disaster-into-national-debate.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"One journalist’s dispatch exposed a battlefield blunder to an empire."},{"title":"X-Factor of Elevation: How High Ground Sealed the Light Brigade’s Fate","slug":"x-factor-of-elevation-how-high-ground-sealed-the-light-brigade-s-fate","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/x-factor-of-elevation-how-high-ground-sealed-the-light-brigade-s-fate.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Russian guns fired downward from heights the cavalry could not reach."},{"title":"Years of Training Lost in Minutes: The Human Cost of the Light Brigade","slug":"years-of-training-lost-in-minutes-the-human-cost-of-the-light-brigade","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/years-of-training-lost-in-minutes-the-human-cost-of-the-light-brigade.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Decades of cavalry experience vanished in a single 20-minute assault."},{"title":"Zero Margin for Clarification: The Fatal Gap in the Light Brigade’s Orders","slug":"zero-margin-for-clarification-the-fatal-gap-in-the-light-brigade-s-orders","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/zero-margin-for-clarification-the-fatal-gap-in-the-light-brigade-s-orders.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"There was no pause to ask what the order truly meant."},{"title":"Zero Strategic Gain: The Light Brigade’s Charge That Changed Nothing on the Field","slug":"zero-strategic-gain-the-light-brigade-s-charge-that-changed-nothing-on-the-field","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/zero-strategic-gain-the-light-brigade-s-charge-that-changed-nothing-on-the-field.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"After the smoke cleared, the battlefield lines barely moved."},{"title":"Zonal Crossfire at Balaclava That Created a Perfect Kill Corridor","slug":"zonal-crossfire-at-balaclava-that-created-a-perfect-kill-corridor","url":"/categories/embarrassing-historical-moments/charge-of-the-light-brigade/zonal-crossfire-at-balaclava-that-created-a-perfect-kill-corridor.html","color":"#42738","category":"embarrassing-historical-moments","factCount":1,"factPreview":"Artillery arcs overlapped so precisely they formed a lethal zone."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>

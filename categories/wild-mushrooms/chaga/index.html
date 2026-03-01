@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaga</title>
+
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V2XJEGWMGS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V2XJEGWMGS');
+</script>
+
+
+<style>
+:root{
+  --bg:#f7f7f7;
+  --text:#222;
+  --card:#ffffff;
+}
+
+body.dark{
+  --bg:#121212;
+  --text:#f5f5f5;
+  --card:#1e1e1e;
+}
+
+body{
+  font-family:'Inter',Arial,sans-serif;
+  background:var(--bg);
+  margin:0;
+  color:var(--text);
+  scroll-behavior:smooth;
+  transition:.3s ease;
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:60px 20px 30px;
+  background:linear-gradient(135deg,#222,#333);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:500;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.controls{
+  margin-top:15px;
+}
+
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  margin:0 5px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+#sortToggle{background:#ff5722;color:white;}
+#darkToggle{background:#444;color:white;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  text-align:center;
+  font-size:0.9em;
+  margin:10px 0 20px;
+}
+
+/* QUICK JUMP */
+.quick-jump{
+  text-align:center;
+  margin:10px 0 20px;
+  font-size:0.9em;
+}
+.quick-jump a{
+  margin:0 5px;
+  color:#007acc;
+  font-weight:500;
+}
+
+/* SEARCH */
+#search-container{text-align:center;margin:20px;}
+#search-input{
+  padding:10px 16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  width:280px;
+}
+
+/* GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin:30px 20px;
+}
+
+.section-header{
+  width:100%;
+  font-size:1.3em;
+  font-weight:700;
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:6px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  flex:1 1 260px;
+  text-align:center;
+  position:relative;
+  transition:0.25s ease;
+  cursor:pointer;
+  opacity:0;
+  border-top:5px solid var(--category-color,#ff5722);
+}
+
+.card.loaded{opacity:1;}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 0 2px var(--category-color,#ff5722),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  margin-top:6px;
+  border-radius:6px;
+  font-size:.8em;
+  background:#eee;
+}
+
+body.dark .badge{background:#333;color:#fff;}
+
+/* TOOLTIP */
+#tooltip{
+  position:fixed;
+  max-width:260px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff;
+  color:#222;
+  font-size:0.85em;
+  box-shadow:0 6px 18px rgba(0,0,0,0.2);
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity .2s ease;
+  z-index:999;
+}
+
+body.dark #tooltip{
+  background:#2b2b2b;
+  color:#fff;
+}
+
+#tooltip::after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  border-width:6px;
+  border-style:solid;
+  border-color:#fff transparent transparent transparent;
+}
+
+body.dark #tooltip::after{
+  border-color:#2b2b2b transparent transparent transparent;
+}
+
+/* BACK TO TOP */
+#back-to-top{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#ff5722;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  font-weight:bold;
+  opacity:0;
+  transition:opacity .3s;
+}
+</style>
+</head>
+<body id="top">
+
+<header>
+  <h1>Chaga</h1>
+  <p>Explore all facts in "Chaga".</p>
+  <div id="totalFacts"></div>
+  <div class="controls">
+    <button id="sortToggle">Sort: A–Z</button>
+    <button id="darkToggle">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="breadcrumb">
+  <a href="/index.html">Home</a> &gt; <span>Chaga</span>
+</nav>
+
+<div class="quick-jump" id="quickJump"></div>
+
+<section id="search-container">
+  <input type="text" id="search-input" placeholder="Search..." oninput="filterCards()">
+</section>
+
+<section id="items-grid" class="grid"></section>
+<div id="tooltip"></div>
+
+<a href="#top" id="back-to-top">↑ Back to Top</a>
+
+<script>
+const ITEMS = [{"title":"Airborne Chaga Spores Travel Invisibly Across Entire Forest Landscapes","slug":"airborne-chaga-spores-travel-invisibly-across-entire-forest-landscapes","url":"/categories/wild-mushrooms/chaga/airborne-chaga-spores-travel-invisibly-across-entire-forest-landscapes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Invisible spores drift for miles before starting decades-long infections."},{"title":"Biochemical Defense Compounds in Birch Trigger Adaptive Responses in Chaga","slug":"biochemical-defense-compounds-in-birch-trigger-adaptive-responses-in-chaga","url":"/categories/wild-mushrooms/chaga/biochemical-defense-compounds-in-birch-trigger-adaptive-responses-in-chaga.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The tree fights back with chemicals, and the fungus adapts."},{"title":"Boreal Chaga Forests Store Carbon for Decades Before Release","slug":"boreal-chaga-forests-store-carbon-for-decades-before-release","url":"/categories/wild-mushrooms/chaga/boreal-chaga-forests-store-carbon-for-decades-before-release.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single fungal infection can lock carbon for decades before unleashing it."},{"title":"Chaga Can Weigh More Than a Car Tire While Hidden on a Tree","slug":"chaga-can-weigh-more-than-a-car-tire-while-hidden-on-a-tree","url":"/categories/wild-mushrooms/chaga/chaga-can-weigh-more-than-a-car-tire-while-hidden-on-a-tree.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A growth that looks like charred bark can weigh over 30 pounds."},{"title":"Chaga Concentrates Betulin From Birch Bark Into Bioactive Compounds","slug":"chaga-concentrates-betulin-from-birch-bark-into-bioactive-compounds","url":"/categories/wild-mushrooms/chaga/chaga-concentrates-betulin-from-birch-bark-into-bioactive-compounds.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus steals chemicals from its host and rewrites them."},{"title":"Chaga Contains One of the Highest Natural Antioxidant Scores Ever Recorded","slug":"chaga-contains-one-of-the-highest-natural-antioxidant-scores-ever-recorded","url":"/categories/wild-mushrooms/chaga/chaga-contains-one-of-the-highest-natural-antioxidant-scores-ever-recorded.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One wild fungus scored higher in antioxidant tests than most superfoods combined."},{"title":"Chaga Harvesting Can Take Decades to Regrow in the Wild","slug":"chaga-harvesting-can-take-decades-to-regrow-in-the-wild","url":"/categories/wild-mushrooms/chaga/chaga-harvesting-can-take-decades-to-regrow-in-the-wild.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Removing one chunk can erase decades of slow Arctic growth."},{"title":"Chaga Has Been Used in Traditional Siberian Medicine for Nearly a Millennium","slug":"chaga-has-been-used-in-traditional-siberian-medicine-for-nearly-a-millennium","url":"/categories/wild-mushrooms/chaga/chaga-has-been-used-in-traditional-siberian-medicine-for-nearly-a-millennium.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus from frozen forests entered medical texts centuries ago."},{"title":"Chaga Infections Can Kill Birch Trees After Decades of Silent Decay","slug":"chaga-infections-can-kill-birch-trees-after-decades-of-silent-decay","url":"/categories/wild-mushrooms/chaga/chaga-infections-can-kill-birch-trees-after-decades-of-silent-decay.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A tree can stand alive for decades while being hollowed from the inside."},{"title":"Chaga Is Not a True Mushroom Cap Despite Its Popular Reputation","slug":"chaga-is-not-a-true-mushroom-cap-despite-its-popular-reputation","url":"/categories/wild-mushrooms/chaga/chaga-is-not-a-true-mushroom-cap-despite-its-popular-reputation.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The so-called mushroom has no cap, stem, or gills."},{"title":"Chaga Mushroom Survives Arctic Winters and Burns From the Inside","slug":"chaga-mushroom-survives-arctic-winters-and-burns-from-the-inside","url":"/categories/wild-mushrooms/chaga/chaga-mushroom-survives-arctic-winters-and-burns-from-the-inside.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This black fungal mass survives Arctic winters by slowly burning its host tree alive."},{"title":"Chaga Produces Its True Fruiting Body Only After the Tree Dies","slug":"chaga-produces-its-true-fruiting-body-only-after-the-tree-dies","url":"/categories/wild-mushrooms/chaga/chaga-produces-its-true-fruiting-body-only-after-the-tree-dies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The mushroom you see is not the mushroom at all."},{"title":"Chaga Thrives in Some of the Coldest Forests on Earth","slug":"chaga-thrives-in-some-of-the-coldest-forests-on-earth","url":"/categories/wild-mushrooms/chaga/chaga-thrives-in-some-of-the-coldest-forests-on-earth.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus stays active where temperatures plunge below minus 40."},{"title":"Continental Boreal Corridors Allow Genetic Flow Between Distant Chaga Populations","slug":"continental-boreal-corridors-allow-genetic-flow-between-distant-chaga-populations","url":"/categories/wild-mushrooms/chaga/continental-boreal-corridors-allow-genetic-flow-between-distant-chaga-populations.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Forests thousands of miles apart share fungal ancestry."},{"title":"Decades-Old Chaga Can Outlive the Human Who Harvests It","slug":"decades-old-chaga-can-outlive-the-human-who-harvests-it","url":"/categories/wild-mushrooms/chaga/decades-old-chaga-can-outlive-the-human-who-harvests-it.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The fungus you cut today may have started growing before you were born."},{"title":"Dense Chaga Conks Can Exceed the Hardness of Surrounding Decayed Wood","slug":"dense-chaga-conks-can-exceed-the-hardness-of-surrounding-decayed-wood","url":"/categories/wild-mushrooms/chaga/dense-chaga-conks-can-exceed-the-hardness-of-surrounding-decayed-wood.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The parasite can feel harder than the tree it destroys."},{"title":"Elevated Antioxidant Activity in Chaga Reflects Adaptation to Environmental Stress","slug":"elevated-antioxidant-activity-in-chaga-reflects-adaptation-to-environmental-stress","url":"/categories/wild-mushrooms/chaga/elevated-antioxidant-activity-in-chaga-reflects-adaptation-to-environmental-stress.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its chemistry is built to survive oxidative assault."},{"title":"Extreme UV Exposure May Influence Chaga's Dark Protective Pigment","slug":"extreme-uv-exposure-may-influence-chaga-s-dark-protective-pigment","url":"/categories/wild-mushrooms/chaga/extreme-uv-exposure-may-influence-chaga-s-dark-protective-pigment.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus armors itself with a pigment also found in human skin."},{"title":"Forest Fires Do Not Create Chaga Despite Its Burnt Appearance","slug":"forest-fires-do-not-create-chaga-despite-its-burnt-appearance","url":"/categories/wild-mushrooms/chaga/forest-fires-do-not-create-chaga-despite-its-burnt-appearance.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"It looks like fire damage, but flames did not make it."},{"title":"Fragmented Forests May Limit Long-Term Chaga Persistence","slug":"fragmented-forests-may-limit-long-term-chaga-persistence","url":"/categories/wild-mushrooms/chaga/fragmented-forests-may-limit-long-term-chaga-persistence.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Break the forest, and the fungus loses its corridor."},{"title":"Geographic Distribution of Chaga Spans Three Continents Across the Northern Hemisphere","slug":"geographic-distribution-of-chaga-spans-three-continents-across-the-northern-hemisphere","url":"/categories/wild-mushrooms/chaga/geographic-distribution-of-chaga-spans-three-continents-across-the-northern-hemisphere.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One parasitic fungus quietly stretches across three continents."},{"title":"Gradual White Rot by Chaga Converts Solid Heartwood Into Nutrient Substrate","slug":"gradual-white-rot-by-chaga-converts-solid-heartwood-into-nutrient-substrate","url":"/categories/wild-mushrooms/chaga/gradual-white-rot-by-chaga-converts-solid-heartwood-into-nutrient-substrate.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Rigid timber slowly transforms into forest food."},{"title":"Hidden Chaga Networks Extend Far Beyond the Visible Conk","slug":"hidden-chaga-networks-extend-far-beyond-the-visible-conk","url":"/categories/wild-mushrooms/chaga/hidden-chaga-networks-extend-far-beyond-the-visible-conk.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The visible mass is only a fraction of the organism inside."},{"title":"Hidden Fruiting Bodies of Chaga Appear Only Briefly After Host Death","slug":"hidden-fruiting-bodies-of-chaga-appear-only-briefly-after-host-death","url":"/categories/wild-mushrooms/chaga/hidden-fruiting-bodies-of-chaga-appear-only-briefly-after-host-death.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The true mushroom emerges only after the tree dies."},{"title":"Infected Birch Trees Can Appear Healthy Until Structural Collapse","slug":"infected-birch-trees-can-appear-healthy-until-structural-collapse","url":"/categories/wild-mushrooms/chaga/infected-birch-trees-can-appear-healthy-until-structural-collapse.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A green canopy can hide a collapsing core."},{"title":"Iron and Mineral Accumulation in Chaga Reflects Long-Term Wood Interaction","slug":"iron-and-mineral-accumulation-in-chaga-reflects-long-term-wood-interaction","url":"/categories/wild-mushrooms/chaga/iron-and-mineral-accumulation-in-chaga-reflects-long-term-wood-interaction.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Decades inside wood allow trace minerals to concentrate."},{"title":"Just One Infection Can Weaken a Birch Trunk to the Point of Sudden Snap","slug":"just-one-infection-can-weaken-a-birch-trunk-to-the-point-of-sudden-snap","url":"/categories/wild-mushrooms/chaga/just-one-infection-can-weaken-a-birch-trunk-to-the-point-of-sudden-snap.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A single fungal entry point can turn solid wood brittle."},{"title":"Kilograms of Dense Fungal Tissue Form From a Single Spore Infection","slug":"kilograms-of-dense-fungal-tissue-form-from-a-single-spore-infection","url":"/categories/wild-mushrooms/chaga/kilograms-of-dense-fungal-tissue-form-from-a-single-spore-infection.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"One microscopic spore can eventually weigh as much as a bowling ball."},{"title":"Lignin Breakdown by Chaga Alters Wood Chemistry at the Molecular Level","slug":"lignin-breakdown-by-chaga-alters-wood-chemistry-at-the-molecular-level","url":"/categories/wild-mushrooms/chaga/lignin-breakdown-by-chaga-alters-wood-chemistry-at-the-molecular-level.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus dismantles one of nature’s toughest polymers."},{"title":"Melanized Fungi Like Chaga Have Survived Extreme Environmental Stress","slug":"melanized-fungi-like-chaga-have-survived-extreme-environmental-stress","url":"/categories/wild-mushrooms/chaga/melanized-fungi-like-chaga-have-survived-extreme-environmental-stress.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Dark pigmentation helps this fungus endure environmental extremes."},{"title":"Microclimates Within Boreal Forests Influence Chaga Infection Patterns","slug":"microclimates-within-boreal-forests-influence-chaga-infection-patterns","url":"/categories/wild-mushrooms/chaga/microclimates-within-boreal-forests-influence-chaga-infection-patterns.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Small temperature and moisture shifts decide fungal success."},{"title":"Nutrient Cycling Accelerates After Chaga-Killed Trees Fall","slug":"nutrient-cycling-accelerates-after-chaga-killed-trees-fall","url":"/categories/wild-mushrooms/chaga/nutrient-cycling-accelerates-after-chaga-killed-trees-fall.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"When the infected tree falls, decomposition speeds dramatically."},{"title":"Old-Growth Birch Stands Are More Likely to Harbor Large Chaga Conks","slug":"old-growth-birch-stands-are-more-likely-to-harbor-large-chaga-conks","url":"/categories/wild-mushrooms/chaga/old-growth-birch-stands-are-more-likely-to-harbor-large-chaga-conks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"The biggest fungal masses grow where trees have aged the longest."},{"title":"Persistent Winter Freeze Does Not Eliminate Chaga Colonies","slug":"persistent-winter-freeze-does-not-eliminate-chaga-colonies","url":"/categories/wild-mushrooms/chaga/persistent-winter-freeze-does-not-eliminate-chaga-colonies.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Months of subzero cold fail to kill this parasitic fungus."},{"title":"Quantities of Betulinic Acid in Chaga Have Drawn Pharmaceutical Interest","slug":"quantities-of-betulinic-acid-in-chaga-have-drawn-pharmaceutical-interest","url":"/categories/wild-mushrooms/chaga/quantities-of-betulinic-acid-in-chaga-have-drawn-pharmaceutical-interest.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A forest parasite produces molecules studied in cancer research labs."},{"title":"Radical Oxidation Reactions Power Chaga’s Wood-Destroying Enzymes","slug":"radical-oxidation-reactions-power-chaga-s-wood-destroying-enzymes","url":"/categories/wild-mushrooms/chaga/radical-oxidation-reactions-power-chaga-s-wood-destroying-enzymes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus unleashes molecular radicals inside living wood."},{"title":"Resilient Mycelial Networks Persist Even After Partial Harvesting","slug":"resilient-mycelial-networks-persist-even-after-partial-harvesting","url":"/categories/wild-mushrooms/chaga/resilient-mycelial-networks-persist-even-after-partial-harvesting.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Cutting part of the conk does not always end the infection."},{"title":"Slow Growth Rates Make Commercial Cultivation of Chaga Difficult","slug":"slow-growth-rates-make-commercial-cultivation-of-chaga-difficult","url":"/categories/wild-mushrooms/chaga/slow-growth-rates-make-commercial-cultivation-of-chaga-difficult.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This fungus refuses to grow fast, even under human control."},{"title":"Temperature Gradients Inside Birch Trunks Buffer Chaga From Surface Extremes","slug":"temperature-gradients-inside-birch-trunks-buffer-chaga-from-surface-extremes","url":"/categories/wild-mushrooms/chaga/temperature-gradients-inside-birch-trunks-buffer-chaga-from-surface-extremes.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Inside the trunk, temperatures are less extreme than outside."},{"title":"Thermal and Chemical Stress Responses Shape Chaga’s Slow Metabolism","slug":"thermal-and-chemical-stress-responses-shape-chaga-s-slow-metabolism","url":"/categories/wild-mushrooms/chaga/thermal-and-chemical-stress-responses-shape-chaga-s-slow-metabolism.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Extreme cold and chemical warfare shape its growth pace."},{"title":"Tree Wounds Are Essential Gateways for Chaga Infection","slug":"tree-wounds-are-essential-gateways-for-chaga-infection","url":"/categories/wild-mushrooms/chaga/tree-wounds-are-essential-gateways-for-chaga-infection.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Without a wound, this parasite cannot enter its host."},{"title":"Undetected Internal Decay Can Reduce Timber Value in Birch Forests","slug":"undetected-internal-decay-can-reduce-timber-value-in-birch-forests","url":"/categories/wild-mushrooms/chaga/undetected-internal-decay-can-reduce-timber-value-in-birch-forests.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A hidden fungus can silently devalue an entire log."},{"title":"Unique Sclerotium Structure Distinguishes Chaga From Typical Mushrooms","slug":"unique-sclerotium-structure-distinguishes-chaga-from-typical-mushrooms","url":"/categories/wild-mushrooms/chaga/unique-sclerotium-structure-distinguishes-chaga-from-typical-mushrooms.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"This so-called mushroom never forms a classic cap."},{"title":"Vast Boreal Landscapes Provide Ideal Habitat for Long-Term Chaga Colonization","slug":"vast-boreal-landscapes-provide-ideal-habitat-for-long-term-chaga-colonization","url":"/categories/wild-mushrooms/chaga/vast-boreal-landscapes-provide-ideal-habitat-for-long-term-chaga-colonization.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Millions of square kilometers of forest support this single species."},{"title":"Wood-Derived Polysaccharides in Chaga Contribute to Its Dense Structure","slug":"wood-derived-polysaccharides-in-chaga-contribute-to-its-dense-structure","url":"/categories/wild-mushrooms/chaga/wood-derived-polysaccharides-in-chaga-contribute-to-its-dense-structure.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Its hardened mass is built from both fungus and tree."},{"title":"Xylem Disruption by Chaga Gradually Alters Water Transport in Birch Trees","slug":"xylem-disruption-by-chaga-gradually-alters-water-transport-in-birch-trees","url":"/categories/wild-mushrooms/chaga/xylem-disruption-by-chaga-gradually-alters-water-transport-in-birch-trees.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"A fungus inside the trunk interferes with water movement."},{"title":"Year-Round Exposure Does Not Dislodge Mature Chaga Conks","slug":"year-round-exposure-does-not-dislodge-mature-chaga-conks","url":"/categories/wild-mushrooms/chaga/year-round-exposure-does-not-dislodge-mature-chaga-conks.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Blizzards and heatwaves fail to knock it from the trunk."},{"title":"Yield Variability in Chaga Depends on Birch Species and Age","slug":"yield-variability-in-chaga-depends-on-birch-species-and-age","url":"/categories/wild-mushrooms/chaga/yield-variability-in-chaga-depends-on-birch-species-and-age.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Not all birch trees produce equally massive fungal growths."},{"title":"Zonal Climate Shifts Could Expand Chaga's Northern Range","slug":"zonal-climate-shifts-could-expand-chaga-s-northern-range","url":"/categories/wild-mushrooms/chaga/zonal-climate-shifts-could-expand-chaga-s-northern-range.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Warming climates may redraw the fungus's geographic limits."},{"title":"Zygomycete Confusion Once Misclassified Chaga in Early Mycology","slug":"zygomycete-confusion-once-misclassified-chaga-in-early-mycology","url":"/categories/wild-mushrooms/chaga/zygomycete-confusion-once-misclassified-chaga-in-early-mycology.html","color":"#39028","category":"wild-mushrooms","factCount":1,"factPreview":"Early scientists placed this fungus in the wrong fungal group."}];
+let currentSort="alpha";
+
+function prettyName(slug){
+  const small=['and','or','the','in','of','to','for'];
+  return (slug||'')
+    .replace(/-/g,' ')
+    .split(' ')
+    .map((w,i)=> i>0 && small.includes(w)? w : w.charAt(0).toUpperCase()+w.slice(1))
+    .join(' ');
+}
+
+function createCard(item){
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.title=(item.title||'').toLowerCase();
+  div.dataset.preview=item.factPreview||'No preview available';
+  div.dataset.factcount=item.factCount||0;
+  div.style.setProperty('--category-color', item.color||'#ff5722');
+
+  div.innerHTML=`
+    <a href="${item.url}">${prettyName(item.title)}</a>
+    <div class="badge">Facts: ${item.factCount||1}</div>
+  `;
+
+  div.addEventListener('mouseenter',showTooltip);
+  div.addEventListener('mousemove',moveTooltip);
+  div.addEventListener('mouseleave',hideTooltip);
+
+  return div;
+}
+
+function populateGrid(items){
+  const container=document.getElementById('items-grid');
+  container.innerHTML='';
+
+  if(currentSort==="alpha"){
+    items.sort((a,b)=>a.title.localeCompare(b.title));
+  }else{
+    items.sort((a,b)=>(b.factCount||0)-(a.factCount||0));
+  }
+
+  let lastLetter='';
+  items.forEach((item,i)=>{
+    if(currentSort==="alpha"){
+      const first=item.title[0].toUpperCase();
+      if(first!==lastLetter){
+        const header=document.createElement('div');
+        header.className='section-header';
+        header.textContent=first;
+        container.appendChild(header);
+        lastLetter=first;
+      }
+    }
+    const card=createCard(item);
+    container.appendChild(card);
+    setTimeout(()=>card.classList.add('loaded'),i*25);
+  });
+
+  const letters=[...new Set(items.map(it=>it.title[0].toUpperCase()))].sort();
+  const quickJump=document.getElementById('quickJump');
+  quickJump.innerHTML='Jump to: '+letters.map(l=>`<a href="#" data-letter="${l}">${l}</a>`).join(' | ');
+
+  quickJump.querySelectorAll('a').forEach(a=>{
+    a.onclick=e=>{
+      e.preventDefault();
+      const letter=a.dataset.letter;
+      const target=[...container.children].find(el=>el.textContent.startsWith(letter));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    };
+  });
+
+  const total=items.reduce((sum,i)=>sum+(i.factCount||0),0);
+  document.getElementById('totalFacts').innerHTML=
+    `<strong>Total Facts:</strong> ${total}`;
+}
+
+function filterCards(){
+  const query=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(card=>{
+    card.style.display=card.dataset.title.includes(query)?'block':'none';
+  });
+}
+
+function showTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.textContent = this.dataset.preview;
+  tooltip.style.opacity = 1;
+  moveTooltip(e);
+}
+
+function moveTooltip(e){
+  const tooltip = document.getElementById('tooltip');
+  const offsetX = 10; // horizontal offset from cursor
+  const offsetY = 20; // vertical offset from cursor
+
+  let left = e.clientX + offsetX;
+  let top = e.clientY + offsetY;
+
+  // prevent tooltip from going off right/bottom edge
+  const rect = tooltip.getBoundingClientRect();
+  if(left + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+  if(top + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+function hideTooltip(){
+  const tooltip = document.getElementById('tooltip');
+  tooltip.style.opacity = 0;
+}
+
+
+document.getElementById('sortToggle').onclick=()=>{
+  currentSort=currentSort==="alpha"?"facts":"alpha";
+  document.getElementById('sortToggle').textContent=
+    currentSort==="alpha"?"Sort: A–Z":"Sort: Most Facts";
+  populateGrid(ITEMS);
+};
+
+document.getElementById('darkToggle').onclick=()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode',
+    document.body.classList.contains('dark'));
+};
+
+if(localStorage.getItem('darkMode')==="true"){
+  document.body.classList.add('dark');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').style.opacity=
+    window.scrollY>300?1:0;
+});
+
+populateGrid(ITEMS);
+</script>
+
+</body>
+</html>
